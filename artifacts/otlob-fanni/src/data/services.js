@@ -1,31 +1,35 @@
 export const categories = [
-  { id: 'electricity', nameAr: 'كهرباء', nameEn: 'Electricity', icon: 'Zap' },
-  { id: 'plumbing', nameAr: 'سباكة', nameEn: 'Plumbing', icon: 'Droplets' },
-  { id: 'ac', nameAr: 'تكييف', nameEn: 'Air Conditioning', icon: 'Wind' },
-  { id: 'painting', nameAr: 'دهانات', nameEn: 'Painting', icon: 'Paintbrush' },
-  { id: 'carpentry', nameAr: 'نجارة', nameEn: 'Carpentry', icon: 'Hammer' },
-  { id: 'cleaning', nameAr: 'تنظيف', nameEn: 'Cleaning', icon: 'Sparkles' },
-  { id: 'moving', nameAr: 'نقل أثاث', nameEn: 'Furniture Moving', icon: 'Truck' },
-  { id: 'cctv', nameAr: 'كاميرات مراقبة', nameEn: 'CCTV', icon: 'Camera' },
-  { id: 'networks', nameAr: 'شبكات وإنترنت', nameEn: 'Networks & Internet', icon: 'Wifi' },
-  { id: 'maintenance', nameAr: 'صيانة عامة', nameEn: 'General Maintenance', icon: 'Wrench' },
-  { id: 'appliances', nameAr: 'أجهزة منزلية', nameEn: 'Home Appliances', icon: 'Tv' },
-  { id: 'welding', nameAr: 'حدادة', nameEn: 'Welding', icon: 'Flame' },
-  { id: 'aluminum', nameAr: 'ألمنيوم وزجاج', nameEn: 'Aluminum & Glass', icon: 'Square' },
-  { id: 'waterproof', nameAr: 'عزل مائي', nameEn: 'Waterproofing', icon: 'Droplet' },
-  { id: 'thermal', nameAr: 'عزل حراري', nameEn: 'Thermal Insulation', icon: 'Thermometer' },
-  { id: 'gas', nameAr: 'تأسيس غاز', nameEn: 'Gas Installation', icon: 'Gauge' },
-  { id: 'locks', nameAr: 'أقفال وأبواب', nameEn: 'Locks & Doors', icon: 'Lock' },
-  { id: 'contracting', nameAr: 'مقاولات', nameEn: 'Contracting', icon: 'Building2' },
-  { id: 'acunits', nameAr: 'مكيفات', nameEn: 'AC Units', icon: 'AirVent' },
-  { id: 'more', nameAr: 'المزيد من الخدمات', nameEn: 'More Services', icon: 'Grid3X3' },
+  // Row 1
+  { id: 'electricity', nameAr: 'كهرباء',            nameEn: 'Electricity',       icon: 'Zap' },
+  { id: 'plumbing',    nameAr: 'سباكة',             nameEn: 'Plumbing',          icon: 'Droplets' },
+  { id: 'ac',          nameAr: 'تكييف',             nameEn: 'Air Conditioning',  icon: 'Snowflake' },
+  { id: 'painting',    nameAr: 'دهانات',            nameEn: 'Painting',          icon: 'PaintRoller' },
+  { id: 'carpentry',   nameAr: 'نجارة',             nameEn: 'Carpentry',         icon: 'Drill' },
+  // Row 2
+  { id: 'appliances',  nameAr: 'أجهزة منزلية',     nameEn: 'Home Appliances',   icon: 'WashingMachine' },
+  { id: 'welding',     nameAr: 'حدادة',             nameEn: 'Welding',           icon: 'Anvil' },
+  { id: 'waterproof',  nameAr: 'عزل مائي',          nameEn: 'Waterproofing',     icon: 'ShieldCheck' },
+  { id: 'thermal',     nameAr: 'عزل حراري',         nameEn: 'Thermal Insulation',icon: 'ThermometerSun' },
+  { id: 'gas',         nameAr: 'تأسيس غاز',         nameEn: 'Gas Installation',  icon: 'Flame' },
+  // Row 3
+  { id: 'maintenance', nameAr: 'صيانة عامة',        nameEn: 'General Maintenance',icon: 'Wrench' },
+  { id: 'acunits',     nameAr: 'مكيفات',            nameEn: 'AC Units',          icon: 'Fan' },
+  { id: 'contracting', nameAr: 'مقاولات',           nameEn: 'Contracting',       icon: 'Construction' },
+  { id: 'aluminum',    nameAr: 'الألمنيوم وزجاج',  nameEn: 'Aluminum & Glass',  icon: 'AppWindow' },
+  { id: 'cleaning',    nameAr: 'تنظيف',             nameEn: 'Cleaning',          icon: 'SprayCan' },
+  // Row 4
+  { id: 'locks',       nameAr: 'أقفال وأبواب',     nameEn: 'Locks & Doors',     icon: 'LockKeyhole' },
+  { id: 'cctv',        nameAr: 'كاميرات مراقبة',   nameEn: 'CCTV',              icon: 'Cctv' },
+  { id: 'networks',    nameAr: 'شبكات وإنترنت',    nameEn: 'Networks & Internet',icon: 'Router' },
+  { id: 'moving',      nameAr: 'نقل أثاث',          nameEn: 'Furniture Moving',  icon: 'Truck' },
+  { id: 'more',        nameAr: 'مزيد من الخدمات',  nameEn: 'More Services',     icon: 'CircleEllipsis' },
 ];
 
 const cities = [
   { ar: 'طرابلس', en: 'Tripoli' },
   { ar: 'بنغازي', en: 'Benghazi' },
   { ar: 'مصراتة', en: 'Misrata' },
-  { ar: 'سبها', en: 'Sabha' },
+  { ar: 'سبها',   en: 'Sabha' },
 ];
 
 const namesAr = ['أحمد', 'محمد', 'علي', 'عمر', 'محمود', 'خالد', 'مصطفى', 'عبدالله', 'حسن', 'حسين'];
@@ -44,9 +48,9 @@ categories.forEach(cat => {
     const nIndex = Math.floor(Math.random() * namesAr.length);
     const lIndex = Math.floor(Math.random() * lastNamesAr.length);
     const phoneStr = String(phoneCounter).padStart(4, '0');
-    
+
     technicians.push({
-      id: `${cat.id}-${i+1}`,
+      id: `${cat.id}-${i + 1}`,
       nameAr: `${namesAr[nIndex]} ${lastNamesAr[lIndex]}`,
       nameEn: `${namesEn[nIndex]} ${lastNamesEn[lIndex]}`,
       categoryId: cat.id,

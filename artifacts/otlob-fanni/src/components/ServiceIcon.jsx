@@ -3,48 +3,48 @@ import {
   Droplets,
   Snowflake,
   PaintRoller,
-  Hammer,
-  Sparkles,
-  Truck,
-  Cctv,
-  Wifi,
-  Wrench,
+  Drill,
   WashingMachine,
   Anvil,
-  AppWindow,
   ShieldCheck,
   ThermometerSun,
   Flame,
+  Wrench,
+  Fan,
+  Construction,
+  AppWindow,
+  SprayCan,
   LockKeyhole,
-  HardHat,
-  AirVent,
-  Grid2X2,
+  Cctv,
+  Router,
+  Truck,
+  CircleEllipsis,
 } from 'lucide-react'
 
 const ICON_MAP = {
-  electricity: Zap,           // برق وكهرباء
-  plumbing:    Droplets,      // قطرات ماء = سباكة
-  ac:          Snowflake,     // ثلج = تكييف
-  painting:    PaintRoller,   // بكرة دهان
-  carpentry:   Hammer,        // مطرقة = نجارة
-  cleaning:    Sparkles,      // لمعة = تنظيف
-  moving:      Truck,         // شاحنة = نقل أثاث
-  cctv:        Cctv,          // كاميرا مراقبة
-  networks:    Wifi,          // واي فاي = شبكات
-  maintenance: Wrench,        // مفتاح ربط = صيانة عامة
-  appliances:  WashingMachine,// غسالة = أجهزة منزلية
-  welding:     Anvil,         // سندان = حدادة
-  aluminum:    AppWindow,     // نافذة = ألمنيوم وزجاج
-  waterproof:  ShieldCheck,   // درع = عزل مائي
-  thermal:     ThermometerSun,// شمس + ترمومتر = عزل حراري
-  gas:         Flame,         // لهب = تأسيس غاز
-  locks:       LockKeyhole,   // قفل = أقفال وأبواب
-  contracting: HardHat,       // خوذة = مقاولات
-  acunits:     AirVent,       // فتحة هواء = مكيفات
-  more:        Grid2X2,       // شبكة = المزيد
+  electricity: Zap,
+  plumbing:    Droplets,
+  ac:          Snowflake,
+  painting:    PaintRoller,
+  carpentry:   Drill,
+  appliances:  WashingMachine,
+  welding:     Anvil,
+  waterproof:  ShieldCheck,
+  thermal:     ThermometerSun,
+  gas:         Flame,
+  maintenance: Wrench,
+  acunits:     Fan,
+  contracting: Construction,
+  aluminum:    AppWindow,
+  cleaning:    SprayCan,
+  locks:       LockKeyhole,
+  cctv:        Cctv,
+  networks:    Router,
+  moving:      Truck,
+  more:        CircleEllipsis,
 }
 
-export default function ServiceIcon({ iconName, size = 34, strokeWidth = 1.8, className = '' }) {
+export default function ServiceIcon({ iconName, size = 32, strokeWidth = 1.8, className = '' }) {
   const Icon = ICON_MAP[iconName] || Wrench
   return (
     <Icon
