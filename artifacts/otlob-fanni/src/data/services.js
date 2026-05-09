@@ -9,7 +9,7 @@ export const categories = [
   { id: 'moving',         nameAr: 'نقل أثاث',           nameEn: 'Furniture Moving',     iconName: 'moving',             sortOrder: 7  },
   { id: 'cctv',           nameAr: 'كاميرات مراقبة',    nameEn: 'CCTV',                 iconName: 'cctv',               sortOrder: 8  },
   { id: 'networks',       nameAr: 'شبكات وإنترنت',     nameEn: 'Networks & Internet',  iconName: 'network',            sortOrder: 9  },
-  { id: 'maintenance',    nameAr: 'صيانة عامة',         nameEn: 'General Maintenance',  iconName: 'maintenance',        sortOrder: 10 },
+  { id: 'maintenance',    nameAr: 'صيانة عامة',         nameEn: 'General Maintenance',  iconName: 'general-maintenance', sortOrder: 10 },
   { id: 'appliances',     nameAr: 'أجهزة منزلية',      nameEn: 'Home Appliances',      iconName: 'appliances',         sortOrder: 11 },
   { id: 'welding',        nameAr: 'حدادة',              nameEn: 'Welding',              iconName: 'welding',            sortOrder: 12 },
   { id: 'aluminum',       nameAr: 'ألمنيوم وزجاج',     nameEn: 'Aluminum & Glass',     iconName: 'aluminum_glass',     sortOrder: 13 },
