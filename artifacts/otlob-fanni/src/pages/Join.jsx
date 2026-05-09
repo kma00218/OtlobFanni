@@ -64,7 +64,7 @@ export default function Join() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="desc">{t('aboutUs')}</Label>
+            <Label htmlFor="desc">{t('description')}</Label>
             <textarea 
               id="desc" 
               className="flex min-h-[100px] w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

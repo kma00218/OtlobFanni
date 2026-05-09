@@ -17,7 +17,7 @@ export default function Orders() {
         </div>
         <h2 className="text-xl font-bold text-foreground mb-2">{t('ordersEmpty')}</h2>
         <p className="text-muted-foreground mb-8 max-w-[250px]">
-          {t('searchPlaceholder')}
+          {t('ordersEmptyDesc')}
         </p>
         <Link href="/">
           <Button className="font-bold px-8 h-12 rounded-full">{t('backToHome')}</Button>

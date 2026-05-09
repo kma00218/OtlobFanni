@@ -15,7 +15,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-[80px] bg-white border-t pb-safe z-50 max-w-[480px] mx-auto flex items-center justify-around px-2">
+    <nav className="fixed bottom-0 left-0 right-0 h-[80px] bg-white border-t z-50 max-w-[480px] mx-auto flex items-center justify-around px-2">
       {tabs.map((tab) => {
         const active = location === tab.path || (tab.path !== '/' && location.startsWith(tab.path));
         const Icon = tab.icon;

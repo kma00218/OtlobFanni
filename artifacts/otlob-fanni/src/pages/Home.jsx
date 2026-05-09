@@ -50,10 +50,12 @@ export default function Home() {
         </div>
         
         <div className="mt-4 pb-4">
-          <Button className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/20 gap-2">
-            {t('requestNow')}
-            {dir === 'rtl' ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
-          </Button>
+          <Link href="/categories">
+            <Button className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/20 gap-2">
+              {t('requestNow')}
+              {dir === 'rtl' ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+            </Button>
+          </Link>
         </div>
       </main>
     </div>

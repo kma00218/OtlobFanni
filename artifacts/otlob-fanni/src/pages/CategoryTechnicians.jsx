@@ -14,7 +14,7 @@ export default function CategoryTechnicians() {
   const title = category ? (lang === 'ar' ? category.nameAr : category.nameEn) : t('technicians');
   
   // if "more", it might show all or we should handle it. For now, filter by exact ID unless "more"
-  let categoryTechs = technicians.filter(t => t.categoryId === categoryId);
+  let categoryTechs = technicians.filter(tech => tech.categoryId === categoryId);
   if (categoryId === 'more') {
     categoryTechs = technicians;
   }

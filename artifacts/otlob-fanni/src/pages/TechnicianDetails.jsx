@@ -2,7 +2,7 @@ import { useLang } from '../context/LanguageContext';
 import BackHeader from '../components/BackHeader';
 import { technicians } from '../data/services';
 import { useRoute } from 'wouter';
-import { Star, MapPin, Briefcase, Phone, MessageSquare, Tag } from 'lucide-react';
+import { Star, MapPin, Briefcase, Phone, MessageSquare, Tag, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function TechnicianDetails() {
@@ -10,7 +10,7 @@ export default function TechnicianDetails() {
   const [, params] = useRoute('/technician/:id');
   const techId = params?.id;
   
-  const technician = technicians.find(t => t.id === techId);
+  const technician = technicians.find(tech => tech.id === techId);
   
   if (!technician) return null;
 
@@ -71,7 +71,7 @@ export default function TechnicianDetails() {
         </div>
 
         <div className="mt-6 bg-white rounded-2xl shadow-sm border p-5">
-          <h3 className="text-lg font-bold text-foreground mb-2">{t('aboutUs')}</h3>
+          <h3 className="text-lg font-bold text-foreground mb-2">{t('aboutTech')}</h3>
           <p className="text-muted-foreground leading-relaxed text-sm">
             {description}
           </p>
@@ -102,9 +102,4 @@ export default function TechnicianDetails() {
       </div>
     </div>
   );
-}
-
-// Quick component since icon wasn't imported top
-function Wrench(props) {
-  return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinelinejoin="round" {...props}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>;
 }

@@ -27,6 +27,7 @@ export const translations = {
     contactTitle: 'تواصل معنا',
     ordersTitle: 'طلباتي',
     ordersEmpty: 'لا توجد طلبات حتى الآن',
+    ordersEmptyDesc: 'ابدأ بطلب فني من الصفحة الرئيسية',
     favoritesTitle: 'المفضلة',
     favoritesEmpty: 'لا توجد عناصر مفضلة حتى الآن',
     messagesTitle: 'الرسائل',
@@ -54,6 +55,8 @@ export const translations = {
     backToHome: 'الرئيسية',
     success: 'تم بنجاح',
     successMsg: 'تم الإرسال بنجاح',
+    aboutTech: 'نبذة عن الفني',
+    description: 'الوصف',
   },
   en: {
     appName: 'Otlob Fanni',
@@ -83,6 +86,7 @@ export const translations = {
     contactTitle: 'Contact Us',
     ordersTitle: 'My Orders',
     ordersEmpty: 'No orders yet',
+    ordersEmptyDesc: 'Start by requesting a technician from the home page',
     favoritesTitle: 'Favorites',
     favoritesEmpty: 'No favorites yet',
     messagesTitle: 'Messages',
@@ -110,5 +114,7 @@ export const translations = {
     backToHome: 'Home',
     success: 'Success',
     successMsg: 'Submitted successfully',
+    aboutTech: 'About the Technician',
+    description: 'Description',
   }
 };
