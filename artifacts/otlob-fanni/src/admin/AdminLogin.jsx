@@ -68,6 +68,7 @@ export default function AdminLogin() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="admin@example.com"
                 required
+                autoComplete="email"
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] bg-[#F7F8FA]"
               />
             </div>
@@ -81,6 +82,7 @@ export default function AdminLogin() {
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  autoComplete="current-password"
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] bg-[#F7F8FA] pl-10"
                 />
                 <button

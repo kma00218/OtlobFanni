@@ -29,7 +29,6 @@ export default function Technicians() {
   const [editItem, setEditItem] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
-  const [deleteId, setDeleteId] = useState(null)
   const [toast, setToast] = useState(null)
 
   const showToast = (msg, type = 'success') => {

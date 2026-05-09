@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Switch, Route, useLocation } from 'wouter'
 import AdminSidebar from './components/AdminSidebar'
 import AdminTopbar from './components/AdminTopbar'
@@ -29,6 +29,14 @@ function AccessDenied() {
   )
 }
 
+function RedirectToDashboard() {
+  const [, navigate] = useLocation()
+  useEffect(() => {
+    navigate('/admin/dashboard')
+  }, [])
+  return null
+}
+
 function AdminRoutes() {
   const { isSuperAdmin } = useAdmin()
 
@@ -37,13 +45,26 @@ function AdminRoutes() {
       <Route path="/admin/dashboard" component={Dashboard} />
       <Route path="/admin/technicians" component={Technicians} />
       <Route path="/admin/requests" component={Requests} />
-      <Route path="/admin/categories">{isSuperAdmin ? <Categories /> : <AccessDenied />}</Route>
-      <Route path="/admin/cities">{isSuperAdmin ? <Cities /> : <AccessDenied />}</Route>
-      <Route path="/admin/ads">{isSuperAdmin ? <Ads /> : <AccessDenied />}</Route>
-      <Route path="/admin/users">{isSuperAdmin ? <AdminUsers /> : <AccessDenied />}</Route>
-      <Route path="/admin/settings">{isSuperAdmin ? <Settings /> : <AccessDenied />}</Route>
-      <Route path="/admin/logs">{isSuperAdmin ? <ActivityLogs /> : <AccessDenied />}</Route>
-      <Route path="/admin">{() => { window.location.replace('/admin/dashboard'); return null }}</Route>
+      <Route path="/admin/categories">
+        {isSuperAdmin ? <Categories /> : <AccessDenied />}
+      </Route>
+      <Route path="/admin/cities">
+        {isSuperAdmin ? <Cities /> : <AccessDenied />}
+      </Route>
+      <Route path="/admin/ads">
+        {isSuperAdmin ? <Ads /> : <AccessDenied />}
+      </Route>
+      <Route path="/admin/users">
+        {isSuperAdmin ? <AdminUsers /> : <AccessDenied />}
+      </Route>
+      <Route path="/admin/settings">
+        {isSuperAdmin ? <Settings /> : <AccessDenied />}
+      </Route>
+      <Route path="/admin/logs">
+        {isSuperAdmin ? <ActivityLogs /> : <AccessDenied />}
+      </Route>
+      <Route path="/admin" component={RedirectToDashboard} />
+      <Route component={RedirectToDashboard} />
     </Switch>
   )
 }

@@ -1,11 +1,12 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { LanguageProvider } from "./context/LanguageContext";
+import { AdminProvider } from "./context/AdminContext";
 
-// Pages
+// Public Pages
 import Home from "./pages/Home";
 import Categories from "./pages/Categories";
 import CategoryTechnicians from "./pages/CategoryTechnicians";
@@ -17,43 +18,61 @@ import Favorites from "./pages/Favorites";
 import Messages from "./pages/Messages";
 import More from "./pages/More";
 
+// Admin
+import AdminLogin from "./admin/AdminLogin";
+import AdminLayout from "./admin/AdminLayout";
+
 // Components
 import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
 
-function Router() {
+function AppContent() {
+  const [location] = useLocation();
+  const isAdminPath = location.startsWith("/admin");
+
+  if (isAdminPath) {
+    return (
+      <AdminProvider>
+        <Switch>
+          <Route path="/admin/login" component={AdminLogin} />
+          <Route path="/admin/:rest*" component={AdminLayout} />
+        </Switch>
+      </AdminProvider>
+    );
+  }
+
   return (
-    <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/categories" component={Categories} />
-        <Route path="/category/:id" component={CategoryTechnicians} />
-        <Route path="/technician/:id" component={TechnicianDetails} />
-        <Route path="/join" component={Join} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/orders" component={Orders} />
-        <Route path="/favorites" component={Favorites} />
-        <Route path="/messages" component={Messages} />
-        <Route path="/more" component={More} />
-        <Route component={NotFound} />
-      </Switch>
-      <BottomNav />
-    </div>
+    <LanguageProvider>
+      <TooltipProvider>
+        <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/categories" component={Categories} />
+            <Route path="/category/:id" component={CategoryTechnicians} />
+            <Route path="/technician/:id" component={TechnicianDetails} />
+            <Route path="/join" component={Join} />
+            <Route path="/contact" component={Contact} />
+            <Route path="/orders" component={Orders} />
+            <Route path="/favorites" component={Favorites} />
+            <Route path="/messages" component={Messages} />
+            <Route path="/more" component={More} />
+            <Route component={NotFound} />
+          </Switch>
+          <BottomNav />
+        </div>
+        <Toaster />
+      </TooltipProvider>
+    </LanguageProvider>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </LanguageProvider>
+      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <AppContent />
+      </WouterRouter>
     </QueryClientProvider>
   );
 }

@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import { useLang } from '../context/LanguageContext';
 import Header from '../components/Header';
 import Logo from '../components/Logo';
@@ -5,22 +6,36 @@ import SearchBar from '../components/SearchBar';
 import CategoryCard from '../components/CategoryCard';
 import { categories } from '../data/services';
 import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const { t, dir } = useLang();
-  
-  // Show first 11 + "more" at the end if we want, or just first 12 if "more" is included in first 12
-  // the data file actually has "more" as the 20th item. We want 11 items + "more"
+  const [, navigate] = useLocation();
+  const logoClickCount = useRef(0);
+  const logoClickTimer = useRef(null);
+
   const displayCategories = [...categories.slice(0, 11), categories.find(c => c.id === 'more')];
+
+  const handleLogoClick = () => {
+    logoClickCount.current += 1;
+    if (logoClickTimer.current) clearTimeout(logoClickTimer.current);
+    if (logoClickCount.current >= 5) {
+      logoClickCount.current = 0;
+      navigate('/admin/login');
+      return;
+    }
+    logoClickTimer.current = setTimeout(() => {
+      logoClickCount.current = 0;
+    }, 5000);
+  };
 
   return (
     <div className="bg-background min-h-screen pt-16">
       <Header />
       
       <main className="px-4 py-6 flex flex-col gap-6">
-        <div className="text-center">
+        <div className="text-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>
           <Logo />
           <p className="text-muted-foreground mt-1 font-medium">{t('slogan')}</p>
         </div>
