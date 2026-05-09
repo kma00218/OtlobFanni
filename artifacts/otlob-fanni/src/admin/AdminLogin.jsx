@@ -32,7 +32,11 @@ export default function AdminLogin() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#071B33] rounded-2xl mb-4 shadow-lg">
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 bg-[#071B33] rounded-2xl mb-4 shadow-lg cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate('/')}
+            title="العودة إلى التطبيق"
+          >
             <Wrench className="w-8 h-8 text-[#FF7900]" />
           </div>
           <h1 className="text-2xl font-bold text-[#071B33]">لوحة التحكم</h1>
