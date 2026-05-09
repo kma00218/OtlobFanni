@@ -1,0 +1,689 @@
+نفّذ المطلوب التالي بدقة على تطبيق "اطلب فني".
+
+مهم جدًا:
+لا تعيد بناء التطبيق من الصفر.
+لا تغيّر فكرة التطبيق.
+لا تضف أفكار جديدة من عندك.
+لا تغيّر التصميم العام إلا إذا كان ضروريًا للوحة التحكم.
+لا تستخدم Firebase.
+لا تستخدم MongoDB.
+لا تستخدم Backend منفصل.
+استخدم Supabase فقط.
+نفّذ المطلوب خطوة بخطوة كما هو مكتوب.
+
+الهدف:
+أريد لوحة تحكم احترافية ومتكاملة قدر الإمكان لتطبيق "اطلب فني"، مع Super Admin يتحكم في كل شيء، و Sub Admins بصلاحيات محدودة.
+
+التقنيات المطلوبة:
+- React
+- Vite
+- Tailwind CSS
+- React Router DOM
+- Supabase
+- Supabase Auth
+- Supabase Database
+- Supabase Edge Functions
+- Lucide React للأيقونات
+
+مهم أمنيًا:
+- ممنوع وضع SUPABASE_SERVICE_ROLE_KEY داخل React.
+- ممنوع وضع service_role key في أي ملف Frontend.
+- استخدم VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY فقط داخل React.
+- استخدم SUPABASE_SERVICE_ROLE_KEY فقط داخل Supabase Edge Functions.
+- فعّل Row Level Security على الجداول.
+
+--------------------------------------------------
+أولًا: الدخول المخفي للوحة التحكم
+--------------------------------------------------
+
+لا أريد زر Admin ظاهر للمستخدمين.
+
+في الصفحة الرئيسية:
+- عند الضغط على شعار "اطلب فني" خمس مرات خلال 5 ثواني
+- افتح صفحة:
+  /admin/login
+
+لا تظهر أي علامة أو زر للمستخدم العادي يدل على وجود لوحة تحكم.
+
+--------------------------------------------------
+ثانيًا: تسجيل دخول لوحة التحكم
+--------------------------------------------------
+
+أنشئ صفحة:
+ /admin/login
+
+تستخدم Supabase Auth بالبريد وكلمة المرور.
+
+بعد تسجيل الدخول:
+- اقرأ بيانات المستخدم من جدول profiles.
+- إذا role = super_admin و is_active = true افتح /admin/dashboard
+- إذا role = sub_admin و is_active = true افتح /admin/dashboard
+- غير ذلك امنع الدخول وأظهر رسالة:
+  "غير مصرح لك بالدخول إلى لوحة التحكم"
+
+احمِ جميع روابط /admin.
+أي شخص غير مسجل دخول يتم تحويله إلى /admin/login.
+
+--------------------------------------------------
+ثالثًا: الصلاحيات
+--------------------------------------------------
+
+1. Super Admin
+
+الـ Super Admin يستطيع تغيير أي شيء في التطبيق:
+
+- إدارة الفنيين
+- إدارة التخصصات
+- إدارة المدن
+- إدارة الطلبات
+- إدارة الإعلانات
+- إدارة المستخدمين
+- إنشاء عدد غير محدود من Sub Admins
+- تفعيل وتعطيل Sub Admins
+- تغيير مدينة Sub Admin
+- تغيير صلاحيات Sub Admin
+- إدارة إعدادات التطبيق
+- إدارة محتوى الصفحة الرئيسية
+- إدارة أرقام التواصل
+- إدارة WhatsApp الدعم
+- مشاهدة كل الإحصائيات
+- رؤية كل المدن
+- رؤية كل الفنيين
+- رؤية كل الطلبات
+- حذف وتعديل وإضافة أي شيء
+
+2. Sub Admin
+
+صلاحية محدودة:
+
+- يرى Dashboard مختصر
+- يرى فقط بيانات المدينة المرتبط بها
+- يستطيع إضافة فنيين في مدينته فقط
+- يستطيع تعديل الفنيين في مدينته فقط
+- يستطيع تفعيل أو تعطيل فنيين في مدينته فقط
+- يستطيع مراجعة الطلبات الخاصة بمدينته فقط
+- يستطيع تغيير حالة الطلب داخل مدينته فقط
+- لا يستطيع إدارة المدن
+- لا يستطيع إدارة التخصصات العامة
+- لا يستطيع إدارة الإعدادات العامة
+- لا يستطيع إنشاء Admin أو Sub Admin
+- لا يستطيع رؤية بيانات المدن الأخرى
+- لا يستطيع حذف Super Admin
+- لا يستطيع تغيير صلاحياته
+
+--------------------------------------------------
+رابعًا: قاعدة البيانات
+--------------------------------------------------
+
+أنشئ أو حدّث ملف:
+
+supabase/schema.sql
+
+يحتوي على الجداول التالية:
+
+1. profiles
+
+الحقول:
+- id uuid primary key references auth.users(id) on delete cascade
+- full_name text
+- email text unique
+- role text check role in ('super_admin','sub_admin','technician','user')
+- city_id uuid references cities(id) nullable
+- is_active boolean default true
+- created_at timestamp default now()
+- updated_at timestamp default now()
+
+2. cities
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- name_ar text not null
+- name_en text not null
+- sort_order integer default 0
+- is_active boolean default true
+- created_at timestamp default now()
+- updated_at timestamp default now()
+
+3. categories
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- name_ar text not null
+- name_en text not null
+- icon text
+- sort_order integer default 0
+- is_active boolean default true
+- created_at timestamp default now()
+- updated_at timestamp default now()
+
+4. technicians
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- name_ar text not null
+- name_en text
+- phone text
+- whatsapp text
+- category_id uuid references categories(id)
+- city_id uuid references cities(id)
+- rating numeric default 0
+- reviews_count integer default 0
+- experience_years integer default 0
+- price_from numeric default 0
+- status text check status in ('available','busy','inactive') default 'available'
+- description_ar text
+- description_en text
+- image_url text nullable
+- is_featured boolean default false
+- is_approved boolean default true
+- is_active boolean default true
+- created_by uuid references auth.users(id)
+- created_at timestamp default now()
+- updated_at timestamp default now()
+
+5. service_requests
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- customer_name text
+- customer_phone text
+- city_id uuid references cities(id)
+- category_id uuid references categories(id)
+- technician_id uuid references technicians(id) nullable
+- description text
+- status text check status in ('new','assigned','in_progress','completed','cancelled') default 'new'
+- created_at timestamp default now()
+- updated_at timestamp default now()
+
+6. ads
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- title_ar text
+- title_en text
+- description_ar text
+- description_en text
+- image_url text nullable
+- link_url text nullable
+- placement text
+- is_active boolean default true
+- start_date date nullable
+- end_date date nullable
+- created_at timestamp default now()
+- updated_at timestamp default now()
+
+7. app_settings
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- key text unique not null
+- value text
+- updated_at timestamp default now()
+
+8. activity_logs
+
+الحقول:
+- id uuid primary key default gen_random_uuid()
+- user_id uuid references auth.users(id)
+- action text
+- table_name text
+- record_id uuid nullable
+- details text nullable
+- created_at timestamp default now()
+
+--------------------------------------------------
+خامسًا: Row Level Security
+--------------------------------------------------
+
+فعّل RLS على كل الجداول.
+
+اكتب سياسات واضحة:
+
+Public users:
+- يستطيعون قراءة cities النشطة فقط
+- يستطيعون قراءة categories النشطة فقط
+- يستطيعون قراءة technicians النشطين والمعتمدين فقط
+- يستطيعون إنشاء service_request جديد فقط
+- لا يستطيعون تعديل أو حذف أي شيء
+
+Super Admin:
+- يستطيع قراءة وإضافة وتعديل وحذف كل شيء
+
+Sub Admin:
+- يستطيع قراءة technicians في مدينته فقط
+- يستطيع إضافة technician في مدينته فقط
+- يستطيع تعديل technician في مدينته فقط
+- يستطيع قراءة service_requests في مدينته فقط
+- يستطيع تعديل حالة service_requests في مدينته فقط
+- لا يستطيع تعديل cities
+- لا يستطيع تعديل categories
+- لا يستطيع تعديل settings
+- لا يستطيع تعديل users إلا بياناته المحدودة إن لزم
+
+--------------------------------------------------
+سادسًا: Supabase Edge Functions
+--------------------------------------------------
+
+أنشئ Edge Function باسم:
+
+create-sub-admin
+
+المسار:
+supabase/functions/create-sub-admin/index.ts
+
+وظيفتها:
+- يستقبل الطلب من Super Admin فقط
+- يتحقق من المستخدم الحالي
+- يتحقق من profile الخاص به
+- يسمح فقط إذا role = super_admin و is_active = true
+- ينشئ مستخدم جديد في Supabase Auth
+- يضع له email و temporary password
+- ينشئ profile له role = sub_admin
+- يربطه بمدينة city_id
+- يرجع رسالة نجاح
+
+مهم:
+- استخدم SUPABASE_SERVICE_ROLE_KEY داخل Edge Function فقط
+- لا تضع service_role key في React
+
+أنشئ Edge Function ثانية باسم:
+
+update-admin-user
+
+وظيفتها:
+- تفعيل أو تعطيل Sub Admin
+- تغيير المدينة الخاصة به
+- تعديل اسمه
+- لا تسمح بحذف أو تعطيل آخر Super Admin
+- لا تسمح لـ Sub Admin باستخدامها
+
+--------------------------------------------------
+سابعًا: صفحات لوحة التحكم
+--------------------------------------------------
+
+أنشئ لوحة تحكم احترافية على المسار:
+
+/admin/dashboard
+
+يجب أن تحتوي على:
+- Sidebar
+- Topbar
+- Cards
+- Tables
+- Forms
+- Modals
+- تصميم احترافي
+- دعم عربي RTL وإنجليزي LTR
+- نفس ألوان التطبيق:
+  كحلي #071B33
+  برتقالي #FF7900
+  رمادي فاتح #F7F8FA
+  أبيض #FFFFFF
+
+صفحات لوحة التحكم المطلوبة:
+
+1. Dashboard
+
+المسار:
+ /admin/dashboard
+
+يحتوي على إحصائيات واضحة:
+
+Cards:
+- إجمالي الفنيين
+- الفنيون النشطون
+- الفنيون غير المعتمدين
+- إجمالي الطلبات
+- الطلبات الجديدة
+- الطلبات المكتملة
+- عدد المدن
+- عدد التخصصات
+- عدد الإعلانات النشطة
+- عدد المشرفين الفرعيين
+
+Charts أو إحصائيات بسيطة:
+- الطلبات حسب الحالة
+- الفنيون حسب المدينة
+- الفنيون حسب التخصص
+- آخر 10 طلبات
+- آخر 10 فنيين تمت إضافتهم
+
+مهم:
+إذا كان المستخدم Sub Admin:
+- يرى فقط إحصائيات مدينته
+إذا كان Super Admin:
+- يرى كل الإحصائيات
+
+2. Technicians Management
+
+المسار:
+ /admin/technicians
+
+المطلوب:
+- جدول فنيين
+- بحث بالاسم أو الهاتف
+- فلترة حسب المدينة
+- فلترة حسب التخصص
+- فلترة حسب الحالة
+- إضافة فني
+- تعديل فني
+- حذف فني
+- تفعيل / تعطيل
+- اعتماد / عدم اعتماد
+- مميز / غير مميز
+
+حقول إضافة الفني:
+- الاسم بالعربي
+- الاسم بالإنجليزي
+- الهاتف
+- واتساب
+- المدينة
+- التخصص
+- سنوات الخبرة
+- السعر يبدأ من
+- الحالة
+- الوصف بالعربي
+- الوصف بالإنجليزي
+- مميز
+- معتمد
+- نشط
+
+Sub Admin:
+- لا يظهر له اختيار المدن كلها
+- المدينة تكون مدينته فقط
+- لا يستطيع إضافة فني في مدينة أخرى
+
+3. Categories Management
+
+المسار:
+ /admin/categories
+
+Super Admin فقط.
+
+المطلوب:
+- إضافة تخصص
+- تعديل تخصص
+- حذف تخصص
+- تفعيل / تعطيل تخصص
+- ترتيب التخصصات
+- اختيار أيقونة من Lucide
+- الاسم عربي وإنجليزي
+
+4. Cities Management
+
+المسار:
+ /admin/cities
+
+Super Admin فقط.
+
+المطلوب:
+- عرض المدن
+- إضافة مدينة
+- تعديل مدينة
+- تفعيل / تعطيل مدينة
+- ترتيب المدن
+- بحث عن مدينة
+
+المدن الأولية التي يجب إضافتها في seed data:
+
+- طرابلس / Tripoli
+- بنغازي / Benghazi
+- مصراتة / Misrata
+- الزاوية / Zawiya
+- سبها / Sabha
+- البيضاء / Al Bayda
+- الخمس / Al Khoms
+- زليتن / Zliten
+- صبراتة / Sabratha
+- زوارة / Zuwara
+- غريان / Gharyan
+- ترهونة / Tarhuna
+- اجدابيا / Ajdabiya
+- درنة / Derna
+- طبرق / Tobruk
+- المرج / Al Marj
+- سرت / Sirte
+- بني وليد / Bani Walid
+- نالوت / Nalut
+- الزنتان / Zintan
+- صرمان / Surman
+- مسلاتة / Msallata
+- الرجبان / Al Rajban
+
+مهم:
+هذه فقط مدن البداية.
+يجب أن يستطيع Super Admin إضافة أي مدينة جديدة لاحقًا من لوحة التحكم.
+
+5. Requests Management
+
+المسار:
+ /admin/requests
+
+المطلوب:
+- عرض الطلبات
+- بحث
+- فلترة حسب المدينة
+- فلترة حسب الحالة
+- فلترة حسب التخصص
+- تغيير حالة الطلب
+- إسناد الطلب لفني
+- عرض تفاصيل الطلب
+- حذف الطلب للـ Super Admin فقط
+
+حالات الطلب:
+- new
+- assigned
+- in_progress
+- completed
+- cancelled
+
+Sub Admin:
+- يرى طلبات مدينته فقط
+
+6. Ads Management
+
+المسار:
+ /admin/ads
+
+Super Admin فقط.
+
+المطلوب:
+- إضافة إعلان
+- تعديل إعلان
+- حذف إعلان
+- تفعيل / تعطيل إعلان
+- مكان الإعلان placement
+- عنوان عربي وإنجليزي
+- وصف عربي وإنجليزي
+- رابط الإعلان
+- تاريخ بداية ونهاية
+
+7. Admin Users Management
+
+المسار:
+ /admin/users
+
+Super Admin فقط.
+
+المطلوب:
+- عرض Super Admins و Sub Admins
+- إضافة Sub Admin
+- تفعيل / تعطيل Sub Admin
+- تغيير مدينة Sub Admin
+- تعديل الاسم
+- حذف أو تعطيل Sub Admin
+- لا تسمح بحذف آخر Super Admin
+- لا تسمح لـ Sub Admin بالدخول لهذه الصفحة
+
+زر:
+"إضافة مشرف فرعي"
+"Add Sub Admin"
+
+الحقول:
+- Full Name
+- Email
+- Temporary Password
+- City
+- Active / Inactive
+
+عند الضغط على حفظ:
+- استدعِ Edge Function create-sub-admin
+- اعرض رسالة نجاح
+- اعرض بيانات الدخول:
+  Email
+  Temporary Password
+
+مهم:
+Super Admin يستطيع إنشاء عدد غير محدود من Sub Admins.
+لا تضع أي حد داخل الكود.
+
+8. Settings Page
+
+المسار:
+ /admin/settings
+
+Super Admin فقط.
+
+المطلوب:
+- اسم التطبيق بالعربي
+- اسم التطبيق بالإنجليزي
+- رقم واتساب الدعم
+- رقم الهاتف
+- البريد الإلكتروني
+- المدينة الافتراضية
+- تفعيل / تعطيل الإعلانات
+- نص السلوغان بالعربي
+- نص السلوغان بالإنجليزي
+
+9. Activity Logs Page
+
+المسار:
+ /admin/logs
+
+Super Admin فقط.
+
+المطلوب:
+- عرض آخر العمليات داخل اللوحة
+- من أضاف فني
+- من عدل فني
+- من غيّر حالة طلب
+- من أنشأ Sub Admin
+- الوقت والتاريخ
+
+--------------------------------------------------
+ثامنًا: ملفات المشروع المطلوبة
+--------------------------------------------------
+
+أنشئ أو عدّل الملفات التالية:
+
+src/lib/supabase.js
+
+src/admin/AdminLayout.jsx
+src/admin/AdminLogin.jsx
+src/admin/ProtectedAdminRoute.jsx
+
+src/admin/pages/Dashboard.jsx
+src/admin/pages/Technicians.jsx
+src/admin/pages/Categories.jsx
+src/admin/pages/Cities.jsx
+src/admin/pages/Requests.jsx
+src/admin/pages/Ads.jsx
+src/admin/pages/AdminUsers.jsx
+src/admin/pages/Settings.jsx
+src/admin/pages/ActivityLogs.jsx
+
+src/admin/components/AdminSidebar.jsx
+src/admin/components/AdminTopbar.jsx
+src/admin/components/StatCard.jsx
+src/admin/components/DataTable.jsx
+src/admin/components/FormModal.jsx
+
+supabase/schema.sql
+supabase/functions/create-sub-admin/index.ts
+supabase/functions/update-admin-user/index.ts
+
+--------------------------------------------------
+تاسعًا: ربط التطبيق العام بلوحة التحكم
+--------------------------------------------------
+
+عدّل التطبيق العام بحيث:
+- يقرأ المدن من Supabase
+- يقرأ التخصصات من Supabase
+- يقرأ الفنيين من Supabase
+- يعرض فقط الفنيين النشطين والمعتمدين
+- يعرض فقط المدن النشطة
+- يعرض فقط التخصصات النشطة
+
+لكن:
+إذا لم تكن مفاتيح Supabase موجودة، استخدم بيانات محلية fallback حتى لا يتوقف التطبيق.
+
+--------------------------------------------------
+عاشرًا: الطلب من المستخدم العادي
+--------------------------------------------------
+
+عند ضغط المستخدم على "اطلب فني الآن":
+افتح نموذج بسيط:
+
+- الاسم
+- رقم الهاتف
+- المدينة
+- التخصص
+- وصف المشكلة
+
+عند الإرسال:
+احفظ الطلب في جدول service_requests.
+
+إذا لم يكن Supabase جاهزًا:
+اعرض رسالة:
+"سيتم تفعيل إرسال الطلبات بعد ربط قاعدة البيانات"
+
+--------------------------------------------------
+الحادي عشر: مراجعة نهائية
+--------------------------------------------------
+
+بعد التنفيذ راجع كل شيء.
+
+تأكد من:
+
+1. التطبيق العام يعمل.
+2. الضغط 5 مرات على الشعار يفتح /admin/login.
+3. تسجيل الدخول يعمل.
+4. Super Admin يستطيع دخول كل الصفحات.
+5. Sub Admin يستطيع دخول Dashboard فقط مع الصفحات المسموحة له.
+6. Sub Admin لا يرى مدن أخرى.
+7. Super Admin يستطيع إنشاء Sub Admin من لوحة التحكم.
+8. لا يوجد حد لعدد Sub Admins.
+9. صفحة الإحصائيات تعمل.
+10. صفحة الفنيين تعمل.
+11. صفحة المدن تعمل.
+12. صفحة التخصصات تعمل.
+13. صفحة الطلبات تعمل.
+14. صفحة الإعلانات تعمل.
+15. صفحة المستخدمين تعمل.
+16. صفحة الإعدادات تعمل.
+17. صفحة السجلات تعمل.
+18. لا توجد أخطاء في Console.
+19. لا توجد صفحات فارغة.
+20. لا توجد مفاتيح سرية داخل React.
+21. RLS مفعلة.
+22. التصميم احترافي ومناسب للموبايل والكمبيوتر.
+23. لا يظهر زر Admin للمستخدم العادي.
+
+--------------------------------------------------
+المطلوب بعد الانتهاء
+--------------------------------------------------
+
+بعد الانتهاء اكتب لي فقط خطوات التشغيل والإعداد:
+
+1. كيف أنشئ مشروع Supabase.
+2. أين أضع VITE_SUPABASE_URL.
+3. أين أضع VITE_SUPABASE_ANON_KEY.
+4. كيف أشغل schema.sql.
+5. كيف أضيف SUPABASE_SERVICE_ROLE_KEY إلى Function Secrets.
+6. كيف أنشر Edge Functions.
+7. كيف أنشئ أول Super Admin يدويًا.
+8. كيف أدخل إلى لوحة التحكم.
+9. كيف أنشئ Sub Admin من اللوحة.
+10. كيف أختبر أن Sub Admin لا يرى إلا مدينته.
+
+نفّذ الآن.
