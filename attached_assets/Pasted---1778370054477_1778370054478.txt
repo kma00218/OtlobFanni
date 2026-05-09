@@ -1,0 +1,187 @@
+راجع ونظّم تخصصات تطبيق "اطلب فني" فقط.
+
+مهم جدًا:
+لا تغيّر التصميم العام.
+لا تغيّر لوحة التحكم.
+لا تغيّر قاعدة البيانات إلا إذا كان التعديل ضروريًا لقائمة التخصصات.
+لا تغيّر الأيقونات إلا إذا كانت أيقونة غير مناسبة.
+لا تضف صفحات جديدة.
+نفّذ فقط تنظيم التخصصات وإزالة التكرار والتأكد أن كل تخصص له أيقونة صحيحة.
+
+المشكلة:
+يوجد احتمال تكرار في التخصصات، مثل:
+- تكييف
+- مكيفات
+
+لا أريد تخصصات مكررة أو متشابهة جدًا.
+
+المطلوب:
+اعتمد القائمة النهائية التالية للتخصصات فقط، بنفس الترتيب، بدون تكرار:
+
+1. كهرباء / Electricity
+iconName: electricity
+icon file: /icons/services/electricity.svg
+
+2. سباكة / Plumbing
+iconName: plumbing
+icon file: /icons/services/plumbing.svg
+
+3. تكييف ومكيفات / AC Services
+iconName: ac
+icon file: /icons/services/ac.svg
+
+4. دهانات / Painting
+iconName: painting
+icon file: /icons/services/painting.svg
+
+5. نجارة / Carpentry
+iconName: carpentry
+icon file: /icons/services/carpentry.svg
+
+6. تنظيف / Cleaning
+iconName: cleaning
+icon file: /icons/services/cleaning.svg
+
+7. نقل أثاث / Furniture Moving
+iconName: moving
+icon file: /icons/services/moving.svg
+
+8. كاميرات مراقبة / CCTV
+iconName: cctv
+icon file: /icons/services/cctv.svg
+
+9. شبكات وإنترنت / Networks & Internet
+iconName: network
+icon file: /icons/services/network.svg
+
+10. صيانة عامة / General Maintenance
+iconName: maintenance
+icon file: /icons/services/maintenance.svg
+
+11. أجهزة منزلية / Home Appliances
+iconName: appliances
+icon file: /icons/services/appliances.svg
+
+12. حدادة / Welding
+iconName: welding
+icon file: /icons/services/welding.svg
+
+13. ألمنيوم وزجاج / Aluminum & Glass
+iconName: aluminum_glass
+icon file: /icons/services/aluminum-glass.svg
+
+14. عزل مائي / Waterproofing
+iconName: waterproofing
+icon file: /icons/services/waterproofing.svg
+
+15. عزل حراري / Thermal Insulation
+iconName: thermal_insulation
+icon file: /icons/services/thermal-insulation.svg
+
+16. تأسيس غاز / Gas Installation
+iconName: gas
+icon file: /icons/services/gas.svg
+
+17. أقفال وأبواب / Locks & Doors
+iconName: locks_doors
+icon file: /icons/services/locks-doors.svg
+
+18. مقاولات / Contracting
+iconName: contracting
+icon file: /icons/services/contracting.svg
+
+19. بلاط وسيراميك / Tiles & Ceramics
+iconName: maintenance
+temporary icon file: /icons/services/maintenance.svg
+
+20. جبس وديكور / Gypsum & Decoration
+iconName: painting
+temporary icon file: /icons/services/painting.svg
+
+21. ستلايت ورسيفر / Satellite & Receiver
+iconName: network
+temporary icon file: /icons/services/network.svg
+
+22. مضخات مياه / Water Pumps
+iconName: plumbing
+temporary icon file: /icons/services/plumbing.svg
+
+23. حدائق ومسابح / Gardens & Pools
+iconName: cleaning
+temporary icon file: /icons/services/cleaning.svg
+
+24. المزيد من الخدمات / More Services
+iconName: more
+icon file: /icons/services/more.svg
+
+مهم:
+احذف أو ادمج أي تخصص مكرر.
+خصوصًا:
+- لا تجعل "تكييف" و "مكيفات" منفصلين.
+اجعلهما تخصصًا واحدًا باسم:
+"تكييف ومكيفات"
+
+تأكد أن:
+- لا يوجد id مكرر.
+- لا يوجد nameAr مكرر.
+- لا يوجد nameEn مكرر.
+- لا يوجد تخصص بدون iconName.
+- لا يوجد تخصص بدون sort_order.
+- كل تخصص يظهر مرة واحدة فقط في الصفحة الرئيسية وصفحة التخصصات.
+- الترتيب يبدأ من 1 إلى 24.
+- "المزيد من الخدمات" يكون دائمًا آخر عنصر.
+
+إذا كانت التخصصات موجودة في src/data/services.js:
+حدّث القائمة هناك.
+
+إذا كانت التخصصات موجودة في Supabase:
+حدّث seed data داخل:
+supabase/schema.sql
+
+ولا تنشئ duplicate rows عند تشغيل seed مرة أخرى.
+استخدم upsert أو تحقق من الاسم قبل الإدخال.
+
+تعديل مهم في عرض التخصصات:
+- في الصفحة الرئيسية اعرض أول 20 تخصص فقط.
+- اجعل "المزيد من الخدمات" في آخر الشبكة.
+- عند الضغط على "عرض الكل" افتح صفحة كل التخصصات وتعرض كل 24 تخصص.
+- عند الضغط على "المزيد من الخدمات" افتح صفحة كل التخصصات.
+
+تأكد من الأيقونات:
+- كهرباء تظهر برق.
+- سباكة تظهر حنفية.
+- تكييف ومكيفات يظهر مكيف.
+- دهانات يظهر رول دهان.
+- نجارة تظهر أداة نجارة.
+- تنظيف يظهر بخاخ/تنظيف.
+- نقل أثاث يظهر شاحنة.
+- كاميرات مراقبة تظهر كاميرا.
+- شبكات وإنترنت يظهر راوتر.
+- صيانة عامة يظهر مفتاح.
+- أجهزة منزلية تظهر غسالة.
+- حدادة تظهر لحام.
+- ألمنيوم وزجاج تظهر نافذة.
+- عزل مائي يظهر درع/ماء.
+- عزل حراري يظهر بيت/حرارة.
+- تأسيس غاز يظهر شعلة.
+- أقفال وأبواب يظهر قفل.
+- مقاولات يظهر مبنى.
+- المزيد يظهر دوائر.
+
+إذا لم توجد أيقونة مخصصة لبعض الخدمات الجديدة مثل بلاط وسيراميك أو جبس وديكور أو ستلايت أو مضخات أو حدائق:
+استخدم temporary iconName كما هو مذكور أعلاه الآن.
+لا تنشئ أيقونات جديدة.
+
+راجع بعد التنفيذ:
+1. لا توجد تخصصات مكررة.
+2. كل التخصصات الأساسية موجودة.
+3. "تكييف ومكيفات" تخصص واحد فقط.
+4. كل تخصص له أيقونة.
+5. كل تخصص له id واضح.
+6. كل تخصص له nameAr و nameEn.
+7. كل تخصص له sort_order.
+8. الصفحة الرئيسية لا تعرض عناصر مكررة.
+9. صفحة عرض الكل تعرض كل التخصصات.
+10. لا توجد console errors.
+
+نفّذ هذا التعديل فقط.

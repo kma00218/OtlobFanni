@@ -9,6 +9,12 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import { Button } from '@/components/ui/button'
 
+// First 19 regular categories + "more" at the end = 20 total
+const homeCategories = [
+  ...categories.filter(c => c.id !== 'more').slice(0, 19),
+  categories.find(c => c.id === 'more'),
+]
+
 export default function Home() {
   const { t, dir } = useLang()
   const [, navigate] = useLocation()
@@ -49,7 +55,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-5 gap-2">
-            {categories.map(category => (
+            {homeCategories.map(category => (
               <CategoryCard key={category.id} category={category} />
             ))}
           </div>
