@@ -1,0 +1,303 @@
+نفّذ هذا التعديل فقط على تطبيق "اطلب فني".
+
+مهم جدًا:
+لا تغيّر فكرة التطبيق.
+لا تغيّر التصميم العام.
+لا تغيّر قاعدة البيانات.
+لا تغيّر لوحة التحكم.
+لا تغيّر الصفحات.
+لا تستخدم Lucide Icons لأيقونات التخصصات.
+لا تنشئ أيقونات جديدة.
+لا تستخدم SVG بالكود.
+لا تستخدم صور من الإنترنت.
+استخدم فقط ملفات الأيقونات الموجودة داخل المشروع.
+
+الأيقونات موجودة في هذا المسار:
+
+public/icons/services/
+
+يجب أن يستخدم التطبيق هذه الأيقونات بدل الأيقونات الحالية.
+
+المسارات النهائية للأيقونات هي:
+
+/icons/services/electricity.svg
+/icons/services/plumbing.svg
+/icons/services/ac.svg
+/icons/services/painting.svg
+/icons/services/carpentry.svg
+/icons/services/cleaning.svg
+/icons/services/moving.svg
+/icons/services/cctv.svg
+/icons/services/network.svg
+/icons/services/maintenance.svg
+/icons/services/appliances.svg
+/icons/services/welding.svg
+/icons/services/aluminum-glass.svg
+/icons/services/waterproofing.svg
+/icons/services/thermal-insulation.svg
+/icons/services/gas.svg
+/icons/services/locks-doors.svg
+/icons/services/contracting.svg
+/icons/services/ac-units.svg
+/icons/services/more.svg
+
+اربط كل تخصص بالأيقونة المناسبة هكذا:
+
+كهرباء / Electricity:
+electricity.svg
+
+سباكة / Plumbing:
+plumbing.svg
+
+تكييف / Air Conditioning:
+ac.svg
+
+دهانات / Painting:
+painting.svg
+
+نجارة / Carpentry:
+carpentry.svg
+
+تنظيف / Cleaning:
+cleaning.svg
+
+نقل أثاث / Furniture Moving:
+moving.svg
+
+كاميرات مراقبة / CCTV:
+cctv.svg
+
+شبكات وإنترنت / Networks & Internet:
+network.svg
+
+صيانة عامة / General Maintenance:
+maintenance.svg
+
+أجهزة منزلية / Home Appliances:
+appliances.svg
+
+حدادة / Welding:
+welding.svg
+
+ألمنيوم وزجاج / Aluminum & Glass:
+aluminum-glass.svg
+
+عزل مائي / Waterproofing:
+waterproofing.svg
+
+عزل حراري / Thermal Insulation:
+thermal-insulation.svg
+
+تأسيس غاز / Gas Installation:
+gas.svg
+
+أقفال وأبواب / Locks & Doors:
+locks-doors.svg
+
+مقاولات / Contracting:
+contracting.svg
+
+مكيفات / AC Units:
+ac-units.svg
+
+المزيد من الخدمات / More Services:
+more.svg
+
+المطلوب برمجيًا:
+
+1. أنشئ مكوّن جديد:
+
+src/components/ServiceImageIcon.jsx
+
+ضع فيه mapping ثابت بين iconName وملف الأيقونة.
+
+الكود المطلوب تقريبًا يكون بهذا الشكل، مع تعديله حسب بنية المشروع:
+
+import React from "react";
+
+const iconMap = {
+  electricity: "/icons/services/electricity.svg",
+  plumbing: "/icons/services/plumbing.svg",
+  ac: "/icons/services/ac.svg",
+  painting: "/icons/services/painting.svg",
+  carpentry: "/icons/services/carpentry.svg",
+  cleaning: "/icons/services/cleaning.svg",
+  moving: "/icons/services/moving.svg",
+  cctv: "/icons/services/cctv.svg",
+  network: "/icons/services/network.svg",
+  maintenance: "/icons/services/maintenance.svg",
+  appliances: "/icons/services/appliances.svg",
+  welding: "/icons/services/welding.svg",
+  aluminum_glass: "/icons/services/aluminum-glass.svg",
+  "aluminum-glass": "/icons/services/aluminum-glass.svg",
+  waterproofing: "/icons/services/waterproofing.svg",
+  thermal_insulation: "/icons/services/thermal-insulation.svg",
+  "thermal-insulation": "/icons/services/thermal-insulation.svg",
+  gas: "/icons/services/gas.svg",
+  locks_doors: "/icons/services/locks-doors.svg",
+  "locks-doors": "/icons/services/locks-doors.svg",
+  contracting: "/icons/services/contracting.svg",
+  ac_units: "/icons/services/ac-units.svg",
+  "ac-units": "/icons/services/ac-units.svg",
+  more: "/icons/services/more.svg",
+};
+
+export default function ServiceImageIcon({ iconName, className = "" }) {
+  const src = iconMap[iconName] || iconMap.more;
+
+  return (
+    <div
+      className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F1F3F5] ${className}`}
+    >
+      <img
+        src={src}
+        alt=""
+        className="h-11 w-11 object-contain"
+        loading="lazy"
+        draggable="false"
+      />
+    </div>
+  );
+}
+
+2. عدّل مكوّن بطاقة التخصص:
+
+src/components/CategoryCard.jsx
+
+واجعله يستخدم:
+
+<ServiceImageIcon iconName={category.iconName || category.icon} />
+
+بدل أيقونات Lucide الحالية.
+
+يجب أن تكون البطاقة بهذا الشكل تقريبًا:
+
+- البطاقة بيضاء
+- border-radius: 18px
+- ظل خفيف
+- داخلها مربع رمادي فاتح للأيقونة
+- الأيقونة في الوسط
+- اسم التخصص أسفل الأيقونة
+- النص واضح ومركزي
+- لا تجعل الأيقونة صغيرة جدًا
+- لا تجعل النص يخرج من البطاقة
+
+3. إذا كانت بيانات التخصصات في ملف محلي مثل:
+
+src/data/services.js
+
+فتأكد أن كل تخصص لديه iconName صحيح:
+
+electricity
+plumbing
+ac
+painting
+carpentry
+cleaning
+moving
+cctv
+network
+maintenance
+appliances
+welding
+aluminum_glass
+waterproofing
+thermal_insulation
+gas
+locks_doors
+contracting
+ac_units
+more
+
+مثال:
+
+{
+  id: "electricity",
+  nameAr: "كهرباء",
+  nameEn: "Electricity",
+  iconName: "electricity"
+}
+
+4. إذا كانت التخصصات تأتي من Supabase:
+
+تأكد أن حقل icon أو iconName في جدول categories يحتوي على نفس القيم:
+
+electricity
+plumbing
+ac
+painting
+carpentry
+cleaning
+moving
+cctv
+network
+maintenance
+appliances
+welding
+aluminum_glass
+waterproofing
+thermal_insulation
+gas
+locks_doors
+contracting
+ac_units
+more
+
+إذا كانت القيم في Supabase مختلفة، أضف mapping يحوّلها إلى iconName الصحيح بدون كسر التطبيق.
+
+5. لا تستخدم Lucide React في بطاقات التخصصات بعد الآن.
+
+يمكن استخدام Lucide في باقي التطبيق مثل:
+- البحث
+- الإشعارات
+- القائمة السفلية
+- لوحة التحكم
+
+لكن أيقونات التخصصات يجب أن تأتي فقط من:
+
+public/icons/services/
+
+6. حافظ على شكل الصفحة الرئيسية قريب من الصورة المرجعية:
+
+- شعار كبير في الأعلى
+- مربع بحث
+- شبكة التخصصات
+- أيقونات واضحة داخل مربعات رمادية
+- زر "اطلب فني الآن"
+- شريط سفلي
+
+7. أصلح مشكلة الشعار إذا كان مقصوصًا:
+
+اجعل الشعار يظهر كاملًا:
+
+- max-width: 260px على الهاتف
+- object-fit: contain
+- لا تستخدم overflow hidden حول الشعار
+- لا تجعل الشعار يختفي خلف الهيدر
+- أعطِ مساحة كافية فوق وتحت الشعار
+
+8. تأكد من أن الأيقونات تظهر على الهاتف والكمبيوتر.
+
+9. لا تغيّر أي شيء آخر غير الأيقونات ومشكلة قص الشعار إذا كانت موجودة.
+
+راجع بعد التنفيذ:
+
+- كل الأيقونات تظهر.
+- لا توجد صور مكسورة.
+- كل تخصص لديه أيقونة صحيحة.
+- الكهرباء تظهر كبرق.
+- السباكة تظهر كحنفية.
+- التكييف يظهر كمكيف.
+- الدهانات تظهر كرول دهان.
+- النجارة تظهر كأداة نجارة.
+- التنظيف يظهر كبخاخ.
+- النقل يظهر كشاحنة.
+- الكاميرات تظهر ككاميرا.
+- الشبكات تظهر كراوتر.
+- الأقفال تظهر كقفل.
+- المقاولات تظهر كبناء.
+- لا توجد Console errors.
+- لا توجد أيقونات Lucide داخل بطاقات التخصصات.
+- التصميم بقي كما هو بدون تغييرات كبيرة.
+
+نفّذ هذا التعديل الآن فقط.

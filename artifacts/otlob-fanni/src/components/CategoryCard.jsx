@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import ServiceIcon from './ServiceIcon'
+import ServiceImageIcon from './ServiceImageIcon'
 
 export default function CategoryCard({ category }) {
   const { lang } = useLang()
@@ -9,19 +9,12 @@ export default function CategoryCard({ category }) {
   return (
     <Link
       href={`/category/${category.id}`}
-      className="group flex flex-col items-center gap-1.5 p-2.5 bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-200 active:scale-95 hover:border-[#FF7900]/30 hover:shadow-md cursor-pointer select-none"
+      className="group flex flex-col items-center gap-1.5 p-2.5 bg-white rounded-[18px] shadow-sm border border-gray-100 transition-all duration-200 active:scale-95 hover:border-[#FF7900]/30 hover:shadow-md cursor-pointer select-none"
     >
-      <div
-        className="h-12 w-12 rounded-xl flex items-center justify-center transition-colors duration-200 group-hover:bg-[#FF7900]/10 group-active:bg-[#FF7900]/15"
-        style={{ backgroundColor: 'rgba(7,27,51,0.07)' }}
-      >
-        <ServiceIcon
-          iconName={category.id}
-          size={28}
-          strokeWidth={1.8}
-          className="text-[#071B33] transition-colors duration-200 group-hover:text-[#FF7900]"
-        />
-      </div>
+      <ServiceImageIcon
+        iconName={category.iconName || category.id}
+        className="transition-all duration-200 group-hover:brightness-110"
+      />
       <span className="text-[10px] font-medium text-center text-[#071B33] leading-tight line-clamp-2 w-full">
         {name}
       </span>
