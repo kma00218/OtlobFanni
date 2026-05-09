@@ -1,0 +1,97 @@
+Fix only the service category icons display.
+
+Do not change the app structure.
+Do not change the database.
+Do not change the admin panel.
+Do not change the pages.
+Do not replace the icon files.
+Use the existing icons from:
+
+public/icons/services/
+
+Problem:
+The service icons are currently too small and look bad.
+They appear inside a small gray box inside another card, so they look weak and unclear.
+
+Required fix:
+Make the service icons large, clear, and professional like the reference design.
+
+Important:
+The SVG icon files already include their own light gray rounded background.
+Therefore, do NOT wrap them inside another gray square.
+
+Update ServiceImageIcon.jsx:
+
+- Remove the extra gray background wrapper.
+- Display the image directly.
+- Use a larger size.
+- The image should be 70px × 70px on mobile.
+- Use object-contain.
+- Do not crop the icon.
+- Do not add another background around it.
+
+Use this style:
+
+<img
+  src={src}
+  alt=""
+  className="h-[70px] w-[70px] object-contain"
+  loading="lazy"
+  draggable="false"
+/>
+
+For very small screens, use:
+h-[64px] w-[64px]
+
+Update CategoryCard.jsx:
+
+Each card should be:
+- white background
+- rounded-2xl
+- light shadow
+- padding around 10px
+- icon centered
+- text centered below the icon
+- card height around 92px to 105px
+- icon should take visual priority
+
+Suggested card layout:
+
+<button className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-2 p-2 min-h-[104px]">
+  <ServiceImageIcon iconName={category.iconName || category.icon} />
+  <span className="text-[12px] font-semibold text-[#071B33] leading-tight text-center">
+    {category name}
+  </span>
+</button>
+
+Grid:
+- On mobile use 5 columns if screen width allows.
+- If 5 columns makes cards too small, use 4 columns.
+- Do not make the cards too narrow.
+- Make sure icons are visible and strong.
+
+Important:
+Do not use Lucide icons for service categories.
+Do not use emoji.
+Do not use online icons.
+Do not create new icons.
+Use only the existing SVG files from public/icons/services/.
+
+Also check:
+- electricity icon must look large and clear.
+- plumbing icon must look large and clear.
+- ac icon must look large and clear.
+- painting icon must look large and clear.
+- all icons must be readable at first glance.
+
+If the SVG files appear too small because they contain too much empty space, add CSS scale:
+
+.service-icon-img {
+  transform: scale(1.18);
+}
+
+But do not crop them.
+
+Final result:
+The icons must look large, clean, professional, and close to the reference screenshot.
+Fix only this issue now.

@@ -9,13 +9,10 @@ export default function CategoryCard({ category }) {
   return (
     <Link
       href={`/category/${category.id}`}
-      className="group flex flex-col items-center gap-1.5 p-2.5 bg-white rounded-[18px] shadow-sm border border-gray-100 transition-all duration-200 active:scale-95 hover:border-[#FF7900]/30 hover:shadow-md cursor-pointer select-none"
+      className="flex flex-col items-center justify-center gap-1.5 p-2 bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[104px] transition-all duration-200 active:scale-95 hover:shadow-md hover:border-[#FF7900]/25 cursor-pointer select-none"
     >
-      <ServiceImageIcon
-        iconName={category.iconName || category.id}
-        className="transition-all duration-200 group-hover:brightness-110"
-      />
-      <span className="text-[10px] font-medium text-center text-[#071B33] leading-tight line-clamp-2 w-full">
+      <ServiceImageIcon iconName={category.iconName || category.id} />
+      <span className="text-[11px] font-semibold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5">
         {name}
       </span>
     </Link>
