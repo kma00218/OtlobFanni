@@ -37,7 +37,6 @@ export default function Home() {
       <main className="px-4 py-6 flex flex-col gap-6">
         <div className="text-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>
           <Logo />
-          <p className="text-muted-foreground mt-1 font-medium">{t('slogan')}</p>
         </div>
         
         <SearchBar />
