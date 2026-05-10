@@ -159,33 +159,31 @@ export default function TechnicianDetails() {
           </div>
         )}
 
-        {/* Request service CTA */}
-        <div className="mt-4">
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full h-14 bg-[#FF7900] hover:bg-[#e06b00] active:bg-[#c95f00] text-white font-bold rounded-2xl flex items-center justify-center gap-2 text-base transition-colors shadow-md"
-          >
-            <ClipboardList className="h-5 w-5" />
-            {ar ? 'أرسل طلب خدمة' : 'Send Service Request'}
-          </button>
-        </div>
-
       </main>
 
-      {/* Contact buttons */}
-      <div className="fixed bottom-[80px] left-0 right-0 p-4 bg-white border-t z-40 max-w-[480px] mx-auto flex gap-3">
-        <a href={`https://wa.me/${technician.whatsapp}`} target="_blank" rel="noreferrer" className="flex-1">
-          <Button className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl gap-2">
-            <MessageSquare className="h-4 w-4 fill-current" />
-            {t('whatsapp')}
-          </Button>
-        </a>
-        <a href={`tel:${technician.phone}`} className="flex-1">
-          <Button className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl gap-2">
-            <Phone className="h-4 w-4 fill-current" />
-            {t('call')}
-          </Button>
-        </a>
+      {/* Fixed bottom bar */}
+      <div className="fixed bottom-[80px] left-0 right-0 bg-white border-t z-40 max-w-[480px] mx-auto px-4 pt-3 pb-3 flex flex-col gap-2">
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full h-12 bg-[#FF7900] hover:bg-[#e06b00] active:bg-[#c95f00] text-white font-bold rounded-xl flex items-center justify-center gap-2 text-base transition-colors"
+        >
+          <ClipboardList className="h-5 w-5" />
+          {ar ? 'أرسل طلب خدمة' : 'Send Service Request'}
+        </button>
+        <div className="flex gap-2">
+          <a href={`https://wa.me/${technician.whatsapp}`} target="_blank" rel="noreferrer" className="flex-1">
+            <Button className="w-full h-11 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl gap-2 text-sm">
+              <MessageSquare className="h-4 w-4 fill-current" />
+              {t('whatsapp')}
+            </Button>
+          </a>
+          <a href={`tel:${technician.phone}`} className="flex-1">
+            <Button className="w-full h-11 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl gap-2 text-sm">
+              <Phone className="h-4 w-4 fill-current" />
+              {t('call')}
+            </Button>
+          </a>
+        </div>
       </div>
 
       {/* Service Request Modal */}
