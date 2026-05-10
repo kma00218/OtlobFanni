@@ -60,14 +60,21 @@ const normalizeApproved = (t) => ({
 
 const normalizeAdmin = (t) => ({ ...t, _source: ADMIN_KEY })
 
-// يُحضر قائمة موحّدة من المفتاحَين
+// يُحضر قائمة موحّدة من المفتاحَين مع إزالة أي تكرارات
 const loadAllTechs = () => {
-  const approved = ls.get(APPROVED_KEY).map(normalizeApproved)
+  const approved  = ls.get(APPROVED_KEY).map(normalizeApproved)
   const adminAdded = ls.get(ADMIN_KEY).map(normalizeAdmin)
   // لا ندوّر المعتمدين مرتين إذا أعيد حفظهم في admin key
   const approvedIds = new Set(approved.map(t => t.id))
   const unique = adminAdded.filter(t => !approvedIds.has(t.id))
-  return [...approved, ...unique]
+  const all = [...approved, ...unique]
+  // إزالة التكرارات بالـ id (تحصين من بيانات قديمة مكررة)
+  const seen = new Set()
+  return all.filter(t => {
+    if (seen.has(t.id)) return false
+    seen.add(t.id)
+    return true
+  })
 }
 
 // يُحدّث سجلاً في مفتاحه الأصلي
@@ -231,24 +238,33 @@ export default function Technicians() {
     reloadTechs()
   }
 
-  // ── تبديل حقل ──
+  // ── تبديل حقل (is_approved / is_featured) ──
   const toggleField = (row, field) => {
     const source = row._source || ADMIN_KEY
-    persistUpdate(row.id, source, { [field]: !row[field] })
-    showToast(field === 'is_approved' ? (row[field] ? 'تم إلغاء الاعتماد' : 'تم اعتماد الفني') : 'تم التحديث')
-    reloadTechs()
+    const newVal = !row[field]
+    persistUpdate(row.id, source, { [field]: newVal })
+    // تحديث فوري للـ state بدون انتظار إعادة التحميل
+    setAllTechs(prev => prev.map(t => t.id === row.id ? { ...t, [field]: newVal } : t))
+    showToast(
+      field === 'is_approved'
+        ? (newVal ? 'تم اعتماد الفني' : 'تم إلغاء الاعتماد')
+        : (newVal ? 'تم تمييز الفني' : 'تم إلغاء التمييز')
+    )
   }
 
   // ── تفعيل/تعطيل ──
   const toggleActive = (row) => {
     const source = row._source || ADMIN_KEY
     const newActive = !row.is_active
-    persistUpdate(row.id, source, {
-      is_active: newActive,
-      status: newActive ? (row.status === 'inactive' ? 'available' : row.status) : 'inactive',
-    })
+    const newStatus = newActive
+      ? (row.status === 'inactive' ? 'available' : row.status)
+      : 'inactive'
+    persistUpdate(row.id, source, { is_active: newActive, status: newStatus })
+    // تحديث فوري للـ state بدون انتظار إعادة التحميل
+    setAllTechs(prev =>
+      prev.map(t => t.id === row.id ? { ...t, is_active: newActive, status: newStatus } : t)
+    )
     showToast(newActive ? 'تم تفعيل الفني' : 'تم تعطيل الفني')
-    reloadTechs()
   }
 
   // ── أعمدة الجدول ──

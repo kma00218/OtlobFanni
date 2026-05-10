@@ -47,11 +47,16 @@ const applicationToTechnician = (app) => ({
 const saveTechnician = (app) => {
   try {
     const existing = JSON.parse(localStorage.getItem(TECH_KEY) || '[]')
-    const alreadyExists = existing.some(t => t.applicationId === app.id)
+    const newId = 'tech_' + app.id
+    // تحقق مزدوج: بالـ id وبالـ applicationId لمنع أي تكرار
+    const alreadyExists = existing.some(t => t.applicationId === app.id || t.id === newId)
     if (alreadyExists) return
-    existing.unshift(applicationToTechnician(app))
-    localStorage.setItem(TECH_KEY, JSON.stringify(existing))
-    console.log('[technicians] record created for:', app.full_name, '| total:', existing.length)
+    const record = applicationToTechnician(app)
+    // إزالة أي تكرارات قائمة قبل الإضافة
+    const deduped = existing.filter((t, i, arr) => arr.findIndex(x => x.id === t.id) === i)
+    deduped.unshift(record)
+    localStorage.setItem(TECH_KEY, JSON.stringify(deduped))
+    console.log('[technicians] record created for:', app.full_name, '| total:', deduped.length)
   } catch (_) {}
 }
 
