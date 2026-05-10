@@ -127,6 +127,7 @@ export const api = {
     companies: {
       list:         ()             => get('/admin/companies'),
       setStatus:    (id, status)  => patch(`/admin/companies/${id}/status`, { status }),
+      update:       (id, data)    => patch(`/admin/companies/${id}`, data),
     },
   },
 }

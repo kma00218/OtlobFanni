@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import {
-  Eye, Building2, Phone, MapPin, Briefcase, Clock,
+  Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle
 } from 'lucide-react'
 import { categories } from '../../data/services'
@@ -20,14 +21,26 @@ const DAY_AR = {
 
 const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 
+const emptyForm = {
+  company_name: '', contact_name: '', phone: '', whatsapp: '',
+  commercial_reg: '', city: '', area: '', address: '',
+  specialty: '', years_active: '', description: '', certifications: '',
+  price_from: '', price_to: '', available_now: false, emergency: false,
+  hours_from: '', hours_to: '', service_radius: '', facebook: '', instagram: '',
+}
+
 export default function Companies() {
-  const [data, setData]         = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [search, setSearch]     = useState('')
+  const { isSuperAdmin } = useAdmin()
+  const [data, setData]             = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [search, setSearch]         = useState('')
   const [filterCity, setFilterCity] = useState('')
-  const [viewItem, setViewItem] = useState(null)
-  const [lightbox, setLightbox] = useState(null)
-  const [toast, setToast]       = useState(null)
+  const [viewItem, setViewItem]     = useState(null)
+  const [editItem, setEditItem]     = useState(null)
+  const [form, setForm]             = useState(emptyForm)
+  const [saving, setSaving]         = useState(false)
+  const [lightbox, setLightbox]     = useState(null)
+  const [toast, setToast]           = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -52,37 +65,79 @@ export default function Companies() {
     } catch { showToast('حدث خطأ', 'error') }
   }
 
+  const openEdit = (row) => {
+    setEditItem(row)
+    setForm({
+      company_name:   row.companyName   || '',
+      contact_name:   row.contactName   || '',
+      phone:          row.phone         || '',
+      whatsapp:       row.whatsapp      || '',
+      commercial_reg: row.commercialReg || '',
+      city:           row.city          || '',
+      area:           row.area          || '',
+      address:        row.address       || '',
+      specialty:      row.specialty     || '',
+      years_active:   row.yearsActive   || '',
+      description:    row.description   || '',
+      certifications: row.certifications|| '',
+      price_from:     row.priceFrom     || '',
+      price_to:       row.priceTo       || '',
+      available_now:  row.availableNow  ?? false,
+      emergency:      row.emergency     ?? false,
+      hours_from:     row.hoursFrom     || '',
+      hours_to:       row.hoursTo       || '',
+      service_radius: row.serviceRadius || '',
+      facebook:       row.facebook      || '',
+      instagram:      row.instagram     || '',
+    })
+    setViewItem(null)
+  }
+
+  const handleSave = async (e) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      const updated = await api.admin.companies.update(editItem.id, form)
+      setData(prev => prev.map(r => r.id === editItem.id ? { ...r, ...updated } : r))
+      showToast('تم حفظ التغييرات بنجاح')
+      setEditItem(null)
+    } catch { showToast('حدث خطأ', 'error') }
+    setSaving(false)
+  }
+
   const cities = [...new Set(data.map(r => r.city).filter(Boolean))].sort()
 
   const filtered = data.filter(r => {
-    const s = !search ||
-      r.company_name?.includes(search) ||
-      r.contact_name?.includes(search) ||
-      r.phone?.includes(search) ||
-      r.city?.includes(search)
+    const name    = r.companyName  || ''
+    const contact = r.contactName  || ''
+    const s = !search || name.includes(search) || contact.includes(search) || r.phone?.includes(search) || r.city?.includes(search)
     const c = !filterCity || r.city === filterCity
     return s && c
   })
 
   const columns = [
     {
-      key: 'company_name', label: 'الشركة / المؤسسة',
-      render: (v, row) => (
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
-            {row.company_logo
-              ? <img src={row.company_logo} alt="" className="w-full h-full object-cover" />
-              : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white text-xs font-bold rounded-xl">
-                  {v?.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                </div>
-            }
+      key: 'companyName', label: 'الشركة / المؤسسة',
+      render: (v, row) => {
+        const logo = row.companyLogo || null
+        const contact = row.contactName || ''
+        return (
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+              {logo
+                ? <img src={logo} alt="" className="w-full h-full object-cover" />
+                : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white text-xs font-bold rounded-xl">
+                    {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  </div>
+              }
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800 text-sm">{v || '—'}</p>
+              <p className="text-xs text-gray-400">{contact || '—'}</p>
+            </div>
           </div>
-          <div>
-            <p className="font-semibold text-gray-800 text-sm">{v}</p>
-            <p className="text-xs text-gray-400">{row.contact_name || '—'}</p>
-          </div>
-        </div>
-      ),
+        )
+      },
     },
     {
       key: 'phone', label: 'الهاتف',
@@ -94,11 +149,11 @@ export default function Companies() {
       render: (v) => CAT_LABEL[v] || v || '—',
     },
     {
-      key: 'years_active', label: 'سنوات النشاط',
+      key: 'yearsActive', label: 'سنوات النشاط',
       render: (v) => EXP_LABEL[v] || v || '—',
     },
     {
-      key: 'created_at', label: 'تاريخ الانضمام',
+      key: 'createdAt', label: 'تاريخ الانضمام',
       render: (v) => v ? new Date(v).toLocaleDateString('ar-LY') : '—',
     },
     {
@@ -108,6 +163,10 @@ export default function Companies() {
           <button onClick={() => setViewItem(row)}
             className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="عرض التفاصيل">
             <Eye className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => openEdit(row)}
+            className="p-1.5 hover:bg-amber-50 text-amber-500 rounded-lg transition-colors" title="تعديل">
+            <Pencil className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => handleRevoke(row.id)}
             className="p-1.5 hover:bg-red-50 text-red-400 rounded-lg transition-colors" title="إلغاء الموافقة">
@@ -134,7 +193,7 @@ export default function Companies() {
 
       <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
-        <span>هذه الشركات تمت الموافقة عليها وأصبحت جزءاً من الدليل. يمكنك إلغاء الموافقة لإعادتها إلى قائمة الطلبات.</span>
+        <span>هذه الشركات تمت الموافقة عليها وأصبحت جزءاً من الدليل. يمكن تعديل بياناتها أو إلغاء الموافقة عليها.</span>
       </div>
 
       <DataTable
@@ -154,179 +213,340 @@ export default function Companies() {
         emptyMessage="لا توجد شركات مقبولة بعد — قم بالموافقة على الطلبات من صفحة طلبات الشركات"
       />
 
+      {/* ── View Modal ──────────────────────────────────────────────── */}
       <FormModal
         open={!!viewItem}
         onClose={() => setViewItem(null)}
         title="تفاصيل الشركة"
-        submitLabel="إغلاق"
-        onSubmit={e => { e.preventDefault(); setViewItem(null) }}
+        submitLabel="تعديل البيانات"
+        onSubmit={e => { e.preventDefault(); openEdit(viewItem) }}
         size="lg"
       >
-        {viewItem && (
-          <div className="space-y-5">
-            <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white shadow">
-                {viewItem.company_logo
-                  ? <img src={viewItem.company_logo} alt=""
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      onClick={() => setLightbox(viewItem.company_logo)} />
-                  : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
-                      {viewItem.company_name?.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                    </div>
-                }
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
-                  <h3 className="font-bold text-gray-900 text-lg">{viewItem.company_name}</h3>
-                </div>
-                <p className="text-sm text-gray-500">
-                  {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">{viewItem.contact_name}</p>
-                <span className="inline-block mt-2 text-xs px-2.5 py-1 rounded-full font-semibold bg-green-50 text-green-700">
-                  شركة مقبولة ✓
-                </span>
-              </div>
-            </div>
+        {viewItem && (() => {
+          const compName    = viewItem.companyName  || ''
+          const contactName = viewItem.contactName  || ''
+          const logo        = viewItem.companyLogo  || null
+          const workImgs    = viewItem.workImages   || []
+          const availNow    = viewItem.availableNow ?? false
+          const hoursFrom   = viewItem.hoursFrom    || ''
+          const hoursTo     = viewItem.hoursTo      || ''
+          const workDays    = viewItem.workingDays  || []
+          const priceFrom   = viewItem.priceFrom    || ''
+          const priceTo     = viewItem.priceTo      || ''
+          const svcRadius   = viewItem.serviceRadius|| ''
+          const commReg     = viewItem.commercialReg|| ''
+          const commDoc     = viewItem.commercialDoc|| null
+          const workLic     = viewItem.workLicense  || null
+          const yearsActive = viewItem.yearsActive  || ''
+          const createdAt   = viewItem.createdAt    || ''
 
-            <Sec icon={Building2} title="معلومات الشركة">
-              <G2>
-                <IC label="اسم الشركة"      value={viewItem.company_name} />
-                <IC label="جهة التواصل"      value={viewItem.contact_name || '—'} />
-                <IC label="رقم الهاتف"        value={viewItem.phone}    dir="ltr" />
-                <IC label="واتساب"           value={viewItem.whatsapp} dir="ltr" />
-                <IC label="السجل التجاري"     value={viewItem.commercial_reg || '—'} />
-                <IC label="المدينة"           value={viewItem.city} />
-                <IC label="المنطقة / الحي"    value={viewItem.area || '—'} />
-                <IC label="نطاق الخدمة"      value={viewItem.service_radius ? `${viewItem.service_radius} كم` : '—'} />
-              </G2>
-              {viewItem.address && (
-                <div className="mt-2 bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-0.5">العنوان التفصيلي</p>
-                  <p className="text-sm text-gray-700">{viewItem.address}</p>
+          return (
+            <div className="space-y-5">
+              <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white shadow">
+                  {logo
+                    ? <img src={logo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
+                    : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
+                        {compName.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      </div>
+                  }
                 </div>
-              )}
-            </Sec>
-
-            <Sec icon={Briefcase} title="معلومات الخدمة">
-              <G2>
-                <IC label="التخصص"       value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
-                <IC label="سنوات النشاط" value={EXP_LABEL[viewItem.years_active] || viewItem.years_active} />
-                <IC label="السعر الأدنى"  value={viewItem.price_from ? `${viewItem.price_from} د.ل` : '—'} />
-                <IC label="السعر الأقصى"  value={viewItem.price_to   ? `${viewItem.price_to} د.ل`   : '—'} />
-              </G2>
-              {viewItem.description && (
-                <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-1">وصف الخدمات</p>
-                  <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
-                </div>
-              )}
-              {viewItem.certifications && (
-                <div className="mt-2 bg-blue-50 rounded-xl p-3">
-                  <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
-                    <Shield className="w-3 h-3" /> الشهادات والاعتمادات
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
+                    <h3 className="font-bold text-gray-900 text-lg">{compName}</h3>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
                   </p>
-                  <p className="text-sm text-blue-800 leading-relaxed">{viewItem.certifications}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{contactName}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-green-50 text-green-700">شركة مقبولة ✓</span>
+                    <span className="text-xs text-gray-400">{createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}</span>
+                  </div>
                 </div>
-              )}
-            </Sec>
+              </div>
 
-            <Sec icon={Clock} title="التوفر والجدول">
-              <G2>
-                <IC label="متاح الآن"
-                  value={viewItem.available_now ? '✓ نعم' : '✗ لا'}
-                  valueClass={viewItem.available_now ? 'text-green-600 font-semibold' : 'text-gray-500'} />
-                <IC label="خدمة الطوارئ 24/7"
-                  value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
-                  valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'} />
-                {viewItem.hours_from && <IC label="بداية الدوام" value={viewItem.hours_from} dir="ltr" />}
-                {viewItem.hours_to   && <IC label="نهاية الدوام" value={viewItem.hours_to}   dir="ltr" />}
-              </G2>
-              {viewItem.working_days?.length > 0 && (
-                <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {viewItem.working_days.map(d => (
-                      <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">{DAY_AR[d] || d}</span>
+              <Sec icon={Building2} title="معلومات الشركة">
+                <G2>
+                  <IC label="اسم الشركة"      value={compName} />
+                  <IC label="جهة التواصل"      value={contactName || '—'} />
+                  <IC label="رقم الهاتف"        value={viewItem.phone}    dir="ltr" />
+                  <IC label="واتساب"           value={viewItem.whatsapp} dir="ltr" />
+                  <IC label="السجل التجاري"     value={commReg || '—'} />
+                  <IC label="المدينة"           value={viewItem.city} />
+                  <IC label="المنطقة / الحي"    value={viewItem.area || '—'} />
+                  <IC label="نطاق الخدمة"      value={svcRadius ? `${svcRadius} كم` : '—'} />
+                </G2>
+                {viewItem.address && (
+                  <div className="mt-2 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs text-gray-400 mb-0.5">العنوان التفصيلي</p>
+                    <p className="text-sm text-gray-700">{viewItem.address}</p>
+                  </div>
+                )}
+              </Sec>
+
+              <Sec icon={Briefcase} title="معلومات الخدمة">
+                <G2>
+                  <IC label="التخصص"       value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
+                  <IC label="سنوات النشاط" value={EXP_LABEL[yearsActive] || yearsActive} />
+                  <IC label="السعر الأدنى"  value={priceFrom ? `${priceFrom} د.ل` : '—'} />
+                  <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />
+                </G2>
+                {viewItem.description && (
+                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs text-gray-400 mb-1">وصف الخدمات</p>
+                    <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
+                  </div>
+                )}
+                {viewItem.certifications && (
+                  <div className="mt-2 bg-blue-50 rounded-xl p-3">
+                    <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
+                      <Shield className="w-3 h-3" /> الشهادات والاعتمادات
+                    </p>
+                    <p className="text-sm text-blue-800 leading-relaxed">{viewItem.certifications}</p>
+                  </div>
+                )}
+              </Sec>
+
+              <Sec icon={Clock} title="التوفر والجدول">
+                <G2>
+                  <IC label="متاح الآن"
+                    value={availNow ? '✓ نعم' : '✗ لا'}
+                    valueClass={availNow ? 'text-green-600 font-semibold' : 'text-gray-500'} />
+                  <IC label="خدمة الطوارئ 24/7"
+                    value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
+                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'} />
+                  {hoursFrom && <IC label="بداية الدوام" value={hoursFrom} dir="ltr" />}
+                  {hoursTo   && <IC label="نهاية الدوام" value={hoursTo}   dir="ltr" />}
+                </G2>
+                {workDays.length > 0 && (
+                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {workDays.map(d => (
+                        <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">{DAY_AR[d] || d}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Sec>
+
+              {(viewItem.facebook || viewItem.instagram) && (
+                <Sec icon={Facebook} title="التواصل الاجتماعي">
+                  {viewItem.facebook && (
+                    <div className="bg-gray-50 rounded-xl p-3 mb-2">
+                      <p className="text-xs text-gray-400 mb-0.5">فيسبوك</p>
+                      <a href={viewItem.facebook} target="_blank" rel="noreferrer"
+                        className="text-sm text-blue-500 hover:underline break-all" dir="ltr">{viewItem.facebook}</a>
+                    </div>
+                  )}
+                  {viewItem.instagram && (
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <p className="text-xs text-gray-400 mb-0.5">إنستغرام</p>
+                      <a href={viewItem.instagram} target="_blank" rel="noreferrer"
+                        className="text-sm text-pink-500 hover:underline break-all" dir="ltr">{viewItem.instagram}</a>
+                    </div>
+                  )}
+                </Sec>
+              )}
+
+              {workImgs.length > 0 && (
+                <Sec icon={Image} title={`معرض الأعمال (${workImgs.length})`}>
+                  <div className="grid grid-cols-3 gap-2">
+                    {workImgs.map((src, i) => (
+                      <img key={i} src={src} alt={`صورة ${i + 1}`}
+                        className="w-full aspect-square object-cover rounded-xl border border-gray-200 cursor-zoom-in hover:opacity-90"
+                        onClick={() => setLightbox(src)} />
                     ))}
                   </div>
-                </div>
+                </Sec>
               )}
-            </Sec>
 
-            {(viewItem.facebook || viewItem.instagram) && (
-              <Sec icon={Facebook} title="التواصل الاجتماعي">
-                {viewItem.facebook && (
-                  <div className="bg-gray-50 rounded-xl p-3 mb-2">
-                    <p className="text-xs text-gray-400 mb-0.5">فيسبوك</p>
-                    <a href={viewItem.facebook} target="_blank" rel="noreferrer"
-                      className="text-sm text-blue-500 hover:underline break-all" dir="ltr">
-                      {viewItem.facebook}
-                    </a>
+              <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-500">
+                <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                  <p className="text-xs text-red-500">سرية تامة — لا تُشارك مع العملاء</p>
+                </div>
+                {(commDoc || workLic) ? (
+                  <div className="space-y-3">
+                    {commDoc && (
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium mb-1">السجل التجاري / الترخيص</p>
+                        <img src={commDoc} alt="commercial"
+                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          onClick={() => setLightbox(commDoc)} />
+                      </div>
+                    )}
+                    {workLic && (
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
+                        <img src={workLic} alt="license"
+                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          onClick={() => setLightbox(workLic)} />
+                      </div>
+                    )}
                   </div>
-                )}
-                {viewItem.instagram && (
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-0.5">إنستغرام</p>
-                    <a href={viewItem.instagram} target="_blank" rel="noreferrer"
-                      className="text-sm text-pink-500 hover:underline break-all" dir="ltr">
-                      {viewItem.instagram}
-                    </a>
+                ) : (
+                  <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
+                    <FileText className="w-4 h-4 flex-shrink-0" />
+                    <p className="text-xs">لم يتم رفع وثائق رسمية</p>
                   </div>
                 )}
               </Sec>
-            )}
 
-            {viewItem.work_images?.length > 0 && (
-              <Sec icon={Image} title={`معرض الأعمال (${viewItem.work_images.length})`}>
-                <div className="grid grid-cols-3 gap-2">
-                  {viewItem.work_images.map((src, i) => (
-                    <img key={i} src={src} alt={`صورة ${i + 1}`}
-                      className="w-full aspect-square object-cover rounded-xl border border-gray-200 cursor-zoom-in hover:opacity-90"
-                      onClick={() => setLightbox(src)} />
-                  ))}
-                </div>
-              </Sec>
-            )}
+              <button
+                onClick={() => handleRevoke(viewItem.id)}
+                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                إلغاء الموافقة وإعادة إلى قائمة الطلبات
+              </button>
+            </div>
+          )
+        })()}
+      </FormModal>
 
-            <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-500">
-              <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                <p className="text-xs text-red-500">سرية تامة — لا تُشارك مع العملاء</p>
-              </div>
-              {(viewItem.commercial_doc || viewItem.work_license) ? (
-                <div className="space-y-3">
-                  {viewItem.commercial_doc && (
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium mb-1">السجل التجاري / الترخيص</p>
-                      <img src={viewItem.commercial_doc} alt="commercial"
-                        className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
-                        onClick={() => setLightbox(viewItem.commercial_doc)} />
-                    </div>
-                  )}
-                  {viewItem.work_license && (
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
-                      <img src={viewItem.work_license} alt="license"
-                        className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
-                        onClick={() => setLightbox(viewItem.work_license)} />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
-                  <FileText className="w-4 h-4 flex-shrink-0" />
-                  <p className="text-xs">لم يتم رفع وثائق رسمية</p>
-                </div>
-              )}
-            </Sec>
-
-            <button
-              onClick={() => { handleRevoke(viewItem.id) }}
-              className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors">
-              إلغاء الموافقة وإعادة إلى قائمة الطلبات
-            </button>
+      {/* ── Edit Modal ──────────────────────────────────────────────── */}
+      <FormModal
+        open={!!editItem}
+        onClose={() => setEditItem(null)}
+        title={`تعديل بيانات: ${editItem?.companyName || ''}`}
+        submitLabel="حفظ التغييرات"
+        onSubmit={handleSave}
+        loading={saving}
+        size="lg"
+      >
+        {editItem && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="form-label">اسم الشركة *</label>
+              <input required value={form.company_name}
+                onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">جهة التواصل</label>
+              <input value={form.contact_name}
+                onChange={e => setForm(f => ({ ...f, contact_name: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">رقم الهاتف</label>
+              <input value={form.phone} dir="ltr"
+                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">واتساب</label>
+              <input value={form.whatsapp} dir="ltr"
+                onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">السجل التجاري</label>
+              <input value={form.commercial_reg}
+                onChange={e => setForm(f => ({ ...f, commercial_reg: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">التخصص</label>
+              <select value={form.specialty}
+                onChange={e => setForm(f => ({ ...f, specialty: e.target.value }))}
+                className="form-input">
+                <option value="">اختر التخصص</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="form-label">المدينة</label>
+              <input value={form.city}
+                onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">المنطقة / الحي</label>
+              <input value={form.area}
+                onChange={e => setForm(f => ({ ...f, area: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">سنوات النشاط</label>
+              <select value={form.years_active}
+                onChange={e => setForm(f => ({ ...f, years_active: e.target.value }))}
+                className="form-input">
+                <option value="">اختر</option>
+                {Object.entries(EXP_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="form-label">نطاق الخدمة (كم)</label>
+              <input value={form.service_radius} type="number" min="0"
+                onChange={e => setForm(f => ({ ...f, service_radius: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">السعر الأدنى (د.ل)</label>
+              <input value={form.price_from} type="number" min="0"
+                onChange={e => setForm(f => ({ ...f, price_from: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">السعر الأقصى (د.ل)</label>
+              <input value={form.price_to} type="number" min="0"
+                onChange={e => setForm(f => ({ ...f, price_to: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div>
+              <label className="form-label">بداية الدوام</label>
+              <input value={form.hours_from} type="time"
+                onChange={e => setForm(f => ({ ...f, hours_from: e.target.value }))}
+                className="form-input" dir="ltr" />
+            </div>
+            <div>
+              <label className="form-label">نهاية الدوام</label>
+              <input value={form.hours_to} type="time"
+                onChange={e => setForm(f => ({ ...f, hours_to: e.target.value }))}
+                className="form-input" dir="ltr" />
+            </div>
+            <div>
+              <label className="form-label">فيسبوك</label>
+              <input value={form.facebook} dir="ltr"
+                onChange={e => setForm(f => ({ ...f, facebook: e.target.value }))}
+                className="form-input" placeholder="https://facebook.com/..." />
+            </div>
+            <div>
+              <label className="form-label">إنستغرام</label>
+              <input value={form.instagram} dir="ltr"
+                onChange={e => setForm(f => ({ ...f, instagram: e.target.value }))}
+                className="form-input" placeholder="https://instagram.com/..." />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="form-label">العنوان التفصيلي</label>
+              <input value={form.address}
+                onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                className="form-input" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="form-label">وصف الخدمات</label>
+              <textarea rows={2} value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                className="form-input resize-none" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="form-label">الشهادات والاعتمادات</label>
+              <textarea rows={2} value={form.certifications}
+                onChange={e => setForm(f => ({ ...f, certifications: e.target.value }))}
+                className="form-input resize-none" />
+            </div>
+            <div className="sm:col-span-2 flex gap-6">
+              {[['available_now', 'متاح الآن'], ['emergency', 'خدمة طوارئ 24/7']].map(([field, label]) => (
+                <label key={field} className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={form[field]}
+                    onChange={e => setForm(f => ({ ...f, [field]: e.target.checked }))}
+                    className="w-4 h-4 accent-[#FF7900]" />
+                  <span className="text-sm text-gray-700">{label}</span>
+                </label>
+              ))}
+            </div>
           </div>
         )}
       </FormModal>

@@ -119,6 +119,41 @@ router.patch("/companies/:id/status", async (req, res): Promise<void> => {
   res.json(app);
 });
 
+router.patch("/companies/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const b = req.body;
+  const updates: Record<string, unknown> = {};
+  if (b.company_name  !== undefined) updates.companyName   = b.company_name;
+  if (b.contact_name  !== undefined) updates.contactName   = b.contact_name;
+  if (b.phone         !== undefined) updates.phone         = b.phone;
+  if (b.whatsapp      !== undefined) updates.whatsapp      = b.whatsapp;
+  if (b.commercial_reg!== undefined) updates.commercialReg = b.commercial_reg;
+  if (b.city          !== undefined) updates.city          = b.city;
+  if (b.area          !== undefined) updates.area          = b.area;
+  if (b.address       !== undefined) updates.address       = b.address;
+  if (b.specialty     !== undefined) updates.specialty     = b.specialty;
+  if (b.years_active  !== undefined) updates.yearsActive   = b.years_active;
+  if (b.description   !== undefined) updates.description   = b.description;
+  if (b.certifications!== undefined) updates.certifications= b.certifications;
+  if (b.price_from    !== undefined) updates.priceFrom     = b.price_from;
+  if (b.price_to      !== undefined) updates.priceTo       = b.price_to;
+  if (b.available_now !== undefined) updates.availableNow  = b.available_now;
+  if (b.working_days  !== undefined) updates.workingDays   = b.working_days;
+  if (b.hours_from    !== undefined) updates.hoursFrom     = b.hours_from;
+  if (b.hours_to      !== undefined) updates.hoursTo       = b.hours_to;
+  if (b.emergency     !== undefined) updates.emergency     = b.emergency;
+  if (b.service_radius!== undefined) updates.serviceRadius = b.service_radius;
+  if (b.facebook      !== undefined) updates.facebook      = b.facebook;
+  if (b.instagram     !== undefined) updates.instagram     = b.instagram;
+  const [app] = await db
+    .update(companyApplicationsTable)
+    .set(updates)
+    .where(eq(companyApplicationsTable.id, raw))
+    .returning();
+  if (!app) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(app);
+});
+
 // ── Company Applications ──────────────────────────────────────────────────────
 router.get("/company-applications", async (_req, res): Promise<void> => {
   const apps = await db.select().from(companyApplicationsTable).orderBy(desc(companyApplicationsTable.createdAt));
