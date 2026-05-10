@@ -171,6 +171,13 @@ export default function Join() {
       const prev = JSON.parse(localStorage.getItem('demo_join_requests_v1') || '[]')
       localStorage.setItem('demo_join_requests_v1', JSON.stringify([request, ...prev]))
     } catch (_) {}
+    try {
+      const apps = JSON.parse(localStorage.getItem('technicianApplications') || '[]')
+      apps.unshift(request)
+      localStorage.setItem('technicianApplications', JSON.stringify(apps))
+      const saved = JSON.parse(localStorage.getItem('technicianApplications'))
+      console.log('[technicianApplications] saved, total entries:', saved.length, '| latest id:', saved[0]?.id)
+    } catch (_) {}
     setTimeout(() => { setSaving(false); setSubmitted(true) }, 700)
   }
 
