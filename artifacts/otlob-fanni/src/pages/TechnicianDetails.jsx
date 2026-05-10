@@ -189,10 +189,10 @@ export default function TechnicianDetails() {
       {/* Service Request Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) closeForm() }}>
-          <div className="bg-white w-full max-w-[480px] rounded-t-3xl p-6 pb-10 animate-slide-up" dir={ar ? 'rtl' : 'ltr'}>
+          <div className="bg-white w-full max-w-[480px] rounded-t-3xl animate-slide-up flex flex-col" style={{ maxHeight: 'calc(100dvh - 80px)' }} dir={ar ? 'rtl' : 'ltr'}>
 
-            {/* Header */}
-            <div className="flex items-center justify-between mb-5">
+            {/* Header — ثابت */}
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
               <h2 className="text-lg font-bold text-gray-800">
                 {ar ? 'طلب خدمة' : 'Service Request'}
               </h2>
@@ -203,7 +203,7 @@ export default function TechnicianDetails() {
 
             {submitted ? (
               /* Success state */
-              <div className="flex flex-col items-center text-center py-6 gap-4">
+              <div className="flex flex-col items-center text-center px-6 pb-8 gap-4">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
@@ -223,70 +223,74 @@ export default function TechnicianDetails() {
                 </button>
               </div>
             ) : (
-              /* Form */
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                {/* محتوى قابل للتمرير */}
+                <div className="flex-1 overflow-y-auto px-6 space-y-4 pb-2">
 
-                {/* Technician name (read-only) */}
-                <div className="bg-orange-50 rounded-xl px-4 py-3 text-sm text-[#FF7900] font-medium flex items-center gap-2">
-                  <Wrench className="h-4 w-4 flex-shrink-0" />
-                  {ar ? `الفني: ${name}` : `Technician: ${name}`}
+                  {/* Technician name (read-only) */}
+                  <div className="bg-orange-50 rounded-xl px-4 py-3 text-sm text-[#FF7900] font-medium flex items-center gap-2">
+                    <Wrench className="h-4 w-4 flex-shrink-0" />
+                    {ar ? `الفني: ${name}` : `Technician: ${name}`}
+                  </div>
+
+                  {/* Customer name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {ar ? 'اسمك الكامل' : 'Your Full Name'} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })) }}
+                      placeholder={ar ? 'مثال: محمد الورفلي' : 'e.g. John Doe'}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
+                    />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {ar ? 'رقم هاتفك' : 'Your Phone Number'} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={form.phone}
+                      onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(er => ({ ...er, phone: '' })) }}
+                      placeholder="09xxxxxxxx"
+                      dir="ltr"
+                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${errors.phone ? 'border-red-400' : 'border-gray-200'}`}
+                    />
+                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {ar ? 'وصف المشكلة أو الخدمة المطلوبة' : 'Describe the problem or service needed'}
+                    </label>
+                    <textarea
+                      value={form.description}
+                      onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                      placeholder={ar ? 'اكتب تفاصيل ما تحتاجه...' : 'Describe what you need...'}
+                      rows={3}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 resize-none"
+                    />
+                  </div>
                 </div>
 
-                {/* Customer name */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {ar ? 'اسمك الكامل' : 'Your Full Name'} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })) }}
-                    placeholder={ar ? 'مثال: محمد الورفلي' : 'e.g. John Doe'}
-                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
-                  />
-                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                {/* زر الإرسال — ثابت في الأسفل */}
+                <div className="px-6 pt-3 pb-6 flex-shrink-0 border-t border-gray-100">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="w-full h-13 py-3.5 bg-[#FF7900] hover:bg-[#e06b00] disabled:opacity-60 text-white font-bold rounded-xl text-base transition-colors"
+                  >
+                    {saving
+                      ? (ar ? 'جاري الإرسال...' : 'Sending...')
+                      : (ar ? 'إرسال الطلب' : 'Send Request')}
+                  </button>
                 </div>
-
-                {/* Phone */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {ar ? 'رقم هاتفك' : 'Your Phone Number'} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    value={form.phone}
-                    onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(er => ({ ...er, phone: '' })) }}
-                    placeholder="09xxxxxxxx"
-                    dir="ltr"
-                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${errors.phone ? 'border-red-400' : 'border-gray-200'}`}
-                  />
-                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {ar ? 'وصف المشكلة أو الخدمة المطلوبة' : 'Describe the problem or service needed'}
-                  </label>
-                  <textarea
-                    value={form.description}
-                    onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                    placeholder={ar ? 'اكتب تفاصيل ما تحتاجه...' : 'Describe what you need...'}
-                    rows={3}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 resize-none"
-                  />
-                </div>
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full h-13 py-3.5 bg-[#FF7900] hover:bg-[#e06b00] disabled:opacity-60 text-white font-bold rounded-xl text-base transition-colors"
-                >
-                  {saving
-                    ? (ar ? 'جاري الإرسال...' : 'Sending...')
-                    : (ar ? 'إرسال الطلب' : 'Send Request')}
-                </button>
               </form>
             )}
           </div>
