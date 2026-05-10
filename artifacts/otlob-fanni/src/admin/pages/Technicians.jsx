@@ -235,6 +235,7 @@ export default function Technicians() {
   const toggleField = (row, field) => {
     const source = row._source || ADMIN_KEY
     persistUpdate(row.id, source, { [field]: !row[field] })
+    showToast(field === 'is_approved' ? (row[field] ? 'تم إلغاء الاعتماد' : 'تم اعتماد الفني') : 'تم التحديث')
     reloadTechs()
   }
 
