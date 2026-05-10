@@ -61,15 +61,22 @@ export function AdminProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  const activateDemo = () => {
+    const dp = { full_name: 'Demo Super Admin', role: 'super_admin', is_active: true }
+    localStorage.setItem('demoMode', 'true')
+    localStorage.setItem('adminRole', 'super_admin')
+    localStorage.setItem('adminName', 'Demo Super Admin')
+    setUser({ id: 'demo-admin' })
+    setProfile(dp)
+    setIsDemoMode(true)
+  }
+
   const signIn = async (email, password) => {
-    if (localStorage.getItem('demoMode') === 'true') {
-      localStorage.setItem('demoMode', 'true')
-      localStorage.setItem('adminRole', 'super_admin')
-      localStorage.setItem('adminName', 'Demo Super Admin')
-      setUser({ id: 'demo-admin' })
-      setProfile(demoProfile)
-      setIsDemoMode(true)
-      return { user: { id: 'demo-admin' }, profile: demoProfile }
+    const DEMO_EMAIL = 'admin@otlobfanni.ly'
+    const DEMO_PASSWORD = 'demo1234'
+    if (email.toLowerCase() === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      activateDemo()
+      return { user: { id: 'demo-admin' }, profile: { full_name: 'Demo Super Admin', role: 'super_admin', is_active: true } }
     }
     if (!supabase) throw new Error('Supabase not configured')
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
@@ -121,7 +128,7 @@ export function AdminProvider({ children }) {
       isSuperAdmin, isSubAdmin, isAdmin,
       cityId,
       isDemoMode,
-      signIn, signOut, logActivity,
+      activateDemo, signIn, signOut, logActivity,
     }}>
       {children}
     </AdminContext.Provider>

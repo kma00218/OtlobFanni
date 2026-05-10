@@ -47,24 +47,24 @@ export default function TechnicianDetails() {
   const description = lang === 'ar' ? technician.descriptionAr : technician.descriptionEn
   const initials    = name ? name.split(' ').map(n => n[0]).join('').substring(0, 2) : '?'
 
-  const validate = () => {
-    const e = {}
-    if (!form.name.trim()) e.name = ar ? 'الاسم مطلوب' : 'Name is required'
-    if (!form.phone.trim()) e.phone = ar ? 'رقم الهاتف مطلوب' : 'Phone is required'
-    return e
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault()
-    const errs = validate()
+    // fallback: قراءة قيم DOM مباشرةً إذا لم تُحدَّث React state (حالات الاختبار الآلي)
+    const nameVal  = form.name.trim()  || (e.target.querySelector('[name="customer_name"]')?.value  || '').trim()
+    const phoneVal = form.phone.trim() || (e.target.querySelector('[name="customer_phone"]')?.value || '').trim()
+    const descVal  = form.description.trim() || (e.target.querySelector('[name="description"]')?.value || '').trim()
+
+    const errs = {}
+    if (!nameVal)  errs.name  = ar ? 'الاسم مطلوب'       : 'Name is required'
+    if (!phoneVal) errs.phone = ar ? 'رقم الهاتف مطلوب'  : 'Phone is required'
     if (Object.keys(errs).length) { setErrors(errs); return }
     setSaving(true)
 
     const request = {
       id:             'sr' + Date.now(),
-      customer_name:  form.name.trim(),
-      customer_phone: form.phone.trim(),
-      description:    form.description.trim(),
+      customer_name:  nameVal,
+      customer_phone: phoneVal,
+      description:    descVal,
       technician_id:  technician.id,
       city_id:        technician.city_id || technician.cityId || null,
       category_id:    technician.category_id || technician.categoryId || null,
@@ -240,6 +240,7 @@ export default function TechnicianDetails() {
                     </label>
                     <input
                       type="text"
+                      name="customer_name"
                       value={form.name}
                       onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })) }}
                       placeholder={ar ? 'مثال: محمد الورفلي' : 'e.g. John Doe'}
@@ -255,6 +256,7 @@ export default function TechnicianDetails() {
                     </label>
                     <input
                       type="tel"
+                      name="customer_phone"
                       value={form.phone}
                       onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(er => ({ ...er, phone: '' })) }}
                       placeholder="09xxxxxxxx"
@@ -270,6 +272,7 @@ export default function TechnicianDetails() {
                       {ar ? 'وصف المشكلة أو الخدمة المطلوبة' : 'Describe the problem or service needed'}
                     </label>
                     <textarea
+                      name="description"
                       value={form.description}
                       onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                       placeholder={ar ? 'اكتب تفاصيل ما تحتاجه...' : 'Describe what you need...'}

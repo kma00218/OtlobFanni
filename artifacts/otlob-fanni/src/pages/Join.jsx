@@ -511,11 +511,17 @@ export default function Join() {
           {/* ── 8. Terms ──────────────────────────────────────────────── */}
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
             <label className="flex items-start gap-3 cursor-pointer">
-              <div
-                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${form.terms ? 'bg-[#FF7900] border-[#FF7900]' : 'border-gray-300'}`}
-                onClick={() => set('terms', !form.terms)}
-              >
-                {form.terms && <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              <div className="relative flex-shrink-0 mt-0.5">
+                <input
+                  type="checkbox"
+                  id="terms-checkbox"
+                  checked={form.terms}
+                  onChange={e => set('terms', e.target.checked)}
+                  className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                />
+                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all pointer-events-none ${form.terms ? 'bg-[#FF7900] border-[#FF7900]' : 'border-gray-300'}`}>
+                  {form.terms && <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
               </div>
               <span className="text-sm text-gray-600 leading-relaxed">
                 {ar

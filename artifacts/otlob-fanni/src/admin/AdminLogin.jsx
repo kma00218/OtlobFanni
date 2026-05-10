@@ -9,31 +9,17 @@ export default function AdminLogin() {
   const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAdmin()
+  const { signIn, activateDemo } = useAdmin()
   const [, navigate] = useLocation()
 
-  const DEMO_EMAIL = 'admin@otlobfanni.ly'
-  const DEMO_PASSWORD = 'demo1234'
-
-  const activateDemoMode = () => {
-    localStorage.setItem('demoMode', 'true')
-    localStorage.setItem('adminRole', 'super_admin')
-    localStorage.setItem('adminName', 'Demo Super Admin')
+  const handleDemoLogin = () => {
+    activateDemo()
     navigate('/admin/dashboard')
   }
-
-  const handleDemoLogin = () => activateDemoMode()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-
-    // Allow demo login via typed credentials
-    if (email.toLowerCase() === DEMO_EMAIL && password === DEMO_PASSWORD) {
-      activateDemoMode()
-      return
-    }
-
     setLoading(true)
     try {
       await signIn(email, password)
