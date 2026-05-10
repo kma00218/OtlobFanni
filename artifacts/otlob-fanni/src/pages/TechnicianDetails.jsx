@@ -49,10 +49,11 @@ export default function TechnicianDetails() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // fallback: قراءة قيم DOM مباشرةً إذا لم تُحدَّث React state (حالات الاختبار الآلي)
-    const nameVal  = form.name.trim()  || (e.target.querySelector('[name="customer_name"]')?.value  || '').trim()
-    const phoneVal = form.phone.trim() || (e.target.querySelector('[name="customer_phone"]')?.value || '').trim()
-    const descVal  = form.description.trim() || (e.target.querySelector('[name="description"]')?.value || '').trim()
+    // FormData هو الأكثر موثوقية — يقرأ مباشرةً من DOM بغض النظر عن React state
+    const fd       = new FormData(e.target)
+    const nameVal  = (fd.get('customer_name')  || form.name        || '').trim()
+    const phoneVal = (fd.get('customer_phone') || form.phone       || '').trim()
+    const descVal  = (fd.get('description')    || form.description || '').trim()
 
     const errs = {}
     if (!nameVal)  errs.name  = ar ? 'الاسم مطلوب'       : 'Name is required'
@@ -78,12 +79,12 @@ export default function TechnicianDetails() {
     try {
       const prev = ls('service_requests')
       localStorage.setItem('service_requests', JSON.stringify([request, ...prev]))
+      // حفظ رقم هاتف العميل لتتبع طلباته في صفحة "طلباتي"
+      if (phoneVal) localStorage.setItem('my_requests_phone', phoneVal)
     } catch (_) {}
 
-    setTimeout(() => {
-      setSaving(false)
-      setSubmitted(true)
-    }, 600)
+    setSaving(false)
+    setSubmitted(true)
   }
 
   const closeForm = () => {

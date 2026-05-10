@@ -14,10 +14,9 @@ const STATUS_MAP = {
   cancelled:   { label: 'ملغي',  cls: 'bg-red-50 text-red-500'      },
 }
 
-const REQ_KEY = 'service_requests'
-const TECH_KEY = 'technicians'
+const REQ_KEY    = 'service_requests'
 const CITIES_KEY = 'demo_cities_v1'
-const CATS_KEY = 'demo_categories_v1'
+const CATS_KEY   = 'demo_categories_v1'
 
 const ls = (key) => {
   try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] }
@@ -25,9 +24,29 @@ const ls = (key) => {
 
 const loadRequests = () => ls(REQ_KEY)
 const saveRequests = (list) => { try { localStorage.setItem(REQ_KEY, JSON.stringify(list)) } catch {} }
-const loadCities = () => ls(CITIES_KEY)
-const loadCats = () => ls(CATS_KEY)
-const loadTechs = () => ls(TECH_KEY)
+const loadCities   = () => ls(CITIES_KEY)
+const loadCats     = () => ls(CATS_KEY)
+
+// تحميل جميع الفنيين: المعتمدون + المضافون من الأدمن
+const loadTechs = () => {
+  const approved = ls('technicians')
+  const admin    = ls('demo_technicians_v1')
+  const merged = [
+    ...approved.map(t => ({
+      id: t.id,
+      name_ar: t.name_ar || t.name || t.nameAr || '',
+      city_id: t.city_id || null,
+      source: 'approved',
+    })),
+    ...admin.map(t => ({
+      id: t.id,
+      name_ar: t.name_ar || '',
+      city_id: t.city_id || null,
+      source: 'admin',
+    })),
+  ]
+  return merged.filter(t => t.name_ar)
+}
 
 const enrich = (rows, cities, cats, techs) => rows.map(r => ({
   ...r,
@@ -200,18 +219,25 @@ export default function Requests() {
         <div className="space-y-4">
           <div>
             <label className="form-label">الحالة الجديدة</label>
-            <select value={newStatus} onChange={e => setNewStatus(e.target.value)} className="form-input">
+            <select
+              data-testid="status-select"
+              value={newStatus}
+              onChange={e => setNewStatus(e.target.value)}
+              className="form-input"
+            >
               {Object.entries(STATUS_MAP).map(([v, { label }]) => <option key={v} value={v}>{label}</option>)}
             </select>
           </div>
           <div>
             <label className="form-label">إسناد إلى فني</label>
-            <select value={newTech} onChange={e => setNewTech(e.target.value)} className="form-input">
+            <select
+              data-testid="tech-select"
+              value={newTech}
+              onChange={e => setNewTech(e.target.value)}
+              className="form-input"
+            >
               <option value="">بدون فني</option>
-              {techs
-                .filter(t => !editItem?.city_id || t.city_id === editItem?.city_id)
-                .map(t => <option key={t.id} value={t.id}>{t.name || t.name_ar}</option>)
-              }
+              {techs.map(t => <option key={t.id} value={t.id}>{t.name_ar}</option>)}
             </select>
           </div>
         </div>
