@@ -1,14 +1,15 @@
 import { useLang } from '../context/LanguageContext';
 import BackHeader from '../components/BackHeader';
-import { UserPlus, Info, FileText, Shield, Mail, Globe, Megaphone } from 'lucide-react';
+import { UserPlus, Info, FileText, Shield, Mail, Globe, Megaphone, Building2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 export default function More() {
   const { t, lang, toggleLang, dir } = useLang();
 
   const menuItems = [
-    { icon: UserPlus,  label: t('joinUs'),                                         path: '/join' },
-    { icon: Megaphone, label: lang === 'ar' ? 'أعلن معنا' : 'Advertise With Us',  path: '/advertise' },
+    { icon: UserPlus,  label: lang === 'ar' ? 'انضم كفني'   : 'Join as Technician', path: '/join' },
+    { icon: Building2, label: lang === 'ar' ? 'انضم كشركة'  : 'Join as Company',    path: '/join-company' },
+    { icon: Megaphone, label: lang === 'ar' ? 'أعلن معنا'   : 'Advertise With Us',  path: '/advertise' },
     { icon: Mail,      label: t('contactTitle'),                                   path: '/contact' },
     { icon: Info,      label: t('aboutUs'),                                        path: '#' },
     { icon: FileText,  label: t('termsOfService'),                                 path: '#' },
