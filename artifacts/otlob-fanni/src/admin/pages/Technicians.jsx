@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react'
 
 const PAGE_SIZE = 15
 
@@ -13,8 +13,46 @@ const emptyForm = {
   is_featured: false, is_approved: true, is_active: true,
 }
 
+// ───────── Demo data ─────────
+const DEMO_CITIES = [
+  { id: 'c1', name_ar: 'طرابلس' },
+  { id: 'c2', name_ar: 'بنغازي' },
+  { id: 'c3', name_ar: 'مصراتة' },
+  { id: 'c4', name_ar: 'الزاوية' },
+  { id: 'c5', name_ar: 'سبها' },
+]
+const DEMO_CATEGORIES = [
+  { id: 'k1', name_ar: 'سباكة' },
+  { id: 'k2', name_ar: 'كهرباء' },
+  { id: 'k3', name_ar: 'تكييف' },
+  { id: 'k4', name_ar: 'نجارة' },
+  { id: 'k5', name_ar: 'دهان' },
+]
+const DEMO_TECHS_SEED = [
+  { id: 't1', name_ar: 'أحمد محمد',  phone: '+218910000001', whatsapp: '218910000001', city_id: 'c1', category_id: 'k1', experience_years: 8,  price_from: 50,  status: 'available', is_featured: true,  is_approved: true,  is_active: true,  created_at: '2026-05-09T10:00:00Z' },
+  { id: 't2', name_ar: 'سالم علي',   phone: '+218910000002', whatsapp: '218910000002', city_id: 'c2', category_id: 'k2', experience_years: 5,  price_from: 40,  status: 'busy',      is_featured: false, is_approved: true,  is_active: true,  created_at: '2026-05-08T18:00:00Z' },
+  { id: 't3', name_ar: 'خالد حسن',   phone: '+218910000003', whatsapp: '218910000003', city_id: 'c3', category_id: 'k3', experience_years: 12, price_from: 70,  status: 'inactive',  is_featured: false, is_approved: false, is_active: false, created_at: '2026-05-07T09:00:00Z' },
+  { id: 't4', name_ar: 'يوسف عمر',   phone: '+218910000004', whatsapp: '218910000004', city_id: 'c4', category_id: 'k4', experience_years: 3,  price_from: 35,  status: 'available', is_featured: false, is_approved: true,  is_active: true,  created_at: '2026-05-06T14:00:00Z' },
+  { id: 't5', name_ar: 'محمود سالم', phone: '+218910000005', whatsapp: '218910000005', city_id: 'c5', category_id: 'k5', experience_years: 7,  price_from: 45,  status: 'available', is_featured: true,  is_approved: true,  is_active: true,  created_at: '2026-05-05T11:00:00Z' },
+  { id: 't6', name_ar: 'علي ميلاد',  phone: '+218910000006', whatsapp: '218910000006', city_id: 'c1', category_id: 'k2', experience_years: 6,  price_from: 55,  status: 'busy',      is_featured: false, is_approved: true,  is_active: true,  created_at: '2026-05-04T08:00:00Z' },
+  { id: 't7', name_ar: 'مصطفى رمضان',phone: '+218910000007', whatsapp: '218910000007', city_id: 'c2', category_id: 'k1', experience_years: 9,  price_from: 60,  status: 'available', is_featured: false, is_approved: true,  is_active: true,  created_at: '2026-05-03T20:00:00Z' },
+  { id: 't8', name_ar: 'حسين فرج',   phone: '+218910000008', whatsapp: '218910000008', city_id: 'c3', category_id: 'k4', experience_years: 4,  price_from: 38,  status: 'available', is_featured: false, is_approved: false, is_active: true,  created_at: '2026-05-02T07:30:00Z' },
+]
+
+const DEMO_KEY = 'demo_technicians_v1'
+const loadDemoTechs = () => {
+  try {
+    const raw = localStorage.getItem(DEMO_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch (_) {}
+  return DEMO_TECHS_SEED
+}
+const saveDemoTechs = (list) => {
+  try { localStorage.setItem(DEMO_KEY, JSON.stringify(list)) } catch (_) {}
+}
+
 export default function Technicians() {
-  const { isSuperAdmin, cityId, logActivity } = useAdmin()
+  const { isSuperAdmin, cityId, logActivity, isDemoMode } = useAdmin()
   const [data, setData] = useState([])
   const [cities, setCities] = useState([])
   const [categories, setCategories] = useState([])
@@ -30,21 +68,23 @@ export default function Technicians() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState(null)
+  const [demoTechs, setDemoTechs] = useState(() => (isDemoMode ? loadDemoTechs() : []))
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3000)
   }
 
+  // ── lookups ──
   useEffect(() => {
+    if (isDemoMode) {
+      setCities(DEMO_CITIES)
+      setCategories(DEMO_CATEGORIES)
+      return
+    }
     if (!isSupabaseConfigured || !supabase) return
     loadLookups()
-  }, [])
-
-  useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return
-    loadData()
-  }, [search, filterCity, filterCat, filterStatus, page])
+  }, [isDemoMode])
 
   const loadLookups = async () => {
     const [{ data: c }, { data: cat }] = await Promise.all([
@@ -53,6 +93,40 @@ export default function Technicians() {
     ])
     setCities(c || [])
     setCategories(cat || [])
+  }
+
+  // ── data ──
+  useEffect(() => {
+    if (isDemoMode) {
+      applyDemoFilters(demoTechs)
+      setLoading(false)
+      return
+    }
+    if (!isSupabaseConfigured || !supabase) return
+    loadData()
+  }, [search, filterCity, filterCat, filterStatus, page, isDemoMode, demoTechs])
+
+  const applyDemoFilters = (list) => {
+    let rows = [...list]
+    if (filterCity) rows = rows.filter(r => r.city_id === filterCity)
+    if (filterCat) rows = rows.filter(r => r.category_id === filterCat)
+    if (filterStatus) rows = rows.filter(r => r.status === filterStatus)
+    if (search) {
+      const s = search.toLowerCase()
+      rows = rows.filter(r =>
+        (r.name_ar || '').toLowerCase().includes(s) ||
+        (r.phone || '').toLowerCase().includes(s)
+      )
+    }
+    rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    setTotal(rows.length)
+    const start = (page - 1) * PAGE_SIZE
+    const paged = rows.slice(start, start + PAGE_SIZE).map(r => ({
+      ...r,
+      cities: { name_ar: DEMO_CITIES.find(c => c.id === r.city_id)?.name_ar || '—' },
+      categories: { name_ar: DEMO_CATEGORIES.find(c => c.id === r.category_id)?.name_ar || '—' },
+    }))
+    setData(paged)
   }
 
   const loadData = useCallback(async () => {
@@ -109,6 +183,28 @@ export default function Technicians() {
         experience_years: parseInt(form.experience_years) || 0,
         price_from: parseFloat(form.price_from) || 0,
       }
+
+      if (isDemoMode) {
+        let next
+        if (editItem) {
+          next = demoTechs.map(t => t.id === editItem.id ? { ...t, ...payload } : t)
+          showToast('تم تعديل الفني (تجريبي)')
+        } else {
+          const newItem = {
+            id: 't' + Date.now(),
+            created_at: new Date().toISOString(),
+            ...payload,
+          }
+          next = [newItem, ...demoTechs]
+          showToast('تم إضافة الفني (تجريبي)')
+        }
+        setDemoTechs(next)
+        saveDemoTechs(next)
+        setModalOpen(false)
+        setSaving(false)
+        return
+      }
+
       if (editItem) {
         const { error } = await supabase.from('technicians').update(payload).eq('id', editItem.id)
         if (error) throw error
@@ -130,6 +226,13 @@ export default function Technicians() {
 
   const handleDelete = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذا الفني؟')) return
+    if (isDemoMode) {
+      const next = demoTechs.filter(t => t.id !== id)
+      setDemoTechs(next)
+      saveDemoTechs(next)
+      showToast('تم حذف الفني (تجريبي)')
+      return
+    }
     const { error } = await supabase.from('technicians').delete().eq('id', id)
     if (error) { showToast(error.message, 'error'); return }
     await logActivity('delete_technician', 'technicians', id, 'Deleted technician')
@@ -138,7 +241,35 @@ export default function Technicians() {
   }
 
   const toggleField = async (id, field, value) => {
+    if (isDemoMode) {
+      const next = demoTechs.map(t => t.id === id ? { ...t, [field]: !value } : t)
+      setDemoTechs(next)
+      saveDemoTechs(next)
+      return
+    }
     const { error } = await supabase.from('technicians').update({ [field]: !value }).eq('id', id)
+    if (error) { showToast(error.message, 'error'); return }
+    loadData()
+  }
+
+  const toggleActive = async (row) => {
+    if (isDemoMode) {
+      const newActive = !row.is_active
+      const next = demoTechs.map(t => t.id === row.id ? {
+        ...t,
+        is_active: newActive,
+        status: newActive ? (t.status === 'inactive' ? 'available' : t.status) : 'inactive',
+      } : t)
+      setDemoTechs(next)
+      saveDemoTechs(next)
+      showToast(newActive ? 'تم تفعيل الفني (تجريبي)' : 'تم تعطيل الفني (تجريبي)')
+      return
+    }
+    const newActive = !row.is_active
+    const { error } = await supabase.from('technicians').update({
+      is_active: newActive,
+      status: newActive ? (row.status === 'inactive' ? 'available' : row.status) : 'inactive',
+    }).eq('id', row.id)
     if (error) { showToast(error.message, 'error'); return }
     loadData()
   }
@@ -164,11 +295,11 @@ export default function Technicians() {
       }
     },
     {
-      key: 'is_active', label: 'نشط',
+      key: 'is_active', label: 'تفعيل',
       render: (v, row) => (
-        <button onClick={() => toggleField(row.id, 'is_active', v)} className={`text-xs flex items-center gap-1 ${v ? 'text-green-600' : 'text-gray-400'}`}>
-          {v ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-          {v ? 'نشط' : 'معطل'}
+        <button onClick={() => toggleActive(row)} className={`text-xs flex items-center gap-1 ${v ? 'text-green-600' : 'text-gray-400'}`}>
+          {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+          {v ? 'مفعّل' : 'معطّل'}
         </button>
       )
     },
@@ -184,7 +315,7 @@ export default function Technicians() {
     {
       key: 'is_featured', label: 'مميز',
       render: (v, row) => (
-        <button onClick={() => toggleField(row.id, 'is_featured', v)} className={`${v ? 'text-[#FF7900]' : 'text-gray-300'}`}>
+        <button onClick={() => toggleField(row.id, 'is_featured', v)} className={`${v ? 'text-[#FF7900]' : 'text-gray-300'}`} title={v ? 'إلغاء التمييز' : 'تمييز'}>
           <Star className="w-4 h-4" fill={v ? 'currentColor' : 'none'} />
         </button>
       )
@@ -193,11 +324,11 @@ export default function Technicians() {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex gap-1">
-          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors">
+          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="تعديل">
             <Pencil className="w-3.5 h-3.5" />
           </button>
-          {isSuperAdmin && (
-            <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors">
+          {(isSuperAdmin || isDemoMode) && (
+            <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors" title="حذف">
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
@@ -206,7 +337,7 @@ export default function Technicians() {
     },
   ]
 
-  if (!isSupabaseConfigured) return <NotConfigured />
+  if (!isDemoMode && !isSupabaseConfigured) return <NotConfigured />
 
   return (
     <div className="space-y-4">
@@ -216,10 +347,17 @@ export default function Technicians() {
         </div>
       )}
 
+      {isDemoMode && (
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl px-3 py-2">
+          <Info className="w-4 h-4 flex-shrink-0" />
+          <span>وضع تجريبي — التعديلات لا تُحفظ في قاعدة البيانات.</span>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="bg-white rounded-2xl border border-gray-100 p-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {isSuperAdmin && (
+          {(isSuperAdmin || isDemoMode) && (
             <select value={filterCity} onChange={e => { setFilterCity(e.target.value); setPage(1) }} className="select-field">
               <option value="">كل المدن</option>
               {cities.map(c => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
@@ -252,7 +390,7 @@ export default function Technicians() {
         }
         emptyMessage="لا يوجد فنيون"
         currentPage={page}
-        totalPages={Math.ceil(total / PAGE_SIZE)}
+        totalPages={Math.ceil(total / PAGE_SIZE) || 1}
         onPageChange={setPage}
       />
 
@@ -284,9 +422,9 @@ export default function Technicians() {
           </div>
           <div>
             <label className="form-label">المدينة *</label>
-            <select required value={form.city_id} onChange={e => setForm(f => ({ ...f, city_id: e.target.value }))} className="form-input" disabled={!isSuperAdmin}>
+            <select required value={form.city_id} onChange={e => setForm(f => ({ ...f, city_id: e.target.value }))} className="form-input" disabled={!isSuperAdmin && !isDemoMode}>
               <option value="">اختر المدينة</option>
-              {(isSuperAdmin ? cities : cities.filter(c => c.id === cityId)).map(c => (
+              {((isSuperAdmin || isDemoMode) ? cities : cities.filter(c => c.id === cityId)).map(c => (
                 <option key={c.id} value={c.id}>{c.name_ar}</option>
               ))}
             </select>
