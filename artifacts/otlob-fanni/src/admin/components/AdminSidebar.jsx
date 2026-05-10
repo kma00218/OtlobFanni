@@ -2,13 +2,14 @@ import { useLocation, Link } from 'wouter'
 import { useAdmin } from '../../context/AdminContext'
 import {
   LayoutDashboard, Users, Wrench, MapPin, ClipboardList,
-  Megaphone, Settings, Activity, LogOut, X, Shield, Tag, FileCheck
+  Megaphone, Settings, Activity, LogOut, X, Shield, Tag, FileCheck, Newspaper
 } from 'lucide-react'
 
 const navItems = [
   { path: '/admin/dashboard',                label: 'لوحة التحكم',      icon: LayoutDashboard, superOnly: false },
   { path: '/admin/technicians',              label: 'الفنيون',           icon: Wrench,          superOnly: false },
   { path: '/admin/technician-applications',  label: 'طلبات التسجيل',     icon: FileCheck,       superOnly: false },
+  { path: '/admin/ad-requests',              label: 'طلبات الإعلانات',   icon: Newspaper,       superOnly: false },
   { path: '/admin/categories',    label: 'التخصصات',       icon: Tag,             superOnly: true  },
   { path: '/admin/cities',        label: 'المدن',          icon: MapPin,          superOnly: true  },
   { path: '/admin/ads',           label: 'الإعلانات',      icon: Megaphone,       superOnly: true  },

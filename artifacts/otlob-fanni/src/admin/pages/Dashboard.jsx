@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import StatCard from '../components/StatCard'
 import {
   Wrench, Users, MapPin, ClipboardList, Tag, Megaphone,
-  CheckCircle, Clock, ShieldCheck,
+  CheckCircle, Clock, ShieldCheck, Newspaper,
 } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -33,13 +33,16 @@ export default function Dashboard() {
     const cats        = ls('demo_categories_v1')
     const ads         = ls('demo_ads_v1')
     const admins      = ls('demo_admins_v1')
+    const adRequests  = ls('adRequests')
 
     // إحصائيات
-    const activeTechs = techs.filter(t => (t.is_active ?? t.isActive ?? true) && (t.is_approved ?? t.isApproved ?? true))
-    const newReqs     = requests.filter(r => r.status === 'new')
-    const doneReqs    = requests.filter(r => r.status === 'completed')
-    const activeAds   = ads.filter(a => a.is_active)
-    const subAdmins   = admins.filter(a => a.role === 'sub_admin')
+    const activeTechs    = techs.filter(t => (t.is_active ?? t.isActive ?? true) && (t.is_approved ?? t.isApproved ?? true))
+    const newReqs        = requests.filter(r => r.status === 'new')
+    const doneReqs       = requests.filter(r => r.status === 'completed')
+    const activeAds      = ads.filter(a => a.is_active)
+    const subAdmins      = admins.filter(a => a.role === 'sub_admin')
+    const pendingAdReqs  = adRequests.filter(r => r.status === 'pending')
+    const approvedAdReqs = adRequests.filter(r => r.status === 'approved')
 
     setStats({
       totalTechs:        techs.length,
@@ -50,6 +53,8 @@ export default function Dashboard() {
       totalCats:         cats.length,
       activeAds:         activeAds.length,
       subAdmins:         subAdmins.length,
+      pendingAdRequests:  pendingAdReqs.length,
+      approvedAdRequests: approvedAdReqs.length,
     })
 
     // آخر 5 طلبات
@@ -81,8 +86,10 @@ export default function Dashboard() {
         <StatCard title="الطلبات المكتملة"    value={stats.completedRequests} icon={ClipboardList} color="green"  loading={loading} />
         <StatCard title="عدد المدن"           value={stats.totalCities}       icon={MapPin}        color="blue"   loading={loading} />
         <StatCard title="عدد التخصصات"        value={stats.totalCats}         icon={Tag}           color="purple" loading={loading} />
-        <StatCard title="الإعلانات النشطة"    value={stats.activeAds}         icon={Megaphone}     color="orange" loading={loading} />
-        <StatCard title="المشرفون الفرعيون"   value={stats.subAdmins}         icon={ShieldCheck}   color="navy"   loading={loading} />
+        <StatCard title="الإعلانات النشطة"       value={stats.activeAds}          icon={Megaphone}   color="orange" loading={loading} />
+        <StatCard title="المشرفون الفرعيون"    value={stats.subAdmins}          icon={ShieldCheck} color="navy"   loading={loading} />
+        <StatCard title="طلبات إعلان معلّقة"   value={stats.pendingAdRequests}  icon={Newspaper}   color="orange" loading={loading} />
+        <StatCard title="طلبات إعلان مقبولة"   value={stats.approvedAdRequests} icon={Newspaper}   color="green"  loading={loading} />
       </div>
 
       {/* Status Pie + Recent Requests */}

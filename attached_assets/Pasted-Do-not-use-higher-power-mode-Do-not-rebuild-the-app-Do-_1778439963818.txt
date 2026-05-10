@@ -1,0 +1,203 @@
+Do not use higher power mode.
+Do not rebuild the app.
+Do not redesign the whole app.
+Do not connect Supabase now.
+Do not add customer service requests.
+Do not add order tracking.
+Do not change technician workflow.
+Do not change admin permissions.
+Do not change unrelated pages.
+
+Task only:
+Add "Ad Requests" feature to the app.
+
+Goal:
+Businesses or shops can submit a request to advertise inside the app.
+Admin can view these ad requests in the admin panel and approve or reject them.
+
+Use localStorage only for now.
+
+Storage key:
+adRequests
+
+Public app:
+Add a page or section called:
+
+Arabic:
+"أعلن معنا"
+
+English:
+"Advertise With Us"
+
+This page should contain a clean form.
+
+Form fields:
+- businessName
+- contactName
+- phone
+- whatsapp
+- city
+- businessType
+- requestedPlacement
+- adTitle
+- adDescription
+- websiteOrSocialLink optional
+- imageUpload optional
+- notes optional
+- acceptedTerms checkbox
+
+Arabic labels:
+- اسم النشاط التجاري
+- اسم المسؤول
+- رقم الهاتف
+- واتساب
+- المدينة
+- نوع النشاط
+- مكان الإعلان المطلوب
+- عنوان الإعلان
+- وصف الإعلان
+- رابط الموقع أو صفحة التواصل
+- صورة الإعلان
+- ملاحظات إضافية
+- أوافق على الشروط
+
+Requested placements:
+- إعلان في الصفحة الرئيسية
+- إعلان داخل صفحة التخصصات
+- إعلان داخل قائمة الفنيين
+- إعلان مميز
+
+When user submits:
+Save to localStorage key:
+adRequests
+
+Ad request object:
+- id
+- businessName
+- contactName
+- phone
+- whatsapp
+- city
+- businessType
+- requestedPlacement
+- adTitle
+- adDescription
+- websiteOrSocialLink
+- imageUrl or imagePreview
+- notes
+- acceptedTerms
+- status: pending
+- createdAt
+- updatedAt
+
+If image is uploaded:
+Store preview as base64 in localStorage for now.
+Do not use Supabase Storage now.
+
+After submit, show success message:
+
+Arabic:
+"تم إرسال طلب الإعلان بنجاح. سيتم التواصل معك من الإدارة قريبًا."
+
+English:
+"Your advertising request has been submitted successfully. The admin will contact you soon."
+
+Admin panel:
+Create or update page:
+
+/admin/ad-requests
+
+Admin sidebar label:
+Arabic:
+"طلبات الإعلانات"
+
+English:
+"Ad Requests"
+
+Admin page should show all ad requests from localStorage.
+
+Table columns:
+- business name
+- contact name
+- phone
+- WhatsApp
+- city
+- requested placement
+- status
+- createdAt
+- actions
+
+Actions:
+- View details
+- Approve
+- Reject
+- Delete
+
+View details:
+Show all submitted information, including image preview if available.
+
+Approve:
+When admin approves:
+- set ad request status = approved
+- optionally create a new ad item in localStorage key:
+ads
+
+Ad object:
+- id
+- titleAr or adTitle
+- descriptionAr or adDescription
+- imageUrl or imagePreview
+- linkUrl
+- placement
+- isActive = true
+- sourceRequestId
+- createdAt
+
+Reject:
+- set status = rejected
+- keep the request saved for history
+
+Delete:
+- remove the ad request
+
+Dashboard:
+If dashboard stats already exist, add:
+- pending ad requests
+- approved ad requests
+- rejected ad requests
+
+Do not change dashboard if it is risky.
+Only add stats if simple.
+
+Public navigation:
+Add "أعلن معنا" link in More page or Support page.
+Do not add it to bottom navigation unless already easy.
+
+Important:
+Do not touch:
+- technician registration
+- technician approval
+- technicians list
+- categories
+- cities
+- Supabase
+- customer requests
+- order tracking
+
+Final test:
+1. Open public app.
+2. Go to "أعلن معنا".
+3. Submit an ad request.
+4. Open admin panel.
+5. Go to "طلبات الإعلانات".
+6. Confirm the request appears.
+7. View details works.
+8. Approve changes status to approved.
+9. Reject changes status to rejected.
+10. Delete removes request.
+11. Data remains after refresh.
+12. No console errors.
+13. No broken navigation links.
+
+Stop after this task.
+Tell me exactly which files you changed.
