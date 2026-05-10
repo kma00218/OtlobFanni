@@ -10,6 +10,7 @@ const iconMap = {
   network:              '/icons/services/network.svg',
   networks:             '/icons/services/network.svg',
   maintenance:          '/icons/services/maintenance.svg',
+  'general-maintenance':'/icons/services/general-maintenance.png',
   appliances:           '/icons/services/appliances.svg',
   welding:              '/icons/services/welding.svg',
   aluminum:             '/icons/services/aluminum-glass.svg',
