@@ -5,7 +5,56 @@ import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, MapPin, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
 import { categories } from '../../data/services'
 
-const LS_KEY = 'technicianApplications'
+const LS_KEY   = 'technicianApplications'
+const TECH_KEY = 'technicians'
+
+const EXP_YEARS = {
+  less1: 0, '1-2': 2, '3-5': 5, '6-10': 10, '10+': 11,
+}
+
+const applicationToTechnician = (app) => ({
+  id:             'tech_' + app.id,
+  applicationId:  app.id,
+  name:           app.full_name     || '',
+  phone:          app.phone         || '',
+  whatsapp:       app.whatsapp      || app.phone || '',
+  city:           app.city          || '',
+  area:           app.area          || '',
+  address:        app.address       || '',
+  category:       app.specialty     || '',
+  experienceYears: EXP_YEARS[app.experience] ?? 0,
+  description:    app.description   || '',
+  certifications: app.certifications || '',
+  priceFrom:      parseFloat(app.price_from) || 0,
+  priceTo:        parseFloat(app.price_to)   || 0,
+  profilePhoto:   app.profile_photo  || null,
+  workImages:     app.work_images    || [],
+  availableNow:   !!app.available_now,
+  workingDays:    app.working_days   || [],
+  hoursFrom:      app.hours_from     || '',
+  hoursTo:        app.hours_to       || '',
+  emergency:      !!app.emergency,
+  serviceRadius:  app.service_radius || '',
+  facebook:       app.facebook       || '',
+  instagram:      app.instagram      || '',
+  isActive:       true,
+  isApproved:     true,
+  isFeatured:     false,
+  rating:         0,
+  reviewsCount:   0,
+  approvedAt:     new Date().toISOString(),
+})
+
+const saveTechnician = (app) => {
+  try {
+    const existing = JSON.parse(localStorage.getItem(TECH_KEY) || '[]')
+    const alreadyExists = existing.some(t => t.applicationId === app.id)
+    if (alreadyExists) return
+    existing.unshift(applicationToTechnician(app))
+    localStorage.setItem(TECH_KEY, JSON.stringify(existing))
+    console.log('[technicians] record created for:', app.full_name, '| total:', existing.length)
+  } catch (_) {}
+}
 
 const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 
@@ -55,9 +104,15 @@ export default function TechnicianApplications() {
   const persist = (next) => { setData(next); save(next) }
 
   const setStatus = (id, status) => {
+    const app = data.find(r => r.id === id)
     persist(data.map(r => r.id === id ? { ...r, status } : r))
     if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
-    showToast(status === 'approved' ? '✓ تم قبول الطلب' : 'تم رفض الطلب')
+    if (status === 'approved' && app) {
+      saveTechnician(app)
+      showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
+    } else {
+      showToast('تم رفض الطلب')
+    }
   }
 
   const handleDelete = (id) => {
