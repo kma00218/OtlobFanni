@@ -168,10 +168,6 @@ export default function Join() {
       created_at:      new Date().toISOString(),
     }
     try {
-      const prev = JSON.parse(localStorage.getItem('demo_join_requests_v1') || '[]')
-      localStorage.setItem('demo_join_requests_v1', JSON.stringify([request, ...prev]))
-    } catch (_) {}
-    try {
       const apps = JSON.parse(localStorage.getItem('technicianApplications') || '[]')
       apps.unshift(request)
       localStorage.setItem('technicianApplications', JSON.stringify(apps))
