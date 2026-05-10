@@ -46,6 +46,33 @@ router.get("/technicians", async (req, res): Promise<void> => {
   res.json(techs);
 });
 
+// ── Companies (public directory — approved only) ──────────────────────────────
+router.get("/companies", async (req, res): Promise<void> => {
+  const { specialty, city } = req.query as Record<string, string>;
+
+  let companies = await db
+    .select()
+    .from(companyApplicationsTable)
+    .where(eq(companyApplicationsTable.status, "approved"))
+    .orderBy(desc(companyApplicationsTable.createdAt));
+
+  if (specialty) companies = companies.filter(c => c.specialty === specialty);
+  if (city)      companies = companies.filter(c => c.city === city);
+
+  res.json(companies);
+});
+
+// ── Single Company ────────────────────────────────────────────────────────────
+router.get("/companies/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const [company] = await db
+    .select()
+    .from(companyApplicationsTable)
+    .where(and(eq(companyApplicationsTable.id, raw), eq(companyApplicationsTable.status, "approved")));
+  if (!company) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(company);
+});
+
 // ── Single Technician ─────────────────────────────────────────────────────────
 router.get("/technicians/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;

@@ -8,6 +8,7 @@ export default function More() {
 
   const menuItems = [
     { icon: UserPlus,  label: lang === 'ar' ? 'انضم كفني'   : 'Join as Technician', path: '/join' },
+    { icon: Building2, label: lang === 'ar' ? 'الشركات'      : 'Companies',          path: '/companies' },
     { icon: Building2, label: lang === 'ar' ? 'انضم كشركة'  : 'Join as Company',    path: '/join-company' },
     { icon: Megaphone, label: lang === 'ar' ? 'أعلن معنا'   : 'Advertise With Us',  path: '/advertise' },
     { icon: Mail,      label: t('contactTitle'),                                   path: '/contact' },

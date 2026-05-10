@@ -48,6 +48,14 @@ export const api = {
 
   submitTechnicianApplication: (data) => post('/technician-applications', data),
   submitCompanyApplication:    (data) => post('/company-applications',    data),
+
+  companies: (params = {}) => {
+    const qs = new URLSearchParams(Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v != null && v !== '')
+    )).toString()
+    return get(`/companies${qs ? '?' + qs : ''}`)
+  },
+  company: (id) => get(`/companies/${id}`),
   submitAdRequest:             (data) => post('/ad-requests',             data),
 
   // ── Admin ─────────────────────────────────────────────────────────────────

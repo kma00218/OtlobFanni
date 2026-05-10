@@ -11,6 +11,8 @@ import Home from "./pages/Home";
 import Categories from "./pages/Categories";
 import CategoryTechnicians from "./pages/CategoryTechnicians";
 import TechnicianDetails from "./pages/TechnicianDetails";
+import Companies from "./pages/Companies";
+import CompanyDetails from "./pages/CompanyDetails";
 import Join from "./pages/Join";
 import JoinCompany from "./pages/JoinCompany";
 import Contact from "./pages/Contact";
@@ -53,6 +55,8 @@ function AppContent() {
             <Route path="/categories" component={Categories} />
             <Route path="/category/:id" component={CategoryTechnicians} />
             <Route path="/technician/:id" component={TechnicianDetails} />
+            <Route path="/companies" component={Companies} />
+            <Route path="/company/:id" component={CompanyDetails} />
             <Route path="/join" component={Join} />
             <Route path="/join-company" component={JoinCompany} />
             <Route path="/contact" component={Contact} />

@@ -5,7 +5,7 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import CategoryCard from '../components/CategoryCard'
 import { categories } from '../data/services'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2 } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import { Button } from '@/components/ui/button'
 import AdBanner from '../components/AdBanner'
@@ -64,6 +64,27 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* بانر الشركات */}
+        <Link href="/companies">
+          <div className="rounded-2xl overflow-hidden bg-gradient-to-r from-[#071B33] to-[#1a3a5c] px-4 py-4 flex items-center gap-3 shadow-md active:scale-[0.98] transition-transform cursor-pointer">
+            <div className="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-bold text-sm leading-tight">
+                {dir === 'rtl' ? 'الشركات المعتمدة' : 'Verified Companies'}
+              </p>
+              <p className="text-white/60 text-xs mt-0.5">
+                {dir === 'rtl' ? 'تعاقد مع شركات موثوقة في مجالك' : 'Partner with trusted companies in your area'}
+              </p>
+            </div>
+            {dir === 'rtl'
+              ? <ArrowLeft className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
+              : <ArrowRight className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
+            }
+          </div>
+        </Link>
 
         {/* إعلان بانر عام */}
         <AdBanner placement="banner" compact />
