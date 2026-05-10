@@ -1,5 +1,5 @@
 import { useLang } from '../context/LanguageContext';
-import { Home, ClipboardList, Heart, MessageCircle, Menu } from 'lucide-react';
+import { Home, UserPlus, Heart, MessageCircle, Menu } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 
 export default function BottomNav() {
@@ -7,11 +7,11 @@ export default function BottomNav() {
   const [location] = useLocation();
 
   const tabs = [
-    { id: 'home', path: '/', icon: Home, label: t('home') },
-    { id: 'orders', path: '/orders', icon: ClipboardList, label: t('orders') },
-    { id: 'favorites', path: '/favorites', icon: Heart, label: t('favorites') },
-    { id: 'messages', path: '/messages', icon: MessageCircle, label: t('messages') },
-    { id: 'more', path: '/more', icon: Menu, label: t('more') },
+    { id: 'home',      path: '/',        icon: Home,          label: t('home') },
+    { id: 'join-us',   path: '/join-us', icon: UserPlus,      label: t('joinUs') },
+    { id: 'favorites', path: '/favorites',icon: Heart,        label: t('favorites') },
+    { id: 'messages',  path: '/messages',icon: MessageCircle, label: t('messages') },
+    { id: 'more',      path: '/more',    icon: Menu,          label: t('more') },
   ];
 
   return (

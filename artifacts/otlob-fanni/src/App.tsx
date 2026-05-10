@@ -20,6 +20,7 @@ import Orders from "./pages/Orders";
 import Favorites from "./pages/Favorites";
 import Messages from "./pages/Messages";
 import More from "./pages/More";
+import JoinUs from "./pages/JoinUs";
 import AdvertiseWithUs from "./pages/AdvertiseWithUs";
 
 // Admin
@@ -65,6 +66,7 @@ function AppContent() {
             <Route path="/support" component={Messages} />
             <Route path="/messages" component={Messages} />
             <Route path="/more" component={More} />
+            <Route path="/join-us" component={JoinUs} />
             <Route path="/advertise" component={AdvertiseWithUs} />
             <Route component={NotFound} />
           </Switch>

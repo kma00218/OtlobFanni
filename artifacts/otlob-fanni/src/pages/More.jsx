@@ -1,24 +1,8 @@
 import { useLang } from '../context/LanguageContext';
-import { UserPlus, Info, FileText, Shield, Mail, Globe, Megaphone, Building2 } from 'lucide-react';
+import { Info, FileText, Shield, Mail, Globe, Megaphone } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ITEMS = [
-  {
-    icon: UserPlus,
-    labelAr: 'انضم كفني',
-    labelEn: 'Join as Tech',
-    path: '/join',
-    bg: 'from-[#34C759] to-[#28a34a]',
-    shadow: 'shadow-green-200',
-  },
-  {
-    icon: Building2,
-    labelAr: 'انضم كشركة',
-    labelEn: 'Join Company',
-    path: '/join-company',
-    bg: 'from-[#007AFF] to-[#0056cc]',
-    shadow: 'shadow-blue-200',
-  },
   {
     icon: Megaphone,
     labelAr: 'أعلن معنا',
@@ -67,12 +51,10 @@ export default function More() {
 
   return (
     <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
-      {/* Header */}
       <div className="px-5 pt-5 pb-3">
         <h1 className="text-2xl font-bold text-[#071B33]">{ar ? 'المزيد' : 'More'}</h1>
       </div>
 
-      {/* Language Toggle — pill style */}
       <div className="px-5 mb-6">
         <button
           onClick={toggleLang}
@@ -91,7 +73,6 @@ export default function More() {
         </button>
       </div>
 
-      {/* Icon Grid */}
       <div className="px-5">
         <div className="grid grid-cols-3 gap-x-4 gap-y-6">
           {ITEMS.map((item, idx) => {
@@ -99,11 +80,9 @@ export default function More() {
             return (
               <Link key={idx} href={item.path}>
                 <div className="flex flex-col items-center gap-2 active:scale-90 transition-transform duration-150 cursor-pointer select-none">
-                  {/* Icon box — iOS style */}
                   <div className={`w-[72px] h-[72px] rounded-[18px] bg-gradient-to-br ${item.bg} flex items-center justify-center shadow-lg ${item.shadow}`}>
                     <Icon className="w-8 h-8 text-white drop-shadow" strokeWidth={1.8} />
                   </div>
-                  {/* Label */}
                   <span className="text-xs font-medium text-gray-700 text-center leading-tight max-w-[72px]">
                     {ar ? item.labelAr : item.labelEn}
                   </span>
@@ -114,7 +93,6 @@ export default function More() {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="mt-12 text-center">
         <p className="text-gray-400 text-xs">Otlob Fanni v1.0.0</p>
       </div>
