@@ -6,7 +6,7 @@ import { categories } from '../data/services'
 import { useRoute, useLocation } from 'wouter'
 import {
   Star, MapPin, Phone, MessageSquare, Zap, Search,
-  Users, Loader2,
+  Users, Loader2, Building2,
 } from 'lucide-react'
 import AdBanner from '../components/AdBanner'
 import api from '../lib/api'
@@ -27,15 +27,15 @@ function Stars({ rating }) {
 
 function TechCard({ tech, lang, onOpen }) {
   const ar = lang === 'ar'
-  const name = tech.name_ar || tech.nameAr || ''
+  const name = tech.nameAr || tech.name_ar || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
-  const photo = tech.profile_photo || tech.profilePhoto || null
-  const availableNow = tech.available_now ?? tech.availableNow ?? (tech.status === 'available')
+  const photo = tech.profilePhoto || tech.profile_photo || null
+  const availableNow = tech.availableNow ?? tech.available_now ?? (tech.status === 'available')
   const emergency = tech.emergency || false
-  const isFeatured = tech.is_featured ?? tech.isFeatured ?? false
+  const isFeatured = tech.isFeatured ?? tech.is_featured ?? false
   const rating = tech.rating || 0
-  const reviewsCount = tech.reviews_count ?? tech.reviewsCount ?? 0
-  const priceFrom = tech.price_from ?? tech.priceFrom ?? 0
+  const reviewsCount = tech.reviewsCount ?? tech.reviews_count ?? 0
+  const priceFrom = tech.priceFrom ?? tech.price_from ?? 0
   const city = tech.city_name || tech.city || ''
   const area = tech.area || ''
 
@@ -118,6 +118,92 @@ function TechCard({ tech, lang, onOpen }) {
   )
 }
 
+function CompanyCard({ company, lang, onOpen }) {
+  const ar = lang === 'ar'
+  const name = company.companyName || company.company_name || ''
+  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
+  const logo = company.companyLogo || company.company_logo || null
+  const availableNow = company.availableNow ?? company.available_now ?? false
+  const emergency = company.emergency || false
+  const priceFrom = company.priceFrom || company.price_from || ''
+  const city = company.city || ''
+  const area = company.area || ''
+
+  return (
+    <div
+      className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      onClick={() => onOpen(company.id)}
+    >
+      <div className="relative">
+        {logo ? (
+          <img src={logo} alt={name} className="w-full h-36 object-cover" />
+        ) : (
+          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#0e3460] flex items-center justify-center">
+            <Building2 className="w-10 h-10 text-white/40 absolute" />
+            <span className="text-white text-3xl font-bold relative">{initials}</span>
+          </div>
+        )}
+        <div className="absolute top-2 right-2 flex flex-col gap-1">
+          <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+            <Building2 className="w-2.5 h-2.5" /> {ar ? 'شركة' : 'Company'}
+          </span>
+          {availableNow && (
+            <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              {ar ? 'متاحة الآن' : 'Available'}
+            </span>
+          )}
+          {emergency && (
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+              <Zap className="w-2.5 h-2.5" /> {ar ? 'طوارئ' : 'Emergency'}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="p-3.5">
+        <p className="font-bold text-gray-900 text-sm mb-1 leading-tight">{name}</p>
+
+        <div className="flex items-center gap-1 mb-2">
+          <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+          <p className="text-xs text-gray-500 truncate">
+            {city}{area ? ` · ${area}` : ''}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full font-medium">
+            {ar ? 'شركة / مؤسسة' : 'Business'}
+          </span>
+          {priceFrom && (
+            <p className="text-xs font-bold text-[#FF7900]">
+              {ar ? `من ${priceFrom} د.ل` : `From ${priceFrom} LYD`}
+            </p>
+          )}
+        </div>
+
+        <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+          <a
+            href={`https://wa.me/${company.whatsapp || company.phone}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            {ar ? 'واتساب' : 'WhatsApp'}
+          </a>
+          <a
+            href={`tel:${company.phone}`}
+            className="flex-1 bg-[#071B33] hover:bg-[#0f2d52] text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <Phone className="w-3.5 h-3.5" />
+            {ar ? 'اتصال' : 'Call'}
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function CategoryTechnicians() {
   const { lang } = useLang()
   const ar = lang === 'ar'
@@ -128,12 +214,13 @@ export default function CategoryTechnicians() {
   const category = categories.find(c => c.id === categoryId)
   const categoryName = ar ? (category?.nameAr || '') : (category?.nameEn || '')
 
-  const [cities, setCities]         = useState([])
+  const [cities, setCities]             = useState([])
   const [selectedCity, setSelectedCity] = useState('')
-  const [techs, setTechs]           = useState([])
-  const [search, setSearch]         = useState('')
-  const [loading, setLoading]       = useState(true)
-  const [error, setError]           = useState(null)
+  const [techs, setTechs]               = useState([])
+  const [companies, setCompanies]       = useState([])
+  const [search, setSearch]             = useState('')
+  const [loading, setLoading]           = useState(true)
+  const [error, setError]               = useState(null)
 
   useEffect(() => {
     api.cities().then(setCities).catch(() => {})
@@ -143,23 +230,41 @@ export default function CategoryTechnicians() {
     if (!categoryId) return
     setLoading(true)
     setError(null)
-    api.technicians({ category: categoryId, city_id: selectedCity || undefined })
-      .then(data => { setTechs(data); setLoading(false) })
+    Promise.all([
+      api.technicians({ category: categoryId, city_id: selectedCity || undefined }),
+      api.companies({ specialty: categoryId, city: selectedCity || undefined }),
+    ])
+      .then(([techData, compData]) => {
+        setTechs(techData)
+        setCompanies(compData)
+        setLoading(false)
+      })
       .catch(err => { setError(err.message); setLoading(false) })
   }, [categoryId, selectedCity])
 
-  const filtered = techs.filter(t => {
+  const filteredTechs = techs.filter(t => {
     if (!search) return true
-    const name = (t.name_ar || t.nameAr || '').toLowerCase()
+    const name = (t.nameAr || t.name_ar || '').toLowerCase()
     const city = (t.city_name || t.city || '').toLowerCase()
     const area = (t.area || '').toLowerCase()
     const q    = search.toLowerCase()
     return name.includes(q) || city.includes(q) || area.includes(q)
   })
 
+  const filteredCompanies = companies.filter(c => {
+    if (!search) return true
+    const name = (c.companyName || c.company_name || '').toLowerCase()
+    const city = (c.city || '').toLowerCase()
+    const area = (c.area || '').toLowerCase()
+    const q    = search.toLowerCase()
+    return name.includes(q) || city.includes(q) || area.includes(q)
+  })
+
+  const totalCount = filteredTechs.length + filteredCompanies.length
+
   return (
     <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
-      <BackHeader title={categoryName || (ar ? 'الفنيون' : 'Technicians')} />
+      <BackHeader title={categoryName || (ar ? 'مقدمو الخدمة' : 'Service Providers')} />
 
       <main className="px-4 pt-4 space-y-4">
 
@@ -174,8 +279,8 @@ export default function CategoryTechnicians() {
               {loading
                 ? (ar ? 'جارٍ التحميل...' : 'Loading...')
                 : ar
-                  ? `${filtered.length} فني متاح`
-                  : `${filtered.length} technician${filtered.length !== 1 ? 's' : ''} available`
+                  ? `${totalCount} مقدّم خدمة متاح`
+                  : `${totalCount} provider${totalCount !== 1 ? 's' : ''} available`
               }
             </p>
           </div>
@@ -189,7 +294,7 @@ export default function CategoryTechnicians() {
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder={ar ? 'بحث عن فني...' : 'Search technician...'}
+              placeholder={ar ? 'بحث...' : 'Search...'}
               className={`w-full border border-gray-200 rounded-xl py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${ar ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
             />
           </div>
@@ -208,7 +313,7 @@ export default function CategoryTechnicians() {
         {/* إعلان */}
         <AdBanner placement="technicians" dismissible />
 
-        {/* قائمة الفنيين */}
+        {/* القائمة */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <Loader2 className="w-8 h-8 text-[#FF7900] animate-spin" />
@@ -222,19 +327,19 @@ export default function CategoryTechnicians() {
               {ar ? 'إعادة المحاولة' : 'Retry'}
             </button>
           </div>
-        ) : filtered.length === 0 ? (
+        ) : totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
               <Users className="w-10 h-10 text-gray-300" />
             </div>
             <div>
               <p className="text-gray-700 font-bold text-base mb-1">
-                {ar ? 'لا يوجد فنيون متاحون' : 'No technicians available'}
+                {ar ? 'لا يوجد مقدمو خدمة متاحون' : 'No providers available'}
               </p>
               <p className="text-gray-400 text-sm max-w-[240px] mx-auto">
                 {ar
-                  ? 'لم يتم إضافة فنيين لهذا التخصص بعد، أو جرب تغيير المدينة.'
-                  : 'No technicians found for this category. Try changing the city.'}
+                  ? 'لم يتم إضافة فنيين أو شركات لهذا التخصص بعد، أو جرب تغيير المدينة.'
+                  : 'No technicians or companies found for this category. Try changing the city.'}
               </p>
             </div>
             {selectedCity && (
@@ -245,15 +350,50 @@ export default function CategoryTechnicians() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map(tech => (
-              <TechCard
-                key={tech.id}
-                tech={tech}
-                lang={lang}
-                onOpen={(id) => navigate(`/technician/${id}`)}
-              />
-            ))}
+          <div className="space-y-4">
+            {/* الفنيون الأفراد */}
+            {filteredTechs.length > 0 && (
+              <div>
+                {filteredCompanies.length > 0 && (
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" />
+                    {ar ? `فنيون (${filteredTechs.length})` : `Technicians (${filteredTechs.length})`}
+                  </p>
+                )}
+                <div className="grid grid-cols-2 gap-3">
+                  {filteredTechs.map(tech => (
+                    <TechCard
+                      key={tech.id}
+                      tech={tech}
+                      lang={lang}
+                      onOpen={(id) => navigate(`/technician/${id}`)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* الشركات */}
+            {filteredCompanies.length > 0 && (
+              <div>
+                {filteredTechs.length > 0 && (
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5" />
+                    {ar ? `شركات ومؤسسات (${filteredCompanies.length})` : `Companies (${filteredCompanies.length})`}
+                  </p>
+                )}
+                <div className="grid grid-cols-2 gap-3">
+                  {filteredCompanies.map(company => (
+                    <CompanyCard
+                      key={company.id}
+                      company={company}
+                      lang={lang}
+                      onOpen={(id) => navigate(`/company/${id}`)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
