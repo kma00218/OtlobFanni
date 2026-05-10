@@ -61,30 +61,36 @@ export default function TechnicianApplications() {
         const name = app.fullName || app.full_name || ''
         const phone = app.phone || ''
         if (name && phone) {
-          await api.admin.technicians.create({
-            id:               'tech_' + app.id,
-            name_ar:          name,
-            phone:            phone,
-            whatsapp:         app.whatsapp || phone,
-            city_id:          null,
-            area:             app.area || '',
-            category_id:      app.specialty || null,
-            experience_years: EXP_YEARS[app.experience] ?? 0,
-            price_from:       parseFloat(app.priceFrom || app.price_from) || 0,
-            price_to:         parseFloat(app.priceTo   || app.price_to)   || 0,
-            description_ar:   app.description || '',
-            profile_photo:    app.profilePhoto || app.profile_photo || null,
-            work_images:      app.workImages   || app.work_images   || [],
-            available_now:    !!(app.availableNow ?? app.available_now),
-            emergency:        !!(app.emergency),
-            is_active:        true,
-            is_approved:      true,
-            is_featured:      false,
-            status:           (app.availableNow ?? app.available_now) ? 'available' : 'busy',
-            application_id:   app.id,
-          }).catch(() => {})
+          try {
+            await api.admin.technicians.create({
+              id:               'tech_' + app.id,
+              name_ar:          name,
+              phone:            phone,
+              whatsapp:         app.whatsapp || phone,
+              city_id:          null,
+              area:             app.area || '',
+              category_id:      app.specialty || null,
+              experience_years: EXP_YEARS[app.experience] ?? 0,
+              price_from:       parseFloat(app.priceFrom || app.price_from) || 0,
+              price_to:         parseFloat(app.priceTo   || app.price_to)   || 0,
+              description_ar:   app.description || '',
+              profile_photo:    app.profilePhoto || app.profile_photo || null,
+              work_images:      app.workImages   || app.work_images   || [],
+              available_now:    !!(app.availableNow ?? app.available_now),
+              emergency:        !!(app.emergency),
+              is_active:        true,
+              is_approved:      true,
+              is_featured:      false,
+              status:           (app.availableNow ?? app.available_now) ? 'available' : 'busy',
+              application_id:   app.id,
+            })
+            showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
+          } catch (err) {
+            showToast('تم قبول الطلب لكن فشل إنشاء سجل الفني — تحقق من الاتصال', 'error')
+          }
+        } else {
+          showToast('✓ تم قبول الطلب (لا يوجد اسم أو هاتف لإنشاء السجل)')
         }
-        showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
       } else {
         showToast('تم رفض الطلب')
       }
