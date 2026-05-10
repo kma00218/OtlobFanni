@@ -33,13 +33,6 @@ function lookupCity(cityId) {
   return cities.find(c => c.id === cityId) || null
 }
 
-function lookupTechnician(techId) {
-  if (!techId) return null
-  const approved = lsA('technicians')
-  const admin    = lsA('demo_technicians_v1')
-  return approved.find(t => t.id === techId) || admin.find(t => t.id === techId) || null
-}
-
 function StatusBadge({ status, lang }) {
   const s = STATUS[status] || STATUS.new
   const Icon = s.icon
@@ -61,10 +54,12 @@ function OrderCard({ req, lang }) {
     ? new Date(req.createdAt).toLocaleDateString('ar-LY', { day: 'numeric', month: 'short', year: 'numeric' })
     : '—'
 
-  const tech = req.status === 'assigned' ? lookupTechnician(req.assignedTechnicianId) : null
-  const techName     = tech ? (tech.name_ar || tech.name || '') : null
-  const techPhone    = tech?.phone    || null
-  const techWhatsapp = tech?.whatsapp || tech?.phone || null
+  // بيانات الفني تُقرأ مباشرة من حقول الطلب (تُحفظ عند الإسناد)
+  const techName     = req.status === 'assigned' ? (req.assignedTechnicianName    || null) : null
+  const techPhone    = req.status === 'assigned' ? (req.assignedTechnicianPhone   || null) : null
+  const techWhatsapp = req.status === 'assigned' ? (req.assignedTechnicianWhatsapp || req.assignedTechnicianPhone || null) : null
+  const techPhoto    = req.status === 'assigned' ? (req.assignedTechnicianPhoto   || null) : null
+  const techInitials = techName ? techName.split(' ').map(n => n[0]).join('').substring(0, 2) : '?'
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -116,41 +111,48 @@ function OrderCard({ req, lang }) {
       )}
 
       {/* بيانات الفني — فقط عند حالة مُسند */}
-      {req.status === 'assigned' && (
-        <div className="px-4 py-3 bg-blue-50/40">
-          <p className="text-xs text-gray-400 mb-2">{ar ? 'الفني المُسند' : 'Assigned Technician'}</p>
-          {techName ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-full bg-[#071B33] flex items-center justify-center text-white text-sm font-bold">
-                  {techName.split(' ').map(n => n[0]).join('').substring(0, 2)}
+      {req.status === 'assigned' && techName && (
+        <div className="px-4 py-3 bg-blue-50/50 border-t border-blue-100">
+          <p className="text-xs text-gray-400 mb-2.5">{ar ? 'الفني المُسند' : 'Assigned Technician'}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              {/* صورة أو حروف أولى */}
+              {techPhoto ? (
+                <img
+                  src={techPhoto}
+                  alt={techName}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#071B33] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                  {techInitials}
                 </div>
-                <span className="font-medium text-gray-800 text-sm">{techName}</span>
-              </div>
-              <div className="flex gap-1.5">
-                {techWhatsapp && (
-                  <a
-                    href={`https://wa.me/${techWhatsapp}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-9 h-9 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-colors"
-                  >
-                    <MessageSquare className="w-4 h-4 text-white" />
-                  </a>
-                )}
-                {techPhone && (
-                  <a
-                    href={`tel:${techPhone}`}
-                    className="w-9 h-9 bg-blue-500 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-colors"
-                  >
-                    <Phone className="w-4 h-4 text-white" />
-                  </a>
-                )}
-              </div>
+              )}
+              <span className="font-semibold text-gray-800 text-sm">{techName}</span>
             </div>
-          ) : (
-            <p className="text-xs text-blue-500">{ar ? 'جاري تحديد الفني...' : 'Technician being assigned...'}</p>
-          )}
+            <div className="flex gap-2">
+              {techWhatsapp && (
+                <a
+                  href={`https://wa.me/${techWhatsapp}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-9 h-9 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-colors"
+                  title={ar ? 'واتساب' : 'WhatsApp'}
+                >
+                  <MessageSquare className="w-4 h-4 text-white" />
+                </a>
+              )}
+              {techPhone && (
+                <a
+                  href={`tel:${techPhone}`}
+                  className="w-9 h-9 bg-blue-500 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-colors"
+                  title={ar ? 'اتصال' : 'Call'}
+                >
+                  <Phone className="w-4 h-4 text-white" />
+                </a>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
