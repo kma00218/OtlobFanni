@@ -189,7 +189,7 @@ export default function TechnicianDetails() {
       {/* Service Request Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) closeForm() }}>
-          <div className="bg-white w-full max-w-[480px] rounded-t-3xl animate-slide-up flex flex-col overflow-y-auto" style={{ maxHeight: 'calc(100dvh - 80px)' }} dir={ar ? 'rtl' : 'ltr'}>
+          <div className="bg-white w-full max-w-[480px] rounded-t-3xl animate-slide-up flex flex-col overflow-y-auto" style={{ maxHeight: 'calc(100dvh - 80px)', paddingBottom: 'calc(80px + env(safe-area-inset-bottom) + 24px)' }} dir={ar ? 'rtl' : 'ltr'}>
 
             {/* Header — ثابت */}
             <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
@@ -280,7 +280,7 @@ export default function TechnicianDetails() {
                 </div>
 
                 {/* زر الإرسال — ثابت في الأسفل */}
-                <div className="px-6 pt-4 pb-8 flex-shrink-0 border-t border-gray-100 bg-white">
+                <div className="sticky bottom-0 px-6 pt-4 pb-8 flex-shrink-0 border-t border-gray-100 bg-white">
                   <button
                     type="submit"
                     disabled={saving}
