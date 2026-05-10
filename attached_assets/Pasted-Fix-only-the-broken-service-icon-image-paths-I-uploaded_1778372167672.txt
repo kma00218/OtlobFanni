@@ -1,0 +1,125 @@
+Fix only the broken service icon image paths.
+
+I uploaded the icons as PNG files, not SVG.
+
+Do not change the design.
+Do not change the app structure.
+Do not change the database.
+Do not change the admin panel.
+Do not create new icons.
+Do not use Lucide for service category icons.
+
+Task:
+Use the PNG icons I uploaded.
+
+First:
+Find where the uploaded PNG icon files are located in the project.
+
+Then:
+Move or copy all service icon PNG files into this folder:
+
+public/icons/services/
+
+Make sure the final folder contains these exact filenames:
+
+electricity.png
+plumbing.png
+ac.png
+painting.png
+carpentry.png
+cleaning.png
+moving.png
+cctv.png
+network.png
+maintenance.png
+appliances.png
+welding.png
+aluminum-glass.png
+waterproofing.png
+thermal-insulation.png
+gas.png
+locks-doors.png
+contracting.png
+ac-units.png
+more.png
+
+Important:
+If any file has a different name like:
+maintenance (1).png
+general-maintenance.png
+صيانة عامة.png
+
+rename it to:
+maintenance.png
+
+Now update:
+
+src/components/ServiceImageIcon.jsx
+
+Use PNG paths only:
+
+const iconMap = {
+  electricity: "/icons/services/electricity.png",
+  plumbing: "/icons/services/plumbing.png",
+  ac: "/icons/services/ac.png",
+  painting: "/icons/services/painting.png",
+  carpentry: "/icons/services/carpentry.png",
+  cleaning: "/icons/services/cleaning.png",
+  moving: "/icons/services/moving.png",
+  cctv: "/icons/services/cctv.png",
+  network: "/icons/services/network.png",
+  maintenance: "/icons/services/maintenance.png",
+  appliances: "/icons/services/appliances.png",
+  welding: "/icons/services/welding.png",
+  aluminum_glass: "/icons/services/aluminum-glass.png",
+  "aluminum-glass": "/icons/services/aluminum-glass.png",
+  waterproofing: "/icons/services/waterproofing.png",
+  thermal_insulation: "/icons/services/thermal-insulation.png",
+  "thermal-insulation": "/icons/services/thermal-insulation.png",
+  gas: "/icons/services/gas.png",
+  locks_doors: "/icons/services/locks-doors.png",
+  "locks-doors": "/icons/services/locks-doors.png",
+  contracting: "/icons/services/contracting.png",
+  ac_units: "/icons/services/ac-units.png",
+  "ac-units": "/icons/services/ac-units.png",
+  more: "/icons/services/more.png",
+};
+
+export default function ServiceImageIcon({ iconName, className = "" }) {
+  const src = iconMap[iconName] || iconMap.maintenance;
+
+  return (
+    <img
+      src={src}
+      alt=""
+      className={`h-[70px] w-[70px] object-contain ${className}`}
+      loading="lazy"
+      draggable="false"
+      onError={(e) => {
+        e.currentTarget.src = "/icons/services/maintenance.png";
+      }}
+    />
+  );
+}
+
+Also update CategoryCard.jsx:
+
+<ServiceImageIcon iconName={category.iconName || category.icon || category.id} />
+
+Important path rule:
+Do not use:
+public/icons/services/maintenance.png
+
+Do not use:
+/public/icons/services/maintenance.png
+
+Correct browser path is:
+/icons/services/maintenance.png
+
+Final check:
+- صيانة عامة must show maintenance.png
+- No broken image icons
+- All service icons load from public/icons/services/*.png
+- Do not use SVG
+- Do not use Lucide icons for category cards
+- Do not change anything else
