@@ -6,10 +6,24 @@ import { categories } from '../data/services'
 import { useRoute, useLocation } from 'wouter'
 import {
   Star, MapPin, Phone, MessageSquare, Zap, Search,
-  Users, Loader2, Building2,
+  Users, Loader2, Building2, Heart,
 } from 'lucide-react'
 import AdBanner from '../components/AdBanner'
 import api from '../lib/api'
+
+function useFavorites() {
+  const [favs, setFavs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('fav_technicians') || '[]') } catch { return [] }
+  })
+  const toggle = (id) => {
+    setFavs(prev => {
+      const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+      localStorage.setItem('fav_technicians', JSON.stringify(next))
+      return next
+    })
+  }
+  return { favs, toggle, isFav: (id) => favs.includes(id) }
+}
 
 function Stars({ rating }) {
   return (
@@ -25,7 +39,7 @@ function Stars({ rating }) {
   )
 }
 
-function TechCard({ tech, lang, onOpen }) {
+function TechCard({ tech, lang, onOpen, isFav, onToggleFav }) {
   const ar = lang === 'ar'
   const name = tech.nameAr || tech.name_ar || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
@@ -69,6 +83,16 @@ function TechCard({ tech, lang, onOpen }) {
             </span>
           )}
         </div>
+        {/* Heart button */}
+        <button
+          onClick={e => { e.stopPropagation(); onToggleFav(tech.id) }}
+          className="absolute top-2 left-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-transform"
+        >
+          <Heart
+            className={`w-3.5 h-3.5 transition-colors ${isFav ? 'text-rose-500' : 'text-gray-400'}`}
+            fill={isFav ? 'currentColor' : 'none'}
+          />
+        </button>
       </div>
 
       <div className="p-3.5">
@@ -210,6 +234,7 @@ export default function CategoryTechnicians() {
   const [, params] = useRoute('/category/:id')
   const [, navigate] = useLocation()
   const categoryId = params?.id
+  const { isFav, toggle: toggleFav } = useFavorites()
 
   const category = categories.find(c => c.id === categoryId)
   const categoryName = ar ? (category?.nameAr || '') : (category?.nameEn || '')
@@ -367,6 +392,8 @@ export default function CategoryTechnicians() {
                       tech={tech}
                       lang={lang}
                       onOpen={(id) => navigate(`/technician/${id}`)}
+                      isFav={isFav(tech.id)}
+                      onToggleFav={toggleFav}
                     />
                   ))}
                 </div>
