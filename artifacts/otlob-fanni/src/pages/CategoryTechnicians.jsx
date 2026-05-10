@@ -11,14 +11,14 @@ import {
 import AdBanner from '../components/AdBanner'
 import api from '../lib/api'
 
-function useFavorites() {
+function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('fav_technicians') || '[]') } catch { return [] }
+    try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch { return [] }
   })
   const toggle = (id) => {
     setFavs(prev => {
       const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
-      localStorage.setItem('fav_technicians', JSON.stringify(next))
+      localStorage.setItem(storageKey, JSON.stringify(next))
       return next
     })
   }
@@ -142,7 +142,7 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav }) {
   )
 }
 
-function CompanyCard({ company, lang, onOpen }) {
+function CompanyCard({ company, lang, onOpen, isFav, onToggleFav }) {
   const ar = lang === 'ar'
   const name = company.companyName || company.company_name || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
@@ -182,6 +182,16 @@ function CompanyCard({ company, lang, onOpen }) {
             </span>
           )}
         </div>
+        {/* Heart button */}
+        <button
+          onClick={e => { e.stopPropagation(); onToggleFav(company.id) }}
+          className="absolute top-2 left-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-transform"
+        >
+          <Heart
+            className={`w-3.5 h-3.5 transition-colors ${isFav ? 'text-rose-500' : 'text-gray-400'}`}
+            fill={isFav ? 'currentColor' : 'none'}
+          />
+        </button>
       </div>
 
       <div className="p-3.5">
@@ -234,7 +244,8 @@ export default function CategoryTechnicians() {
   const [, params] = useRoute('/category/:id')
   const [, navigate] = useLocation()
   const categoryId = params?.id
-  const { isFav, toggle: toggleFav } = useFavorites()
+  const { isFav, toggle: toggleFav } = useFavorites('fav_technicians')
+  const { isFav: isCompanyFav, toggle: toggleCompanyFav } = useFavorites('fav_companies')
 
   const category = categories.find(c => c.id === categoryId)
   const categoryName = ar ? (category?.nameAr || '') : (category?.nameEn || '')
@@ -416,6 +427,8 @@ export default function CategoryTechnicians() {
                       company={company}
                       lang={lang}
                       onOpen={(id) => navigate(`/company/${id}`)}
+                      isFav={isCompanyFav(company.id)}
+                      onToggleFav={toggleCompanyFav}
                     />
                   ))}
                 </div>
