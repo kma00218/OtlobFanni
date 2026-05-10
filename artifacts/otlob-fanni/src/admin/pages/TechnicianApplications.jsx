@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, MapPin, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
+import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
 import { categories } from '../../data/services'
 import api from '../../lib/api'
 
@@ -58,28 +58,32 @@ export default function TechnicianApplications() {
       setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
       if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
       if (status === 'approved' && app) {
-        await api.admin.technicians.create({
-          id:              'tech_' + app.id,
-          name_ar:         app.full_name || '',
-          phone:           app.phone || '',
-          whatsapp:        app.whatsapp || app.phone || '',
-          city_id:         null,
-          area:            app.area || '',
-          category_id:     app.specialty || null,
-          experience_years: EXP_YEARS[app.experience] ?? 0,
-          price_from:      parseFloat(app.price_from) || 0,
-          price_to:        parseFloat(app.price_to) || 0,
-          description_ar:  app.description || '',
-          profile_photo:   app.profile_photo || null,
-          work_images:     app.work_images || [],
-          available_now:   !!app.available_now,
-          emergency:       !!app.emergency,
-          is_active:       true,
-          is_approved:     true,
-          is_featured:     false,
-          status:          app.available_now ? 'available' : 'busy',
-          application_id:  app.id,
-        }).catch(() => {})
+        const name = app.fullName || app.full_name || ''
+        const phone = app.phone || ''
+        if (name && phone) {
+          await api.admin.technicians.create({
+            id:               'tech_' + app.id,
+            name_ar:          name,
+            phone:            phone,
+            whatsapp:         app.whatsapp || phone,
+            city_id:          null,
+            area:             app.area || '',
+            category_id:      app.specialty || null,
+            experience_years: EXP_YEARS[app.experience] ?? 0,
+            price_from:       parseFloat(app.priceFrom || app.price_from) || 0,
+            price_to:         parseFloat(app.priceTo   || app.price_to)   || 0,
+            description_ar:   app.description || '',
+            profile_photo:    app.profilePhoto || app.profile_photo || null,
+            work_images:      app.workImages   || app.work_images   || [],
+            available_now:    !!(app.availableNow ?? app.available_now),
+            emergency:        !!(app.emergency),
+            is_active:        true,
+            is_approved:      true,
+            is_featured:      false,
+            status:           (app.availableNow ?? app.available_now) ? 'available' : 'busy',
+            application_id:   app.id,
+          }).catch(() => {})
+        }
         showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
       } else {
         showToast('تم رفض الطلب')
@@ -98,7 +102,8 @@ export default function TechnicianApplications() {
   }
 
   const filtered = data.filter(r => {
-    const s = !search || r.full_name?.includes(search) || r.phone?.includes(search) || r.city?.includes(search)
+    const name = r.fullName || r.full_name || ''
+    const s = !search || name.includes(search) || r.phone?.includes(search) || r.city?.includes(search)
     const f = !filter || r.status === filter
     return s && f
   })
@@ -107,14 +112,14 @@ export default function TechnicianApplications() {
 
   const columns = [
     {
-      key: 'full_name', label: 'مقدم الطلب',
+      key: 'fullName', label: 'مقدم الطلب',
       render: (v, row) => (
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-100">
-            {row.profile_photo
-              ? <img src={row.profile_photo} alt="" className="w-full h-full object-cover" />
+            {(row.profilePhoto || row.profile_photo)
+              ? <img src={row.profilePhoto || row.profile_photo} alt="" className="w-full h-full object-cover" />
               : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white text-xs font-bold">
-                  {v?.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
                 </div>
             }
           </div>
@@ -147,7 +152,7 @@ export default function TechnicianApplications() {
       },
     },
     {
-      key: 'created_at', label: 'تاريخ التقديم',
+      key: 'createdAt', label: 'تاريخ التقديم',
       render: (v) => v ? new Date(v).toLocaleDateString('ar-LY') : '—',
     },
     {
@@ -239,207 +244,223 @@ export default function TechnicianApplications() {
         }
         size="lg"
       >
-        {viewItem && (
-          <div className="space-y-5">
+        {viewItem && (() => {
+          const name       = viewItem.fullName || viewItem.full_name || ''
+          const photo      = viewItem.profilePhoto || viewItem.profile_photo || null
+          const workImgs   = viewItem.workImages || viewItem.work_images || []
+          const availNow   = viewItem.availableNow ?? viewItem.available_now ?? false
+          const hoursFrom  = viewItem.hoursFrom  || viewItem.hours_from  || ''
+          const hoursTo    = viewItem.hoursTo    || viewItem.hours_to    || ''
+          const workDays   = viewItem.workingDays || viewItem.working_days || []
+          const priceFrom  = viewItem.priceFrom  || viewItem.price_from  || ''
+          const priceTo    = viewItem.priceTo    || viewItem.price_to    || ''
+          const natId      = viewItem.nationalId || viewItem.national_id || ''
+          const idFront    = viewItem.idDocFront || viewItem.id_doc_front || null
+          const idBack     = viewItem.idDocBack  || viewItem.id_doc_back  || null
+          const workLic    = viewItem.workLicense|| viewItem.work_license || null
+          const svcRadius  = viewItem.serviceRadius || viewItem.service_radius || ''
+          const createdAt  = viewItem.createdAt  || viewItem.created_at  || ''
 
-            {/* Profile header */}
-            <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow">
-                {viewItem.profile_photo
-                  ? <img src={viewItem.profile_photo} alt=""
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      onClick={() => setLightbox(viewItem.profile_photo)} />
-                  : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white font-bold text-2xl">
-                      {viewItem.full_name?.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                    </div>
-                }
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-lg leading-tight">{viewItem.full_name}</h3>
-                <p className="text-sm text-gray-500 mt-0.5">
-                  {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
-                </p>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS[viewItem.status]?.cls}`}>
-                    {STATUS[viewItem.status]?.label}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    {new Date(viewItem.created_at).toLocaleDateString('ar-LY')}
-                  </span>
-                </div>
-              </div>
-            </div>
+          return (
+            <div className="space-y-5">
 
-            {/* Personal */}
-            <Sec icon={Phone} title="المعلومات الشخصية">
-              <G2>
-                <IC label="الاسم الكامل"   value={viewItem.full_name} />
-                <IC label="رقم الهاتف"     value={viewItem.phone}     dir="ltr" />
-                <IC label="واتساب"          value={viewItem.whatsapp}  dir="ltr" />
-                <IC label="الرقم الوطني"   value={viewItem.national_id || '—'} />
-                <IC label="المدينة"         value={viewItem.city} />
-                <IC label="المنطقة / الحي" value={viewItem.area || '—'} />
-              </G2>
-              {viewItem.address && (
-                <div className="mt-2 bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-0.5">العنوان التفصيلي</p>
-                  <p className="text-sm text-gray-700">{viewItem.address}</p>
+              {/* Profile header */}
+              <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
+                <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow">
+                  {photo
+                    ? <img src={photo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(photo)} />
+                    : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white font-bold text-2xl">
+                        {name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      </div>
+                  }
                 </div>
-              )}
-            </Sec>
-
-            {/* Professional */}
-            <Sec icon={Briefcase} title="المعلومات المهنية">
-              <G2>
-                <IC label="التخصص"         value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
-                <IC label="سنوات الخبرة"   value={EXP_LABEL[viewItem.experience] || viewItem.experience} />
-                <IC label="نوع العمل"      value={viewItem.type === 'company' ? 'شركة / مؤسسة' : 'فردي'} />
-                <IC label="نطاق الخدمة"   value={viewItem.service_radius ? `${viewItem.service_radius} كم` : '—'} />
-                <IC label="السعر الأدنى"   value={viewItem.price_from ? `${viewItem.price_from} د.ل` : '—'} />
-                <IC label="السعر الأقصى"   value={viewItem.price_to   ? `${viewItem.price_to} د.ل`   : '—'} />
-              </G2>
-              {viewItem.description && (
-                <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-1">وصف الخدمة</p>
-                  <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
-                </div>
-              )}
-              {viewItem.certifications && (
-                <div className="mt-2 bg-blue-50 rounded-xl p-3">
-                  <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
-                    <Shield className="w-3 h-3" /> الشهادات والمؤهلات
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 text-lg leading-tight">{name}</h3>
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
                   </p>
-                  <p className="text-sm text-blue-800 leading-relaxed">{viewItem.certifications}</p>
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS[viewItem.status]?.cls}`}>
+                      {STATUS[viewItem.status]?.label}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </Sec>
+              </div>
 
-            {/* Availability */}
-            <Sec icon={Clock} title="التوفر والجدول">
-              <G2>
-                <IC label="متاح الآن"
-                  value={viewItem.available_now ? '✓ نعم' : '✗ لا'}
-                  valueClass={viewItem.available_now ? 'text-green-600 font-semibold' : 'text-gray-500'} />
-                <IC label="خدمة الطوارئ 24/7"
-                  value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
-                  valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'} />
-                {viewItem.hours_from && <IC label="بداية العمل" value={viewItem.hours_from} dir="ltr" />}
-                {viewItem.hours_to   && <IC label="نهاية العمل" value={viewItem.hours_to}   dir="ltr" />}
-              </G2>
-              {viewItem.working_days?.length > 0 && (
-                <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {viewItem.working_days.map(d => (
-                      <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">
-                        {DAY_AR[d] || d}
-                      </span>
+              {/* Personal */}
+              <Sec icon={Phone} title="المعلومات الشخصية">
+                <G2>
+                  <IC label="الاسم الكامل"   value={name} />
+                  <IC label="رقم الهاتف"     value={viewItem.phone}     dir="ltr" />
+                  <IC label="واتساب"          value={viewItem.whatsapp}  dir="ltr" />
+                  <IC label="الرقم الوطني"   value={natId || '—'} />
+                  <IC label="المدينة"         value={viewItem.city} />
+                  <IC label="المنطقة / الحي" value={viewItem.area || '—'} />
+                </G2>
+                {viewItem.address && (
+                  <div className="mt-2 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs text-gray-400 mb-0.5">العنوان التفصيلي</p>
+                    <p className="text-sm text-gray-700">{viewItem.address}</p>
+                  </div>
+                )}
+              </Sec>
+
+              {/* Professional */}
+              <Sec icon={Briefcase} title="المعلومات المهنية">
+                <G2>
+                  <IC label="التخصص"         value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
+                  <IC label="سنوات الخبرة"   value={EXP_LABEL[viewItem.experience] || viewItem.experience} />
+                  <IC label="نوع العمل"      value={viewItem.type === 'company' ? 'شركة / مؤسسة' : 'فردي'} />
+                  <IC label="نطاق الخدمة"   value={svcRadius ? `${svcRadius} كم` : '—'} />
+                  <IC label="السعر الأدنى"   value={priceFrom ? `${priceFrom} د.ل` : '—'} />
+                  <IC label="السعر الأقصى"   value={priceTo   ? `${priceTo} د.ل`   : '—'} />
+                </G2>
+                {viewItem.description && (
+                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs text-gray-400 mb-1">وصف الخدمة</p>
+                    <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
+                  </div>
+                )}
+                {viewItem.certifications && (
+                  <div className="mt-2 bg-blue-50 rounded-xl p-3">
+                    <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
+                      <Shield className="w-3 h-3" /> الشهادات والمؤهلات
+                    </p>
+                    <p className="text-sm text-blue-800 leading-relaxed">{viewItem.certifications}</p>
+                  </div>
+                )}
+              </Sec>
+
+              {/* Availability */}
+              <Sec icon={Clock} title="التوفر والجدول">
+                <G2>
+                  <IC label="متاح الآن"
+                    value={availNow ? '✓ نعم' : '✗ لا'}
+                    valueClass={availNow ? 'text-green-600 font-semibold' : 'text-gray-500'} />
+                  <IC label="خدمة الطوارئ 24/7"
+                    value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
+                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'} />
+                  {hoursFrom && <IC label="بداية العمل" value={hoursFrom} dir="ltr" />}
+                  {hoursTo   && <IC label="نهاية العمل" value={hoursTo}   dir="ltr" />}
+                </G2>
+                {workDays.length > 0 && (
+                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {workDays.map(d => (
+                        <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">
+                          {DAY_AR[d] || d}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Sec>
+
+              {/* Social */}
+              {(viewItem.facebook || viewItem.instagram) && (
+                <Sec icon={Facebook} title="التواصل الاجتماعي">
+                  {viewItem.facebook && (
+                    <div className="bg-gray-50 rounded-xl p-3 mb-2">
+                      <p className="text-xs text-gray-400 mb-0.5">فيسبوك</p>
+                      <a href={viewItem.facebook} target="_blank" rel="noreferrer"
+                        className="text-sm text-blue-500 hover:underline break-all" dir="ltr">
+                        {viewItem.facebook}
+                      </a>
+                    </div>
+                  )}
+                  {viewItem.instagram && (
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <p className="text-xs text-gray-400 mb-0.5">إنستغرام</p>
+                      <a href={viewItem.instagram} target="_blank" rel="noreferrer"
+                        className="text-sm text-pink-500 hover:underline break-all" dir="ltr">
+                        {viewItem.instagram}
+                      </a>
+                    </div>
+                  )}
+                </Sec>
+              )}
+
+              {/* Portfolio */}
+              {workImgs.length > 0 ? (
+                <Sec icon={Image} title={`معرض الأعمال (${workImgs.length})`}>
+                  <div className="grid grid-cols-3 gap-2">
+                    {workImgs.map((src, i) => (
+                      <img key={i} src={src} alt={`صورة ${i + 1}`}
+                        className="w-full aspect-square object-cover rounded-xl border border-gray-200 cursor-zoom-in hover:opacity-90"
+                        onClick={() => setLightbox(src)} />
                     ))}
                   </div>
-                </div>
-              )}
-            </Sec>
-
-            {/* Social */}
-            {(viewItem.facebook || viewItem.instagram) && (
-              <Sec icon={Facebook} title="التواصل الاجتماعي">
-                {viewItem.facebook && (
-                  <div className="bg-gray-50 rounded-xl p-3 mb-2">
-                    <p className="text-xs text-gray-400 mb-0.5">فيسبوك</p>
-                    <a href={viewItem.facebook} target="_blank" rel="noreferrer"
-                      className="text-sm text-blue-500 hover:underline break-all" dir="ltr">
-                      {viewItem.facebook}
-                    </a>
-                  </div>
-                )}
-                {viewItem.instagram && (
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-0.5">إنستغرام</p>
-                    <a href={viewItem.instagram} target="_blank" rel="noreferrer"
-                      className="text-sm text-pink-500 hover:underline break-all" dir="ltr">
-                      {viewItem.instagram}
-                    </a>
-                  </div>
-                )}
-              </Sec>
-            )}
-
-            {/* Portfolio */}
-            {viewItem.work_images?.length > 0 ? (
-              <Sec icon={Image} title={`معرض الأعمال (${viewItem.work_images.length})`}>
-                <div className="grid grid-cols-3 gap-2">
-                  {viewItem.work_images.map((src, i) => (
-                    <img key={i} src={src} alt={`صورة ${i + 1}`}
-                      className="w-full aspect-square object-cover rounded-xl border border-gray-200 cursor-zoom-in hover:opacity-90"
-                      onClick={() => setLightbox(src)} />
-                  ))}
-                </div>
-              </Sec>
-            ) : (
-              <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
-                <Image className="w-4 h-4 flex-shrink-0" />
-                <p className="text-xs">لم يتم رفع صور من الأعمال</p>
-              </div>
-            )}
-
-            {/* Documents — internal */}
-            <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-500">
-              <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                <p className="text-xs text-red-500">سرية تامة — لا تُشارك مع العملاء</p>
-              </div>
-              {(viewItem.id_doc_front || viewItem.id_doc_back || viewItem.work_license) ? (
-                <div className="space-y-3">
-                  {(viewItem.id_doc_front || viewItem.id_doc_back) && (
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium mb-2">بطاقة الهوية</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {viewItem.id_doc_front && (
-                          <div>
-                            <p className="text-xs text-gray-400 mb-1">الوجه الأمامي</p>
-                            <img src={viewItem.id_doc_front} alt="front"
-                              className="w-full rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
-                              onClick={() => setLightbox(viewItem.id_doc_front)} />
-                          </div>
-                        )}
-                        {viewItem.id_doc_back && (
-                          <div>
-                            <p className="text-xs text-gray-400 mb-1">الوجه الخلفي</p>
-                            <img src={viewItem.id_doc_back} alt="back"
-                              className="w-full rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
-                              onClick={() => setLightbox(viewItem.id_doc_back)} />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {viewItem.work_license && (
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium mb-1">رخصة العمل / الشهادة المهنية</p>
-                      <img src={viewItem.work_license} alt="license"
-                        className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
-                        onClick={() => setLightbox(viewItem.work_license)} />
-                    </div>
-                  )}
-                </div>
+                </Sec>
               ) : (
                 <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
-                  <FileText className="w-4 h-4 flex-shrink-0" />
-                  <p className="text-xs">لم يتم رفع وثائق رسمية</p>
+                  <Image className="w-4 h-4 flex-shrink-0" />
+                  <p className="text-xs">لم يتم رفع صور من الأعمال</p>
                 </div>
               )}
-            </Sec>
 
-            {/* Reject */}
-            {viewItem.status === 'pending' && (
-              <button
-                onClick={() => { setStatus(viewItem.id, 'rejected'); setViewItem(null) }}
-                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors">
-                رفض الطلب
-              </button>
-            )}
-          </div>
-        )}
+              {/* Documents — internal */}
+              <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-500">
+                <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                  <p className="text-xs text-red-500">سرية تامة — لا تُشارك مع العملاء</p>
+                </div>
+                {(idFront || idBack || workLic) ? (
+                  <div className="space-y-3">
+                    {(idFront || idBack) && (
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium mb-2">بطاقة الهوية</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {idFront && (
+                            <div>
+                              <p className="text-xs text-gray-400 mb-1">الوجه الأمامي</p>
+                              <img src={idFront} alt="front"
+                                className="w-full rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                                onClick={() => setLightbox(idFront)} />
+                            </div>
+                          )}
+                          {idBack && (
+                            <div>
+                              <p className="text-xs text-gray-400 mb-1">الوجه الخلفي</p>
+                              <img src={idBack} alt="back"
+                                className="w-full rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                                onClick={() => setLightbox(idBack)} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {workLic && (
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium mb-1">رخصة العمل / الشهادة المهنية</p>
+                        <img src={workLic} alt="license"
+                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          onClick={() => setLightbox(workLic)} />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
+                    <FileText className="w-4 h-4 flex-shrink-0" />
+                    <p className="text-xs">لم يتم رفع وثائق رسمية</p>
+                  </div>
+                )}
+              </Sec>
+
+              {/* Reject */}
+              {viewItem.status === 'pending' && (
+                <button
+                  onClick={() => { setStatus(viewItem.id, 'rejected'); setViewItem(null) }}
+                  className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                  رفض الطلب
+                </button>
+              )}
+            </div>
+          )
+        })()}
       </FormModal>
     </div>
   )
