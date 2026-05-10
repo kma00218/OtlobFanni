@@ -24,11 +24,11 @@ export default function Technicians() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading]       = useState(true)
 
-  const [search, setSearch]           = useState('')
-  const [filterCity, setFilterCity]   = useState('')
-  const [filterCat, setFilterCat]     = useState('')
+  const [search, setSearch]             = useState('')
+  const [filterCity, setFilterCity]     = useState('')
+  const [filterCat, setFilterCat]       = useState('')
   const [filterStatus, setFilterStatus] = useState('')
-  const [page, setPage]               = useState(1)
+  const [page, setPage]                 = useState(1)
 
   const [data, setData]   = useState([])
   const [total, setTotal] = useState(0)
@@ -61,26 +61,29 @@ export default function Technicians() {
     let rows = [...allTechs]
 
     if (!isSuperAdmin && cityId)
-      rows = rows.filter(r => r.city_id === cityId)
-    if (filterCity)   rows = rows.filter(r => r.city_id === filterCity)
-    if (filterCat)    rows = rows.filter(r => r.category_id === filterCat)
-    if (filterStatus) rows = rows.filter(r => r.status === filterStatus)
+      rows = rows.filter(r => (r.cityId || r.city_id) === cityId)
+    if (filterCity)
+      rows = rows.filter(r => (r.cityId || r.city_id) === filterCity)
+    if (filterCat)
+      rows = rows.filter(r => (r.categoryId || r.category_id) === filterCat)
+    if (filterStatus)
+      rows = rows.filter(r => r.status === filterStatus)
     if (search) {
       const s = search.toLowerCase()
       rows = rows.filter(r =>
-        (r.name_ar || '').toLowerCase().includes(s) ||
+        (r.nameAr || r.name_ar || '').toLowerCase().includes(s) ||
         (r.phone || '').toLowerCase().includes(s)
       )
     }
 
-    rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    rows.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at))
     setTotal(rows.length)
 
     const start = (page - 1) * PAGE_SIZE
     const paged = rows.slice(start, start + PAGE_SIZE).map(r => ({
       ...r,
-      cities:     { name_ar: cities.find(c => c.id === r.city_id)?.name_ar || r.city_id || '—' },
-      categories: { name_ar: categories.find(c => c.id === r.category_id)?.name_ar || r.category_id || '—' },
+      _cityName:     cities.find(c => c.id === (r.cityId || r.city_id))?.name_ar || (r.cityId || r.city_id) || '—',
+      _categoryName: categories.find(c => c.id === (r.categoryId || r.category_id))?.name_ar || (r.categoryId || r.category_id) || '—',
     }))
     setData(paged)
   }, [allTechs, search, filterCity, filterCat, filterStatus, page, isSuperAdmin, cityId, cities, categories])
@@ -94,17 +97,20 @@ export default function Technicians() {
   const openEdit = (row) => {
     setEditItem(row)
     setForm({
-      name_ar: row.name_ar || '', name_en: row.name_en || '',
-      phone: row.phone || '', whatsapp: row.whatsapp || '',
-      category_id: row.category_id || '', city_id: row.city_id || '',
-      experience_years: row.experience_years || 0,
-      price_from: row.price_from || 0,
-      status: row.status || 'available',
-      description_ar: row.description_ar || '',
-      description_en: row.description_en || '',
-      is_featured: row.is_featured || false,
-      is_approved: row.is_approved ?? true,
-      is_active: row.is_active ?? true,
+      name_ar:          row.nameAr          || row.name_ar          || '',
+      name_en:          row.nameEn          || row.name_en          || '',
+      phone:            row.phone           || '',
+      whatsapp:         row.whatsapp        || '',
+      category_id:      row.categoryId      || row.category_id      || '',
+      city_id:          row.cityId          || row.city_id          || '',
+      experience_years: row.experienceYears ?? row.experience_years ?? 0,
+      price_from:       row.priceFrom       ?? row.price_from       ?? 0,
+      status:           row.status          || 'available',
+      description_ar:   row.descriptionAr   || row.description_ar   || '',
+      description_en:   row.descriptionEn   || row.description_en   || '',
+      is_featured:      row.isFeatured      ?? row.is_featured      ?? false,
+      is_approved:      row.isApproved      ?? row.is_approved      ?? true,
+      is_active:        row.isActive        ?? row.is_active        ?? true,
     })
     setModalOpen(true)
   }
@@ -141,10 +147,16 @@ export default function Technicians() {
   }
 
   const toggleField = async (row, field) => {
-    const newVal = !row[field]
+    const apiField = field
+    const localField = field === 'is_approved' ? 'isApproved' : 'isFeatured'
+    const currentVal = row[localField] ?? row[field] ?? false
+    const newVal = !currentVal
     try {
-      await api.admin.technicians.update(row.id, { [field]: newVal })
-      setAllTechs(prev => prev.map(t => t.id === row.id ? { ...t, [field]: newVal } : t))
+      await api.admin.technicians.update(row.id, { [apiField]: newVal })
+      setAllTechs(prev => prev.map(t => t.id === row.id
+        ? { ...t, [localField]: newVal, [field]: newVal }
+        : t
+      ))
       showToast(
         field === 'is_approved'
           ? (newVal ? 'تم اعتماد الفني' : 'تم إلغاء الاعتماد')
@@ -154,28 +166,31 @@ export default function Technicians() {
   }
 
   const toggleActive = async (row) => {
-    const newActive = !row.is_active
+    const currentActive = row.isActive ?? row.is_active ?? true
+    const newActive = !currentActive
     const newStatus = newActive ? (row.status === 'inactive' ? 'available' : row.status) : 'inactive'
     try {
       await api.admin.technicians.update(row.id, { is_active: newActive, status: newStatus })
-      setAllTechs(prev => prev.map(t => t.id === row.id ? { ...t, is_active: newActive, status: newStatus } : t))
+      setAllTechs(prev => prev.map(t => t.id === row.id
+        ? { ...t, isActive: newActive, is_active: newActive, status: newStatus }
+        : t
+      ))
       showToast(newActive ? 'تم تفعيل الفني' : 'تم تعطيل الفني')
     } catch { showToast('حدث خطأ', 'error') }
   }
 
-  // ── أعمدة الجدول ──
   const columns = [
     {
-      key: 'name_ar', label: 'الفني',
+      key: 'nameAr', label: 'الفني',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-gray-800">{v}</p>
-          <p className="text-xs text-gray-400">{row.phone}</p>
+          <p className="font-medium text-gray-800">{v || row.name_ar || '—'}</p>
+          <p className="text-xs text-gray-400" dir="ltr">{row.phone}</p>
         </div>
       ),
     },
-    { key: 'cities',     label: 'المدينة',  render: (v) => v?.name_ar || '—' },
-    { key: 'categories', label: 'التخصص',   render: (v) => v?.name_ar || '—' },
+    { key: '_cityName',     label: 'المدينة',  render: (v) => v || '—' },
+    { key: '_categoryName', label: 'التخصص',   render: (v) => v || '—' },
     {
       key: 'status', label: 'الحالة',
       render: (v) => {
@@ -189,40 +204,49 @@ export default function Technicians() {
       },
     },
     {
-      key: 'is_active', label: 'تفعيل',
-      render: (v, row) => (
-        <button
-          onClick={() => toggleActive(row)}
-          className={`text-xs flex items-center gap-1 ${v ? 'text-green-600' : 'text-gray-400'}`}
-        >
-          {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
-          {v ? 'مفعّل' : 'معطّل'}
-        </button>
-      ),
+      key: 'isActive', label: 'تفعيل',
+      render: (v, row) => {
+        const active = v ?? row.is_active ?? true
+        return (
+          <button
+            onClick={() => toggleActive(row)}
+            className={`text-xs flex items-center gap-1 ${active ? 'text-green-600' : 'text-gray-400'}`}
+          >
+            {active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+            {active ? 'مفعّل' : 'معطّل'}
+          </button>
+        )
+      },
     },
     {
-      key: 'is_approved', label: 'معتمد',
-      render: (v, row) => (
-        <button
-          onClick={() => toggleField(row, 'is_approved')}
-          className={`text-xs flex items-center gap-1 ${v ? 'text-blue-600' : 'text-red-500'}`}
-        >
-          {v ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-          {v ? 'معتمد' : 'غير معتمد'}
-        </button>
-      ),
+      key: 'isApproved', label: 'معتمد',
+      render: (v, row) => {
+        const approved = v ?? row.is_approved ?? true
+        return (
+          <button
+            onClick={() => toggleField(row, 'is_approved')}
+            className={`text-xs flex items-center gap-1 ${approved ? 'text-blue-600' : 'text-red-500'}`}
+          >
+            {approved ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+            {approved ? 'معتمد' : 'غير معتمد'}
+          </button>
+        )
+      },
     },
     {
-      key: 'is_featured', label: 'مميز',
-      render: (v, row) => (
-        <button
-          onClick={() => toggleField(row, 'is_featured')}
-          className={v ? 'text-[#FF7900]' : 'text-gray-300'}
-          title={v ? 'إلغاء التمييز' : 'تمييز'}
-        >
-          <Star className="w-4 h-4" fill={v ? 'currentColor' : 'none'} />
-        </button>
-      ),
+      key: 'isFeatured', label: 'مميز',
+      render: (v, row) => {
+        const featured = v ?? row.is_featured ?? false
+        return (
+          <button
+            onClick={() => toggleField(row, 'is_featured')}
+            className={featured ? 'text-[#FF7900]' : 'text-gray-300'}
+            title={featured ? 'إلغاء التمييز' : 'تمييز'}
+          >
+            <Star className="w-4 h-4" fill={featured ? 'currentColor' : 'none'} />
+          </button>
+        )
+      },
     },
     {
       key: 'id', label: 'إجراءات',
