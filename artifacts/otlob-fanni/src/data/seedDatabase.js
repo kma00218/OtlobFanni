@@ -4,7 +4,7 @@
  * لإعادة الضبط: احذف المفتاح otlob_fanni_seed_v2 من localStorage
  */
 
-const SEED_KEY = 'otlob_fanni_seed_v4'
+const SEED_KEY = 'otlob_fanni_seed_v5'
 
 // ──────────────────────────────────────────────
 // المدن
@@ -682,6 +682,108 @@ const SERVICE_REQUESTS = [
 ]
 
 // ──────────────────────────────────────────────
+// طلبات الشركات (ديمو)
+// ──────────────────────────────────────────────
+const COMPANY_APPLICATIONS = [
+  {
+    id: 'cr1000000001',
+    applicant_type: 'company',
+    company_name: 'مؤسسة الأمل للصيانة والخدمات',
+    contact_name: 'خالد محمد الورفلي',
+    phone: '0911111101',
+    whatsapp: '0911111101',
+    commercial_reg: 'LY-2022-01234',
+    city: 'طرابلس',
+    area: 'حي الأندلس',
+    address: 'شارع عمر المختار، بناية رقم 12',
+    specialty: 'plumbing',
+    years_active: '3-5',
+    description: 'نقدم خدمات السباكة والصرف الصحي وتمديدات المياه للمنازل والمنشآت التجارية. فريق متخصص ومجهز بأحدث المعدات.',
+    certifications: 'معتمدة من وزارة الاقتصاد الليبية، شريك معتمد لمواسير أكوا-فلو',
+    price_from: '150',
+    price_to: '3000',
+    available_now: true,
+    working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday'],
+    hours_from: '08:00',
+    hours_to: '20:00',
+    emergency: true,
+    service_radius: '40',
+    facebook: 'https://facebook.com/amal.maintenance',
+    instagram: '',
+    company_logo: null,
+    work_images: [],
+    commercial_doc: null,
+    work_license: null,
+    status: 'pending',
+    created_at: '2026-05-08T10:30:00Z',
+  },
+  {
+    id: 'cr1000000002',
+    applicant_type: 'company',
+    company_name: 'شركة تيتان للتكييف والتبريد',
+    contact_name: 'سالم عبدالله بوصيرة',
+    phone: '0922222202',
+    whatsapp: '0922222202',
+    commercial_reg: 'LY-2019-05678',
+    city: 'بنغازي',
+    area: 'الصابري',
+    address: 'طريق الفضيل بوعمر، مجمع الورش الصناعية',
+    specialty: 'ac',
+    years_active: '6-10',
+    description: 'متخصصون في تركيب وصيانة جميع أنواع المكيفات (سبليت، مركزي، كاسيت). ضمان سنة كاملة على جميع الأعمال.',
+    certifications: 'وكيل معتمد لـ Gree وCarrier في ليبيا. شهادة فنيين معتمدين من الشركة الأم.',
+    price_from: '200',
+    price_to: '5000',
+    available_now: true,
+    working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],
+    hours_from: '07:00',
+    hours_to: '22:00',
+    emergency: true,
+    service_radius: '60',
+    facebook: 'https://facebook.com/titan.ac.libya',
+    instagram: 'https://instagram.com/titan_ac',
+    company_logo: null,
+    work_images: [],
+    commercial_doc: null,
+    work_license: null,
+    status: 'approved',
+    created_at: '2026-05-02T09:00:00Z',
+  },
+  {
+    id: 'cr1000000003',
+    applicant_type: 'company',
+    company_name: 'مؤسسة النجمة للكهرباء والإضاءة',
+    contact_name: 'أحمد الطاهر الزروق',
+    phone: '0933333303',
+    whatsapp: '0933333303',
+    commercial_reg: 'LY-2021-09012',
+    city: 'مصراتة',
+    area: 'المنطقة الصناعية',
+    address: 'شارع الجمهورية، بجانب مصرف الوحدة',
+    specialty: 'electricity',
+    years_active: '3-5',
+    description: 'تركيب وصيانة الأنظمة الكهربائية السكنية والتجارية والصناعية. لوحات كهربائية، إضاءة، طاقة شمسية.',
+    certifications: 'مرخصة من شركة الكهرباء الليبية. فنيون حاصلون على شهادات دولية IET.',
+    price_from: '100',
+    price_to: '8000',
+    available_now: false,
+    working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday'],
+    hours_from: '08:00',
+    hours_to: '17:00',
+    emergency: false,
+    service_radius: '30',
+    facebook: '',
+    instagram: '',
+    company_logo: null,
+    work_images: [],
+    commercial_doc: null,
+    work_license: null,
+    status: 'rejected',
+    created_at: '2026-04-28T14:00:00Z',
+  },
+]
+
+// ──────────────────────────────────────────────
 // الإعلانات — إعلان لكل مكان ممكن في التطبيق
 // ──────────────────────────────────────────────
 const ADS = [
@@ -834,6 +936,7 @@ export function seedDatabase() {
     set('technicians',                 TECHNICIANS)   // force refresh on v3
     setIfEmpty('demo_technicians_v1',  ADMIN_TECHNICIANS)
     setIfEmpty('technicianApplications', TECHNICIAN_APPLICATIONS)
+    setIfEmpty('companyApplications',    COMPANY_APPLICATIONS)
     setIfEmpty('service_requests',     SERVICE_REQUESTS)
     set('demo_ads_v1',                 ADS)   // force refresh on v4
     setIfEmpty('demo_admins_v1',       ADMIN_USERS)
