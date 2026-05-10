@@ -83,7 +83,11 @@ export function getApprovedTechnicians() {
     if (!raw) return []
     const list = JSON.parse(raw)
     return list
-      .filter(t => t.isActive && t.isApproved)
+      .filter(t => {
+        const active   = t.is_active   !== undefined ? t.is_active   : t.isActive
+        const approved = t.is_approved !== undefined ? t.is_approved : t.isApproved
+        return active && approved
+      })
       .map((t, i) => {
         const cat  = categories.find(c => c.id === t.category) || {}
         const city = CITY_TEXT_MAP[t.city] || { ar: t.city || '—', en: t.city || '—' }
