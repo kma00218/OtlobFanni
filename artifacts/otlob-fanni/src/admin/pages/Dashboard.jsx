@@ -3,6 +3,7 @@ import StatCard from '../components/StatCard'
 import {
   Wrench, Users, MapPin, ClipboardList, Tag, Megaphone,
   CheckCircle, Clock, ShieldCheck, Newspaper, Building2, FileCheck,
+  HardDrive,
 } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import api from '../../lib/api'
@@ -24,10 +25,13 @@ export default function Dashboard() {
   const [recentRequests, setRecentRequests] = useState([])
   const [recentTechs, setRecentTechs] = useState([])
   const [requestsByStatus, setRequestsByStatus] = useState([])
+  const [storageUsage, setStorageUsage] = useState(null)
 
   useEffect(() => {
-    api.admin.stats()
-      .then(s => {
+    Promise.all([
+      api.admin.stats(),
+      api.admin.storageUsage().catch(() => null),
+    ]).then(([s, usage]) => {
         setStats(s)
         setRecentRequests(s.recentRequests || [])
         setRecentTechs(s.recentTechs || [])
@@ -37,13 +41,73 @@ export default function Dashboard() {
           key, name, value: statusCounts[key] || 0, fill: STATUS_COLORS[key],
         })).filter(d => d.value > 0)
         setRequestsByStatus(pieData)
+        if (usage) setStorageUsage(usage)
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [])
 
+  const usedMB  = storageUsage ? (storageUsage.usedBytes  / (1024 * 1024)).toFixed(1) : null
+  const limitMB  = storageUsage ? (storageUsage.limitBytes / (1024 * 1024)).toFixed(0) : null
+  const usedPct  = storageUsage ? Math.min(100, (storageUsage.usedBytes / storageUsage.limitBytes) * 100) : 0
+  const usageFmt = usedMB !== null
+    ? usedMB >= 1024
+      ? `${(usedMB / 1024).toFixed(2)} GB`
+      : `${usedMB} MB`
+    : null
+  const limitFmt = limitMB !== null
+    ? limitMB >= 1024
+      ? `${(limitMB / 1024).toFixed(0)} GB`
+      : `${limitMB} MB`
+    : null
+  const barColor = usedPct > 85 ? '#EF4444' : usedPct > 60 ? '#FF7900' : '#10B981'
+
   return (
     <div className="space-y-6">
+      {/* Storage Usage Bar */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-xl bg-[#071B33]/5 flex items-center justify-center">
+            <HardDrive size={18} className="text-[#071B33]" />
+          </div>
+          <div>
+            <h3 className="font-bold text-[#071B33] text-sm">سعة التخزين</h3>
+            <p className="text-xs text-gray-400">Object Storage — Replit</p>
+          </div>
+          {storageUsage && (
+            <div className="mr-auto text-right">
+              <span className="text-sm font-bold text-gray-800">{usageFmt}</span>
+              <span className="text-xs text-gray-400"> / {limitFmt}</span>
+            </div>
+          )}
+        </div>
+        {loading ? (
+          <div className="h-3 bg-gray-100 rounded-full animate-pulse" />
+        ) : storageUsage ? (
+          <>
+            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${usedPct}%`, background: barColor }}
+              />
+            </div>
+            <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
+              <span>{storageUsage.fileCount} ملف محفوظ</span>
+              <span className={usedPct > 85 ? 'text-red-500 font-bold' : usedPct > 60 ? 'text-orange-500 font-semibold' : 'text-green-500'}>
+                {usedPct.toFixed(1)}% مستخدم
+              </span>
+            </div>
+            {usedPct > 85 && (
+              <p className="mt-2 text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">
+                ⚠️ التخزين يقترب من الحد الأقصى — احذف الملفات غير الضرورية أو رفّع باقتك
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="text-xs text-gray-400 text-center py-1">تعذّر تحميل بيانات التخزين</div>
+        )}
+      </div>
+
       {/* Stats Grid */}
       {/* ── طلبات التسجيل ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

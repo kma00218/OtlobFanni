@@ -6,6 +6,7 @@ import {
   adminsTable, serviceRequestsTable,
 } from "@workspace/db/schema";
 import { eq, desc, count, and } from "drizzle-orm";
+import { objectStorageClient } from "../lib/objectStorage";
 
 const router: IRouter = Router();
 
@@ -45,6 +46,31 @@ router.get("/stats", async (_req, res): Promise<void> => {
     recentRequests,
     recentTechs,
   });
+});
+
+// ── Storage Usage ─────────────────────────────────────────────────────────────
+router.get("/storage-usage", async (_req, res): Promise<void> => {
+  try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    if (!bucketId) {
+      res.json({ usedBytes: 0, fileCount: 0, limitBytes: 1 * 1024 * 1024 * 1024 });
+      return;
+    }
+    const bucket = objectStorageClient.bucket(bucketId);
+    const [files] = await bucket.getFiles();
+    let usedBytes = 0;
+    for (const file of files) {
+      const size = Number(file.metadata?.size ?? 0);
+      usedBytes += size;
+    }
+    res.json({
+      usedBytes,
+      fileCount: files.length,
+      limitBytes: 1 * 1024 * 1024 * 1024,
+    });
+  } catch {
+    res.json({ usedBytes: 0, fileCount: 0, limitBytes: 1 * 1024 * 1024 * 1024 });
+  }
 });
 
 // ── Technician Applications ───────────────────────────────────────────────────

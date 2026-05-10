@@ -113,6 +113,8 @@ export const api = {
       create: (data)     => post('/admin/admin-users', data),
       update: (id, data) => patch(`/admin/admin-users/${id}`, data),
     },
+
+    storageUsage: () => get('/admin/storage-usage'),
   },
 }
 
