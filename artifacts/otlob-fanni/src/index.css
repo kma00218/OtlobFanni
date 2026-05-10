@@ -260,6 +260,14 @@
     @apply w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] bg-[#F7F8FA] transition-colors;
   }
 
+  .icon-chip {
+    @apply inline-flex items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] ring-1 ring-black/5;
+  }
+
+  .icon-chip-strong {
+    @apply inline-flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.10)] ring-1 ring-black/5;
+  }
+
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {
     @apply hidden;
