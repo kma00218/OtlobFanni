@@ -1,0 +1,103 @@
+Do not rebuild the app.
+Do not redesign the app.
+Do not change the workflow.
+Do not add new features.
+Do not connect all app data now.
+
+Important:
+The request workflow already works, but only on the same device because it uses localStorage.
+
+I want service requests to be saved online like Lahzi, so requests appear in the admin panel from any device.
+
+Task:
+Connect ONLY service requests to Supabase online database.
+
+Keep the current localStorage workflow as fallback if Supabase keys are missing.
+
+Required:
+
+1. Create Supabase client file:
+src/lib/supabase.js
+
+Use environment variables:
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+
+2. Create SQL file:
+supabase/service_requests.sql
+
+Create table:
+
+service_requests
+
+Fields:
+- id uuid primary key default gen_random_uuid()
+- customer_name text not null
+- customer_phone text not null
+- city text
+- area text
+- category_id text
+- category_name_ar text
+- category_name_en text
+- problem_description text
+- urgency text default 'normal'
+- preferred_time text
+- status text default 'new'
+- assigned_technician_id text
+- assigned_technician_name text
+- assigned_technician_phone text
+- assigned_technician_whatsapp text
+- assigned_technician_photo text
+- created_at timestamp with time zone default now()
+- updated_at timestamp with time zone default now()
+- completed_at timestamp with time zone
+- cancelled_at timestamp with time zone
+- cancel_reason text
+
+3. Customer request form:
+When customer submits a request:
+- save it to Supabase table service_requests
+- also save the returned request id in localStorage myRequestIds
+- if Supabase is not configured, use localStorage fallback
+
+Important:
+Use insert().select() so the request id is returned.
+
+4. Admin Requests page:
+Update /admin/requests:
+- if Supabase is configured, read all requests from Supabase
+- admin can assign technician
+- admin can change request status
+- all changes must update Supabase
+- if Supabase is not configured, use localStorage fallback
+
+5. My Orders page:
+If Supabase is configured:
+- show orders saved in myRequestIds
+- also allow customer to search orders by phone number
+
+Add field:
+Arabic: أدخل رقم هاتفك لعرض طلباتك
+English: Enter your phone number to view your orders
+
+When customer enters phone:
+- fetch requests from Supabase where customer_phone equals the phone number
+- show matching orders
+
+6. Keep privacy rule:
+Do not show technicians publicly.
+Show assigned technician only inside the customer order after admin assignment.
+
+7. Do not migrate technicians, cities, categories, technician applications, or admin users now.
+Only service_requests.
+
+Final test:
+- Submit request from phone A.
+- Open admin panel from laptop B.
+- The request must appear.
+- Admin assigns technician.
+- Open My Orders on phone A.
+- Assigned technician appears.
+- Search by phone number from another device shows the order.
+
+Stop after this task.
