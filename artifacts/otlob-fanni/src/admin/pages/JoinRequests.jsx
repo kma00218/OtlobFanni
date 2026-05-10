@@ -4,7 +4,55 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, Info, AlertCircle, Phone, MapPin, Briefcase, Clock, Star, Zap, Facebook, CheckCircle, XCircle } from 'lucide-react'
 
-const DEMO_KEY = 'demo_join_requests_v1'
+const DEMO_KEY      = 'demo_join_requests_v1'
+const TECHS_KEY     = 'demo_technicians_v1'
+
+const CITY_ID_MAP = {
+  'طرابلس': 'c1', 'بنغازي': 'c2', 'مصراتة': 'c3',
+  'الزاوية': 'c4', 'سبها': 'c5', 'زوارة': 'c6',
+  'زليتن': 'c7', 'الخمس': 'c8', 'سرت': 'c9', 'طبرق': 'c10',
+}
+const CAT_ID_MAP = {
+  'سباكة': 'k1', 'plumbing': 'k1',
+  'كهرباء': 'k2', 'electricity': 'k2',
+  'تكييف': 'k3', 'ac': 'k3', 'ac services': 'k3',
+  'نجارة': 'k4', 'carpentry': 'k4',
+  'دهانات': 'k5', 'painting': 'k5', 'دهان': 'k5',
+  'تنظيف': 'k6', 'cleaning': 'k6',
+  'نقل أثاث': 'k7', 'furniture moving': 'k7',
+  'كاميرات مراقبة': 'k8', 'cctv': 'k8',
+  'شبكات وإنترنت': 'k9', 'networks & internet': 'k9',
+  'صيانة عامة': 'k10', 'general maintenance': 'k10',
+  'أجهزة منزلية': 'k11', 'home appliances': 'k11',
+  'حدادة': 'k12', 'welding': 'k12',
+}
+const parseExperience = (exp) => {
+  if (!exp) return 0
+  if (exp.includes('أقل') || exp.includes('Less')) return 0
+  if (exp.includes('10+') || exp.includes('أكثر')) return 11
+  const nums = exp.match(/\d+/g)
+  if (nums) return parseInt(nums[nums.length - 1]) || 0
+  return 0
+}
+
+const joinRequestToTechnician = (req) => ({
+  id:               't' + Date.now() + Math.random().toString(36).slice(2, 6),
+  name_ar:          req.full_name || '',
+  name_en:          '',
+  phone:            req.phone || '',
+  whatsapp:         req.whatsapp || req.phone || '',
+  city_id:          CITY_ID_MAP[req.city] || 'c1',
+  category_id:      CAT_ID_MAP[(req.specialty || '').toLowerCase()] || CAT_ID_MAP[req.specialty] || 'k10',
+  experience_years: parseExperience(req.experience),
+  price_from:       parseFloat(req.price_from) || 0,
+  status:           req.available_now ? 'available' : 'inactive',
+  description_ar:   req.description || '',
+  description_en:   '',
+  is_featured:      false,
+  is_approved:      true,
+  is_active:        true,
+  created_at:       new Date().toISOString(),
+})
 
 const DEMO_SEED = [
   {
@@ -87,8 +135,23 @@ export default function JoinRequests() {
   const persist = (next) => { setData(next); saveDemo(next) }
 
   const setStatus = (id, status) => {
+    const request = data.find(r => r.id === id)
     persist(data.map(r => r.id === id ? { ...r, status } : r))
-    showToast(status === 'approved' ? 'تم قبول الطلب' : 'تم رفض الطلب')
+
+    if (status === 'approved' && request) {
+      try {
+        const existing = JSON.parse(localStorage.getItem(TECHS_KEY) || 'null')
+        const techList = Array.isArray(existing) ? existing : []
+        const newTech = joinRequestToTechnician(request)
+        localStorage.setItem(TECHS_KEY, JSON.stringify([newTech, ...techList]))
+        showToast('✓ تم قبول الطلب وإضافة الفني تلقائياً')
+      } catch (_) {
+        showToast('تم قبول الطلب')
+      }
+    } else {
+      showToast('تم رفض الطلب')
+    }
+
     if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
   }
 
