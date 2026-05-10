@@ -7,11 +7,12 @@ import { Eye, Trash2, Wrench, RefreshCw, SlidersHorizontal, UserCheck, Phone, St
 const PAGE_SIZE = 15
 
 const STATUS_MAP = {
-  new:         { label: 'جديد',   cls: 'bg-orange-50 text-[#FF7900]'   },
-  assigned:    { label: 'مُسند',  cls: 'bg-blue-50   text-blue-600'    },
-  in_progress: { label: 'جارٍ',   cls: 'bg-purple-50 text-purple-600'  },
-  completed:   { label: 'مكتمل', cls: 'bg-green-50  text-green-600'   },
-  cancelled:   { label: 'ملغي',  cls: 'bg-red-50    text-red-500'     },
+  new:         { label: 'جديد',        cls: 'bg-orange-50 text-[#FF7900]'   },
+  assigned:    { label: 'مُسند',       cls: 'bg-blue-50   text-blue-600'    },
+  contacted:   { label: 'تم التواصل', cls: 'bg-sky-50    text-sky-600'     },
+  in_progress: { label: 'جارٍ',        cls: 'bg-purple-50 text-purple-600'  },
+  completed:   { label: 'مكتمل',      cls: 'bg-green-50  text-green-600'   },
+  cancelled:   { label: 'ملغي',       cls: 'bg-red-50    text-red-500'     },
 }
 
 const URGENCY_MAP = {
