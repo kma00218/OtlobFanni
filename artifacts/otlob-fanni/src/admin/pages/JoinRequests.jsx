@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Eye, Trash2, Info, AlertCircle, Phone, MapPin, Briefcase, Clock, Star, Zap, Facebook, CheckCircle, XCircle } from 'lucide-react'
+import { Eye, Trash2, Info, AlertCircle, Phone, MapPin, Briefcase, Clock, Star, Zap, Facebook, CheckCircle, XCircle, Image } from 'lucide-react'
 
 const DEMO_KEY      = 'demo_join_requests_v1'
 const TECHS_KEY     = 'demo_technicians_v1'
@@ -346,6 +346,34 @@ export default function JoinRequests() {
                   <p className="text-xs text-gray-400 mb-0.5">صفحة فيسبوك</p>
                   <a href={viewItem.facebook} target="_blank" rel="noreferrer" className="text-sm text-blue-500 hover:underline break-all" dir="ltr">{viewItem.facebook}</a>
                 </div>
+              </div>
+            )}
+
+            {/* Work Images */}
+            {viewItem.work_images?.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Image className="w-3.5 h-3.5" /> صور من الأعمال ({viewItem.work_images.length})
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {viewItem.work_images.map((src, i) => (
+                    <a key={i} href={src} target="_blank" rel="noreferrer" className="block">
+                      <img
+                        src={src}
+                        alt={`صورة ${i + 1}`}
+                        className="w-full aspect-square object-cover rounded-xl border border-gray-200 hover:opacity-90 transition-opacity cursor-zoom-in"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* No images notice */}
+            {(!viewItem.work_images || viewItem.work_images.length === 0) && (
+              <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
+                <Image className="w-4 h-4 flex-shrink-0" />
+                <p className="text-xs">لم يتم رفع أي صور من الأعمال</p>
               </div>
             )}
 

@@ -104,6 +104,7 @@ export default function Join() {
       working_days: days,
       emergency: form.emergency === 'yes',
       facebook: form.facebook,
+      work_images: imagePreviews,
       status: 'pending',
       created_at: new Date().toISOString(),
     }
