@@ -14,6 +14,21 @@ export default function Join() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const form = e.target;
+    const request = {
+      id: 'jr' + Date.now(),
+      full_name: form.name.value,
+      phone: form.phone.value,
+      specialty: form.specialty.value,
+      city: form.city.value,
+      description: form.desc.value || '',
+      status: 'pending',
+      created_at: new Date().toISOString(),
+    };
+    try {
+      const prev = JSON.parse(localStorage.getItem('demo_join_requests_v1') || '[]');
+      localStorage.setItem('demo_join_requests_v1', JSON.stringify([request, ...prev]));
+    } catch (_) {}
     setSubmitted(true);
     toast({
       title: t('success'),

@@ -2,19 +2,20 @@ import { useLocation, Link } from 'wouter'
 import { useAdmin } from '../../context/AdminContext'
 import {
   LayoutDashboard, Users, Wrench, MapPin, ClipboardList,
-  Megaphone, Settings, Activity, LogOut, X, Shield, Tag
+  Megaphone, Settings, Activity, LogOut, X, Shield, Tag, UserPlus
 } from 'lucide-react'
 
 const navItems = [
-  { path: '/admin/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, superOnly: false },
-  { path: '/admin/technicians', label: 'الفنيون', icon: Wrench, superOnly: false },
-  { path: '/admin/requests', label: 'الطلبات', icon: ClipboardList, superOnly: false },
-  { path: '/admin/categories', label: 'التخصصات', icon: Tag, superOnly: true },
-  { path: '/admin/cities', label: 'المدن', icon: MapPin, superOnly: true },
-  { path: '/admin/ads', label: 'الإعلانات', icon: Megaphone, superOnly: true },
-  { path: '/admin/users', label: 'المستخدمون', icon: Users, superOnly: true },
-  { path: '/admin/settings', label: 'الإعدادات', icon: Settings, superOnly: true },
-  { path: '/admin/logs', label: 'سجل النشاط', icon: Activity, superOnly: true },
+  { path: '/admin/dashboard',     label: 'لوحة التحكم',   icon: LayoutDashboard, superOnly: false },
+  { path: '/admin/technicians',   label: 'الفنيون',        icon: Wrench,          superOnly: false },
+  { path: '/admin/requests',      label: 'الطلبات',        icon: ClipboardList,   superOnly: false },
+  { path: '/admin/join-requests', label: 'طلبات الانضمام', icon: UserPlus,        superOnly: false },
+  { path: '/admin/categories',    label: 'التخصصات',       icon: Tag,             superOnly: true  },
+  { path: '/admin/cities',        label: 'المدن',          icon: MapPin,          superOnly: true  },
+  { path: '/admin/ads',           label: 'الإعلانات',      icon: Megaphone,       superOnly: true  },
+  { path: '/admin/users',         label: 'المستخدمون',     icon: Users,           superOnly: true  },
+  { path: '/admin/settings',      label: 'الإعدادات',      icon: Settings,        superOnly: true  },
+  { path: '/admin/logs',          label: 'سجل النشاط',     icon: Activity,        superOnly: true  },
 ]
 
 function SidebarNav({ location, visibleItems, onClose }) {
