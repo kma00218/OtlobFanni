@@ -187,11 +187,10 @@ export default function Join() {
           <h2 className="text-xl font-bold text-[#071B33] mb-3">
             {ar ? 'تم الإرسال بنجاح!' : 'Request Submitted!'}
           </h2>
-          <p className="text-gray-500 text-sm leading-relaxed mb-2">
-            {ar ? 'تم إرسال طلبك بنجاح وسيتم مراجعته من الإدارة خلال 24-48 ساعة.' : 'Your request was submitted. Our team will review it within 24-48 hours.'}
-          </p>
-          <p className="text-gray-400 text-xs mb-8">
-            {ar ? 'سنتواصل معك على رقم الهاتف المسجل.' : 'We will contact you at the registered phone number.'}
+          <p className="text-gray-500 text-sm leading-relaxed mb-8">
+            {ar
+              ? 'تم إرسال طلبك بنجاح. سيتم مراجعة بياناتك من الإدارة، وبعد الموافقة سيظهر ملفك في التطبيق.'
+              : 'Your application has been submitted successfully. The admin will review it, and after approval your profile will appear in the app.'}
           </p>
           <button onClick={() => window.history.back()}
             className="w-full bg-[#FF7900] text-white font-bold py-4 rounded-2xl text-base hover:bg-[#e86d00] transition-colors active:scale-95">

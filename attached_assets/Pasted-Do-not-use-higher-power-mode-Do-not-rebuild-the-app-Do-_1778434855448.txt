@@ -1,0 +1,235 @@
+Do not use higher power mode.
+Do not rebuild the app.
+Do not redesign the app.
+Do not connect Supabase now.
+Do not create customer request workflow now.
+Do not create order assignment workflow now.
+Do not create technician login.
+Do not create customer login.
+Do not add payment.
+Do not add chat.
+
+We are simplifying the app for phase 1.
+
+Business model for phase 1:
+The app will work as a public technician directory.
+Technicians join for free during the first month to build the database.
+Every technician must submit the Join as Technician form.
+The technician appears publicly only after admin approval.
+
+Keep the current technician directory flow:
+1. Customer opens app.
+2. Customer selects city and service category.
+3. App shows approved technicians in that city/category.
+4. Customer opens technician details.
+5. Customer contacts technician by WhatsApp or Call.
+
+Main rule:
+Only approved and active technicians should appear in the public app.
+
+Do not show pending or rejected technicians publicly.
+
+Task:
+
+1. Keep Join as Technician form as it is.
+Do not redesign it.
+Do not remove fields.
+
+2. When technician submits the form:
+Save the application to localStorage key:
+technicianApplications
+
+Application status must be:
+pending
+
+Save all existing form fields, including:
+- personal photo
+- full name
+- phone
+- WhatsApp
+- national ID if already exists
+- city
+- area
+- detailed address
+- service category
+- experience years
+- work type
+- min price
+- max price
+- description
+- certificates
+- availability
+- working days
+- emergency service
+- service range
+- ID documents if already included
+- work gallery
+- Facebook
+- Instagram
+- accepted terms
+- createdAt
+
+3. After submit, show success message:
+Arabic:
+"تم إرسال طلبك بنجاح. سيتم مراجعة بياناتك من الإدارة، وبعد الموافقة سيظهر ملفك في التطبيق."
+
+English:
+"Your application has been submitted successfully. The admin will review it, and after approval your profile will appear in the app."
+
+4. Admin panel:
+Create or update page:
+/admin/technician-applications
+
+Show all submitted technician applications from localStorage.
+
+Columns:
+- photo
+- full name
+- phone
+- WhatsApp
+- city
+- area
+- category
+- experience
+- status
+- createdAt
+- actions
+
+Actions:
+- View details
+- Approve
+- Reject
+- Delete
+
+5. View details:
+Show all technician application details.
+
+Sensitive data rule:
+Sensitive fields like national ID, ID card images, work license, and detailed address should be visible only inside admin panel, not public app.
+
+6. Approve action:
+When admin approves an application:
+- set application status = approved
+- create technician record in localStorage key:
+technicians
+
+Technician record should include public fields only:
+- id
+- photoUrl
+- nameAr or fullName
+- phone
+- whatsapp
+- city
+- area
+- category
+- experienceYears
+- workType
+- minPrice
+- maxPrice
+- description
+- certificates
+- availableNow
+- workingDays
+- emergencyService
+- serviceRangeKm
+- workGalleryImages
+- facebookUrl
+- instagramUrl
+- rating = 0
+- reviewsCount = 0
+- isActive = true
+- isApproved = true
+- isFeatured = false
+- status = available
+- createdAt
+
+Do not copy sensitive fields to the public technician profile:
+- national ID
+- ID card front
+- ID card back
+- work license
+- detailed address
+
+7. Reject action:
+- set application status = rejected
+- do not create public technician record
+
+8. Public app:
+When customer selects a category:
+Show only technicians where:
+- isApproved = true
+- isActive = true
+- category matches selected category
+- city matches selected city if city filter exists
+
+9. Technician card:
+Show:
+- personal photo or initials fallback
+- technician name
+- city
+- area
+- category
+- rating
+- price range
+- availability
+- WhatsApp button
+- Call button
+
+10. Technician details:
+Show:
+- photo
+- name
+- category
+- city
+- area
+- experience
+- price range
+- description
+- working days
+- emergency service
+- work gallery if exists
+- WhatsApp button
+- Call button
+
+Do not show:
+- national ID
+- ID card images
+- detailed address
+- official documents
+
+11. Admin technicians page:
+/admin/technicians
+
+Show approved technicians from localStorage.
+Admin can:
+- edit technician
+- activate/deactivate
+- approve/unapprove
+- make featured/unfeatured
+- delete technician
+
+12. Keep data after refresh.
+Use localStorage only for now.
+
+13. Do not implement:
+- service request assignment
+- My Orders workflow
+- customer request tracking
+- Supabase
+- payment
+- chat
+- customer login
+
+Final test:
+1. Submit Join as Technician form.
+2. Application appears in admin technician applications.
+3. Public app does not show this technician while status is pending.
+4. Admin approves application.
+5. Technician appears in public app under correct city and category.
+6. Customer can open technician details.
+7. Customer can contact by WhatsApp or Call.
+8. Sensitive documents do not appear publicly.
+9. Refresh browser and data remains.
+
+Stop after this task.
+Tell me exactly which files were changed.

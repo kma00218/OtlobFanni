@@ -20,7 +20,6 @@ const applicationToTechnician = (app) => ({
   whatsapp:       app.whatsapp      || app.phone || '',
   city:           app.city          || '',
   area:           app.area          || '',
-  address:        app.address       || '',
   category:       app.specialty     || '',
   experienceYears: EXP_YEARS[app.experience] ?? 0,
   description:    app.description   || '',
