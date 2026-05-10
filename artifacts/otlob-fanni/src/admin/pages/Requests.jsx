@@ -3,6 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, Wrench, RefreshCw, SlidersHorizontal, UserCheck, Phone, Star } from 'lucide-react'
+import api from '../../lib/api'
 
 const PAGE_SIZE = 15
 
@@ -21,82 +22,23 @@ const URGENCY_MAP = {
   emergency: { label: 'طارئ',  cls: 'text-red-600 font-bold' },
 }
 
-// slug ← category_id (demo_technicians_v1 uses k-ids; request uses slugs)
-const CAT_ID_TO_SLUG = {
-  k1: 'electricity', k2: 'plumbing',    k3: 'ac',          k4: 'painting',
-  k5: 'carpentry',   k6: 'cleaning',    k7: 'moving',      k8: 'cctv',
-  k9: 'networks',    k10: 'maintenance', k11: 'appliances', k12: 'welding',
-}
-
-const REQ_KEY = 'serviceRequests'
-const ls = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
-const loadRequests = () => ls(REQ_KEY)
-const loadCities   = () => ls('demo_cities_v1')
-const saveRequests = (list) => { try { localStorage.setItem(REQ_KEY, JSON.stringify(list)) } catch {} }
-
-// جلب الفنيين المؤهلين لطلب معين (مدينة + تخصص + نشط + معتمد)
-function getEligibleTechs(req, cities) {
-  const cityObj    = cities.find(c => c.id === req.city)
-  const cityNameAr = cityObj?.name_ar || ''
-  const catSlug    = req.categoryId || ''
-
-  // فنيون معتمدون (technicians) — يستخدمون city=اسم عربي، category=slug
-  const approved = ls('technicians')
-    .filter(t =>
-      t.is_active  === true &&
-      t.is_approved === true &&
-      t.status !== 'inactive' &&
-      t.city     === cityNameAr &&
-      t.category === catSlug
-    )
-    .map(t => ({
-      id:        t.id,
-      name_ar:   t.name_ar || t.name || '',
-      phone:     t.phone    || '',
-      whatsapp:  t.whatsapp || t.phone || '',
-      photo:     t.photo    || null,
-      rating:    t.rating   || null,
-      source:    'approved',
-    }))
-
-  // فنيو الأدمن (demo_technicians_v1) — يستخدمون city_id وcategory_id
-  const adminTechs = ls('demo_technicians_v1')
-    .filter(t =>
-      t.is_active  === true &&
-      t.is_approved === true &&
-      t.status !== 'inactive' &&
-      t.city_id     === req.city &&
-      CAT_ID_TO_SLUG[t.category_id] === catSlug
-    )
-    .map(t => ({
-      id:       t.id,
-      name_ar:  t.name_ar || '',
-      phone:    t.phone    || '',
-      whatsapp: t.whatsapp || t.phone || '',
-      photo:    t.photo    || null,
-      rating:   t.rating   || null,
-      source:   'admin',
-    }))
-
-  return [...approved, ...adminTechs]
-}
-
 export default function Requests() {
   const { isSuperAdmin, cityId: adminCityId } = useAdmin()
 
   const [data,         setData]         = useState([])
   const [cities,       setCities]       = useState([])
+  const [allTechs,     setAllTechs]     = useState([])
   const [loading,      setLoading]      = useState(true)
   const [search,       setSearch]       = useState('')
   const [filterCity,   setFilterCity]   = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [page,         setPage]         = useState(1)
 
-  const [viewItem,   setViewItem]   = useState(null)
-  const [editItem,   setEditItem]   = useState(null)
-  const [newStatus,  setNewStatus]  = useState('')
-  const [assignItem, setAssignItem] = useState(null)   // طلب لإسناد فني
-  const [eligibles,  setEligibles]  = useState([])    // فنيون مؤهلون
+  const [viewItem,       setViewItem]       = useState(null)
+  const [editItem,       setEditItem]       = useState(null)
+  const [newStatus,      setNewStatus]      = useState('')
+  const [assignItem,     setAssignItem]     = useState(null)
+  const [eligibles,      setEligibles]      = useState([])
   const [selectedTechId, setSelectedTechId] = useState('')
 
   const [saving, setSaving] = useState(false)
@@ -108,113 +50,131 @@ export default function Requests() {
   }
 
   const load = () => {
-    const c = loadCities()
-    setCities(c)
-    setData(loadRequests())
-    setLoading(false)
+    setLoading(true)
+    Promise.all([
+      api.admin.serviceRequests.list(),
+      api.cities(),
+      api.admin.technicians.list(),
+    ]).then(([reqs, c, techs]) => {
+      setData(reqs)
+      setCities(c)
+      setAllTechs(techs)
+      setLoading(false)
+    }).catch(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [])
 
-  const persist = (next) => { setData(next); saveRequests(next) }
-
-  const cityName = (cityId) => cities.find(c => c.id === cityId)?.name_ar || cityId || '—'
+  const cityName = (val) => {
+    if (!val) return '—'
+    const found = cities.find(c => c.id === val || c.name_ar === val)
+    return found?.name_ar || val
+  }
 
   const visible = data.filter(r => {
-    if (!isSuperAdmin && adminCityId && r.city !== adminCityId) return false
-    if (filterCity   && r.city   !== filterCity)   return false
-    if (filterStatus && r.status !== filterStatus) return false
+    const city   = r.city_id  || r.city  || ''
+    const status = r.status   || ''
+    if (!isSuperAdmin && adminCityId && city !== adminCityId) return false
+    if (filterCity   && city   !== filterCity)   return false
+    if (filterStatus && status !== filterStatus) return false
     if (search) {
       const q = search.toLowerCase()
-      if (
-        !r.customerName?.toLowerCase().includes(q) &&
-        !r.customerPhone?.includes(q)              &&
-        !r.categoryNameAr?.includes(q)
-      ) return false
+      const name  = (r.customer_name  || r.customerName  || '').toLowerCase()
+      const phone = (r.customer_phone || r.customerPhone || '')
+      const cat   = (r.category_name_ar || r.categoryNameAr || '').toLowerCase()
+      if (!name.includes(q) && !phone.includes(q) && !cat.includes(q)) return false
     }
     return true
-  }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  }).sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0))
 
   const pagedData  = visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
   const totalPages = Math.ceil(visible.length / PAGE_SIZE) || 1
 
   // ── تغيير الحالة ──
-  const handleStatusUpdate = (e) => {
+  const handleStatusUpdate = async (e) => {
     e.preventDefault()
     setSaving(true)
-    persist(data.map(r =>
-      r.id === editItem.id
-        ? { ...r, status: newStatus, updatedAt: new Date().toISOString() }
-        : r
-    ))
-    showToast('تم تحديث الحالة')
-    setEditItem(null)
+    try {
+      await api.admin.serviceRequests.update(editItem.id, newStatus)
+      setData(prev => prev.map(r => r.id === editItem.id ? { ...r, status: newStatus } : r))
+      showToast('تم تحديث الحالة')
+      setEditItem(null)
+    } catch { showToast('حدث خطأ', 'error') }
     setSaving(false)
   }
 
   // ── فتح مودال إسناد الفني ──
   const openAssign = (row) => {
-    const list = getEligibleTechs(row, cities)
+    const cityVal = row.city_id || row.city || ''
+    const catId   = row.category_id || ''
+    const list = allTechs.filter(t =>
+      t.is_active && t.is_approved &&
+      (t.city_id === cityVal || t.city === cityVal || t.city === cityName(cityVal)) &&
+      (t.category_id === catId || t.category === catId)
+    ).map(t => ({
+      id:       t.id,
+      name_ar:  t.name_ar || '',
+      phone:    t.phone || '',
+      whatsapp: t.whatsapp || t.phone || '',
+      rating:   t.rating || null,
+    }))
     setEligibles(list)
     setSelectedTechId(list[0]?.id || '')
     setAssignItem(row)
   }
 
   // ── تأكيد الإسناد ──
-  const handleAssign = (e) => {
+  const handleAssign = async (e) => {
     e.preventDefault()
     if (!selectedTechId) { showToast('اختر فنياً أولاً', 'error'); return }
     const tech = eligibles.find(t => t.id === selectedTechId)
     if (!tech) return
     setSaving(true)
-    persist(data.map(r =>
-      r.id === assignItem.id
-        ? {
-            ...r,
-            status:                   'assigned',
-            assignedTechnicianId:     tech.id,
-            assignedTechnicianName:   tech.name_ar,
-            assignedTechnicianPhone:  tech.phone,
-            assignedTechnicianWhatsapp: tech.whatsapp,
-            assignedTechnicianPhoto:  tech.photo || null,
-            updatedAt: new Date().toISOString(),
-          }
-        : r
-    ))
-    showToast('تم إسناد الفني بنجاح')
-    setAssignItem(null)
+    try {
+      await api.admin.serviceRequests.update(assignItem.id, 'assigned')
+      setData(prev => prev.map(r =>
+        r.id === assignItem.id
+          ? { ...r, status: 'assigned', assigned_technician_id: tech.id, assigned_technician_name: tech.name_ar }
+          : r
+      ))
+      showToast('تم إسناد الفني بنجاح')
+      setAssignItem(null)
+    } catch { showToast('حدث خطأ', 'error') }
     setSaving(false)
   }
 
   // ── حذف ──
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return
-    persist(data.filter(r => r.id !== id))
-    showToast('تم حذف الطلب')
+    try {
+      await api.admin.serviceRequests.delete(id)
+      setData(prev => prev.filter(r => r.id !== id))
+      showToast('تم حذف الطلب')
+    } catch { showToast('حدث خطأ', 'error') }
   }
 
   const columns = [
     {
-      key: 'customerName', label: 'العميل',
+      key: 'customer_name', label: 'العميل',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-gray-800 text-sm">{v || '—'}</p>
-          <p className="text-xs text-gray-400" dir="ltr">{row.customerPhone || '—'}</p>
+          <p className="font-medium text-gray-800 text-sm">{v || row.customerName || '—'}</p>
+          <p className="text-xs text-gray-400" dir="ltr">{row.customer_phone || row.customerPhone || '—'}</p>
         </div>
       )
     },
     {
-      key: 'city', label: 'المدينة',
+      key: 'city_id', label: 'المدينة',
       render: (v, row) => (
         <div>
-          <p className="text-sm text-gray-700">{cityName(v)}</p>
+          <p className="text-sm text-gray-700">{cityName(v || row.city || '')}</p>
           {row.area && <p className="text-xs text-gray-400">{row.area}</p>}
         </div>
       )
     },
     {
-      key: 'categoryNameAr', label: 'التخصص',
-      render: (v) => <span className="text-sm text-gray-700">{v || '—'}</span>
+      key: 'category_name_ar', label: 'التخصص',
+      render: (v, row) => <span className="text-sm text-gray-700">{v || row.categoryNameAr || '—'}</span>
     },
     {
       key: 'urgency', label: 'الأولوية',
@@ -233,41 +193,27 @@ export default function Requests() {
       }
     },
     {
-      key: 'createdAt', label: 'التاريخ',
-      render: (v) => v ? new Date(v).toLocaleDateString('ar-LY') : '—'
+      key: 'created_at', label: 'التاريخ',
+      render: (v, row) => {
+        const d = v || row.createdAt
+        return d ? new Date(d).toLocaleDateString('ar-LY') : '—'
+      }
     },
     {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setViewItem(row)}
-            className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"
-            title="عرض التفاصيل"
-          >
+          <button onClick={() => setViewItem(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="عرض التفاصيل">
             <Eye className="w-3.5 h-3.5" />
           </button>
-          <button
-            onClick={() => openAssign(row)}
-            className="p-1.5 hover:bg-green-50 text-green-600 rounded-lg transition-colors"
-            title="إسناد فني"
-            data-testid="assign-btn"
-          >
+          <button onClick={() => openAssign(row)} className="p-1.5 hover:bg-green-50 text-green-600 rounded-lg transition-colors" title="إسناد فني" data-testid="assign-btn">
             <UserCheck className="w-3.5 h-3.5" />
           </button>
-          <button
-            onClick={() => { setEditItem(row); setNewStatus(row.status) }}
-            className="p-1.5 hover:bg-[#FF7900]/10 text-[#FF7900] rounded-lg transition-colors"
-            title="تغيير الحالة"
-          >
+          <button onClick={() => { setEditItem(row); setNewStatus(row.status) }} className="p-1.5 hover:bg-[#FF7900]/10 text-[#FF7900] rounded-lg transition-colors" title="تغيير الحالة">
             <SlidersHorizontal className="w-3.5 h-3.5" />
           </button>
           {isSuperAdmin && (
-            <button
-              onClick={() => handleDelete(row.id)}
-              className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
-              title="حذف"
-            >
+            <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors" title="حذف">
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
@@ -288,31 +234,19 @@ export default function Requests() {
       <div className="bg-white rounded-2xl border border-gray-100 p-4">
         <div className="flex flex-wrap gap-3 items-center">
           {isSuperAdmin && (
-            <select
-              value={filterCity}
-              onChange={e => { setFilterCity(e.target.value); setPage(1) }}
-              className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white"
-            >
+            <select value={filterCity} onChange={e => { setFilterCity(e.target.value); setPage(1) }} className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
               <option value="">كل المدن</option>
               {cities.map(c => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
             </select>
           )}
-          <select
-            value={filterStatus}
-            onChange={e => { setFilterStatus(e.target.value); setPage(1) }}
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white"
-          >
+          <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1) }} className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
             <option value="">كل الحالات</option>
             {Object.entries(STATUS_MAP).map(([v, { label }]) => (
               <option key={v} value={v}>{label}</option>
             ))}
           </select>
           <span className="text-xs text-gray-400 flex-1">{visible.length} طلب</span>
-          <button
-            onClick={load}
-            className="p-2 hover:bg-gray-50 text-gray-500 rounded-xl border border-gray-200 transition-colors"
-            title="تحديث"
-          >
+          <button onClick={load} className="p-2 hover:bg-gray-50 text-gray-500 rounded-xl border border-gray-200 transition-colors" title="تحديث">
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
@@ -320,38 +254,27 @@ export default function Requests() {
 
       {/* الجدول */}
       <DataTable
-        columns={columns}
-        data={pagedData}
-        loading={loading}
+        columns={columns} data={pagedData} loading={loading}
         searchValue={search}
         onSearchChange={v => { setSearch(v); setPage(1) }}
         searchPlaceholder="بحث بالاسم أو الهاتف أو التخصص..."
         emptyMessage="لا توجد طلبات"
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
+        currentPage={page} totalPages={totalPages} onPageChange={setPage}
       />
 
       {/* مودال: عرض التفاصيل */}
-      <FormModal
-        open={!!viewItem}
-        onClose={() => setViewItem(null)}
-        title="تفاصيل الطلب"
-        onSubmit={e => { e.preventDefault(); setViewItem(null) }}
-        submitLabel="إغلاق"
-        size="md"
-      >
+      <FormModal open={!!viewItem} onClose={() => setViewItem(null)} title="تفاصيل الطلب" onSubmit={e => { e.preventDefault(); setViewItem(null) }} submitLabel="إغلاق" size="md">
         {viewItem && (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               {[
-                ['العميل',       viewItem.customerName],
-                ['الهاتف',       viewItem.customerPhone],
-                ['المدينة',      cityName(viewItem.city)],
+                ['العميل',       viewItem.customer_name  || viewItem.customerName],
+                ['الهاتف',       viewItem.customer_phone || viewItem.customerPhone],
+                ['المدينة',      cityName(viewItem.city_id || viewItem.city || '')],
                 ['المنطقة',      viewItem.area],
-                ['التخصص',       viewItem.categoryNameAr],
+                ['التخصص',       viewItem.category_name_ar || viewItem.categoryNameAr],
                 ['الأولوية',     URGENCY_MAP[viewItem.urgency]?.label || '—'],
-                ['الوقت المفضل', viewItem.preferredTime || '—'],
+                ['الوقت المفضل', viewItem.preferred_time || viewItem.preferredTime || '—'],
               ].map(([k, v]) => (
                 <div key={k} className="bg-gray-50 rounded-xl p-3">
                   <p className="text-xs text-gray-400 mb-0.5">{k}</p>
@@ -365,100 +288,60 @@ export default function Requests() {
                 </span>
               </div>
             </div>
-            {viewItem.assignedTechnicianName && (
+            {(viewItem.assigned_technician_name || viewItem.assignedTechnicianName) && (
               <div className="bg-blue-50 rounded-xl p-3">
                 <p className="text-xs text-gray-400 mb-1">الفني المُسند</p>
-                <p className="text-sm font-medium text-gray-800">{viewItem.assignedTechnicianName}</p>
-                {viewItem.assignedTechnicianPhone && (
-                  <p className="text-xs text-gray-400 mt-0.5" dir="ltr">{viewItem.assignedTechnicianPhone}</p>
-                )}
+                <p className="text-sm font-medium text-gray-800">{viewItem.assigned_technician_name || viewItem.assignedTechnicianName}</p>
               </div>
             )}
-            {viewItem.problemDescription && (
+            {(viewItem.problem_description || viewItem.problemDescription) && (
               <div className="bg-gray-50 rounded-xl p-3">
                 <p className="text-xs text-gray-400 mb-1">وصف المشكلة</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{viewItem.problemDescription}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{viewItem.problem_description || viewItem.problemDescription}</p>
               </div>
             )}
             <p className="text-xs text-gray-400 text-left" dir="ltr">
-              {viewItem.createdAt ? new Date(viewItem.createdAt).toLocaleString('ar-LY') : ''}
+              {(viewItem.created_at || viewItem.createdAt) ? new Date(viewItem.created_at || viewItem.createdAt).toLocaleString('ar-LY') : ''}
             </p>
           </div>
         )}
       </FormModal>
 
       {/* مودال: إسناد فني */}
-      <FormModal
-        open={!!assignItem}
-        onClose={() => setAssignItem(null)}
-        title="إسناد فني للطلب"
-        onSubmit={handleAssign}
-        loading={saving}
-        submitLabel="إسناد الفني"
-        size="md"
-      >
+      <FormModal open={!!assignItem} onClose={() => setAssignItem(null)} title="إسناد فني للطلب" onSubmit={handleAssign} loading={saving} submitLabel="إسناد الفني" size="md">
         {assignItem && (
           <div className="space-y-4">
-            {/* ملخص الطلب */}
             <div className="bg-gray-50 rounded-xl p-3 text-sm">
               <p className="text-xs text-gray-400 mb-1">الطلب</p>
               <p className="font-medium text-gray-800">
-                {assignItem.customerName} — {assignItem.categoryNameAr}
+                {assignItem.customer_name || assignItem.customerName} — {assignItem.category_name_ar || assignItem.categoryNameAr}
               </p>
               <p className="text-xs text-gray-500 mt-0.5">
-                {cityName(assignItem.city)}{assignItem.area ? ` · ${assignItem.area}` : ''}
+                {cityName(assignItem.city_id || assignItem.city || '')}
+                {assignItem.area ? ` · ${assignItem.area}` : ''}
               </p>
             </div>
-
-            {/* قائمة الفنيين */}
             {eligibles.length === 0 ? (
               <div className="text-center py-6">
                 <Wrench className="w-10 h-10 text-gray-200 mx-auto mb-2" />
                 <p className="text-sm font-medium text-gray-500">لا يوجد فنيون متاحون</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  لا يوجد فنيون نشطون ومعتمدون في هذه المدينة لهذا التخصص
-                </p>
+                <p className="text-xs text-gray-400 mt-1">لا يوجد فنيون نشطون ومعتمدون في هذه المدينة لهذا التخصص</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-gray-400">{eligibles.length} فني متاح</p>
                 <div className="space-y-2 max-h-72 overflow-y-auto">
                   {eligibles.map(tech => (
-                    <label
-                      key={tech.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedTechId === tech.id
-                          ? 'border-[#FF7900] bg-[#FF7900]/5'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="techSelect"
-                        value={tech.id}
-                        checked={selectedTechId === tech.id}
-                        onChange={() => setSelectedTechId(tech.id)}
-                        className="accent-[#FF7900]"
-                        data-testid="tech-radio"
-                      />
+                    <label key={tech.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedTechId === tech.id ? 'border-[#FF7900] bg-[#FF7900]/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
+                      <input type="radio" name="techSelect" value={tech.id} checked={selectedTechId === tech.id} onChange={() => setSelectedTechId(tech.id)} className="accent-[#FF7900]" data-testid="tech-radio" />
                       <div className="w-9 h-9 rounded-full bg-[#071B33] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                         {tech.name_ar.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-800 text-sm">{tech.name_ar}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          {tech.phone && (
-                            <span className="flex items-center gap-1 text-xs text-gray-400" dir="ltr">
-                              <Phone className="w-3 h-3" />
-                              {tech.phone}
-                            </span>
-                          )}
-                          {tech.rating && (
-                            <span className="flex items-center gap-0.5 text-xs text-amber-500">
-                              <Star className="w-3 h-3 fill-current" />
-                              {tech.rating}
-                            </span>
-                          )}
+                          {tech.phone && <span className="flex items-center gap-1 text-xs text-gray-400" dir="ltr"><Phone className="w-3 h-3" />{tech.phone}</span>}
+                          {tech.rating && <span className="flex items-center gap-0.5 text-xs text-amber-500"><Star className="w-3 h-3 fill-current" />{tech.rating}</span>}
                         </div>
                       </div>
                     </label>
@@ -471,28 +354,16 @@ export default function Requests() {
       </FormModal>
 
       {/* مودال: تغيير الحالة */}
-      <FormModal
-        open={!!editItem}
-        onClose={() => setEditItem(null)}
-        title="تغيير حالة الطلب"
-        onSubmit={handleStatusUpdate}
-        loading={saving}
-        submitLabel="حفظ"
-      >
+      <FormModal open={!!editItem} onClose={() => setEditItem(null)} title="تغيير حالة الطلب" onSubmit={handleStatusUpdate} loading={saving} submitLabel="حفظ">
         {editItem && (
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-700">
               <span className="text-gray-400 text-xs block mb-0.5">الطلب</span>
-              {editItem.customerName} — {editItem.categoryNameAr}
+              {editItem.customer_name || editItem.customerName} — {editItem.category_name_ar || editItem.categoryNameAr}
             </div>
             <div>
               <label className="form-label">الحالة الجديدة</label>
-              <select
-                data-testid="status-select"
-                value={newStatus}
-                onChange={e => setNewStatus(e.target.value)}
-                className="form-input"
-              >
+              <select data-testid="status-select" value={newStatus} onChange={e => setNewStatus(e.target.value)} className="form-input">
                 {Object.entries(STATUS_MAP).map(([v, { label }]) => (
                   <option key={v} value={v}>{label}</option>
                 ))}

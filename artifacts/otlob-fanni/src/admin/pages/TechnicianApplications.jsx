@@ -4,60 +4,10 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, MapPin, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
 import { categories } from '../../data/services'
-
-const LS_KEY   = 'technicianApplications'
-const TECH_KEY = 'technicians'
+import api from '../../lib/api'
 
 const EXP_YEARS = {
   less1: 0, '1-2': 2, '3-5': 5, '6-10': 10, '10+': 11,
-}
-
-const applicationToTechnician = (app) => ({
-  id:             'tech_' + app.id,
-  applicationId:  app.id,
-  name:           app.full_name     || '',
-  phone:          app.phone         || '',
-  whatsapp:       app.whatsapp      || app.phone || '',
-  city:           app.city          || '',
-  area:           app.area          || '',
-  category:       app.specialty     || '',
-  experienceYears: EXP_YEARS[app.experience] ?? 0,
-  description:    app.description   || '',
-  certifications: app.certifications || '',
-  priceFrom:      parseFloat(app.price_from) || 0,
-  priceTo:        parseFloat(app.price_to)   || 0,
-  profilePhoto:   app.profile_photo  || null,
-  workImages:     app.work_images    || [],
-  availableNow:   !!app.available_now,
-  workingDays:    app.working_days   || [],
-  hoursFrom:      app.hours_from     || '',
-  hoursTo:        app.hours_to       || '',
-  emergency:      !!app.emergency,
-  serviceRadius:  app.service_radius || '',
-  facebook:       app.facebook       || '',
-  instagram:      app.instagram      || '',
-  isActive:       true,
-  isApproved:     true,
-  isFeatured:     false,
-  rating:         0,
-  reviewsCount:   0,
-  approvedAt:     new Date().toISOString(),
-})
-
-const saveTechnician = (app) => {
-  try {
-    const existing = JSON.parse(localStorage.getItem(TECH_KEY) || '[]')
-    const newId = 'tech_' + app.id
-    // تحقق مزدوج: بالـ id وبالـ applicationId لمنع أي تكرار
-    const alreadyExists = existing.some(t => t.applicationId === app.id || t.id === newId)
-    if (alreadyExists) return
-    const record = applicationToTechnician(app)
-    // إزالة أي تكرارات قائمة قبل الإضافة
-    const deduped = existing.filter((t, i, arr) => arr.findIndex(x => x.id === t.id) === i)
-    deduped.unshift(record)
-    localStorage.setItem(TECH_KEY, JSON.stringify(deduped))
-    console.log('[technicians] record created for:', app.full_name, '| total:', deduped.length)
-  } catch (_) {}
 }
 
 const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
@@ -78,16 +28,8 @@ const DAY_AR = {
   Tuesday:'الثلاثاء', Wednesday:'الأربعاء', Thursday:'الخميس', Friday:'الجمعة',
 }
 
-const load = () => {
-  try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : [] }
-  catch (_) { return [] }
-}
-const save = (list) => {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(list)) } catch (_) {}
-}
-
 export default function TechnicianApplications() {
-  const { isDemoMode } = useAdmin()
+  const { isSuperAdmin } = useAdmin()
   const [data, setData]         = useState([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
@@ -100,30 +42,59 @@ export default function TechnicianApplications() {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
   }
 
-  useEffect(() => {
-    setData(load())
-    setLoading(false)
-  }, [])
-
-  const persist = (next) => { setData(next); save(next) }
-
-  const setStatus = (id, status) => {
-    const app = data.find(r => r.id === id)
-    persist(data.map(r => r.id === id ? { ...r, status } : r))
-    if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
-    if (status === 'approved' && app) {
-      saveTechnician(app)
-      showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
-    } else {
-      showToast('تم رفض الطلب')
-    }
+  const reload = () => {
+    setLoading(true)
+    api.admin.technicianApplications.list()
+      .then(rows => { setData(rows); setLoading(false) })
+      .catch(() => setLoading(false))
   }
 
-  const handleDelete = (id) => {
+  useEffect(() => { reload() }, [])
+
+  const setStatus = async (id, status) => {
+    const app = data.find(r => r.id === id)
+    try {
+      await api.admin.technicianApplications.update(id, status)
+      setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+      if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
+      if (status === 'approved' && app) {
+        await api.admin.technicians.create({
+          id:              'tech_' + app.id,
+          name_ar:         app.full_name || '',
+          phone:           app.phone || '',
+          whatsapp:        app.whatsapp || app.phone || '',
+          city_id:         null,
+          area:            app.area || '',
+          category_id:     app.specialty || null,
+          experience_years: EXP_YEARS[app.experience] ?? 0,
+          price_from:      parseFloat(app.price_from) || 0,
+          price_to:        parseFloat(app.price_to) || 0,
+          description_ar:  app.description || '',
+          profile_photo:   app.profile_photo || null,
+          work_images:     app.work_images || [],
+          available_now:   !!app.available_now,
+          emergency:       !!app.emergency,
+          is_active:       true,
+          is_approved:     true,
+          is_featured:     false,
+          status:          app.available_now ? 'available' : 'busy',
+          application_id:  app.id,
+        }).catch(() => {})
+        showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
+      } else {
+        showToast('تم رفض الطلب')
+      }
+    } catch { showToast('حدث خطأ', 'error') }
+  }
+
+  const handleDelete = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return
-    persist(data.filter(r => r.id !== id))
-    if (viewItem?.id === id) setViewItem(null)
-    showToast('تم حذف الطلب')
+    try {
+      await api.admin.technicianApplications.delete(id)
+      setData(prev => prev.filter(r => r.id !== id))
+      if (viewItem?.id === id) setViewItem(null)
+      showToast('تم حذف الطلب')
+    } catch { showToast('حدث خطأ', 'error') }
   }
 
   const filtered = data.filter(r => {
@@ -227,7 +198,7 @@ export default function TechnicianApplications() {
       {/* Info banner */}
       <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
-        <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كفني</strong> وتُحفظ في الجهاز. البيانات تبقى بعد إعادة التحميل.</span>
+        <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كفني</strong> وتُحفظ في قاعدة البيانات.</span>
       </div>
 
       {pendingCount > 0 && (

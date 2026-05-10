@@ -3,13 +3,9 @@ import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle, XCircle } from 'lucide-react'
+import api from '../../lib/api'
 
 const PAGE_SIZE = 15
-
-const CITIES_KEY   = 'demo_cities_v1'
-const CATS_KEY     = 'demo_categories_v1'
-const ADMIN_KEY    = 'demo_technicians_v1'   // أُضيفوا من الأدمن
-const APPROVED_KEY = 'technicians'           // أُضيفوا عبر طلبات التسجيل
 
 const emptyForm = {
   name_ar: '', name_en: '', phone: '', whatsapp: '',
@@ -20,77 +16,6 @@ const emptyForm = {
   is_featured: false, is_approved: true, is_active: true,
 }
 
-// ── helpers لقراءة/كتابة localStorage ──────────────────────────────────────
-const ls = {
-  get: (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } },
-  set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)) } catch {} },
-}
-
-// خريطة slug التخصص → معرف التخصص (k1..k12)
-const SLUG_TO_CAT_ID = {
-  electricity: 'k1', plumbing: 'k2', ac: 'k3', painting: 'k4',
-  carpentry: 'k5', cleaning: 'k6', moving: 'k7', cctv: 'k8',
-  networks: 'k9', maintenance: 'k10', appliances: 'k11', welding: 'k12',
-}
-
-// يُطبّع سجل الفني القادم من approved key ليطابق schema الأدمن
-const normalizeApproved = (t) => ({
-  id: t.id,
-  _source: APPROVED_KEY,
-  name_ar: t.name || t.name_ar || '',
-  name_en: t.name_en || t.name || '',
-  phone: t.phone || '',
-  whatsapp: t.whatsapp || t.phone || '',
-  // city_id: قد يكون ID (c1) أو اسم نصي (طرابلس) — نحتفظ بكليهما
-  city_id:    t.city_id || '',
-  city_name:  t.city    || '',
-  // category_id: قد يكون ID (k1) أو slug (electricity) — نحول الـ slug إلى ID
-  category_id:   SLUG_TO_CAT_ID[t.category] || t.category_id || t.category || '',
-  category_slug: t.category || '',
-  experience_years: t.experience_years || t.experienceYears || 0,
-  price_from: t.price_from || t.priceFrom || 0,
-  status: t.status || (t.availableNow ? 'available' : 'busy'),
-  description_ar: t.description_ar || t.description || '',
-  description_en: t.description_en || '',
-  is_featured: t.is_featured ?? t.isFeatured ?? false,
-  is_approved: t.is_approved ?? t.isApproved ?? true,
-  is_active: t.is_active ?? t.isActive ?? true,
-  created_at: t.created_at || t.approvedAt || new Date().toISOString(),
-})
-
-const normalizeAdmin = (t) => ({ ...t, _source: ADMIN_KEY })
-
-// يُحضر قائمة موحّدة من المفتاحَين مع إزالة أي تكرارات
-const loadAllTechs = () => {
-  const approved  = ls.get(APPROVED_KEY).map(normalizeApproved)
-  const adminAdded = ls.get(ADMIN_KEY).map(normalizeAdmin)
-  // لا ندوّر المعتمدين مرتين إذا أعيد حفظهم في admin key
-  const approvedIds = new Set(approved.map(t => t.id))
-  const unique = adminAdded.filter(t => !approvedIds.has(t.id))
-  const all = [...approved, ...unique]
-  // إزالة التكرارات بالـ id (تحصين من بيانات قديمة مكررة)
-  const seen = new Set()
-  return all.filter(t => {
-    if (seen.has(t.id)) return false
-    seen.add(t.id)
-    return true
-  })
-}
-
-// يُحدّث سجلاً في مفتاحه الأصلي
-const persistUpdate = (id, source, changes) => {
-  const list = ls.get(source)
-  const updated = list.map(t => t.id === id ? { ...t, ...changes } : t)
-  ls.set(source, updated)
-}
-
-// يحذف سجلاً من مفتاحه الأصلي
-const persistDelete = (id, source) => {
-  const list = ls.get(source)
-  ls.set(source, list.filter(t => t.id !== id))
-}
-
-// ────────────────────────────────────────────────────────────────────────────
 export default function Technicians() {
   const { isSuperAdmin, cityId, logActivity } = useAdmin()
 
@@ -119,21 +44,19 @@ export default function Technicians() {
     setTimeout(() => setToast(null), 3000)
   }
 
-  // ── تحميل المدن والتخصصات من localStorage ──
-  useEffect(() => {
-    setCities(ls.get(CITIES_KEY))
-    setCategories(ls.get(CATS_KEY))
-  }, [])
-
-  // ── تحميل الفنيين ──
   const reloadTechs = useCallback(() => {
-    setAllTechs(loadAllTechs())
-    setLoading(false)
+    setLoading(true)
+    api.admin.technicians.list()
+      .then(rows => { setAllTechs(rows); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [])
 
-  useEffect(() => { reloadTechs() }, [reloadTechs])
+  useEffect(() => {
+    reloadTechs()
+    api.cities().then(setCities).catch(() => {})
+    api.categories().then(setCategories).catch(() => {})
+  }, [reloadTechs])
 
-  // ── تصفية وترتيب وتصفيح ──
   useEffect(() => {
     let rows = [...allTechs]
 
@@ -156,20 +79,12 @@ export default function Technicians() {
     const start = (page - 1) * PAGE_SIZE
     const paged = rows.slice(start, start + PAGE_SIZE).map(r => ({
       ...r,
-      cities: {
-        name_ar: cities.find(c => c.id === r.city_id)?.name_ar
-               || cities.find(c => c.name_ar === r.city_name)?.name_ar
-               || r.city_name || r.city_id || '—',
-      },
-      categories: {
-        name_ar: categories.find(c => c.id === r.category_id)?.name_ar
-               || r.category_id || '—',
-      },
+      cities:     { name_ar: cities.find(c => c.id === r.city_id)?.name_ar || r.city_id || '—' },
+      categories: { name_ar: categories.find(c => c.id === r.category_id)?.name_ar || r.category_id || '—' },
     }))
     setData(paged)
   }, [allTechs, search, filterCity, filterCat, filterStatus, page, isSuperAdmin, cityId, cities, categories])
 
-  // ── فتح النموذج ──
   const openAdd = () => {
     setEditItem(null)
     setForm({ ...emptyForm, city_id: (!isSuperAdmin && cityId) ? cityId : '' })
@@ -194,77 +109,58 @@ export default function Technicians() {
     setModalOpen(true)
   }
 
-  // ── حفظ (إضافة أو تعديل) ──
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
-
     const payload = {
       ...form,
       experience_years: parseInt(form.experience_years) || 0,
       price_from: parseFloat(form.price_from) || 0,
     }
-
-    if (editItem) {
-      const source = editItem._source || ADMIN_KEY
-      persistUpdate(editItem.id, source, payload)
-      logActivity?.('update_technician', 'technicians', editItem.id, `Updated: ${form.name_ar}`)
-      showToast('تم تعديل الفني بنجاح')
-    } else {
-      const newItem = {
-        id: 'ta_' + Date.now(),
-        created_at: new Date().toISOString(),
-        _source: ADMIN_KEY,
-        ...payload,
+    try {
+      if (editItem) {
+        await api.admin.technicians.update(editItem.id, payload)
+        showToast('تم تعديل الفني بنجاح')
+      } else {
+        await api.admin.technicians.create({ id: 'ta_' + Date.now(), ...payload })
+        showToast('تم إضافة الفني بنجاح')
       }
-      const list = ls.get(ADMIN_KEY)
-      ls.set(ADMIN_KEY, [newItem, ...list])
-      logActivity?.('add_technician', 'technicians', newItem.id, `Added: ${form.name_ar}`)
-      showToast('تم إضافة الفني بنجاح')
-    }
-
-    setModalOpen(false)
+      setModalOpen(false)
+      reloadTechs()
+    } catch { showToast('حدث خطأ', 'error') }
     setSaving(false)
-    reloadTechs()
   }
 
-  // ── حذف ──
-  const handleDelete = (row) => {
+  const handleDelete = async (row) => {
     if (!confirm('هل أنت متأكد من حذف هذا الفني؟')) return
-    const source = row._source || ADMIN_KEY
-    persistDelete(row.id, source)
-    logActivity?.('delete_technician', 'technicians', row.id, `Deleted: ${row.name_ar}`)
-    showToast('تم حذف الفني')
-    reloadTechs()
+    try {
+      await api.admin.technicians.delete(row.id)
+      showToast('تم حذف الفني')
+      reloadTechs()
+    } catch { showToast('حدث خطأ', 'error') }
   }
 
-  // ── تبديل حقل (is_approved / is_featured) ──
-  const toggleField = (row, field) => {
-    const source = row._source || ADMIN_KEY
+  const toggleField = async (row, field) => {
     const newVal = !row[field]
-    persistUpdate(row.id, source, { [field]: newVal })
-    // تحديث فوري للـ state بدون انتظار إعادة التحميل
-    setAllTechs(prev => prev.map(t => t.id === row.id ? { ...t, [field]: newVal } : t))
-    showToast(
-      field === 'is_approved'
-        ? (newVal ? 'تم اعتماد الفني' : 'تم إلغاء الاعتماد')
-        : (newVal ? 'تم تمييز الفني' : 'تم إلغاء التمييز')
-    )
+    try {
+      await api.admin.technicians.update(row.id, { [field]: newVal })
+      setAllTechs(prev => prev.map(t => t.id === row.id ? { ...t, [field]: newVal } : t))
+      showToast(
+        field === 'is_approved'
+          ? (newVal ? 'تم اعتماد الفني' : 'تم إلغاء الاعتماد')
+          : (newVal ? 'تم تمييز الفني' : 'تم إلغاء التمييز')
+      )
+    } catch { showToast('حدث خطأ', 'error') }
   }
 
-  // ── تفعيل/تعطيل ──
-  const toggleActive = (row) => {
-    const source = row._source || ADMIN_KEY
+  const toggleActive = async (row) => {
     const newActive = !row.is_active
-    const newStatus = newActive
-      ? (row.status === 'inactive' ? 'available' : row.status)
-      : 'inactive'
-    persistUpdate(row.id, source, { is_active: newActive, status: newStatus })
-    // تحديث فوري للـ state بدون انتظار إعادة التحميل
-    setAllTechs(prev =>
-      prev.map(t => t.id === row.id ? { ...t, is_active: newActive, status: newStatus } : t)
-    )
-    showToast(newActive ? 'تم تفعيل الفني' : 'تم تعطيل الفني')
+    const newStatus = newActive ? (row.status === 'inactive' ? 'available' : row.status) : 'inactive'
+    try {
+      await api.admin.technicians.update(row.id, { is_active: newActive, status: newStatus })
+      setAllTechs(prev => prev.map(t => t.id === row.id ? { ...t, is_active: newActive, status: newStatus } : t))
+      showToast(newActive ? 'تم تفعيل الفني' : 'تم تعطيل الفني')
+    } catch { showToast('حدث خطأ', 'error') }
   }
 
   // ── أعمدة الجدول ──

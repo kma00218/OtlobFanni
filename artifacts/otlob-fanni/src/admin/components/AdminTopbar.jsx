@@ -1,4 +1,4 @@
-import { Menu, Bell, LogOut, Shield } from 'lucide-react'
+import { Menu, Bell, LogOut } from 'lucide-react'
 import { useAdmin } from '../../context/AdminContext'
 import { useLocation } from 'wouter'
 
@@ -15,7 +15,8 @@ const pageTitles = {
 }
 
 export default function AdminTopbar({ onMenuClick, currentPath }) {
-  const { profile, isSuperAdmin, isDemoMode, signOut } = useAdmin()
+  const { admin, isSuperAdmin, signOut } = useAdmin()
+  const profile = admin ? { full_name: admin.name } : null
   const [, navigate] = useLocation()
   const title = pageTitles[currentPath] || 'لوحة التحكم'
 
@@ -34,12 +35,6 @@ export default function AdminTopbar({ onMenuClick, currentPath }) {
 
       {/* Right side */}
       <div className="flex items-center gap-2">
-        {isDemoMode && (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#FF7900]/10 text-[#FF7900] text-[10px] font-bold">
-            <Shield className="w-3 h-3" />
-            Demo Mode
-          </span>
-        )}
         {/* Notifications placeholder */}
         <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 relative transition-colors">
           <Bell className="w-5 h-5" />

@@ -5,8 +5,7 @@ import {
   CheckCircle, Clock, ShieldCheck, Newspaper, Building2, FileCheck,
 } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
-
-const ls = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
+import api from '../../lib/api'
 
 const STATUS_COLORS = {
   new:         '#FF7900',
@@ -27,61 +26,20 @@ export default function Dashboard() {
   const [requestsByStatus, setRequestsByStatus] = useState([])
 
   useEffect(() => {
-    const techs       = [...ls('technicians'), ...ls('demo_technicians_v1')]
-    const requests    = ls('service_requests')
-    const cities      = ls('demo_cities_v1')
-    const cats        = ls('demo_categories_v1')
-    const ads         = ls('demo_ads_v1')
-    const admins      = ls('demo_admins_v1')
-    const adRequests      = ls('adRequests')
-    const techApps        = ls('technicianApplications')
-    const companyApps     = ls('companyApplications')
-
-    // إحصائيات
-    const activeTechs        = techs.filter(t => (t.is_active ?? t.isActive ?? true) && (t.is_approved ?? t.isApproved ?? true))
-    const newReqs            = requests.filter(r => r.status === 'new')
-    const doneReqs           = requests.filter(r => r.status === 'completed')
-    const activeAds          = ads.filter(a => a.is_active)
-    const subAdmins          = admins.filter(a => a.role === 'sub_admin')
-    const pendingAdReqs      = adRequests.filter(r => r.status === 'pending')
-    const approvedAdReqs     = adRequests.filter(r => r.status === 'approved')
-    const pendingTechApps    = techApps.filter(r => r.status === 'pending')
-    const pendingCompanyApps = companyApps.filter(r => r.status === 'pending')
-
-    setStats({
-      totalTechs:          techs.length,
-      activeTechs:         activeTechs.length,
-      newRequests:         newReqs.length,
-      completedRequests:   doneReqs.length,
-      totalCities:         cities.length,
-      totalCats:           cats.length,
-      activeAds:           activeAds.length,
-      subAdmins:           subAdmins.length,
-      pendingAdRequests:   pendingAdReqs.length,
-      approvedAdRequests:  approvedAdReqs.length,
-      pendingTechApps:     pendingTechApps.length,
-      totalTechApps:       techApps.length,
-      pendingCompanyApps:  pendingCompanyApps.length,
-      totalCompanyApps:    companyApps.length,
-    })
-
-    // آخر 5 طلبات
-    const sortedReqs = [...requests].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    setRecentRequests(sortedReqs.slice(0, 5))
-
-    // آخر 5 فنيين
-    const sortedTechs = [...techs].sort((a, b) => new Date(b.created_at || b.approvedAt || 0) - new Date(a.created_at || a.approvedAt || 0))
-    setRecentTechs(sortedTechs.slice(0, 5))
-
-    // توزيع الطلبات حسب الحالة
-    const statusCounts = {}
-    requests.forEach(r => { statusCounts[r.status] = (statusCounts[r.status] || 0) + 1 })
-    const pieData = Object.entries(STATUS_LABELS).map(([key, name]) => ({
-      key, name, value: statusCounts[key] || 0, fill: STATUS_COLORS[key],
-    })).filter(d => d.value > 0)
-    setRequestsByStatus(pieData)
-
-    setLoading(false)
+    api.admin.stats()
+      .then(s => {
+        setStats(s)
+        setRecentRequests(s.recentRequests || [])
+        setRecentTechs(s.recentTechs || [])
+        const statusCounts = {}
+        ;(s.recentRequests || []).forEach(r => { statusCounts[r.status] = (statusCounts[r.status] || 0) + 1 })
+        const pieData = Object.entries(STATUS_LABELS).map(([key, name]) => ({
+          key, name, value: statusCounts[key] || 0, fill: STATUS_COLORS[key],
+        })).filter(d => d.value > 0)
+        setRequestsByStatus(pieData)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [])
 
   return (

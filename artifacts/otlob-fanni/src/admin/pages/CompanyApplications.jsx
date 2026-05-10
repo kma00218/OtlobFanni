@@ -3,8 +3,7 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, MapPin, FileText, Image, Lock, Facebook, Info, Building2, Shield } from 'lucide-react'
 import { categories } from '../../data/services'
-
-const LS_KEY = 'companyApplications'
+import api from '../../lib/api'
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',
@@ -24,9 +23,6 @@ const DAY_AR = {
 
 const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 
-const load = () => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]') } catch { return [] } }
-const save = (list) => { try { localStorage.setItem(LS_KEY, JSON.stringify(list)) } catch (_) {} }
-
 export default function CompanyApplications() {
   const [data, setData]         = useState([])
   const [loading, setLoading]   = useState(true)
@@ -40,28 +36,32 @@ export default function CompanyApplications() {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
   }
 
-  useEffect(() => {
-    setData(load())
-    setLoading(false)
-  }, [])
-
-  const persist = (next) => { setData(next); save(next) }
-
-  const setStatus = (id, status) => {
-    persist(data.map(r => r.id === id ? { ...r, status } : r))
-    if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
-    if (status === 'approved') {
-      showToast('✓ تم قبول طلب الشركة')
-    } else {
-      showToast('تم رفض الطلب')
-    }
+  const reload = () => {
+    setLoading(true)
+    api.admin.companyApplications.list()
+      .then(rows => { setData(rows); setLoading(false) })
+      .catch(() => setLoading(false))
   }
 
-  const handleDelete = (id) => {
+  useEffect(() => { reload() }, [])
+
+  const setStatus = async (id, status) => {
+    try {
+      await api.admin.companyApplications.update(id, status)
+      setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+      if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
+      showToast(status === 'approved' ? '✓ تم قبول طلب الشركة' : 'تم رفض الطلب')
+    } catch { showToast('حدث خطأ', 'error') }
+  }
+
+  const handleDelete = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return
-    persist(data.filter(r => r.id !== id))
-    if (viewItem?.id === id) setViewItem(null)
-    showToast('تم حذف الطلب')
+    try {
+      await api.admin.companyApplications.delete(id)
+      setData(prev => prev.filter(r => r.id !== id))
+      if (viewItem?.id === id) setViewItem(null)
+      showToast('تم حذف الطلب')
+    } catch { showToast('حدث خطأ', 'error') }
   }
 
   const filtered = data.filter(r => {
@@ -164,7 +164,7 @@ export default function CompanyApplications() {
       {/* Info banner */}
       <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
-        <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كشركة</strong> وتُحفظ في الجهاز. البيانات تبقى بعد إعادة التحميل.</span>
+        <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كشركة</strong> وتُحفظ في قاعدة البيانات.</span>
       </div>
 
       {pendingCount > 0 && (

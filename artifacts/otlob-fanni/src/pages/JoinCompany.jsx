@@ -3,6 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { categories } from '../data/services'
 import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook } from 'lucide-react'
+import api from '../lib/api'
 
 const CITIES = [
   { ar: 'طرابلس', en: 'Tripoli' }, { ar: 'بنغازي', en: 'Benghazi' },
@@ -137,47 +138,46 @@ export default function JoinCompany() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
-    const request = {
-      id: 'cr' + Date.now(),
-      applicant_type: 'company',
-      company_name:    form.company_name,
-      contact_name:    form.contact_name,
-      phone:           form.phone,
-      whatsapp:        form.whatsapp,
-      commercial_reg:  form.commercial_reg,
-      city:            form.city,
-      area:            form.area,
-      address:         form.address,
-      specialty:       form.category,
-      years_active:    form.years_active,
-      description:     form.description,
-      certifications:  form.certifications,
-      price_from:      form.price_from,
-      price_to:        form.price_to,
-      available_now:   form.available_now === 'yes',
-      working_days:    days,
-      hours_from:      form.hours_from,
-      hours_to:        form.hours_to,
-      emergency:       form.emergency === 'yes',
-      service_radius:  form.service_radius,
-      facebook:        form.facebook,
-      instagram:       form.instagram,
-      company_logo:    companyLogo,
-      work_images:     workImages,
-      commercial_doc:  commercialDoc,
-      work_license:    workLicense,
-      status:          'pending',
-      created_at:      new Date().toISOString(),
-    }
     try {
-      const apps = JSON.parse(localStorage.getItem('companyApplications') || '[]')
-      apps.unshift(request)
-      localStorage.setItem('companyApplications', JSON.stringify(apps))
-    } catch (_) {}
-    setTimeout(() => { setSaving(false); setSubmitted(true) }, 700)
+      await api.submitCompanyApplication({
+        id:             'cr' + Date.now(),
+        company_name:   form.company_name,
+        contact_name:   form.contact_name,
+        phone:          form.phone,
+        whatsapp:       form.whatsapp,
+        commercial_reg: form.commercial_reg,
+        city:           form.city,
+        area:           form.area,
+        address:        form.address,
+        specialty:      form.category,
+        years_active:   form.years_active,
+        description:    form.description,
+        certifications: form.certifications,
+        price_from:     form.price_from,
+        price_to:       form.price_to,
+        available_now:  form.available_now === 'yes',
+        working_days:   days,
+        hours_from:     form.hours_from,
+        hours_to:       form.hours_to,
+        emergency:      form.emergency === 'yes',
+        service_radius: form.service_radius,
+        facebook:       form.facebook,
+        instagram:      form.instagram,
+        company_logo:   companyLogo,
+        work_images:    workImages,
+        commercial_doc: commercialDoc,
+        work_license:   workLicense,
+      })
+      setSubmitted(true)
+    } catch (err) {
+      alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.')
+      console.error(err)
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (submitted) {

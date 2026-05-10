@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { Megaphone, CheckCircle } from 'lucide-react'
+import api from '../lib/api'
 
 const PLACEMENTS_AR = [
   'إعلان في الصفحة الرئيسية',
@@ -69,7 +70,7 @@ export default function AdvertiseWithUs() {
     return errs
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length > 0) {
@@ -77,20 +78,22 @@ export default function AdvertiseWithUs() {
       return
     }
 
-    const now = new Date().toISOString()
-    const record = {
-      id: 'adr_' + Date.now(),
-      ...form,
-      imagePreview: imagePreview || null,
-      status: 'pending',
-      createdAt: now,
-      updatedAt: now,
-    }
-
     try {
-      const existing = JSON.parse(localStorage.getItem('adRequests') || '[]')
-      existing.unshift(record)
-      localStorage.setItem('adRequests', JSON.stringify(existing))
+      await api.submitAdRequest({
+        id: 'adr_' + Date.now(),
+        company_name: form.businessName,
+        contact_name: form.contactName,
+        phone: form.phone,
+        whatsapp: form.whatsapp,
+        city: form.city,
+        business_type: form.businessType,
+        requested_placement: form.requestedPlacement,
+        ad_title: form.adTitle,
+        ad_description: form.adDescription,
+        website_or_social_link: form.websiteOrSocialLink,
+        notes: form.notes,
+        image_preview: imagePreview || null,
+      })
     } catch (_) {}
 
     setSubmitted(true)

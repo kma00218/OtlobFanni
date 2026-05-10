@@ -9,13 +9,8 @@ export default function AdminLogin() {
   const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn, activateDemo } = useAdmin()
+  const { signIn } = useAdmin()
   const [, navigate] = useLocation()
-
-  const handleDemoLogin = () => {
-    activateDemo()
-    navigate('/admin/dashboard')
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -103,13 +98,6 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          <button
-            type="button"
-            onClick={handleDemoLogin}
-            className="w-full mt-3 border border-[#FF7900] text-[#FF7900] hover:bg-[#FF7900] hover:text-white font-bold py-3 rounded-xl transition-colors"
-          >
-            دخول تجريبي للوحة التحكم
-          </button>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">

@@ -3,6 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { categories } from '../data/services'
 import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image } from 'lucide-react'
+import api from '../lib/api'
 
 const CITIES = [
   { ar: 'طرابلس', en: 'Tripoli' }, { ar: 'بنغازي', en: 'Benghazi' },
@@ -132,49 +133,47 @@ export default function Join() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
-    const request = {
-      id: 'jr' + Date.now(),
-      full_name:       form.full_name,
-      phone:           form.phone,
-      whatsapp:        form.whatsapp,
-      national_id:     form.national_id,
-      city:            form.city,
-      area:            form.area,
-      address:         form.address,
-      specialty:       form.category,
-      experience:      form.experience,
-      type:            form.type,
-      description:     form.description,
-      certifications:  form.certifications,
-      price_from:      form.price_from,
-      price_to:        form.price_to,
-      available_now:   form.available_now === 'yes',
-      working_days:    days,
-      hours_from:      form.hours_from,
-      hours_to:        form.hours_to,
-      emergency:       form.emergency === 'yes',
-      service_radius:  form.service_radius,
-      facebook:        form.facebook,
-      instagram:       form.instagram,
-      profile_photo:   profilePhoto,
-      work_images:     workImages,
-      id_doc_front:    idDocFront,
-      id_doc_back:     idDocBack,
-      work_license:    workLicense,
-      status:          'pending',
-      created_at:      new Date().toISOString(),
-    }
     try {
-      const apps = JSON.parse(localStorage.getItem('technicianApplications') || '[]')
-      apps.unshift(request)
-      localStorage.setItem('technicianApplications', JSON.stringify(apps))
-      const saved = JSON.parse(localStorage.getItem('technicianApplications'))
-      console.log('[technicianApplications] saved, total entries:', saved.length, '| latest id:', saved[0]?.id)
-    } catch (_) {}
-    setTimeout(() => { setSaving(false); setSubmitted(true) }, 700)
+      await api.submitTechnicianApplication({
+        id:              'jr' + Date.now(),
+        full_name:       form.full_name,
+        phone:           form.phone,
+        whatsapp:        form.whatsapp,
+        national_id:     form.national_id,
+        city:            form.city,
+        area:            form.area,
+        address:         form.address,
+        specialty:       form.category,
+        experience:      form.experience,
+        type:            form.type,
+        description:     form.description,
+        certifications:  form.certifications,
+        price_from:      form.price_from,
+        price_to:        form.price_to,
+        available_now:   form.available_now === 'yes',
+        working_days:    days,
+        hours_from:      form.hours_from,
+        hours_to:        form.hours_to,
+        emergency:       form.emergency === 'yes',
+        service_radius:  form.service_radius,
+        facebook:        form.facebook,
+        instagram:       form.instagram,
+        profile_photo:   profilePhoto,
+        work_images:     workImages,
+        id_doc_front:    idDocFront,
+        id_doc_back:     idDocBack,
+        work_license:    workLicense,
+      })
+      setSubmitted(true)
+    } catch (err) {
+      alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.')
+      console.error(err)
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (submitted) {

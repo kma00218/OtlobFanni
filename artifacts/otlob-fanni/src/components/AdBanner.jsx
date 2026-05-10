@@ -1,18 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ExternalLink, X } from 'lucide-react'
-
-const lsGet = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
-
-function getActiveAds(placement) {
-  const all = lsGet('demo_ads_v1')
-  const now = new Date()
-  return all.filter(ad => {
-    if (!ad.is_active) return false
-    if (ad.placement !== placement) return false
-    if (ad.end_date && new Date(ad.end_date) < now) return false
-    return true
-  })
-}
+import api from '../lib/api'
 
 // ── Single horizontal banner card ──────────────────────────────────────────
 function BannerCard({ ad, onDismiss, compact }) {
@@ -111,7 +99,8 @@ export default function AdBanner({ placement, variant = 'banner', compact = fals
   const [dismissed, setDismissed] = useState(new Set())
 
   useEffect(() => {
-    setAds(getActiveAds(placement))
+    if (!placement) return
+    api.ads(placement).then(setAds).catch(() => {})
   }, [placement])
 
   const visible = ads.filter(a => !dismissed.has(a.id))
