@@ -15,6 +15,7 @@ import Settings from './pages/Settings'
 import ActivityLogs from './pages/ActivityLogs'
 import TechnicianApplications from './pages/TechnicianApplications'
 import CompanyApplications from './pages/CompanyApplications'
+import Companies from './pages/Companies'
 import AdRequests from './pages/AdRequests'
 import { Shield } from 'lucide-react'
 
@@ -64,6 +65,7 @@ function AdminRoutes() {
         {isSuperAdmin ? <Settings /> : <AccessDenied />}
       </Route>
       <Route path="/admin/technician-applications" component={TechnicianApplications} />
+      <Route path="/admin/companies" component={Companies} />
       <Route path="/admin/company-applications" component={CompanyApplications} />
       <Route path="/admin/ad-requests" component={AdRequests} />
       <Route path="/admin/logs">

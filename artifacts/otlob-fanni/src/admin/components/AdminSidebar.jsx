@@ -9,6 +9,7 @@ const navItems = [
   { path: '/admin/dashboard',                label: 'لوحة التحكم',      icon: LayoutDashboard, superOnly: false },
   { path: '/admin/technicians',              label: 'الفنيون',           icon: Wrench,          superOnly: false },
   { path: '/admin/technician-applications',  label: 'طلبات الفنيين',     icon: FileCheck,       superOnly: false },
+  { path: '/admin/companies',                label: 'الشركات',           icon: Building2,       superOnly: false },
   { path: '/admin/company-applications',     label: 'طلبات الشركات',     icon: Building2,       superOnly: false },
   { path: '/admin/ad-requests',              label: 'طلبات الإعلانات',   icon: Newspaper,       superOnly: false },
   { path: '/admin/categories',    label: 'التخصصات',       icon: Tag,             superOnly: true  },

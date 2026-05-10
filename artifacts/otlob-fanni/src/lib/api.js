@@ -115,6 +115,11 @@ export const api = {
     },
 
     storageUsage: () => get('/admin/storage-usage'),
+
+    companies: {
+      list:         ()             => get('/admin/companies'),
+      setStatus:    (id, status)  => patch(`/admin/companies/${id}/status`, { status }),
+    },
   },
 }
 

@@ -97,6 +97,28 @@ router.delete("/technician-applications/:id", async (req, res): Promise<void> =>
   res.sendStatus(204);
 });
 
+// ── Companies (approved only) ─────────────────────────────────────────────────
+router.get("/companies", async (_req, res): Promise<void> => {
+  const companies = await db
+    .select()
+    .from(companyApplicationsTable)
+    .where(eq(companyApplicationsTable.status, "approved"))
+    .orderBy(desc(companyApplicationsTable.createdAt));
+  res.json(companies);
+});
+
+router.patch("/companies/:id/status", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { status } = req.body;
+  const [app] = await db
+    .update(companyApplicationsTable)
+    .set({ status })
+    .where(eq(companyApplicationsTable.id, raw))
+    .returning();
+  if (!app) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(app);
+});
+
 // ── Company Applications ──────────────────────────────────────────────────────
 router.get("/company-applications", async (_req, res): Promise<void> => {
   const apps = await db.select().from(companyApplicationsTable).orderBy(desc(companyApplicationsTable.createdAt));
