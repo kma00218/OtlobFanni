@@ -41,6 +41,64 @@ const lastNamesAr = ['الورفلي','المصراتي','الترهوني','ا�
 const lastNamesEn = ['Al-Warfali','Al-Misrati','Al-Tarhouni','Al-Zintani','Al-Zawi','Al-Magrahi','Gaddafi','Al-Obeidi','Al-Faydi','Al-Fitouri']
 const colors      = ['#FF7900','#071B33','#4CAF50','#2196F3','#9C27B0','#F44336']
 
+// ─── Admin → Public category/city mapping ───────────────────────────────────
+const ADMIN_CAT_MAP = {
+  k1: 'plumbing', k2: 'electricity', k3: 'ac', k4: 'carpentry',
+  k5: 'painting', k6: 'cleaning',   k7: 'moving',  k8: 'cctv',
+  k9: 'networks', k10: 'maintenance', k11: 'appliances', k12: 'welding',
+}
+const ADMIN_CITY_MAP = {
+  c1:  { ar: 'طرابلس',  en: 'Tripoli'   },
+  c2:  { ar: 'بنغازي',  en: 'Benghazi'  },
+  c3:  { ar: 'مصراتة',  en: 'Misrata'   },
+  c4:  { ar: 'الزاوية', en: 'Zawiya'    },
+  c5:  { ar: 'سبها',    en: 'Sabha'     },
+  c6:  { ar: 'زوارة',   en: 'Zuwara'   },
+  c7:  { ar: 'زليتن',   en: 'Zliten'   },
+  c8:  { ar: 'الخمس',   en: 'Al Khoms' },
+  c9:  { ar: 'سرت',     en: 'Sirte'    },
+  c10: { ar: 'طبرق',    en: 'Tobruk'   },
+}
+const AVATAR_COLORS = ['#FF7900','#071B33','#4CAF50','#2196F3','#9C27B0','#E91E63']
+
+export function getAdminTechnicians() {
+  try {
+    const raw = localStorage.getItem('demo_technicians_v1')
+    if (!raw) return []
+    const list = JSON.parse(raw)
+    return list
+      .filter(t => t.is_active && t.is_approved && t.status !== 'inactive')
+      .map((t, i) => {
+        const catId = ADMIN_CAT_MAP[t.category_id] || t.category_id || 'maintenance'
+        const cat   = categories.find(c => c.id === catId) || {}
+        const city  = ADMIN_CITY_MAP[t.city_id] || { ar: t.city_id || '—', en: t.city_id || '—' }
+        return {
+          id:              t.id,
+          nameAr:          t.name_ar  || '',
+          nameEn:          t.name_en  || t.name_ar || '',
+          categoryId:      catId,
+          categoryAr:      cat.nameAr || '',
+          categoryEn:      cat.nameEn || '',
+          cityAr:          city.ar,
+          cityEn:          city.en,
+          rating:          t.rating   || (4 + (i % 10) * 0.1).toFixed(1),
+          reviews:         t.reviews  || (i % 50) + 5,
+          experienceYears: t.experience_years || 0,
+          priceFrom:       t.price_from || 0,
+          phone:           t.phone    || '',
+          whatsapp:        t.whatsapp || t.phone || '',
+          statusAr:        t.status === 'available' ? 'متاح الآن' : 'مشغول',
+          statusEn:        t.status === 'available' ? 'Available Now' : 'Busy',
+          available:       t.status === 'available',
+          descriptionAr:   t.description_ar || '',
+          descriptionEn:   t.description_en || t.description_ar || '',
+          avatarColor:     AVATAR_COLORS[i % AVATAR_COLORS.length],
+          fromAdmin:       true,
+        }
+      })
+  } catch (_) { return [] }
+}
+
 export const technicians = []
 let phoneCounter = 1
 
