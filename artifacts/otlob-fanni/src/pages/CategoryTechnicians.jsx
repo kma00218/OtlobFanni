@@ -8,6 +8,7 @@ import {
   Star, MapPin, Phone, MessageSquare, Zap, Search,
   Users, ChevronLeft, ChevronRight, SlidersHorizontal,
 } from 'lucide-react'
+import AdBanner from '../components/AdBanner'
 
 const lsA = (k) => { try { return JSON.parse(localStorage.getItem(k) || '[]') } catch { return [] } }
 
@@ -274,6 +275,9 @@ export default function CategoryTechnicians() {
             ))}
           </select>
         </div>
+
+        {/* إعلان داخل قائمة الفنيين */}
+        <AdBanner placement="technicians" dismissible />
 
         {/* قائمة الفنيين */}
         {filtered.length === 0 ? (

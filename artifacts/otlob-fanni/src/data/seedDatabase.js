@@ -4,7 +4,7 @@
  * لإعادة الضبط: احذف المفتاح otlob_fanni_seed_v2 من localStorage
  */
 
-const SEED_KEY = 'otlob_fanni_seed_v3'
+const SEED_KEY = 'otlob_fanni_seed_v4'
 
 // ──────────────────────────────────────────────
 // المدن
@@ -682,29 +682,113 @@ const SERVICE_REQUESTS = [
 ]
 
 // ──────────────────────────────────────────────
-// الإعلانات
+// الإعلانات — إعلان لكل مكان ممكن في التطبيق
 // ──────────────────────────────────────────────
 const ADS = [
+  // ── الصفحة الرئيسية (home) ──────────────────
   {
-    id: 'a1', title_ar: 'اطلب فنيك الآن', title_en: 'Book Your Technician Now',
-    description_ar: 'أسرع خدمة صيانة في ليبيا', description_en: 'Fastest maintenance in Libya',
-    image_url: 'https://placehold.co/600x200/FF7900/white?text=Otlob+Fanni',
-    link_url: '/', placement: 'home', is_active: true,
-    start_date: '2026-05-01', end_date: '2026-06-30', created_at: '2026-05-01T10:00:00Z',
+    id: 'a1',
+    title_ar: 'مطعم الشروق — طرابلس',
+    title_en: 'Al-Shorouk Restaurant — Tripoli',
+    description_ar: 'أشهى المأكولات الليبية الأصيلة بأسعار مناسبة. يومياً من 12 ظهراً حتى منتصف الليل.',
+    description_en: 'Authentic Libyan cuisine at great prices. Open daily noon–midnight.',
+    image_url: 'https://placehold.co/700x220/FF7900/ffffff?text=%D9%85%D8%B7%D8%B9%D9%85+%D8%A7%D9%84%D8%B4%D8%B1%D9%88%D9%82',
+    link_url: 'https://wa.me/218910000001',
+    placement: 'home',
+    is_active: true,
+    start_date: '2026-05-01',
+    end_date: '2026-07-31',
+    created_at: '2026-05-01T10:00:00Z',
   },
   {
-    id: 'a2', title_ar: 'خدمة الكهرباء المنزلية', title_en: 'Home Electrical Service',
-    description_ar: 'فنيون معتمدون لكل أعمال الكهرباء', description_en: 'Certified electricians',
-    image_url: 'https://placehold.co/600x200/071B33/white?text=Electricity',
-    link_url: '/category/electricity', placement: 'categories', is_active: true,
-    start_date: '2026-05-05', end_date: '2026-05-31', created_at: '2026-05-05T09:00:00Z',
+    id: 'a2',
+    title_ar: 'متجر الأدوات الكهربائية — سوبر تك',
+    title_en: 'SuperTech Electrical Store',
+    description_ar: 'جميع مستلزمات الكهرباء والإضاءة بأفضل الأسعار. توصيل لجميع مناطق طرابلس.',
+    description_en: 'All electrical & lighting supplies. Delivery across Tripoli.',
+    image_url: 'https://placehold.co/700x220/071B33/FF7900?text=SuperTech+Store',
+    link_url: 'https://wa.me/218910000002',
+    placement: 'home',
+    is_active: true,
+    start_date: '2026-05-03',
+    end_date: '2026-06-30',
+    created_at: '2026-05-03T08:00:00Z',
+  },
+
+  // ── صفحة التخصصات (categories) ──────────────
+  {
+    id: 'a3',
+    title_ar: 'شركة النجمة للدهانات',
+    title_en: 'Al-Najma Paints Company',
+    description_ar: 'أفضل دهانات ليبية وأوروبية للمنازل والمحلات. خصم 15% طوال شهر مايو.',
+    description_en: 'Best Libyan & European paints. 15% off all May.',
+    image_url: 'https://placehold.co/700x220/E91E63/ffffff?text=%D8%B4%D8%B1%D9%83%D8%A9+%D8%A7%D9%84%D9%86%D8%AC%D9%85%D8%A9+%D9%84%D9%84%D8%AF%D9%87%D8%A7%D9%86%D8%A7%D8%AA',
+    link_url: '/category/painting',
+    placement: 'categories',
+    is_active: true,
+    start_date: '2026-05-01',
+    end_date: '2026-05-31',
+    created_at: '2026-05-01T09:00:00Z',
   },
   {
-    id: 'a3', title_ar: 'عرض صيانة الصيف', title_en: 'Summer Maintenance Offer',
-    description_ar: 'خصم 20% على خدمات التكييف', description_en: '20% off on AC services',
-    image_url: 'https://placehold.co/600x200/4CAF50/white?text=Summer+Offer',
-    link_url: '/category/ac', placement: 'banner', is_active: false,
-    start_date: '2026-06-01', end_date: '2026-08-31', created_at: '2026-05-02T14:00:00Z',
+    id: 'a4',
+    title_ar: 'مركز تيتان لتكييف الهواء',
+    title_en: 'Titan AC Service Center',
+    description_ar: 'صيانة وتركيب جميع أنواع المكيفات. ضمان سنة كاملة على جميع الأعمال.',
+    description_en: 'Service & installation for all AC brands. Full one-year warranty.',
+    image_url: 'https://placehold.co/700x220/2196F3/ffffff?text=Titan+AC+Center',
+    link_url: '/category/ac',
+    placement: 'categories',
+    is_active: true,
+    start_date: '2026-05-05',
+    end_date: '2026-08-31',
+    created_at: '2026-05-05T11:00:00Z',
+  },
+
+  // ── قائمة الفنيين (technicians) ──────────────
+  {
+    id: 'a5',
+    title_ar: 'مواد البناء — مؤسسة الأمل',
+    title_en: "Al-Amal Building Materials",
+    description_ar: 'أسمنت، بلاط، سيراميك وكل مواد البناء. أسعار الجملة للجميع.',
+    description_en: 'Cement, tiles, ceramics & all construction materials. Wholesale prices.',
+    image_url: 'https://placehold.co/700x220/795548/ffffff?text=%D9%85%D8%A4%D8%B3%D8%B3%D8%A9+%D8%A7%D9%84%D8%A3%D9%85%D9%84',
+    link_url: 'https://wa.me/218910000005',
+    placement: 'technicians',
+    is_active: true,
+    start_date: '2026-05-01',
+    end_date: '2026-07-31',
+    created_at: '2026-05-01T12:00:00Z',
+  },
+  {
+    id: 'a6',
+    title_ar: 'معرض أثاث الديار — طرابلس',
+    title_en: 'Al-Diyar Furniture Showroom',
+    description_ar: 'غرف نوم، صالونات وأثاث مكتبي. أقساط ميسرة بدون فوائد.',
+    description_en: 'Bedrooms, living rooms & office furniture. Easy installments, no interest.',
+    image_url: 'https://placehold.co/700x220/4CAF50/ffffff?text=%D9%85%D8%B9%D8%B1%D8%B6+%D8%A7%D9%84%D8%AF%D9%8A%D8%A7%D8%B1+%D9%84%D9%84%D8%A3%D8%AB%D8%A7%D8%AB',
+    link_url: 'https://wa.me/218910000006',
+    placement: 'technicians',
+    is_active: true,
+    start_date: '2026-05-10',
+    end_date: '2026-06-30',
+    created_at: '2026-05-10T10:00:00Z',
+  },
+
+  // ── بانر عام (banner) ─────────────────────────
+  {
+    id: 'a7',
+    title_ar: 'عرض الصيف — خصم 20% على التكييف',
+    title_en: 'Summer Deal — 20% off AC Services',
+    description_ar: 'لا تنتظر الحر! احجز صيانة مكيفك الآن واستفد من الخصم الصيفي الحصري.',
+    description_en: "Don't wait for the heat! Book AC maintenance now.",
+    image_url: 'https://placehold.co/700x220/00BCD4/ffffff?text=%D8%B9%D8%B1%D8%B6+%D8%A7%D9%84%D8%B5%D9%8A%D9%81+20%25',
+    link_url: '/category/ac',
+    placement: 'banner',
+    is_active: true,
+    start_date: '2026-05-01',
+    end_date: '2026-09-30',
+    created_at: '2026-05-01T07:00:00Z',
   },
 ]
 
@@ -751,7 +835,7 @@ export function seedDatabase() {
     setIfEmpty('demo_technicians_v1',  ADMIN_TECHNICIANS)
     setIfEmpty('technicianApplications', TECHNICIAN_APPLICATIONS)
     setIfEmpty('service_requests',     SERVICE_REQUESTS)
-    setIfEmpty('demo_ads_v1',          ADS)
+    set('demo_ads_v1',                 ADS)   // force refresh on v4
     setIfEmpty('demo_admins_v1',       ADMIN_USERS)
     setIfEmpty('demo_settings_v1',     SETTINGS)
 

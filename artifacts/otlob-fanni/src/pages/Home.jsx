@@ -8,6 +8,7 @@ import { categories } from '../data/services'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import { Button } from '@/components/ui/button'
+import AdBanner from '../components/AdBanner'
 
 // First 19 regular categories + "more" at the end = 20 total
 const homeCategories = [
@@ -45,6 +46,9 @@ export default function Home() {
 
         <SearchBar />
 
+        {/* إعلان الصفحة الرئيسية */}
+        <AdBanner placement="home" dismissible />
+
         <div>
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-base font-bold text-foreground">{t('categories')}</h2>
@@ -60,6 +64,9 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* إعلان بانر عام */}
+        <AdBanner placement="banner" compact />
 
         <div className="pb-4">
           <Link href="/categories">
