@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useLocation } from 'wouter'
 import { useAdmin } from '../context/AdminContext'
 import { Wrench, Eye, EyeOff, AlertCircle } from 'lucide-react'
-import { isSupabaseConfigured } from '../lib/supabase'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -65,15 +64,6 @@ export default function AdminLogin() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           <h2 className="text-xl font-bold text-[#071B33] mb-6">تسجيل الدخول</h2>
-
-          {!isSupabaseConfigured && (
-            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-              <p className="text-amber-700 text-xs">
-                لم يتم ربط قاعدة البيانات. أضف VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY في إعدادات المشروع.
-              </p>
-            </div>
-          )}
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
