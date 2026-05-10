@@ -13,7 +13,6 @@ import Ads from './pages/Ads'
 import AdminUsers from './pages/AdminUsers'
 import Settings from './pages/Settings'
 import ActivityLogs from './pages/ActivityLogs'
-import JoinRequests from './pages/JoinRequests'
 import TechnicianApplications from './pages/TechnicianApplications'
 import { Shield } from 'lucide-react'
 
@@ -62,7 +61,6 @@ function AdminRoutes() {
       <Route path="/admin/settings">
         {isSuperAdmin ? <Settings /> : <AccessDenied />}
       </Route>
-      <Route path="/admin/join-requests" component={JoinRequests} />
       <Route path="/admin/technician-applications" component={TechnicianApplications} />
       <Route path="/admin/logs">
         {isSuperAdmin ? <ActivityLogs /> : <AccessDenied />}
