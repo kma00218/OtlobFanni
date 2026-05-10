@@ -33,7 +33,7 @@ export default function Favorites() {
 
   useEffect(() => {
     if (!favIds.length) { setLoading(false); return }
-    api.technicians.list()
+    api.technicians()
       .then(all => {
         setTechs(all.filter(t => favIds.includes(t.id)))
         setLoading(false)
