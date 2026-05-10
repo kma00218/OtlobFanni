@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
-import { supabase, isSupabaseConfigured } from '../../lib/supabase'
 import StatCard from '../components/StatCard'
 import {
   Wrench, Users, MapPin, ClipboardList, Tag, Megaphone,
@@ -8,124 +7,17 @@ import {
 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
-const STATUS_COLORS = { new: '#FF7900', assigned: '#3B82F6', in_progress: '#8B5CF6', completed: '#10B981', cancelled: '#EF4444' }
-const STATUS_LABELS = { new: 'جديد', assigned: 'مُسند', in_progress: 'جارٍ', completed: 'مكتمل', cancelled: 'ملغي' }
-
-export default function Dashboard() {
-  const { isSuperAdmin, cityId } = useAdmin()
-  const [stats, setStats] = useState({})
-  const [loading, setLoading] = useState(true)
-  const [recentRequests, setRecentRequests] = useState([])
-  const [recentTechs, setRecentTechs] = useState([])
-  const [requestsByStatus, setRequestsByStatus] = useState([])
-  const [techsByCity, setTechsByCity] = useState([])
-
-  useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) {
-      setLoading(false)
-      return
-    }
-    loadData()
-  }, [isSuperAdmin, cityId])
-
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      const cityFilter = !isSuperAdmin && cityId ? { city_id: cityId } : {}
-
-      const [
-        { count: totalTechs },
-        { count: activeTechs },
-        { count: pendingTechs },
-        { count: totalRequests },
-        { count: newRequests },
-        { count: completedRequests },
-        { count: totalCities },
-        { count: totalCats },
-        { count: activeAds },
-        { count: subAdmins },
-        { data: reqData },
-        { data: techData },
-        { data: statusData },
-        { data: cityData },
-      ] = await Promise.all([
-        supabase.from('technicians').select('*', { count: 'exact', head: true }).match(cityFilter),
-        supabase.from('technicians').select('*', { count: 'exact', head: true }).match({ ...cityFilter, is_active: true }),
-        supabase.from('technicians').select('*', { count: 'exact', head: true }).match({ ...cityFilter, is_approved: false }),
-        supabase.from('service_requests').select('*', { count: 'exact', head: true }).match(cityFilter),
-        supabase.from('service_requests').select('*', { count: 'exact', head: true }).match({ ...cityFilter, status: 'new' }),
-        supabase.from('service_requests').select('*', { count: 'exact', head: true }).match({ ...cityFilter, status: 'completed' }),
-        isSuperAdmin ? supabase.from('cities').select('*', { count: 'exact', head: true }) : Promise.resolve({ count: 0 }),
-        isSuperAdmin ? supabase.from('categories').select('*', { count: 'exact', head: true }) : Promise.resolve({ count: 0 }),
-        isSuperAdmin ? supabase.from('ads').select('*', { count: 'exact', head: true }).eq('is_active', true) : Promise.resolve({ count: 0 }),
-        isSuperAdmin ? supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'sub_admin') : Promise.resolve({ count: 0 }),
-        supabase.from('service_requests').select('id,customer_name,status,created_at,cities(name_ar)').match(cityFilter).order('created_at', { ascending: false }).limit(10),
-        supabase.from('technicians').select('id,name_ar,status,created_at,cities(name_ar)').match(cityFilter).order('created_at', { ascending: false }).limit(10),
-        supabase.from('service_requests').select('status').match(cityFilter),
-        isSuperAdmin ? supabase.from('technicians').select('city_id,cities(name_ar)') : Promise.resolve({ data: [] }),
-      ])
-
-      setStats({ totalTechs, activeTechs, pendingTechs, totalRequests, newRequests, completedRequests, totalCities, totalCats, activeAds, subAdmins })
-      setRecentRequests(reqData || [])
-      setRecentTechs(techData || [])
-
-      // Process status data
-      if (statusData) {
-        const counts = {}
-        statusData.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1 })
-        setRequestsByStatus(Object.entries(counts).map(([status, value]) => ({
-          name: STATUS_LABELS[status] || status,
-          value,
-          fill: STATUS_COLORS[status],
-        })))
-      }
-
-      // Process city data
-      if (cityData) {
-        const counts = {}
-        cityData.forEach(t => {
-          const n = t.cities?.name_ar || 'أخرى'
-          counts[n] = (counts[n] || 0) + 1
-        })
-        setTechsByCity(Object.entries(counts).slice(0, 6).map(([name, value]) => ({ name, value })))
-      }
-    } catch (e) {
-      console.error('Dashboard error:', e)
-    }
-    setLoading(false)
-  }
-
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center bg-white rounded-2xl p-8 border border-amber-200 shadow-sm max-w-md">
-          <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-          <h3 className="font-bold text-gray-800 mb-2">لم يتم ربط قاعدة البيانات</h3>
-          <p className="text-gray-500 text-sm">أضف <code className="bg-gray-100 px-1 rounded">VITE_SUPABASE_URL</code> و <code className="bg-gray-100 px-1 rounded">VITE_SUPABASE_ANON_KEY</code> في إعدادات المشروع ثم أعد تشغيل التطبيق.</p>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3">
         <StatCard title="إجمالي الفنيين" value={stats.totalTechs} icon={Wrench} color="navy" loading={loading} />
         <StatCard title="الفنيون النشطون" value={stats.activeTechs} icon={CheckCircle} color="green" loading={loading} />
-        <StatCard title="بانتظار الاعتماد" value={stats.pendingTechs} icon={Clock} color="red" loading={loading} />
-        <StatCard title="إجمالي الطلبات" value={stats.totalRequests} icon={ClipboardList} color="orange" loading={loading} />
-        <StatCard title="الطلبات الجديدة" value={stats.newRequests} icon={TrendingUp} color="blue" loading={loading} />
+        <StatCard title="الطلبات الجديدة" value={stats.newRequests} icon={Clock} color="orange" loading={loading} />
+        <StatCard title="الطلبات المكتملة" value={stats.completedRequests} icon={CheckCircle} color="green" loading={loading} />
+        <StatCard title="عدد المدن" value={stats.totalCities} icon={MapPin} color="blue" loading={loading} />
+        <StatCard title="عدد التخصصات" value={stats.totalCats} icon={Tag} color="purple" loading={loading} />
+        <StatCard title="الإعلانات النشطة" value={stats.activeAds} icon={Megaphone} color="orange" loading={loading} />
+        <StatCard title="المشرفون الفرعيون" value={stats.subAdmins} icon={Users} color="navy" loading={loading} />
       </div>
-
-      {isSuperAdmin && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard title="الطلبات المكتملة" value={stats.completedRequests} icon={CheckCircle} color="green" loading={loading} />
-          <StatCard title="المدن" value={stats.totalCities} icon={MapPin} color="blue" loading={loading} />
-          <StatCard title="التخصصات" value={stats.totalCats} icon={Tag} color="purple" loading={loading} />
-          <StatCard title="الإعلانات النشطة" value={stats.activeAds} icon={Megaphone} color="orange" loading={loading} />
-        </div>
-      )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
