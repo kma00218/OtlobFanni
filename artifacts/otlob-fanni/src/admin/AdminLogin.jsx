@@ -13,16 +13,28 @@ export default function AdminLogin() {
   const { signIn } = useAdmin()
   const [, navigate] = useLocation()
 
-  const handleDemoLogin = () => {
+  const DEMO_EMAIL = 'admin@otlobfanni.ly'
+  const DEMO_PASSWORD = 'demo1234'
+
+  const activateDemoMode = () => {
     localStorage.setItem('demoMode', 'true')
     localStorage.setItem('adminRole', 'super_admin')
     localStorage.setItem('adminName', 'Demo Super Admin')
     navigate('/admin/dashboard')
   }
 
+  const handleDemoLogin = () => activateDemoMode()
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    // Allow demo login via typed credentials
+    if (email.toLowerCase() === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      activateDemoMode()
+      return
+    }
+
     setLoading(true)
     try {
       await signIn(email, password)
@@ -108,7 +120,7 @@ export default function AdminLogin() {
 
             <button
               type="submit"
-              disabled={loading || !isSupabaseConfigured}
+              disabled={loading}
               className="w-full bg-[#FF7900] hover:bg-[#e86d00] text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'جاري الدخول...' : 'دخول'}
