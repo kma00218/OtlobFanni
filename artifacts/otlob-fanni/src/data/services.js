@@ -92,6 +92,7 @@ export function getAdminTechnicians() {
           available:       t.status === 'available',
           descriptionAr:   t.description_ar || '',
           descriptionEn:   t.description_en || t.description_ar || '',
+          profilePhoto:    t.profile_photo || null,
           avatarColor:     AVATAR_COLORS[i % AVATAR_COLORS.length],
           fromAdmin:       true,
         }

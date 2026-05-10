@@ -4,21 +4,30 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
-  const name = lang === 'ar' ? technician.nameAr : technician.nameEn;
+  const name     = lang === 'ar' ? technician.nameAr     : technician.nameEn;
   const specialty = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
-  const city = lang === 'ar' ? technician.cityAr : technician.cityEn;
-  const status = lang === 'ar' ? technician.statusAr : technician.statusEn;
+  const city     = lang === 'ar' ? technician.cityAr     : technician.cityEn;
+  const status   = lang === 'ar' ? technician.statusAr   : technician.statusEn;
   const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2);
 
   return (
     <Link href={`/technician/${technician.id}`} className="block bg-white rounded-xl shadow-sm border p-4 mb-3 hover-elevate active:scale-[0.98] transition-all">
       <div className="flex items-center gap-3">
-        <div 
-          className="h-14 w-14 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
-          style={{ backgroundColor: technician.avatarColor }}
-        >
-          {initials}
+
+        {/* Avatar — real photo or colored initials */}
+        <div className="h-14 w-14 rounded-full flex-shrink-0 overflow-hidden border-2 border-gray-100">
+          {technician.profilePhoto ? (
+            <img src={technician.profilePhoto} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-white font-bold text-lg"
+              style={{ backgroundColor: technician.avatarColor }}
+            >
+              {initials}
+            </div>
+          )}
         </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-1">
             <h3 className="font-bold text-foreground truncate">{name}</h3>
@@ -40,6 +49,7 @@ export default function TechnicianCard({ technician }) {
             </span>
           </div>
         </div>
+
         <div className="flex-shrink-0 text-muted-foreground">
           {dir === 'rtl' ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
         </div>

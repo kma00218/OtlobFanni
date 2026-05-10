@@ -3,11 +3,11 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { technicians, getAdminTechnicians } from '../data/services'
 import { useRoute } from 'wouter'
-import { Star, MapPin, Briefcase, Phone, MessageSquare, Tag, Wrench } from 'lucide-react'
+import { Star, MapPin, Briefcase, Phone, MessageSquare, Tag, Wrench, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function TechnicianDetails() {
-  const { t, lang, dir } = useLang()
+  const { t, lang } = useLang()
   const [, params] = useRoute('/technician/:id')
   const techId = params?.id
 
@@ -39,12 +39,22 @@ export default function TechnicianDetails() {
       <BackHeader title={name} />
 
       <main className="px-4 py-6">
+
+        {/* Profile card */}
         <div className="bg-white rounded-2xl shadow-sm border p-6 flex flex-col items-center text-center">
-          <div
-            className="h-24 w-24 rounded-full flex items-center justify-center text-white font-bold text-3xl mb-4"
-            style={{ backgroundColor: technician.avatarColor || '#FF7900' }}
-          >
-            {initials}
+
+          {/* Avatar — real photo or colored initials */}
+          <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-gray-100 mb-4 flex-shrink-0">
+            {technician.profilePhoto ? (
+              <img src={technician.profilePhoto} alt={name} className="w-full h-full object-cover" />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center text-white font-bold text-3xl"
+                style={{ backgroundColor: technician.avatarColor || '#FF7900' }}
+              >
+                {initials}
+              </div>
+            )}
           </div>
 
           <h2 className="text-2xl font-bold text-foreground mb-1">{name}</h2>
@@ -83,14 +93,16 @@ export default function TechnicianDetails() {
           </div>
         </div>
 
+        {/* Description */}
         {description && (
-          <div className="mt-6 bg-white rounded-2xl shadow-sm border p-5">
-            <h3 className="text-lg font-bold text-foreground mb-2">{t('aboutTech')}</h3>
+          <div className="mt-4 bg-white rounded-2xl shadow-sm border p-5">
+            <h3 className="text-base font-bold text-foreground mb-2">{t('aboutTech')}</h3>
             <p className="text-muted-foreground leading-relaxed text-sm">{description}</p>
           </div>
         )}
       </main>
 
+      {/* Action buttons */}
       <div className="fixed bottom-[80px] left-0 right-0 p-4 bg-white border-t z-40 max-w-[480px] mx-auto flex gap-3">
         <a href={`https://wa.me/${technician.whatsapp}`} target="_blank" rel="noreferrer" className="flex-1">
           <Button className="w-full h-14 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl gap-2 text-lg">
