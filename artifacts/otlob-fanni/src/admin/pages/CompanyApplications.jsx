@@ -39,7 +39,7 @@ export default function CompanyApplications() {
   const reload = () => {
     setLoading(true)
     api.admin.companyApplications.list()
-      .then(rows => { setData(rows); setLoading(false) })
+      .then(rows => { setData(rows.filter(r => r.status !== 'approved')); setLoading(false) })
       .catch(() => setLoading(false))
   }
 
@@ -48,9 +48,15 @@ export default function CompanyApplications() {
   const setStatus = async (id, status) => {
     try {
       await api.admin.companyApplications.update(id, status)
-      setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
-      if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
-      showToast(status === 'approved' ? '✓ تم قبول طلب الشركة وستظهر في التطبيق' : 'تم رفض الطلب')
+      if (status === 'approved') {
+        setData(prev => prev.filter(r => r.id !== id))
+        if (viewItem?.id === id) setViewItem(null)
+        showToast('✓ تم قبول طلب الشركة — تجدها الآن في صفحة الشركات المقبولة')
+      } else {
+        setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+        if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
+        showToast('تم رفض الطلب')
+      }
     } catch { showToast('حدث خطأ', 'error') }
   }
 
@@ -192,7 +198,6 @@ export default function CompanyApplications() {
             className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
-            <option value="approved">مقبول</option>
             <option value="rejected">مرفوض</option>
           </select>
         }

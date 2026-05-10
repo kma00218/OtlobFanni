@@ -45,7 +45,7 @@ export default function TechnicianApplications() {
   const reload = () => {
     setLoading(true)
     api.admin.technicianApplications.list()
-      .then(rows => { setData(rows); setLoading(false) })
+      .then(rows => { setData(rows.filter(r => r.status !== 'approved')); setLoading(false) })
       .catch(() => setLoading(false))
   }
 
@@ -55,8 +55,13 @@ export default function TechnicianApplications() {
     const app = data.find(r => r.id === id)
     try {
       await api.admin.technicianApplications.update(id, status)
-      setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
-      if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
+      if (status === 'approved') {
+        setData(prev => prev.filter(r => r.id !== id))
+        if (viewItem?.id === id) setViewItem(null)
+      } else {
+        setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+        if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
+      }
       if (status === 'approved' && app) {
         const name = app.fullName || app.full_name || ''
         const phone = app.phone || ''
@@ -231,7 +236,6 @@ export default function TechnicianApplications() {
             className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
-            <option value="approved">مقبول</option>
             <option value="rejected">مرفوض</option>
           </select>
         }
