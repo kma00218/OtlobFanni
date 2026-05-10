@@ -13,6 +13,13 @@ export default function AdminLogin() {
   const { signIn } = useAdmin()
   const [, navigate] = useLocation()
 
+  const handleDemoLogin = () => {
+    localStorage.setItem('demoMode', 'true')
+    localStorage.setItem('adminRole', 'super_admin')
+    localStorage.setItem('adminName', 'Demo Super Admin')
+    navigate('/admin/dashboard')
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -107,6 +114,14 @@ export default function AdminLogin() {
               {loading ? 'جاري الدخول...' : 'دخول'}
             </button>
           </form>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="w-full mt-3 border border-[#FF7900] text-[#FF7900] hover:bg-[#FF7900] hover:text-white font-bold py-3 rounded-xl transition-colors"
+          >
+            دخول تجريبي للوحة التحكم
+          </button>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">

@@ -1,5 +1,6 @@
-import { Menu, Bell, Globe } from 'lucide-react'
+import { Menu, Bell, LogOut, Shield } from 'lucide-react'
 import { useAdmin } from '../../context/AdminContext'
+import { useLocation } from 'wouter'
 
 const pageTitles = {
   '/admin/dashboard': 'لوحة التحكم',
@@ -14,7 +15,8 @@ const pageTitles = {
 }
 
 export default function AdminTopbar({ onMenuClick, currentPath }) {
-  const { profile, isSuperAdmin } = useAdmin()
+  const { profile, isSuperAdmin, isDemoMode, signOut } = useAdmin()
+  const [, navigate] = useLocation()
   const title = pageTitles[currentPath] || 'لوحة التحكم'
 
   return (
@@ -32,6 +34,12 @@ export default function AdminTopbar({ onMenuClick, currentPath }) {
 
       {/* Right side */}
       <div className="flex items-center gap-2">
+        {isDemoMode && (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#FF7900]/10 text-[#FF7900] text-[10px] font-bold">
+            <Shield className="w-3 h-3" />
+            Demo Mode
+          </span>
+        )}
         {/* Notifications placeholder */}
         <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 relative transition-colors">
           <Bell className="w-5 h-5" />
@@ -49,6 +57,17 @@ export default function AdminTopbar({ onMenuClick, currentPath }) {
             <p className="text-[10px] text-gray-400">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
           </div>
         </div>
+
+        <button
+          onClick={async () => {
+            await signOut()
+            navigate('/admin/login')
+          }}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-[#071B33] hover:bg-gray-100 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          خروج
+        </button>
       </div>
     </header>
   )
