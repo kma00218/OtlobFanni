@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import TechnicianCard from '../components/TechnicianCard'
-import { categories, technicians, getAdminTechnicians } from '../data/services'
+import { categories, technicians, getAdminTechnicians, getApprovedTechnicians } from '../data/services'
 import { useRoute } from 'wouter'
 import { AlertCircle } from 'lucide-react'
 
@@ -14,14 +14,14 @@ export default function CategoryTechnicians() {
   const [allTechs, setAllTechs] = useState(technicians)
 
   useEffect(() => {
-    const adminTechs = getAdminTechnicians()
-    if (adminTechs.length > 0) {
-      const adminIds = new Set(adminTechs.map(t => t.id))
-      const merged = [...adminTechs, ...technicians.filter(t => !adminIds.has(t.id))]
-      setAllTechs(merged)
-    } else {
-      setAllTechs(technicians)
+    const approvedTechs = getApprovedTechnicians()
+    const adminTechs    = getAdminTechnicians()
+    const seenIds = new Set()
+    const merged = []
+    for (const t of [...approvedTechs, ...adminTechs, ...technicians]) {
+      if (!seenIds.has(t.id)) { seenIds.add(t.id); merged.push(t) }
     }
+    setAllTechs(merged)
   }, [])
 
   const category = categories.find(c => c.id === categoryId)

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
-import { technicians, getAdminTechnicians } from '../data/services'
+import { technicians, getAdminTechnicians, getApprovedTechnicians } from '../data/services'
 import { useRoute } from 'wouter'
 import { Star, MapPin, Briefcase, Phone, MessageSquare, Tag, Wrench, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,8 +16,13 @@ export default function TechnicianDetails() {
   )
 
   useEffect(() => {
-    const adminTechs = getAdminTechnicians()
-    const found = adminTechs.find(t => t.id === techId) || technicians.find(t => t.id === techId) || null
+    const approvedTechs = getApprovedTechnicians()
+    const adminTechs    = getAdminTechnicians()
+    const found =
+      approvedTechs.find(t => t.id === techId) ||
+      adminTechs.find(t => t.id === techId)    ||
+      technicians.find(t => t.id === techId)   ||
+      null
     setTechnician(found)
   }, [techId])
 

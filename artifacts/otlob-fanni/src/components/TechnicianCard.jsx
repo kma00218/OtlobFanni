@@ -35,8 +35,8 @@ export default function TechnicianCard({ technician }) {
               {status}
             </div>
           </div>
-          <p className="text-sm text-muted-foreground truncate mb-1">
-            {specialty} • {city}
+          <p className="text-sm text-muted-foreground truncate mb-0.5">
+            {specialty} • {city}{technician.area ? ` • ${technician.area}` : ''}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
@@ -45,7 +45,9 @@ export default function TechnicianCard({ technician }) {
               <span className="text-xs text-muted-foreground">({technician.reviews})</span>
             </div>
             <span className="text-sm font-bold text-primary">
-              {t('priceFrom')} {technician.priceFrom} {t('lyd')}
+              {technician.priceTo > 0
+                ? `${technician.priceFrom}–${technician.priceTo} ${t('lyd')}`
+                : `${t('priceFrom')} ${technician.priceFrom} ${t('lyd')}`}
             </span>
           </div>
         </div>

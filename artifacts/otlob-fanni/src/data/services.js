@@ -61,6 +61,62 @@ const ADMIN_CITY_MAP = {
 }
 const AVATAR_COLORS = ['#FF7900','#071B33','#4CAF50','#2196F3','#9C27B0','#E91E63']
 
+// City text (ar or en) → bilingual object for public display
+const CITY_TEXT_MAP = {
+  'طرابلس':  { ar: 'طرابلس',  en: 'Tripoli'  }, 'Tripoli':  { ar: 'طرابلس',  en: 'Tripoli'  },
+  'بنغازي':  { ar: 'بنغازي',  en: 'Benghazi' }, 'Benghazi': { ar: 'بنغازي',  en: 'Benghazi' },
+  'مصراتة':  { ar: 'مصراتة',  en: 'Misrata'  }, 'Misrata':  { ar: 'مصراتة',  en: 'Misrata'  },
+  'الزاوية': { ar: 'الزاوية', en: 'Zawiya'   }, 'Zawiya':   { ar: 'الزاوية', en: 'Zawiya'   },
+  'سبها':    { ar: 'سبها',    en: 'Sabha'    }, 'Sabha':    { ar: 'سبها',    en: 'Sabha'    },
+  'زوارة':   { ar: 'زوارة',   en: 'Zuwara'   }, 'Zuwara':   { ar: 'زوارة',   en: 'Zuwara'   },
+  'زليتن':   { ar: 'زليتن',   en: 'Zliten'   }, 'Zliten':   { ar: 'زليتن',   en: 'Zliten'   },
+  'الخمس':   { ar: 'الخمس',   en: 'Al Khoms' }, 'Al Khoms': { ar: 'الخمس',   en: 'Al Khoms' },
+  'سرت':     { ar: 'سرت',     en: 'Sirte'    }, 'Sirte':    { ar: 'سرت',     en: 'Sirte'    },
+  'طبرق':    { ar: 'طبرق',    en: 'Tobruk'   }, 'Tobruk':   { ar: 'طبرق',    en: 'Tobruk'   },
+}
+
+// Read from the `technicians` localStorage key created by the approval workflow (Task 3).
+// Only shows isActive + isApproved records. No sensitive fields exposed.
+export function getApprovedTechnicians() {
+  try {
+    const raw = localStorage.getItem('technicians')
+    if (!raw) return []
+    const list = JSON.parse(raw)
+    return list
+      .filter(t => t.isActive && t.isApproved)
+      .map((t, i) => {
+        const cat  = categories.find(c => c.id === t.category) || {}
+        const city = CITY_TEXT_MAP[t.city] || { ar: t.city || '—', en: t.city || '—' }
+        return {
+          id:              t.id,
+          nameAr:          t.name || '',
+          nameEn:          t.name || '',
+          categoryId:      t.category || '',
+          categoryAr:      cat.nameAr || '',
+          categoryEn:      cat.nameEn || '',
+          cityAr:          city.ar,
+          cityEn:          city.en,
+          area:            t.area || '',
+          rating:          t.rating ?? 0,
+          reviews:         t.reviewsCount ?? 0,
+          experienceYears: t.experienceYears || 0,
+          priceFrom:       t.priceFrom || 0,
+          priceTo:         t.priceTo   || 0,
+          phone:           t.phone    || '',
+          whatsapp:        t.whatsapp || t.phone || '',
+          statusAr:        t.availableNow ? 'متاح الآن' : 'مشغول',
+          statusEn:        t.availableNow ? 'Available Now' : 'Busy',
+          available:       !!t.availableNow,
+          descriptionAr:   t.description || '',
+          descriptionEn:   t.description || '',
+          profilePhoto:    t.profilePhoto || null,
+          avatarColor:     AVATAR_COLORS[i % AVATAR_COLORS.length],
+          fromApproved:    true,
+        }
+      })
+  } catch (_) { return [] }
+}
+
 export function getAdminTechnicians() {
   try {
     const raw = localStorage.getItem('demo_technicians_v1')
