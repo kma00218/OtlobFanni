@@ -117,6 +117,47 @@ export function getApprovedTechnicians() {
   } catch (_) { return [] }
 }
 
+export function getFeaturedTechnicians() {
+  try {
+    const raw = localStorage.getItem('technicians')
+    if (!raw) return []
+    const list = JSON.parse(raw)
+    return list
+      .filter(t => t.isActive && t.isApproved && t.isFeatured)
+      .map((t, i) => {
+        const cat  = categories.find(c => c.id === t.category) || {}
+        const city = CITY_TEXT_MAP[t.city] || { ar: t.city || '—', en: t.city || '—' }
+        return {
+          id:              t.id,
+          nameAr:          t.name || '',
+          nameEn:          t.name || '',
+          categoryId:      t.category || '',
+          categoryAr:      cat.nameAr || '',
+          categoryEn:      cat.nameEn || '',
+          cityAr:          city.ar,
+          cityEn:          city.en,
+          area:            t.area || '',
+          rating:          t.rating ?? 0,
+          reviews:         t.reviewsCount ?? 0,
+          experienceYears: t.experienceYears || 0,
+          priceFrom:       t.priceFrom || 0,
+          priceTo:         t.priceTo || 0,
+          phone:           t.phone || '',
+          whatsapp:        t.whatsapp || t.phone || '',
+          statusAr:        t.availableNow ? 'متاح الآن' : 'مشغول',
+          statusEn:        t.availableNow ? 'Available Now' : 'Busy',
+          available:       !!t.availableNow,
+          descriptionAr:   t.description || '',
+          descriptionEn:   t.description || '',
+          profilePhoto:    t.profilePhoto || null,
+          avatarColor:     AVATAR_COLORS[i % AVATAR_COLORS.length],
+          fromApproved:    true,
+          isFeatured:      true,
+        }
+      })
+  } catch (_) { return [] }
+}
+
 export function getAdminTechnicians() {
   try {
     const raw = localStorage.getItem('demo_technicians_v1')

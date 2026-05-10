@@ -4,10 +4,12 @@ import Header from '../components/Header'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import CategoryCard from '../components/CategoryCard'
-import { categories } from '../data/services'
+import { categories, getFeaturedTechnicians } from '../data/services'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
+import TechnicianCard from '../components/TechnicianCard'
 
 // First 19 regular categories + "more" at the end = 20 total
 const homeCategories = [
@@ -18,8 +20,13 @@ const homeCategories = [
 export default function Home() {
   const { t, dir } = useLang()
   const [, navigate] = useLocation()
+  const [featuredTechs, setFeaturedTechs] = useState([])
   const logoClickCount = useRef(0)
   const logoClickTimer = useRef(null)
+
+  useEffect(() => {
+    setFeaturedTechs(getFeaturedTechnicians())
+  }, [])
 
   const handleLogoClick = () => {
     logoClickCount.current += 1
@@ -44,6 +51,19 @@ export default function Home() {
         </div>
 
         <SearchBar />
+
+        {featuredTechs.length > 0 && (
+          <div>
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-base font-bold text-foreground">الفنيين المميزين</h2>
+            </div>
+            <div className="flex flex-col">
+              {featuredTechs.map(tech => (
+                <TechnicianCard key={tech.id} technician={tech} />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div>
           <div className="flex justify-between items-center mb-3">
