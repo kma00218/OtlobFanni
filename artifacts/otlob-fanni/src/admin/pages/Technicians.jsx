@@ -26,6 +26,13 @@ const ls = {
   set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)) } catch {} },
 }
 
+// خريطة slug التخصص → معرف التخصص (k1..k12)
+const SLUG_TO_CAT_ID = {
+  electricity: 'k1', plumbing: 'k2', ac: 'k3', painting: 'k4',
+  carpentry: 'k5', cleaning: 'k6', moving: 'k7', cctv: 'k8',
+  networks: 'k9', maintenance: 'k10', appliances: 'k11', welding: 'k12',
+}
+
 // يُطبّع سجل الفني القادم من approved key ليطابق schema الأدمن
 const normalizeApproved = (t) => ({
   id: t.id,
@@ -34,8 +41,12 @@ const normalizeApproved = (t) => ({
   name_en: t.name_en || t.name || '',
   phone: t.phone || '',
   whatsapp: t.whatsapp || t.phone || '',
-  city_id: t.city_id || t.city || '',
-  category_id: t.category_id || t.category || '',
+  // city_id: قد يكون ID (c1) أو اسم نصي (طرابلس) — نحتفظ بكليهما
+  city_id:    t.city_id || '',
+  city_name:  t.city    || '',
+  // category_id: قد يكون ID (k1) أو slug (electricity) — نحول الـ slug إلى ID
+  category_id:   SLUG_TO_CAT_ID[t.category] || t.category_id || t.category || '',
+  category_slug: t.category || '',
   experience_years: t.experience_years || t.experienceYears || 0,
   price_from: t.price_from || t.priceFrom || 0,
   status: t.status || (t.availableNow ? 'available' : 'busy'),
@@ -138,8 +149,15 @@ export default function Technicians() {
     const start = (page - 1) * PAGE_SIZE
     const paged = rows.slice(start, start + PAGE_SIZE).map(r => ({
       ...r,
-      cities:     { name_ar: cities.find(c => c.id === r.city_id)?.name_ar || '—' },
-      categories: { name_ar: categories.find(c => c.id === r.category_id)?.name_ar || '—' },
+      cities: {
+        name_ar: cities.find(c => c.id === r.city_id)?.name_ar
+               || cities.find(c => c.name_ar === r.city_name)?.name_ar
+               || r.city_name || r.city_id || '—',
+      },
+      categories: {
+        name_ar: categories.find(c => c.id === r.category_id)?.name_ar
+               || r.category_id || '—',
+      },
     }))
     setData(paged)
   }, [allTechs, search, filterCity, filterCat, filterStatus, page, isSuperAdmin, cityId, cities, categories])
