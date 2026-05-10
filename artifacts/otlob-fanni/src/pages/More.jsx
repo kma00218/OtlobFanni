@@ -1,39 +1,63 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Mail, Globe, Megaphone } from 'lucide-react';
+import { Info, FileText, Shield, Mail, Globe, Megaphone, MessageCircle, UserPlus, Building2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ITEMS = [
+  {
+    icon: UserPlus,
+    labelAr: 'انضم كفني',
+    labelEn: 'Join as Tech',
+    path: '/join',
+    bg: 'from-[#34C759] to-[#248a3d]',
+    shadow: 'shadow-green-200',
+  },
+  {
+    icon: Building2,
+    labelAr: 'انضم كشركة',
+    labelEn: 'Join as Co.',
+    path: '/join-company',
+    bg: 'from-[#FF7900] to-[#d96400]',
+    shadow: 'shadow-orange-200',
+  },
+  {
+    icon: MessageCircle,
+    labelAr: 'الدعم',
+    labelEn: 'Support',
+    path: '/messages',
+    bg: 'from-[#5856D6] to-[#3634A3]',
+    shadow: 'shadow-purple-200',
+  },
   {
     icon: Megaphone,
     labelAr: 'أعلن معنا',
     labelEn: 'Advertise',
     path: '/advertise',
-    bg: 'from-[#FF7900] to-[#d96400]',
-    shadow: 'shadow-orange-200',
+    bg: 'from-[#FF9500] to-[#cc7700]',
+    shadow: 'shadow-amber-200',
   },
   {
     icon: Mail,
     labelAr: 'تواصل معنا',
     labelEn: 'Contact Us',
     path: '/contact',
-    bg: 'from-[#5856D6] to-[#3634A3]',
-    shadow: 'shadow-purple-200',
+    bg: 'from-[#FF2D55] to-[#c4002e]',
+    shadow: 'shadow-rose-200',
   },
   {
     icon: Info,
     labelAr: 'عن التطبيق',
     labelEn: 'About App',
     path: '#',
-    bg: 'from-[#FF2D55] to-[#c4002e]',
-    shadow: 'shadow-rose-200',
+    bg: 'from-[#30B0C7] to-[#1a7a8a]',
+    shadow: 'shadow-cyan-200',
   },
   {
     icon: FileText,
     labelAr: 'شروط الخدمة',
     labelEn: 'Terms',
     path: '#',
-    bg: 'from-[#FF9500] to-[#cc7700]',
-    shadow: 'shadow-amber-200',
+    bg: 'from-[#AF52DE] to-[#7b2fa6]',
+    shadow: 'shadow-purple-200',
   },
   {
     icon: Shield,
