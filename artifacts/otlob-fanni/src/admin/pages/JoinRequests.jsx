@@ -2,17 +2,52 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Eye, Trash2, ToggleLeft, ToggleRight, Info, AlertCircle } from 'lucide-react'
+import { Eye, Trash2, Info, AlertCircle, Phone, MapPin, Briefcase, Clock, Star, Zap, Facebook, CheckCircle, XCircle } from 'lucide-react'
 
 const DEMO_KEY = 'demo_join_requests_v1'
 
 const DEMO_SEED = [
-  { id: 'jr1', full_name: 'فيصل الورفلي',   phone: '+218911111111', specialty: 'سباكة',   city: 'طرابلس', description: 'خبرة 7 سنوات في أعمال السباكة والصيانة', status: 'pending',  created_at: '2026-05-08T09:00:00Z' },
-  { id: 'jr2', full_name: 'نجم الدين فرج',  phone: '+218922222222', specialty: 'كهرباء',  city: 'بنغازي', description: 'كهربائي معتمد بخبرة 10 سنوات',              status: 'approved', created_at: '2026-05-07T14:00:00Z' },
-  { id: 'jr3', full_name: 'عادل بوعزة',     phone: '+218933333333', specialty: 'تكييف',   city: 'مصراتة', description: 'صيانة وتركيب أجهزة التكييف المركزي',       status: 'pending',  created_at: '2026-05-06T11:30:00Z' },
-  { id: 'jr4', full_name: 'سليمان الزروق',  phone: '+218944444444', specialty: 'نجارة',   city: 'الزاوية','description': 'نجارة ديكور وأثاث منزلي',                status: 'rejected', created_at: '2026-05-05T08:00:00Z' },
-  { id: 'jr5', full_name: 'إبراهيم الأسود', phone: '+218955555555', specialty: 'دهان',    city: 'سبها',   description: 'دهانات داخلية وخارجية',                   status: 'pending',  created_at: '2026-05-04T16:00:00Z' },
+  {
+    id: 'jr1', full_name: 'فيصل الورفلي', phone: '+218911111111', whatsapp: '+218911111111',
+    specialty: 'سباكة', city: 'طرابلس', area: 'حي الأندلس',
+    experience: '6-10', type: 'individual', description: 'خبرة 7 سنوات في أعمال السباكة والصيانة المنزلية الشاملة',
+    price_from: '80', available_now: true, working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday'],
+    emergency: true, facebook: '', status: 'pending', created_at: '2026-05-08T09:00:00Z',
+  },
+  {
+    id: 'jr2', full_name: 'نجم الدين فرج', phone: '+218922222222', whatsapp: '+218922222222',
+    specialty: 'كهرباء', city: 'بنغازي', area: 'السابع',
+    experience: '3-5', type: 'individual', description: 'كهربائي معتمد، تركيب وصيانة لوحات كهربائية وإضاءة LED',
+    price_from: '100', available_now: true, working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday'],
+    emergency: false, facebook: 'https://facebook.com/najm.faraj', status: 'approved', created_at: '2026-05-07T14:00:00Z',
+  },
+  {
+    id: 'jr3', full_name: 'عادل بوعزة', phone: '+218933333333', whatsapp: '+218933333333',
+    specialty: 'تكييف', city: 'مصراتة', area: 'الشارع الرئيسي',
+    experience: '6-10', type: 'company', description: 'شركة متخصصة في صيانة وتركيب أجهزة التكييف المركزي والسبليت',
+    price_from: '150', available_now: false, working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday'],
+    emergency: true, facebook: '', status: 'pending', created_at: '2026-05-06T11:30:00Z',
+  },
+  {
+    id: 'jr4', full_name: 'سليمان الزروق', phone: '+218944444444', whatsapp: '+218944444444',
+    specialty: 'نجارة', city: 'الزاوية', area: 'وسط المدينة',
+    experience: '1-2', type: 'individual', description: 'نجارة ديكور وأثاث منزلي',
+    price_from: '60', available_now: true, working_days: ['Saturday','Sunday','Monday'],
+    emergency: false, facebook: '', status: 'rejected', created_at: '2026-05-05T08:00:00Z',
+  },
+  {
+    id: 'jr5', full_name: 'إبراهيم الأسود', phone: '+218955555555', whatsapp: '+218966666666',
+    specialty: 'دهانات', city: 'سبها', area: 'حي النصر',
+    experience: '3-5', type: 'individual', description: 'دهانات داخلية وخارجية، ديكور جبس بورد',
+    price_from: '70', available_now: true, working_days: ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],
+    emergency: false, facebook: 'https://facebook.com/ibrahim.alaswd', status: 'pending', created_at: '2026-05-04T16:00:00Z',
+  },
 ]
+
+const DAY_LABELS = {
+  Saturday: 'السبت', Sunday: 'الأحد', Monday: 'الاثنين',
+  Tuesday: 'الثلاثاء', Wednesday: 'الأربعاء', Thursday: 'الخميس', Friday: 'الجمعة',
+}
 
 const STATUS_LABELS = {
   pending:  { label: 'قيد المراجعة', cls: 'bg-amber-50 text-amber-600' },
@@ -163,49 +198,99 @@ export default function JoinRequests() {
         open={!!viewItem}
         onClose={() => setViewItem(null)}
         title="تفاصيل طلب الانضمام"
-        submitLabel={viewItem?.status === 'pending' ? 'قبول الطلب' : null}
-        onSubmit={viewItem?.status === 'pending' ? (e) => { e.preventDefault(); setStatus(viewItem.id, 'approved') } : null}
-        size="md"
+        submitLabel={viewItem?.status === 'pending' ? 'قبول الطلب' : 'إغلاق'}
+        onSubmit={viewItem?.status === 'pending'
+          ? (e) => { e.preventDefault(); setStatus(viewItem.id, 'approved') }
+          : (e) => { e.preventDefault(); setViewItem(null) }
+        }
+        size="lg"
       >
         {viewItem && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-0.5">الاسم الكامل</p>
-                <p className="font-medium text-gray-800 text-sm">{viewItem.full_name}</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-0.5">رقم الهاتف</p>
-                <p className="font-medium text-gray-800 text-sm" dir="ltr">{viewItem.phone}</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-0.5">التخصص</p>
-                <p className="font-medium text-gray-800 text-sm">{viewItem.specialty}</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-0.5">المدينة</p>
-                <p className="font-medium text-gray-800 text-sm">{viewItem.city}</p>
-              </div>
-            </div>
-            {viewItem.description && (
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-1">نبذة عن الفني</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
-              </div>
-            )}
-            <div className="flex items-center justify-between">
+          <div className="space-y-5">
+
+            {/* Status bar */}
+            <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-400">الحالة:</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_LABELS[viewItem.status]?.cls}`}>
+                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_LABELS[viewItem.status]?.cls}`}>
                   {STATUS_LABELS[viewItem.status]?.label}
                 </span>
               </div>
               <span className="text-xs text-gray-400">{new Date(viewItem.created_at).toLocaleDateString('ar-LY')}</span>
             </div>
+
+            {/* Personal info */}
+            <div>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> معلومات شخصية</p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <InfoCell label="الاسم الكامل"     value={viewItem.full_name} />
+                <InfoCell label="رقم الهاتف"       value={viewItem.phone}     dir="ltr" />
+                <InfoCell label="واتساب"            value={viewItem.whatsapp}  dir="ltr" />
+                <InfoCell label="المدينة"           value={viewItem.city} />
+                {viewItem.area && <InfoCell label="المنطقة / الحي" value={viewItem.area} />}
+              </div>
+            </div>
+
+            {/* Professional info */}
+            <div>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" /> معلومات مهنية</p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <InfoCell label="التخصص"           value={viewItem.specialty} />
+                <InfoCell label="سنوات الخبرة"      value={viewItem.experience} />
+                <InfoCell label="نوع العمل"         value={viewItem.type === 'company' ? 'شركة' : 'فردي'} />
+                <InfoCell label="السعر الابتدائي"   value={viewItem.price_from ? `${viewItem.price_from} د.ل` : '—'} />
+              </div>
+              {viewItem.description && (
+                <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-1">وصف الخدمة</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Availability */}
+            <div>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> التوفر والجدول</p>
+              <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                <InfoCell
+                  label="متاح الآن"
+                  value={viewItem.available_now ? '✓ نعم' : '✗ لا'}
+                  valueClass={viewItem.available_now ? 'text-green-600 font-semibold' : 'text-gray-500'}
+                />
+                <InfoCell
+                  label="خدمة الطوارئ 24/7"
+                  value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
+                  valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'}
+                />
+              </div>
+              {viewItem.working_days?.length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {viewItem.working_days.map(d => (
+                      <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">{DAY_LABELS[d] || d}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Facebook */}
+            {viewItem.facebook && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Facebook className="w-3.5 h-3.5" /> معلومات إضافية</p>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-400 mb-0.5">صفحة فيسبوك</p>
+                  <a href={viewItem.facebook} target="_blank" rel="noreferrer" className="text-sm text-blue-500 hover:underline break-all" dir="ltr">{viewItem.facebook}</a>
+                </div>
+              </div>
+            )}
+
+            {/* Reject button */}
             {viewItem.status === 'pending' && (
               <button
-                onClick={() => setStatus(viewItem.id, 'rejected')}
-                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2 rounded-xl text-sm transition-colors"
+                onClick={() => { setStatus(viewItem.id, 'rejected'); setViewItem(null) }}
+                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors"
               >
                 رفض الطلب
               </button>
@@ -213,6 +298,15 @@ export default function JoinRequests() {
           </div>
         )}
       </FormModal>
+    </div>
+  )
+}
+
+function InfoCell({ label, value, dir, valueClass }) {
+  return (
+    <div className="bg-gray-50 rounded-xl p-3">
+      <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+      <p className={`font-medium text-gray-800 text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }
