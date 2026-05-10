@@ -3,10 +3,34 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, AlertCircle, Info } from 'lucide-react'
+
+const DEMO_KEY = 'demo_cities_v1'
+const DEMO_SEED = [
+  { id: 'c1',  name_ar: 'طرابلس',  name_en: 'Tripoli',  sort_order: 1,  is_active: true },
+  { id: 'c2',  name_ar: 'بنغازي',  name_en: 'Benghazi', sort_order: 2,  is_active: true },
+  { id: 'c3',  name_ar: 'مصراتة',  name_en: 'Misrata',  sort_order: 3,  is_active: true },
+  { id: 'c4',  name_ar: 'الزاوية', name_en: 'Zawiya',   sort_order: 4,  is_active: true },
+  { id: 'c5',  name_ar: 'سبها',    name_en: 'Sabha',    sort_order: 5,  is_active: true },
+  { id: 'c6',  name_ar: 'زوارة',   name_en: 'Zuwara',   sort_order: 6,  is_active: true },
+  { id: 'c7',  name_ar: 'زليتن',   name_en: 'Zliten',   sort_order: 7,  is_active: true },
+  { id: 'c8',  name_ar: 'الخمس',   name_en: 'Al Khoms', sort_order: 8,  is_active: true },
+  { id: 'c9',  name_ar: 'سرت',     name_en: 'Sirte',    sort_order: 9,  is_active: true },
+  { id: 'c10', name_ar: 'طبرق',    name_en: 'Tobruk',   sort_order: 10, is_active: true },
+]
+const loadDemo = () => {
+  try {
+    const raw = localStorage.getItem(DEMO_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch (_) {}
+  return DEMO_SEED
+}
+const saveDemo = (list) => {
+  try { localStorage.setItem(DEMO_KEY, JSON.stringify(list)) } catch (_) {}
+}
 
 export default function Cities() {
-  const { logActivity } = useAdmin()
+  const { logActivity, isDemoMode } = useAdmin()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -18,13 +42,28 @@ export default function Cities() {
 
   const showToast = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000) }
 
-  useEffect(() => { if (isSupabaseConfigured && supabase) loadData() }, [])
+  useEffect(() => {
+    if (isDemoMode) {
+      const list = loadDemo()
+      list.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+      setData(list)
+      setLoading(false)
+      return
+    }
+    if (isSupabaseConfigured && supabase) loadData()
+  }, [isDemoMode])
 
   const loadData = async () => {
     setLoading(true)
     const { data: rows } = await supabase.from('cities').select('*').order('sort_order')
     setData(rows || [])
     setLoading(false)
+  }
+
+  const persistDemo = (next) => {
+    next.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+    setData(next)
+    saveDemo(next)
   }
 
   const filtered = data.filter(r => !search || r.name_ar?.includes(search) || r.name_en?.toLowerCase().includes(search.toLowerCase()))
@@ -37,6 +76,20 @@ export default function Cities() {
     setSaving(true)
     try {
       const payload = { ...form, sort_order: parseInt(form.sort_order) || 0 }
+
+      if (isDemoMode) {
+        if (editItem) {
+          persistDemo(data.map(c => c.id === editItem.id ? { ...c, ...payload } : c))
+          showToast('تم تعديل المدينة (تجريبي)')
+        } else {
+          persistDemo([...data, { id: 'c' + Date.now(), is_active: true, ...payload }])
+          showToast('تم إضافة المدينة (تجريبي)')
+        }
+        setModalOpen(false)
+        setSaving(false)
+        return
+      }
+
       if (editItem) {
         await supabase.from('cities').update(payload).eq('id', editItem.id)
         await logActivity('update_city', 'cities', editItem.id, `Updated: ${form.name_ar}`)
@@ -54,6 +107,11 @@ export default function Cities() {
 
   const handleDelete = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذه المدينة؟')) return
+    if (isDemoMode) {
+      persistDemo(data.filter(c => c.id !== id))
+      showToast('تم حذف المدينة (تجريبي)')
+      return
+    }
     const { error } = await supabase.from('cities').delete().eq('id', id)
     if (error) { showToast('لا يمكن حذف مدينة مرتبطة بفنيين', 'error'); return }
     showToast('تم حذف المدينة')
@@ -61,6 +119,10 @@ export default function Cities() {
   }
 
   const toggleActive = async (id, val) => {
+    if (isDemoMode) {
+      persistDemo(data.map(c => c.id === id ? { ...c, is_active: !val } : c))
+      return
+    }
     await supabase.from('cities').update({ is_active: !val }).eq('id', id)
     loadData()
   }
@@ -73,7 +135,7 @@ export default function Cities() {
       key: 'is_active', label: 'الحالة',
       render: (v, row) => (
         <button onClick={() => toggleActive(row.id, v)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-green-600' : 'text-gray-400'}`}>
-          {v ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+          {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
           {v ? 'نشطة' : 'معطلة'}
         </button>
       )
@@ -82,18 +144,25 @@ export default function Cities() {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex gap-1">
-          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-          <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="تعديل"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors" title="حذف"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       )
     },
   ]
 
-  if (!isSupabaseConfigured) return <NotConfigured />
+  if (!isDemoMode && !isSupabaseConfigured) return <NotConfigured />
 
   return (
     <div className="space-y-4">
       {toast && <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl text-white text-sm shadow-lg ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>{toast.msg}</div>}
+
+      {isDemoMode && (
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl px-3 py-2">
+          <Info className="w-4 h-4 flex-shrink-0" />
+          <span>وضع تجريبي — التعديلات لا تُحفظ في قاعدة البيانات.</span>
+        </div>
+      )}
 
       <DataTable
         columns={columns}
