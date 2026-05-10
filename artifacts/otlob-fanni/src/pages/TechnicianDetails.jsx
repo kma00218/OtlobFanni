@@ -189,7 +189,7 @@ export default function TechnicianDetails() {
       {/* Service Request Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) closeForm() }}>
-          <div className="bg-white w-full max-w-[480px] rounded-t-3xl animate-slide-up flex flex-col" style={{ maxHeight: 'calc(100dvh - 80px)' }} dir={ar ? 'rtl' : 'ltr'}>
+          <div className="bg-white w-full max-w-[480px] rounded-t-3xl animate-slide-up flex flex-col overflow-y-auto" style={{ maxHeight: 'calc(100dvh - 80px)' }} dir={ar ? 'rtl' : 'ltr'}>
 
             {/* Header — ثابت */}
             <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
