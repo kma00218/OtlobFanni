@@ -40,10 +40,32 @@ const DEMO_TECHS_SEED = [
 ]
 
 const DEMO_KEY = 'demo_technicians_v1'
+const LIVE_KEY = 'technicians'
 const loadDemoTechs = () => {
   try {
-    const raw = localStorage.getItem(DEMO_KEY)
-    if (raw) return JSON.parse(raw)
+    const liveRaw = localStorage.getItem(LIVE_KEY)
+    const liveList = liveRaw ? JSON.parse(liveRaw) : []
+    const demoRaw = localStorage.getItem(DEMO_KEY)
+    const demoList = demoRaw ? JSON.parse(demoRaw) : []
+    const normalizedLive = liveList.map(t => ({
+      id: t.id,
+      name_ar: t.name || t.name_ar || '',
+      name_en: t.name_en || t.name || '',
+      phone: t.phone || '',
+      whatsapp: t.whatsapp || t.phone || '',
+      city_id: t.city_id || t.city || '',
+      category_id: t.category_id || t.category || '',
+      experience_years: t.experience_years || t.experienceYears || 0,
+      price_from: t.price_from || t.priceFrom || 0,
+      status: t.status || (t.availableNow ? 'available' : 'busy'),
+      description_ar: t.description_ar || t.description || '',
+      description_en: t.description_en || t.description || '',
+      is_featured: t.is_featured ?? t.isFeatured ?? false,
+      is_approved: t.is_approved ?? t.isApproved ?? true,
+      is_active: t.is_active ?? t.isActive ?? true,
+      created_at: t.created_at || t.approvedAt || new Date().toISOString(),
+    }))
+    return [...normalizedLive, ...demoList]
   } catch (_) {}
   return DEMO_TECHS_SEED
 }
