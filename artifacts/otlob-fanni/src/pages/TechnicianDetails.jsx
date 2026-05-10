@@ -280,7 +280,7 @@ export default function TechnicianDetails() {
                 </div>
 
                 {/* زر الإرسال — ثابت في الأسفل */}
-                <div className="px-6 pt-3 pb-6 flex-shrink-0 border-t border-gray-100">
+                <div className="px-6 pt-4 pb-8 flex-shrink-0 border-t border-gray-100 bg-white">
                   <button
                     type="submit"
                     disabled={saving}
