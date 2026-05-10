@@ -3,72 +3,90 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import ServiceImageIcon from '../components/ServiceImageIcon'
 import { categories } from '../data/services'
-import { useRoute } from 'wouter'
-import { CheckCircle, User, Phone, MapPin, FileText } from 'lucide-react'
+import { useRoute, useLocation } from 'wouter'
+import { CheckCircle, User, Phone, MapPin, FileText, Clock, Zap } from 'lucide-react'
 
-const ls  = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null') } catch { return null } }
-const lsA = (k) => { try { return JSON.parse(localStorage.getItem(k) || '[]')  } catch { return [] }  }
+const lsA = (k) => { try { return JSON.parse(localStorage.getItem(k) || '[]') } catch { return [] } }
 
 export default function CategoryTechnicians() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const [, params] = useRoute('/category/:id')
+  const [, navigate] = useLocation()
   const categoryId = params?.id
 
   const category = categories.find(c => c.id === categoryId)
-  const categoryName = category ? (ar ? category.nameAr : category.nameEn) : (ar ? 'طلب خدمة' : 'Service Request')
+  const categoryNameAr = category?.nameAr || 'طلب خدمة'
+  const categoryNameEn = category?.nameEn || 'Service Request'
+  const categoryName   = ar ? categoryNameAr : categoryNameEn
 
   const [cities, setCities] = useState([])
-  const [form, setForm]     = useState({ name: '', phone: '', city: '', description: '' })
+  const [form, setForm] = useState({
+    customerName: '', customerPhone: '', city: '', area: '',
+    problemDescription: '', urgency: '', preferredTime: '',
+  })
   const [errors, setErrors] = useState({})
-  const [saving, setSaving] = useState(false)
+  const [saving,    setSaving]    = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [savedId,   setSavedId]   = useState(null)
 
   useEffect(() => {
-    const saved = lsA('demo_cities_v1')
-    setCities(saved)
-    // استعادة الهاتف المحفوظ مسبقاً
-    const savedPhone = ls('my_requests_phone')
-    if (savedPhone) setForm(f => ({ ...f, phone: savedPhone }))
+    setCities(lsA('demo_cities_v1'))
   }, [])
+
+  const set = (field) => (e) => {
+    setForm(f => ({ ...f, [field]: e.target.value }))
+    setErrors(er => ({ ...er, [field]: '' }))
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const fd       = new FormData(e.target)
-    const nameVal  = (fd.get('customer_name')  || form.name        || '').trim()
-    const phoneVal = (fd.get('customer_phone') || form.phone       || '').trim()
-    const cityVal  = fd.get('city_id')         || form.city        || ''
-    const descVal  = (fd.get('description')    || form.description || '').trim()
+    const fd = new FormData(e.target)
+
+    const customerName        = (fd.get('customerName')        || form.customerName        || '').trim()
+    const customerPhone       = (fd.get('customerPhone')       || form.customerPhone       || '').trim()
+    const city                = (fd.get('city')                || form.city                || '')
+    const area                = (fd.get('area')                || form.area                || '').trim()
+    const problemDescription  = (fd.get('problemDescription')  || form.problemDescription  || '').trim()
+    const urgency             = (fd.get('urgency')             || form.urgency             || '')
+    const preferredTime       = (fd.get('preferredTime')       || form.preferredTime       || '').trim()
 
     const errs = {}
-    if (!nameVal)  errs.name  = ar ? 'الاسم مطلوب'        : 'Name is required'
-    if (!phoneVal) errs.phone = ar ? 'رقم الهاتف مطلوب'   : 'Phone is required'
-    if (!cityVal)  errs.city  = ar ? 'اختر مدينتك'        : 'Select your city'
+    if (!customerName)  errs.customerName  = ar ? 'الاسم مطلوب'       : 'Name is required'
+    if (!customerPhone) errs.customerPhone = ar ? 'رقم الهاتف مطلوب'  : 'Phone is required'
+    if (!city)          errs.city          = ar ? 'اختر مدينتك'       : 'Select your city'
     if (Object.keys(errs).length) { setErrors(errs); return }
 
-    setSaving(true)
+    const now = new Date().toISOString()
+    const id  = 'sr_' + Date.now()
 
-    const city = cities.find(c => c.id === cityVal)
     const request = {
-      id:             'sr' + Date.now(),
-      customer_name:  nameVal,
-      customer_phone: phoneVal,
-      description:    descVal,
-      technician_id:  null,
-      city_id:        cityVal,
-      category_id:    categoryId || null,
-      city_name:      city?.name_ar || cityVal,
-      category_name:  category?.nameAr || categoryName,
-      status:         'new',
-      created_at:     new Date().toISOString(),
+      id,
+      customerName,
+      customerPhone,
+      city,
+      area,
+      categoryId:      categoryId || null,
+      categoryNameAr,
+      categoryNameEn,
+      problemDescription,
+      urgency,
+      preferredTime,
+      status:              'new',
+      assignedTechnicianId: null,
+      createdAt:  now,
+      updatedAt:  now,
     }
 
     try {
-      const prev = lsA('service_requests')
-      localStorage.setItem('service_requests', JSON.stringify([request, ...prev]))
-      if (phoneVal) localStorage.setItem('my_requests_phone', phoneVal)
+      const prev = lsA('serviceRequests')
+      localStorage.setItem('serviceRequests', JSON.stringify([request, ...prev]))
+
+      const prevIds = lsA('myRequestIds')
+      localStorage.setItem('myRequestIds', JSON.stringify([id, ...prevIds]))
     } catch (_) {}
 
+    setSavedId(id)
     setSaving(false)
     setSubmitted(true)
   }
@@ -76,6 +94,7 @@ export default function CategoryTechnicians() {
   const inputCls = (field) =>
     `w-full border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 focus:border-[#FF7900] transition-colors ${errors[field] ? 'border-red-400' : 'border-gray-200'}`
 
+  // ── نجاح ──
   if (submitted) {
     return (
       <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-20" dir={ar ? 'rtl' : 'ltr'}>
@@ -96,24 +115,33 @@ export default function CategoryTechnicians() {
           </div>
           <div className="bg-white rounded-2xl border border-gray-100 p-4 w-full max-w-[320px] text-right space-y-2">
             <p className="text-xs text-gray-400">{ar ? 'تفاصيل الطلب' : 'Request Details'}</p>
-            <p className="text-sm font-medium text-gray-700">{ar ? 'الخدمة: ' : 'Service: '}<span className="text-[#FF7900]">{categoryName}</span></p>
-            <p className="text-sm font-medium text-gray-700">{ar ? 'الحالة: ' : 'Status: '}<span className="text-orange-500 font-bold">{ar ? 'جديد — قيد المراجعة' : 'New — Under Review'}</span></p>
+            <p className="text-sm font-medium text-gray-700">
+              {ar ? 'الخدمة: ' : 'Service: '}
+              <span className="text-[#FF7900]">{categoryName}</span>
+            </p>
+            <p className="text-sm font-medium text-gray-700">
+              {ar ? 'الحالة: ' : 'Status: '}
+              <span className="text-orange-500 font-bold">{ar ? 'جديد — قيد المراجعة' : 'New — Under Review'}</span>
+            </p>
           </div>
-          <a href="/orders">
-            <button className="bg-[#FF7900] text-white font-bold px-8 py-3 rounded-xl text-sm">
-              {ar ? 'تابع طلباتك' : 'Track Your Orders'}
-            </button>
-          </a>
-          <a href="/">
-            <button className="text-gray-400 text-sm hover:text-gray-600 py-1">
-              {ar ? 'العودة للرئيسية' : 'Back to Home'}
-            </button>
-          </a>
+          <button
+            onClick={() => navigate('/orders')}
+            className="bg-[#FF7900] text-white font-bold px-8 py-3 rounded-xl text-sm w-full max-w-[280px]"
+          >
+            {ar ? 'تابع طلباتك' : 'Track Your Orders'}
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="text-gray-400 text-sm hover:text-gray-600 py-1"
+          >
+            {ar ? 'العودة للرئيسية' : 'Back to Home'}
+          </button>
         </main>
       </div>
     )
   }
 
+  // ── النموذج ──
   return (
     <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-20" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={categoryName} />
@@ -135,51 +163,57 @@ export default function CategoryTechnicians() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* Name */}
+            {/* الاسم */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-[#FF7900]" />
-                {ar ? 'الاسم الكامل' : 'Full Name'} <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-[#FF7900]" />
+                  {ar ? 'الاسم الكامل' : 'Full Name'} <span className="text-red-500">*</span>
+                </span>
               </label>
               <input
                 type="text"
-                name="customer_name"
-                value={form.name}
-                onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: '' })) }}
+                name="customerName"
+                value={form.customerName}
+                onChange={set('customerName')}
                 placeholder={ar ? 'مثال: محمد الورفلي' : 'e.g. John Doe'}
-                className={inputCls('name')}
+                className={inputCls('customerName')}
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+              {errors.customerName && <p className="text-red-500 text-xs mt-1">{errors.customerName}</p>}
             </div>
 
-            {/* Phone */}
+            {/* الهاتف */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-[#FF7900]" />
-                {ar ? 'رقم الهاتف' : 'Phone Number'} <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[#FF7900]" />
+                  {ar ? 'رقم الهاتف' : 'Phone Number'} <span className="text-red-500">*</span>
+                </span>
               </label>
               <input
                 type="tel"
-                name="customer_phone"
-                value={form.phone}
-                onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(er => ({ ...er, phone: '' })) }}
+                name="customerPhone"
+                value={form.customerPhone}
+                onChange={set('customerPhone')}
                 placeholder="09xxxxxxxx"
                 dir="ltr"
-                className={inputCls('phone')}
+                className={inputCls('customerPhone')}
               />
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              {errors.customerPhone && <p className="text-red-500 text-xs mt-1">{errors.customerPhone}</p>}
             </div>
 
-            {/* City */}
+            {/* المدينة */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#FF7900]" />
-                {ar ? 'المدينة' : 'City'} <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#FF7900]" />
+                  {ar ? 'المدينة' : 'City'} <span className="text-red-500">*</span>
+                </span>
               </label>
               <select
-                name="city_id"
+                name="city"
                 value={form.city}
-                onChange={e => { setForm(f => ({ ...f, city: e.target.value })); setErrors(er => ({ ...er, city: '' })) }}
+                onChange={set('city')}
                 className={inputCls('city')}
               >
                 <option value="">{ar ? '— اختر مدينتك —' : '— Select your city —'}</option>
@@ -190,26 +224,89 @@ export default function CategoryTechnicians() {
               {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
             </div>
 
-            {/* Description */}
+            {/* المنطقة / الحي */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-[#FF7900]" />
-                {ar ? 'وصف المشكلة أو الخدمة المطلوبة' : 'Describe the service needed'}
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                  {ar ? 'المنطقة أو الحي' : 'Area / Neighborhood'}
+                </span>
+              </label>
+              <input
+                type="text"
+                name="area"
+                value={form.area}
+                onChange={set('area')}
+                placeholder={ar ? 'مثال: حي الأندلس، طريق المطار...' : 'e.g. Al-Andalus, Airport Road...'}
+                className={inputCls('area')}
+              />
+            </div>
+
+            {/* وصف المشكلة */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-[#FF7900]" />
+                  {ar ? 'وصف المشكلة أو الخدمة المطلوبة' : 'Describe the problem or service needed'}
+                </span>
               </label>
               <textarea
-                name="description"
-                value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                placeholder={ar ? 'اكتب تفاصيل ما تحتاجه...' : 'Write details about what you need...'}
+                name="problemDescription"
+                value={form.problemDescription}
+                onChange={set('problemDescription')}
+                placeholder={ar ? 'اكتب تفاصيل ما تحتاجه...' : 'Describe what you need...'}
                 rows={3}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 focus:border-[#FF7900] transition-colors resize-none"
               />
             </div>
 
+            {/* الأولوية */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-[#FF7900]" />
+                  {ar ? 'الأولوية' : 'Urgency'}
+                </span>
+              </label>
+              <select
+                name="urgency"
+                value={form.urgency}
+                onChange={set('urgency')}
+                className={inputCls('urgency')}
+              >
+                <option value="">{ar ? '— اختر الأولوية —' : '— Select urgency —'}</option>
+                <option value="normal">{ar ? 'عادي'  : 'Normal'}</option>
+                <option value="urgent">{ar ? 'عاجل'  : 'Urgent'}</option>
+                <option value="emergency">{ar ? 'طارئ' : 'Emergency'}</option>
+              </select>
+            </div>
+
+            {/* الوقت المفضل */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#FF7900]" />
+                  {ar ? 'الوقت المفضل للزيارة' : 'Preferred Visit Time'}
+                </span>
+              </label>
+              <select
+                name="preferredTime"
+                value={form.preferredTime}
+                onChange={set('preferredTime')}
+                className={inputCls('preferredTime')}
+              >
+                <option value="">{ar ? '— اختر الوقت المفضل —' : '— Select preferred time —'}</option>
+                <option value="morning">{ar   ? 'صباحاً (8ص — 12م)'   : 'Morning (8AM — 12PM)'}</option>
+                <option value="afternoon">{ar ? 'ظهراً (12م — 4م)'    : 'Afternoon (12PM — 4PM)'}</option>
+                <option value="evening">{ar   ? 'مساءً (4م — 8م)'     : 'Evening (4PM — 8PM)'}</option>
+                <option value="anytime">{ar   ? 'أي وقت مناسب'        : 'Anytime'}</option>
+              </select>
+            </div>
+
             <button
               type="submit"
               disabled={saving}
-              className="w-full py-3.5 bg-[#FF7900] hover:bg-[#e06b00] disabled:opacity-60 text-white font-bold rounded-xl text-base transition-colors"
+              className="w-full py-3.5 bg-[#FF7900] hover:bg-[#e06b00] disabled:opacity-60 text-white font-bold rounded-xl text-base transition-colors mt-2"
             >
               {saving
                 ? (ar ? 'جاري الإرسال...' : 'Sending...')
