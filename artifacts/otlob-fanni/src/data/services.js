@@ -119,37 +119,41 @@ export function getApprovedTechnicians() {
 
 export function getFeaturedTechnicians() {
   try {
-    const raw = localStorage.getItem('technicians')
-    if (!raw) return []
-    const list = JSON.parse(raw)
+    const demoRaw = localStorage.getItem('demo_technicians_v1')
+    const demoList = demoRaw ? JSON.parse(demoRaw) : []
+    const approvedRaw = localStorage.getItem('technicians')
+    const approvedList = approvedRaw ? JSON.parse(approvedRaw) : []
+    const list = [...demoList, ...approvedList]
     return list
-      .filter(t => t.isActive && t.isApproved && t.isFeatured)
+      .filter(t => (t.is_active ?? t.isActive) && (t.is_approved ?? t.isApproved) && (t.is_featured ?? t.isFeatured))
       .map((t, i) => {
-        const cat  = categories.find(c => c.id === t.category) || {}
-        const city = CITY_TEXT_MAP[t.city] || { ar: t.city || '—', en: t.city || '—' }
+        const catId = t.category || t.category_id || ''
+        const cat  = categories.find(c => c.id === catId) || {}
+        const cityRaw = t.city || t.city_id || ''
+        const city = CITY_TEXT_MAP[cityRaw] || { ar: cityRaw || '—', en: cityRaw || '—' }
         return {
           id:              t.id,
-          nameAr:          t.name || '',
-          nameEn:          t.name || '',
-          categoryId:      t.category || '',
+          nameAr:          t.name || t.name_ar || '',
+          nameEn:          t.name || t.name_en || t.name_ar || '',
+          categoryId:      catId,
           categoryAr:      cat.nameAr || '',
           categoryEn:      cat.nameEn || '',
           cityAr:          city.ar,
           cityEn:          city.en,
           area:            t.area || '',
           rating:          t.rating ?? 0,
-          reviews:         t.reviewsCount ?? 0,
-          experienceYears: t.experienceYears || 0,
-          priceFrom:       t.priceFrom || 0,
+          reviews:         t.reviewsCount ?? t.reviews ?? 0,
+          experienceYears: t.experienceYears || t.experience_years || 0,
+          priceFrom:       t.priceFrom || t.price_from || 0,
           priceTo:         t.priceTo || 0,
           phone:           t.phone || '',
           whatsapp:        t.whatsapp || t.phone || '',
-          statusAr:        t.availableNow ? 'متاح الآن' : 'مشغول',
-          statusEn:        t.availableNow ? 'Available Now' : 'Busy',
-          available:       !!t.availableNow,
-          descriptionAr:   t.description || '',
-          descriptionEn:   t.description || '',
-          profilePhoto:    t.profilePhoto || null,
+          statusAr:        (t.status === 'available' || t.availableNow) ? 'متاح الآن' : 'مشغول',
+          statusEn:        (t.status === 'available' || t.availableNow) ? 'Available Now' : 'Busy',
+          available:       !!(t.availableNow || t.status === 'available'),
+          descriptionAr:   t.description || t.description_ar || '',
+          descriptionEn:   t.description || t.description_en || t.description_ar || '',
+          profilePhoto:    t.profilePhoto || t.profile_photo || null,
           avatarColor:     AVATAR_COLORS[i % AVATAR_COLORS.length],
           fromApproved:    true,
           isFeatured:      true,
