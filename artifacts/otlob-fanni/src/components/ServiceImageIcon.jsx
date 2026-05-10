@@ -1,3 +1,5 @@
+import generalMaintenanceIcon from '@assets/maintenanc_1778371616295.png'
+
 const iconMap = {
   electricity:          '/icons/services/electricity.svg',
   plumbing:             '/icons/services/plumbing.svg',
@@ -9,7 +11,7 @@ const iconMap = {
   cctv:                 '/icons/services/cctv.svg',
   network:              '/icons/services/network.svg',
   networks:             '/icons/services/network.svg',
-  maintenance:          '/icons/services/maintenance.svg',
+  maintenance:          generalMaintenanceIcon,
   'general-maintenance':'/icons/services/general-maintenance.png',
   appliances:           '/icons/services/appliances.svg',
   welding:              '/icons/services/welding.svg',
