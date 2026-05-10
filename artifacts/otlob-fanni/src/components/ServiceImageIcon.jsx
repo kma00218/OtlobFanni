@@ -1,4 +1,4 @@
-import generalMaintenanceIcon from '@assets/maintenanc_1778371616295.png'
+import generalMaintenanceIcon from '@assets/Screenshot_2026-05-10_at_02.11.06_1778371871545.png'
 
 const iconMap = {
   electricity:          '/icons/services/electricity.svg',
