@@ -18,9 +18,16 @@ const CAT_ID_TO_SLUG = {
 }
 
 function loadTechnicians(categoryId, selectedCityId, cities) {
+  const isVisible = (t) => {
+    const approved = t.isApproved ?? t.is_approved ?? true
+    const active = t.isActive ?? t.is_active ?? true
+    const status = t.status
+    return approved && active && status !== 'inactive'
+  }
+
   // ── من طلبات الانضمام المعتمدة ──
   const approved = lsA('technicians')
-    .filter(t => (t.isApproved ?? true) && (t.isActive ?? true))
+    .filter(isVisible)
     .filter(t => t.category === categoryId)
     .filter(t => {
       if (!selectedCityId) return true
@@ -50,7 +57,7 @@ function loadTechnicians(categoryId, selectedCityId, cities) {
 
   // ── من الفنيين المضافين يدوياً من الأدمن ──
   const adminAdded = lsA('demo_technicians_v1')
-    .filter(t => (t.is_approved ?? true) && (t.is_active ?? true) && t.status !== 'inactive')
+    .filter(isVisible)
     .filter(t => {
       const slug = CAT_ID_TO_SLUG[t.category_id] || t.category_id
       return slug === categoryId
