@@ -89,8 +89,6 @@ export default function JoinCompany() {
   const [saving, setSaving] = useState(false)
   const [companyLogo, setCompanyLogo] = useState(null)
   const [workImages, setWorkImages] = useState([])
-  const [commercialDoc, setCommercialDoc] = useState(null)
-  const [workLicense, setWorkLicense] = useState(null)
   const [days, setDays] = useState([])
 
   const [form, setForm] = useState({
@@ -168,8 +166,6 @@ export default function JoinCompany() {
         instagram:      form.instagram,
         company_logo:   companyLogo,
         work_images:    workImages,
-        commercial_doc: commercialDoc,
-        work_license:   workLicense,
       })
       setSubmitted(true)
     } catch (err) {
@@ -480,35 +476,6 @@ export default function JoinCompany() {
                   <input type="file" accept="image/*" multiple className="hidden" onChange={handleWorkImages} />
                 </label>
               )}
-            </div>
-          </div>
-
-          {/* ── 7. Official Documents ───────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-            <SectionTitle icon={Lock} step={7}>{ar ? 'الوثائق الرسمية (للاستخدام الداخلي فقط)' : 'Official Documents (Internal Use Only)'}</SectionTitle>
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4 flex items-start gap-2">
-              <Lock className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-amber-700 leading-relaxed">
-                {ar
-                  ? 'هذه الوثائق سرية وتُستخدم فقط للتحقق من هوية الشركة من قبل الإدارة. لن تظهر للعملاء.'
-                  : 'These documents are confidential and used only for internal company verification. They will not be shown to customers.'}
-              </p>
-            </div>
-            <div className="space-y-4">
-              <DocUpload
-                label={ar ? 'وثيقة السجل التجاري / الترخيص' : 'Commercial Registration Document'}
-                hint={ar ? 'صورة أو PDF من السجل التجاري أو الترخيص' : 'Image or PDF of commercial registration or license'}
-                value={commercialDoc}
-                onChange={setCommercialDoc}
-                ar={ar}
-              />
-              <DocUpload
-                label={ar ? 'رخصة العمل / شهادة الاعتماد' : 'Work License / Accreditation Certificate'}
-                hint={ar ? 'اختياري — أي شهادة مهنية أو ترخيص إضافي' : 'Optional — any professional certificate or additional license'}
-                value={workLicense}
-                onChange={setWorkLicense}
-                ar={ar}
-              />
             </div>
           </div>
 
