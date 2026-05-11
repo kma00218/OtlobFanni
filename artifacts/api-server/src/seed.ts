@@ -1,5 +1,5 @@
 import { db } from "@workspace/db";
-import { citiesTable, categoriesTable } from "@workspace/db/schema";
+import { citiesTable, categoriesTable, adminsTable } from "@workspace/db/schema";
 import { sql } from "drizzle-orm";
 
 const CITIES = [
@@ -97,6 +97,21 @@ export async function seedDatabase(): Promise<void> {
     if (catCount === 0) {
       await db.insert(categoriesTable).values(CATEGORIES).onConflictDoNothing();
       console.log(`[seed] Inserted ${CATEGORIES.length} categories`);
+    }
+
+    const [{ count: adminCount }] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(adminsTable);
+
+    if (adminCount === 0) {
+      await db.insert(adminsTable).values({
+        name: 'Super Admin',
+        email: 'admin@otlobfanni.ly',
+        passwordHash: 'demo1234',
+        role: 'super_admin',
+        isActive: true,
+      }).onConflictDoNothing();
+      console.log('[seed] Inserted default super admin');
     }
   } catch (err) {
     console.error('[seed] Seed failed (non-fatal):', err);
