@@ -5,7 +5,7 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import CategoryCard from '../components/CategoryCard'
 import { categories } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, Wrench } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2 } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 
@@ -89,16 +89,6 @@ export default function Home() {
         <AdBanner placement="banner" compact />
       </main>
 
-      {/* زر اطلب فني الآن — ثابت فوق شريط التنقل السفلي */}
-      <div className="fixed bottom-[64px] left-0 right-0 px-4 z-40 max-w-[480px] mx-auto">
-        <Link href="/categories">
-          <button className="w-full h-13 bg-[#FF7900] text-white text-base font-bold rounded-2xl shadow-xl shadow-[#FF7900]/30 flex items-center justify-center gap-2 active:scale-[0.97] transition-transform">
-            <Wrench className="h-5 w-5" />
-            {t('requestNow')}
-            {dir === 'rtl' ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
-          </button>
-        </Link>
-      </div>
     </div>
   )
 }
