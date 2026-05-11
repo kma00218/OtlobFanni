@@ -291,7 +291,7 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
                 <div className="w-8 h-8 rounded-xl bg-[#071B33] flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-[#071B33] font-extrabold text-[12px] text-center leading-tight w-full px-1 line-clamp-2">{cityName}</span>
+                <span className="text-[#071B33] font-extrabold text-[14px] text-center leading-tight w-full px-1 line-clamp-2">{cityName}</span>
               </button>
             )
           })}
