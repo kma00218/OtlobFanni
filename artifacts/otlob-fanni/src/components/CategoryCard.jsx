@@ -112,7 +112,7 @@ export default function CategoryCard({ category }) {
           />
         </div>
         {/* Label */}
-        <span className="text-[11px] font-semibold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[76px]">
+        <span className="text-[12px] font-bold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[76px]">
           {name}
         </span>
       </div>
