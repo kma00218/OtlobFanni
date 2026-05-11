@@ -98,20 +98,20 @@ export default function CategoryCard({ category }) {
       <div className="flex flex-col items-center gap-1.5 select-none cursor-pointer active:scale-90 transition-transform duration-150">
         {/* iPhone-style icon */}
         <div
-          className="w-[58px] h-[58px] rounded-[14px] flex items-center justify-center shadow-md overflow-hidden"
+          className="w-[70px] h-[70px] rounded-[18px] flex items-center justify-center shadow-lg overflow-hidden"
           style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
         >
           <img
             src={iconSrc}
             alt=""
-            className="w-10 h-10 object-contain"
+            className="w-12 h-12 object-contain"
             loading="lazy"
             draggable="false"
             onError={(e) => { e.currentTarget.src = '/icons/services/maintenance.svg' }}
           />
         </div>
         {/* Label */}
-        <span className="text-[10px] font-semibold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[64px]">
+        <span className="text-[11px] font-semibold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[76px]">
           {name}
         </span>
       </div>
