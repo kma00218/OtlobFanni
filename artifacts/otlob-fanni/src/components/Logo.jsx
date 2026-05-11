@@ -1,6 +1,6 @@
 export default function Logo() {
   return (
-    <div className="flex items-center justify-center py-3">
+    <div className="flex items-center justify-center py-1">
       <img
         src="/logo.png"
         alt="اطلب فني"
