@@ -131,15 +131,15 @@ export default function TechnicianDetails() {
               </span>
             )}
           </div>
-          <div className="px-4 pb-4 -mt-10">
-            <div className="flex items-end gap-3 mb-3">
+          <div className="px-4 pt-4 pb-4">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#071B33] flex items-center justify-center">
                 {tech.photoUrl
                   ? <img src={tech.photoUrl} alt={tech.name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(tech.photoUrl)} />
                   : <span className="text-white text-2xl font-bold">{initials}</span>
                 }
               </div>
-              <div className="flex-1 min-w-0 mt-10">
+              <div className="flex-1 min-w-0">
                 <h1 className="font-bold text-gray-900 text-lg leading-tight">{tech.name}</h1>
                 <p className="text-sm text-[#FF7900] font-medium">{catName}</p>
               </div>
