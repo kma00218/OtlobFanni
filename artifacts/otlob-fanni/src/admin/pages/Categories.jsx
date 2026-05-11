@@ -65,13 +65,13 @@ export default function Categories() {
 
   const columns = [
     { key: 'icon', label: 'الأيقونة', width: '80px', render: (v) => <span className="text-[#FF7900] font-mono text-xs bg-[#FF7900]/10 px-2 py-1 rounded-lg">{v || 'Wrench'}</span> },
-    { key: 'name_ar', label: 'الاسم عربي',     render: (v) => <span className="font-medium">{v}</span> },
-    { key: 'name_en', label: 'الاسم إنجليزي',  render: (v) => <span dir="ltr" className="text-gray-500">{v}</span> },
+    { key: 'name_ar', label: 'الاسم عربي',     render: (v) => <span className="font-medium text-[#D8D8EC]">{v}</span> },
+    { key: 'name_en', label: 'الاسم إنجليزي',  render: (v) => <span dir="ltr" className="text-[#8888A8]">{v}</span> },
     { key: 'sort_order', label: 'الترتيب', width: '80px' },
     {
       key: 'is_active', label: 'الحالة',
       render: (v, row) => (
-        <button onClick={() => toggleActive(row.id, v)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-green-600' : 'text-gray-400'}`}>
+        <button onClick={() => toggleActive(row.id, v)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-emerald-400' : 'text-[#444460]'}`}>
           {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
           {v ? 'نشط' : 'معطل'}
         </button>
@@ -81,8 +81,8 @@ export default function Categories() {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex gap-1">
-          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-          <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       )
     },

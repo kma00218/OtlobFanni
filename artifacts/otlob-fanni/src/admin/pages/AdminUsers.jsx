@@ -98,15 +98,15 @@ export default function AdminUsers() {
       key: 'name', label: 'المستخدم',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-gray-800">{v || '—'}</p>
-          <p className="text-xs text-gray-400" dir="ltr">{row.email}</p>
+          <p className="font-medium text-[#D8D8EC]">{v || '—'}</p>
+          <p className="text-xs text-[#555570]" dir="ltr">{row.email}</p>
         </div>
       )
     },
     {
       key: 'role', label: 'الدور',
       render: (v) => (
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${v === 'super_admin' ? 'bg-[#071B33] text-white' : 'bg-[#FF7900]/10 text-[#FF7900]'}`}>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${v === 'super_admin' ? 'bg-white/10 text-[#E8E8F0]' : 'bg-[#FF7900]/10 text-[#FF7900]'}`}>
           {v === 'super_admin' ? 'Super Admin' : 'Sub Admin'}
         </span>
       )
@@ -115,12 +115,12 @@ export default function AdminUsers() {
       key: 'isActive', label: 'الحالة',
       render: (v, row) => (
         row.role !== 'super_admin' ? (
-          <button onClick={() => toggleActive(row)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-green-600' : 'text-gray-400'}`}>
+          <button onClick={() => toggleActive(row)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-emerald-400' : 'text-[#444460]'}`}>
             {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
             {v ? 'نشط' : 'معطل'}
           </button>
         ) : (
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-green-50 text-green-600">نشط</span>
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-emerald-500/10 text-emerald-400">نشط</span>
         )
       )
     },
@@ -131,10 +131,10 @@ export default function AdminUsers() {
     {
       key: 'id', label: 'إجراءات',
       render: (v, row) => row.role === 'sub_admin' ? (
-        <button onClick={() => openEdit(row)} className="text-xs text-blue-500 hover:text-blue-700 font-medium px-2 py-1 hover:bg-blue-50 rounded-lg transition-colors">
+        <button onClick={() => openEdit(row)} className="text-xs text-blue-400 hover:text-blue-300 font-medium px-2 py-1 hover:bg-blue-500/10 rounded-lg transition-colors">
           تعديل
         </button>
-      ) : <span className="text-xs text-gray-300">—</span>
+      ) : <span className="text-xs text-[#333350]">—</span>
     },
   ]
 
@@ -189,35 +189,35 @@ export default function AdminUsers() {
           <div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={editForm.is_active} onChange={e => setEditForm(f => ({ ...f, is_active: e.target.checked }))} className="w-4 h-4 accent-[#FF7900]" />
-              <span className="text-sm text-gray-700">حساب نشط</span>
+              <span className="text-sm text-[#C0C0D8]">حساب نشط</span>
             </label>
           </div>
         </div>
       </FormModal>
 
       {successInfo && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" dir="rtl">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" dir="rtl">
+          <div className="bg-[#0E0E17] border border-white/8 rounded-2xl shadow-2xl w-full max-w-sm p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-emerald-500/15 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">تم إنشاء الحساب بنجاح</h3>
-                <p className="text-xs text-gray-400">احفظ بيانات الدخول</p>
+                <h3 className="font-bold text-[#E8E8F0]">تم إنشاء الحساب بنجاح</h3>
+                <p className="text-xs text-[#555570]">احفظ بيانات الدخول</p>
               </div>
             </div>
-            <div className="bg-[#F7F8FA] rounded-xl p-4 space-y-3 mb-4">
+            <div className="bg-white/5 rounded-xl p-4 space-y-3 mb-4">
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">البريد الإلكتروني</p>
-                <p className="font-mono text-sm text-gray-800" dir="ltr">{successInfo.email}</p>
+                <p className="text-xs text-[#555570] mb-0.5">البريد الإلكتروني</p>
+                <p className="font-mono text-sm text-[#D8D8EC]" dir="ltr">{successInfo.email}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">كلمة المرور</p>
+                <p className="text-xs text-[#555570] mb-0.5">كلمة المرور</p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-mono text-sm text-gray-800" dir="ltr">{successInfo.password}</p>
+                  <p className="font-mono text-sm text-[#D8D8EC]" dir="ltr">{successInfo.password}</p>
                   <button onClick={() => copyToClipboard(`${successInfo.email}\n${successInfo.password}`)} className="text-[#FF7900] hover:text-[#e86d00]">
-                    {copied ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
               </div>

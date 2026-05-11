@@ -11,9 +11,9 @@ const EXP_LABEL = {
 }
 
 const STATUS = {
-  pending:  { label: 'قيد المراجعة', cls: 'bg-amber-50 text-amber-600'  },
-  approved: { label: 'مقبول',        cls: 'bg-green-50 text-green-700'  },
-  rejected: { label: 'مرفوض',        cls: 'bg-red-50   text-red-500'    },
+  pending:  { label: 'قيد المراجعة', cls: 'bg-amber-500/10 text-amber-400'   },
+  approved: { label: 'مقبول',        cls: 'bg-emerald-500/10 text-emerald-400' },
+  rejected: { label: 'مرفوض',        cls: 'bg-red-500/10 text-red-400'        },
 }
 
 const DAY_AR = {
@@ -88,17 +88,17 @@ export default function CompanyApplications() {
         const contact = row.contactName || row.contact_name
         return (
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-white/8">
               {logo
                 ? <img src={logo} alt="" className="w-full h-full object-cover" />
-                : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white text-xs font-bold rounded-xl">
+                : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white text-xs font-bold rounded-xl">
                     {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
                   </div>
               }
             </div>
             <div>
-              <p className="font-medium text-gray-800 text-sm">{v}</p>
-              <p className="text-xs text-gray-400">{contact || '—'}</p>
+              <p className="font-medium text-[#D8D8EC] text-sm">{v}</p>
+              <p className="text-xs text-[#555570]">{contact || '—'}</p>
             </div>
           </div>
         )
@@ -106,7 +106,7 @@ export default function CompanyApplications() {
     },
     {
       key: 'phone', label: 'الهاتف',
-      render: (v) => <span className="text-xs text-gray-600" dir="ltr">{v || '—'}</span>,
+      render: (v) => <span className="text-xs text-[#8888A8]" dir="ltr">{v || '—'}</span>,
     },
     { key: 'city', label: 'المدينة' },
     {
@@ -133,23 +133,23 @@ export default function CompanyApplications() {
       render: (v, row) => (
         <div className="flex gap-1 flex-wrap">
           <button onClick={() => setViewItem(row)}
-            className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="عرض التفاصيل">
+            className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors" title="عرض التفاصيل">
             <Eye className="w-3.5 h-3.5" />
           </button>
           {row.status === 'pending' && (
             <>
               <button onClick={() => setStatus(row.id, 'approved')}
-                className="px-2 py-1 text-xs bg-green-50 text-green-600 hover:bg-green-100 rounded-lg font-medium transition-colors">
+                className="px-2 py-1 text-xs bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg font-medium transition-colors">
                 قبول
               </button>
               <button onClick={() => setStatus(row.id, 'rejected')}
-                className="px-2 py-1 text-xs bg-red-50 text-red-500 hover:bg-red-100 rounded-lg font-medium transition-colors">
+                className="px-2 py-1 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg font-medium transition-colors">
                 رفض
               </button>
             </>
           )}
           <button onClick={() => handleDelete(row.id)}
-            className="p-1.5 hover:bg-red-50 text-red-400 rounded-lg transition-colors" title="حذف">
+            className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="حذف">
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -174,13 +174,13 @@ export default function CompanyApplications() {
       )}
 
       {/* Info banner */}
-      <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-xl px-3 py-2">
+      <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
         <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كشركة</strong>. عند القبول تظهر الشركة مباشرة في التطبيق.</span>
       </div>
 
       {pendingCount > 0 && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl px-3 py-2">
+        <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs rounded-xl px-3 py-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>يوجد <strong>{pendingCount}</strong> {pendingCount === 1 ? 'طلب' : 'طلبات'} قيد المراجعة.</span>
         </div>
@@ -195,7 +195,7 @@ export default function CompanyApplications() {
         searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة..."
         actions={
           <select value={filter} onChange={e => setFilter(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
+            className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
             <option value="rejected">مرفوض</option>
@@ -238,11 +238,11 @@ export default function CompanyApplications() {
             <div className="space-y-5">
 
               {/* Company header */}
-              <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
-                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white shadow">
+              <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white/10 shadow">
                   {logo
                     ? <img src={logo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
-                    : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
+                    : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
                         {compName.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                   }
@@ -250,19 +250,19 @@ export default function CompanyApplications() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
-                    <h3 className="font-bold text-gray-900 text-lg leading-tight">{compName}</h3>
+                    <h3 className="font-bold text-[#E8E8F0] text-lg leading-tight">{compName}</h3>
                   </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[#8888A8]">
                     {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
                   </p>
                   {contactName && (
-                    <p className="text-xs text-gray-400 mt-0.5">جهة التواصل: {contactName}</p>
+                    <p className="text-xs text-[#555570] mt-0.5">جهة التواصل: {contactName}</p>
                   )}
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS[viewItem.status]?.cls}`}>
                       {STATUS[viewItem.status]?.label}
                     </span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-[#555570]">
                       {createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}
                     </span>
                   </div>
@@ -282,9 +282,9 @@ export default function CompanyApplications() {
                   <IC label="نطاق الخدمة"       value={svcRadius ? `${svcRadius} كم` : '—'} />
                 </G2>
                 {viewItem.address && (
-                  <div className="mt-2 bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-0.5">العنوان التفصيلي</p>
-                    <p className="text-sm text-gray-700">{viewItem.address}</p>
+                  <div className="mt-2 bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-[#555570] mb-0.5">العنوان التفصيلي</p>
+                    <p className="text-sm text-[#C0C0D8]">{viewItem.address}</p>
                   </div>
                 )}
               </Sec>
@@ -298,17 +298,17 @@ export default function CompanyApplications() {
                   <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />
                 </G2>
                 {viewItem.description && (
-                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-1">وصف الخدمات</p>
-                    <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
+                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-[#555570] mb-1">وصف الخدمات</p>
+                    <p className="text-sm text-[#C0C0D8] leading-relaxed">{viewItem.description}</p>
                   </div>
                 )}
                 {viewItem.certifications && (
-                  <div className="mt-2 bg-blue-50 rounded-xl p-3">
+                  <div className="mt-2 bg-blue-500/10 rounded-xl p-3">
                     <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
                       <Shield className="w-3 h-3" /> الشهادات والاعتمادات
                     </p>
-                    <p className="text-sm text-blue-800 leading-relaxed">{viewItem.certifications}</p>
+                    <p className="text-sm text-blue-300 leading-relaxed">{viewItem.certifications}</p>
                   </div>
                 )}
               </Sec>
@@ -318,19 +318,19 @@ export default function CompanyApplications() {
                 <G2>
                   <IC label="متاح الآن"
                     value={availNow ? '✓ نعم' : '✗ لا'}
-                    valueClass={availNow ? 'text-green-600 font-semibold' : 'text-gray-500'} />
+                    valueClass={availNow ? 'text-emerald-400 font-semibold' : 'text-[#555570]'} />
                   <IC label="خدمة الطوارئ 24/7"
                     value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
-                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'} />
+                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-[#555570]'} />
                   {hoursFrom && <IC label="بداية الدوام" value={hoursFrom} dir="ltr" />}
                   {hoursTo   && <IC label="نهاية الدوام" value={hoursTo}   dir="ltr" />}
                 </G2>
                 {workDays.length > 0 && (
-                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
+                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-[#555570] mb-2">أيام العمل</p>
                     <div className="flex flex-wrap gap-1.5">
                       {workDays.map(d => (
-                        <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">
+                        <span key={d} className="bg-white/10 text-[#C0C0D8] text-xs px-2.5 py-1 rounded-lg">
                           {DAY_AR[d] || d}
                         </span>
                       ))}
@@ -343,19 +343,19 @@ export default function CompanyApplications() {
               {(viewItem.facebook || viewItem.instagram) && (
                 <Sec icon={Facebook} title="التواصل الاجتماعي">
                   {viewItem.facebook && (
-                    <div className="bg-gray-50 rounded-xl p-3 mb-2">
-                      <p className="text-xs text-gray-400 mb-0.5">فيسبوك</p>
+                    <div className="bg-white/5 rounded-xl p-3 mb-2">
+                      <p className="text-xs text-[#555570] mb-0.5">فيسبوك</p>
                       <a href={viewItem.facebook} target="_blank" rel="noreferrer"
-                        className="text-sm text-blue-500 hover:underline break-all" dir="ltr">
+                        className="text-sm text-blue-400 hover:underline break-all" dir="ltr">
                         {viewItem.facebook}
                       </a>
                     </div>
                   )}
                   {viewItem.instagram && (
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-xs text-gray-400 mb-0.5">إنستغرام</p>
+                    <div className="bg-white/5 rounded-xl p-3">
+                      <p className="text-xs text-[#555570] mb-0.5">إنستغرام</p>
                       <a href={viewItem.instagram} target="_blank" rel="noreferrer"
-                        className="text-sm text-pink-500 hover:underline break-all" dir="ltr">
+                        className="text-sm text-pink-400 hover:underline break-all" dir="ltr">
                         {viewItem.instagram}
                       </a>
                     </div>
@@ -369,45 +369,45 @@ export default function CompanyApplications() {
                   <div className="grid grid-cols-3 gap-2">
                     {workImgs.map((src, i) => (
                       <img key={i} src={src} alt={`صورة ${i + 1}`}
-                        className="w-full aspect-square object-cover rounded-xl border border-gray-200 cursor-zoom-in hover:opacity-90"
+                        className="w-full aspect-square object-cover rounded-xl border border-white/8 cursor-zoom-in hover:opacity-90"
                         onClick={() => setLightbox(src)} />
                     ))}
                   </div>
                 </Sec>
               ) : (
-                <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
+                <div className="bg-white/5 rounded-xl p-3 flex items-center gap-2 text-[#555570]">
                   <Image className="w-4 h-4 flex-shrink-0" />
                   <p className="text-xs">لم يتم رفع صور من الأعمال</p>
                 </div>
               )}
 
               {/* Documents */}
-              <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-500">
-                <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
+              <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-400">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
                   <Lock className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                  <p className="text-xs text-red-500">سرية تامة — لا تُشارك مع العملاء</p>
+                  <p className="text-xs text-red-400">سرية تامة — لا تُشارك مع العملاء</p>
                 </div>
                 {(commDoc || workLic) ? (
                   <div className="space-y-3">
                     {commDoc && (
                       <div>
-                        <p className="text-xs text-gray-500 font-medium mb-1">السجل التجاري / الترخيص</p>
+                        <p className="text-xs text-[#666680] font-medium mb-1">السجل التجاري / الترخيص</p>
                         <img src={commDoc} alt="commercial"
-                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(commDoc)} />
                       </div>
                     )}
                     {workLic && (
                       <div>
-                        <p className="text-xs text-gray-500 font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
+                        <p className="text-xs text-[#666680] font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
                         <img src={workLic} alt="license"
-                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(workLic)} />
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
+                  <div className="bg-white/5 rounded-xl p-3 flex items-center gap-2 text-[#555570]">
                     <FileText className="w-4 h-4 flex-shrink-0" />
                     <p className="text-xs">لم يتم رفع وثائق رسمية</p>
                   </div>
@@ -418,7 +418,7 @@ export default function CompanyApplications() {
               {viewItem.status === 'pending' && (
                 <button
                   onClick={() => { setStatus(viewItem.id, 'rejected'); setViewItem(null) }}
-                  className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                  className="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 font-medium py-2.5 rounded-xl text-sm transition-colors">
                   رفض الطلب
                 </button>
               )}
@@ -433,7 +433,7 @@ export default function CompanyApplications() {
 function Sec({ icon: Icon, title, titleClass, children }) {
   return (
     <div>
-      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-gray-400'}`}>
+      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-[#555570]'}`}>
         <Icon className="w-3.5 h-3.5" /> {title}
       </p>
       {children}
@@ -445,9 +445,9 @@ function G2({ children }) {
 }
 function IC({ label, value, dir, valueClass }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-3">
-      <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-      <p className={`font-medium text-gray-800 text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+    <div className="bg-white/5 rounded-xl p-3">
+      <p className="text-xs text-[#555570] mb-0.5">{label}</p>
+      <p className={`font-medium text-[#D8D8EC] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }

@@ -123,17 +123,17 @@ export default function Companies() {
         const contact = row.contactName || ''
         return (
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-white/8">
               {logo
                 ? <img src={logo} alt="" className="w-full h-full object-cover" />
-                : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white text-xs font-bold rounded-xl">
+                : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white text-xs font-bold rounded-xl">
                     {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
                   </div>
               }
             </div>
             <div>
-              <p className="font-semibold text-gray-800 text-sm">{v || '—'}</p>
-              <p className="text-xs text-gray-400">{contact || '—'}</p>
+              <p className="font-semibold text-[#D8D8EC] text-sm">{v || '—'}</p>
+              <p className="text-xs text-[#555570]">{contact || '—'}</p>
             </div>
           </div>
         )
@@ -141,7 +141,7 @@ export default function Companies() {
     },
     {
       key: 'phone', label: 'الهاتف',
-      render: (v) => <span className="text-xs text-gray-600" dir="ltr">{v || '—'}</span>,
+      render: (v) => <span className="text-xs text-[#8888A8]" dir="ltr">{v || '—'}</span>,
     },
     { key: 'city', label: 'المدينة', render: v => v || '—' },
     {
@@ -161,15 +161,15 @@ export default function Companies() {
       render: (v, row) => (
         <div className="flex gap-1">
           <button onClick={() => setViewItem(row)}
-            className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="عرض التفاصيل">
+            className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors" title="عرض التفاصيل">
             <Eye className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => openEdit(row)}
-            className="p-1.5 hover:bg-amber-50 text-amber-500 rounded-lg transition-colors" title="تعديل">
+            className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => handleRevoke(row.id)}
-            className="p-1.5 hover:bg-red-50 text-red-400 rounded-lg transition-colors" title="إلغاء الموافقة">
+            className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="إلغاء الموافقة">
             <XCircle className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -191,7 +191,7 @@ export default function Companies() {
         </div>
       )}
 
-      <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-xs rounded-xl px-3 py-2">
+      <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
         <span>هذه الشركات تمت الموافقة عليها وأصبحت جزءاً من الدليل. يمكن تعديل بياناتها أو إلغاء الموافقة عليها.</span>
       </div>
@@ -205,7 +205,7 @@ export default function Companies() {
         searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة..."
         actions={
           <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
+            className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
             <option value="">كل المدن</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -242,11 +242,11 @@ export default function Companies() {
 
           return (
             <div className="space-y-5">
-              <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
-                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white shadow">
+              <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white/10 shadow">
                   {logo
                     ? <img src={logo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
-                    : <div className="w-full h-full bg-[#071B33] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
+                    : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
                         {compName.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                   }
@@ -254,15 +254,15 @@ export default function Companies() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
-                    <h3 className="font-bold text-gray-900 text-lg">{compName}</h3>
+                    <h3 className="font-bold text-[#E8E8F0] text-lg">{compName}</h3>
                   </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[#8888A8]">
                     {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">{contactName}</p>
+                  <p className="text-xs text-[#555570] mt-0.5">{contactName}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-green-50 text-green-700">شركة مقبولة ✓</span>
-                    <span className="text-xs text-gray-400">{createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}</span>
+                    <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-500/10 text-emerald-400">شركة مقبولة ✓</span>
+                    <span className="text-xs text-[#555570]">{createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}</span>
                   </div>
                 </div>
               </div>
@@ -279,9 +279,9 @@ export default function Companies() {
                   <IC label="نطاق الخدمة"      value={svcRadius ? `${svcRadius} كم` : '—'} />
                 </G2>
                 {viewItem.address && (
-                  <div className="mt-2 bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-0.5">العنوان التفصيلي</p>
-                    <p className="text-sm text-gray-700">{viewItem.address}</p>
+                  <div className="mt-2 bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-[#555570] mb-0.5">العنوان التفصيلي</p>
+                    <p className="text-sm text-[#C0C0D8]">{viewItem.address}</p>
                   </div>
                 )}
               </Sec>
@@ -294,17 +294,17 @@ export default function Companies() {
                   <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />
                 </G2>
                 {viewItem.description && (
-                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-1">وصف الخدمات</p>
-                    <p className="text-sm text-gray-700 leading-relaxed">{viewItem.description}</p>
+                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-[#555570] mb-1">وصف الخدمات</p>
+                    <p className="text-sm text-[#C0C0D8] leading-relaxed">{viewItem.description}</p>
                   </div>
                 )}
                 {viewItem.certifications && (
-                  <div className="mt-2 bg-blue-50 rounded-xl p-3">
+                  <div className="mt-2 bg-blue-500/10 rounded-xl p-3">
                     <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
                       <Shield className="w-3 h-3" /> الشهادات والاعتمادات
                     </p>
-                    <p className="text-sm text-blue-800 leading-relaxed">{viewItem.certifications}</p>
+                    <p className="text-sm text-blue-300 leading-relaxed">{viewItem.certifications}</p>
                   </div>
                 )}
               </Sec>
@@ -313,19 +313,19 @@ export default function Companies() {
                 <G2>
                   <IC label="متاح الآن"
                     value={availNow ? '✓ نعم' : '✗ لا'}
-                    valueClass={availNow ? 'text-green-600 font-semibold' : 'text-gray-500'} />
+                    valueClass={availNow ? 'text-emerald-400 font-semibold' : 'text-[#555570]'} />
                   <IC label="خدمة الطوارئ 24/7"
                     value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
-                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-gray-500'} />
+                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-[#555570]'} />
                   {hoursFrom && <IC label="بداية الدوام" value={hoursFrom} dir="ltr" />}
                   {hoursTo   && <IC label="نهاية الدوام" value={hoursTo}   dir="ltr" />}
                 </G2>
                 {workDays.length > 0 && (
-                  <div className="mt-2.5 bg-gray-50 rounded-xl p-3">
-                    <p className="text-xs text-gray-400 mb-2">أيام العمل</p>
+                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
+                    <p className="text-xs text-[#555570] mb-2">أيام العمل</p>
                     <div className="flex flex-wrap gap-1.5">
                       {workDays.map(d => (
-                        <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">{DAY_AR[d] || d}</span>
+                        <span key={d} className="bg-white/10 text-[#C0C0D8] text-xs px-2.5 py-1 rounded-lg">{DAY_AR[d] || d}</span>
                       ))}
                     </div>
                   </div>
@@ -335,17 +335,17 @@ export default function Companies() {
               {(viewItem.facebook || viewItem.instagram) && (
                 <Sec icon={Facebook} title="التواصل الاجتماعي">
                   {viewItem.facebook && (
-                    <div className="bg-gray-50 rounded-xl p-3 mb-2">
-                      <p className="text-xs text-gray-400 mb-0.5">فيسبوك</p>
+                    <div className="bg-white/5 rounded-xl p-3 mb-2">
+                      <p className="text-xs text-[#555570] mb-0.5">فيسبوك</p>
                       <a href={viewItem.facebook} target="_blank" rel="noreferrer"
-                        className="text-sm text-blue-500 hover:underline break-all" dir="ltr">{viewItem.facebook}</a>
+                        className="text-sm text-blue-400 hover:underline break-all" dir="ltr">{viewItem.facebook}</a>
                     </div>
                   )}
                   {viewItem.instagram && (
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <p className="text-xs text-gray-400 mb-0.5">إنستغرام</p>
+                    <div className="bg-white/5 rounded-xl p-3">
+                      <p className="text-xs text-[#555570] mb-0.5">إنستغرام</p>
                       <a href={viewItem.instagram} target="_blank" rel="noreferrer"
-                        className="text-sm text-pink-500 hover:underline break-all" dir="ltr">{viewItem.instagram}</a>
+                        className="text-sm text-pink-400 hover:underline break-all" dir="ltr">{viewItem.instagram}</a>
                     </div>
                   )}
                 </Sec>
@@ -356,39 +356,39 @@ export default function Companies() {
                   <div className="grid grid-cols-3 gap-2">
                     {workImgs.map((src, i) => (
                       <img key={i} src={src} alt={`صورة ${i + 1}`}
-                        className="w-full aspect-square object-cover rounded-xl border border-gray-200 cursor-zoom-in hover:opacity-90"
+                        className="w-full aspect-square object-cover rounded-xl border border-white/8 cursor-zoom-in hover:opacity-90"
                         onClick={() => setLightbox(src)} />
                     ))}
                   </div>
                 </Sec>
               )}
 
-              <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-500">
-                <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
+              <Sec icon={Lock} title="الوثائق الرسمية — للاستخدام الداخلي فقط" titleClass="text-red-400">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2 mb-3 flex items-center gap-2">
                   <Lock className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                  <p className="text-xs text-red-500">سرية تامة — لا تُشارك مع العملاء</p>
+                  <p className="text-xs text-red-400">سرية تامة — لا تُشارك مع العملاء</p>
                 </div>
                 {(commDoc || workLic) ? (
                   <div className="space-y-3">
                     {commDoc && (
                       <div>
-                        <p className="text-xs text-gray-500 font-medium mb-1">السجل التجاري / الترخيص</p>
+                        <p className="text-xs text-[#666680] font-medium mb-1">السجل التجاري / الترخيص</p>
                         <img src={commDoc} alt="commercial"
-                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(commDoc)} />
                       </div>
                     )}
                     {workLic && (
                       <div>
-                        <p className="text-xs text-gray-500 font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
+                        <p className="text-xs text-[#666680] font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
                         <img src={workLic} alt="license"
-                          className="w-full max-h-40 rounded-xl border object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(workLic)} />
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-2 text-gray-400">
+                  <div className="bg-white/5 rounded-xl p-3 flex items-center gap-2 text-[#555570]">
                     <FileText className="w-4 h-4 flex-shrink-0" />
                     <p className="text-xs">لم يتم رفع وثائق رسمية</p>
                   </div>
@@ -397,7 +397,7 @@ export default function Companies() {
 
               <button
                 onClick={() => handleRevoke(viewItem.id)}
-                className="w-full border border-red-200 text-red-500 hover:bg-red-50 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                className="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 font-medium py-2.5 rounded-xl text-sm transition-colors">
                 إلغاء الموافقة وإعادة إلى قائمة الطلبات
               </button>
             </div>
@@ -496,16 +496,16 @@ export default function Companies() {
                 className="form-input" />
             </div>
             <div>
-              <label className="form-label">بداية الدوام</label>
+              <label className="form-label">وقت بداية الدوام</label>
               <input value={form.hours_from} type="time"
                 onChange={e => setForm(f => ({ ...f, hours_from: e.target.value }))}
-                className="form-input" dir="ltr" />
+                className="form-input" />
             </div>
             <div>
-              <label className="form-label">نهاية الدوام</label>
+              <label className="form-label">وقت نهاية الدوام</label>
               <input value={form.hours_to} type="time"
                 onChange={e => setForm(f => ({ ...f, hours_to: e.target.value }))}
-                className="form-input" dir="ltr" />
+                className="form-input" />
             </div>
             <div>
               <label className="form-label">فيسبوك</label>
@@ -526,24 +526,18 @@ export default function Companies() {
                 className="form-input" />
             </div>
             <div className="sm:col-span-2">
-              <label className="form-label">وصف الخدمات</label>
-              <textarea rows={2} value={form.description}
+              <label className="form-label">الوصف</label>
+              <textarea rows={3} value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 className="form-input resize-none" />
             </div>
-            <div className="sm:col-span-2">
-              <label className="form-label">الشهادات والاعتمادات</label>
-              <textarea rows={2} value={form.certifications}
-                onChange={e => setForm(f => ({ ...f, certifications: e.target.value }))}
-                className="form-input resize-none" />
-            </div>
             <div className="sm:col-span-2 flex gap-6">
-              {[['available_now', 'متاح الآن'], ['emergency', 'خدمة طوارئ 24/7']].map(([field, label]) => (
+              {[['available_now', 'متاح الآن'], ['emergency', 'طوارئ 24/7']].map(([field, label]) => (
                 <label key={field} className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={form[field]}
                     onChange={e => setForm(f => ({ ...f, [field]: e.target.checked }))}
                     className="w-4 h-4 accent-[#FF7900]" />
-                  <span className="text-sm text-gray-700">{label}</span>
+                  <span className="text-sm text-[#C0C0D8]">{label}</span>
                 </label>
               ))}
             </div>
@@ -557,7 +551,7 @@ export default function Companies() {
 function Sec({ icon: Icon, title, titleClass, children }) {
   return (
     <div>
-      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-gray-400'}`}>
+      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-[#555570]'}`}>
         <Icon className="w-3.5 h-3.5" /> {title}
       </p>
       {children}
@@ -569,9 +563,9 @@ function G2({ children }) {
 }
 function IC({ label, value, dir, valueClass }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-3">
-      <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-      <p className={`font-medium text-gray-800 text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+    <div className="bg-white/5 rounded-xl p-3">
+      <p className="text-xs text-[#555570] mb-0.5">{label}</p>
+      <p className={`font-medium text-[#D8D8EC] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }

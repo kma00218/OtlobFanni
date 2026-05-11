@@ -8,18 +8,18 @@ import api from '../../lib/api'
 const PAGE_SIZE = 15
 
 const STATUS_MAP = {
-  new:         { label: 'جديد',        cls: 'bg-orange-50 text-[#FF7900]'   },
-  assigned:    { label: 'مُسند',       cls: 'bg-blue-50   text-blue-600'    },
-  contacted:   { label: 'تم التواصل', cls: 'bg-sky-50    text-sky-600'     },
-  in_progress: { label: 'جارٍ',        cls: 'bg-purple-50 text-purple-600'  },
-  completed:   { label: 'مكتمل',      cls: 'bg-green-50  text-green-600'   },
-  cancelled:   { label: 'ملغي',       cls: 'bg-red-50    text-red-500'     },
+  new:         { label: 'جديد',        cls: 'bg-orange-500/10 text-[#FF7900]'   },
+  assigned:    { label: 'مُسند',       cls: 'bg-blue-500/10 text-blue-400'      },
+  contacted:   { label: 'تم التواصل', cls: 'bg-sky-500/10 text-sky-400'        },
+  in_progress: { label: 'جارٍ',        cls: 'bg-purple-500/10 text-purple-400'  },
+  completed:   { label: 'مكتمل',      cls: 'bg-emerald-500/10 text-emerald-400' },
+  cancelled:   { label: 'ملغي',       cls: 'bg-red-500/10 text-red-400'        },
 }
 
 const URGENCY_MAP = {
-  normal:    { label: 'عادي',  cls: 'text-gray-500'          },
-  urgent:    { label: 'عاجل',  cls: 'text-orange-500'        },
-  emergency: { label: 'طارئ',  cls: 'text-red-600 font-bold' },
+  normal:    { label: 'عادي',  cls: 'text-[#666680]'            },
+  urgent:    { label: 'عاجل',  cls: 'text-orange-400'           },
+  emergency: { label: 'طارئ',  cls: 'text-red-400 font-bold'    },
 }
 
 export default function Requests() {
@@ -90,7 +90,6 @@ export default function Requests() {
   const pagedData  = visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
   const totalPages = Math.ceil(visible.length / PAGE_SIZE) || 1
 
-  // ── تغيير الحالة ──
   const handleStatusUpdate = async (e) => {
     e.preventDefault()
     setSaving(true)
@@ -103,7 +102,6 @@ export default function Requests() {
     setSaving(false)
   }
 
-  // ── فتح مودال إسناد الفني ──
   const openAssign = (row) => {
     const cityVal = row.city_id || row.city || ''
     const catId   = row.category_id || ''
@@ -123,7 +121,6 @@ export default function Requests() {
     setAssignItem(row)
   }
 
-  // ── تأكيد الإسناد ──
   const handleAssign = async (e) => {
     e.preventDefault()
     if (!selectedTechId) { showToast('اختر فنياً أولاً', 'error'); return }
@@ -143,7 +140,6 @@ export default function Requests() {
     setSaving(false)
   }
 
-  // ── حذف ──
   const handleDelete = async (id) => {
     if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return
     try {
@@ -158,8 +154,8 @@ export default function Requests() {
       key: 'customer_name', label: 'العميل',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-gray-800 text-sm">{v || row.customerName || '—'}</p>
-          <p className="text-xs text-gray-400" dir="ltr">{row.customer_phone || row.customerPhone || '—'}</p>
+          <p className="font-medium text-[#D8D8EC] text-sm">{v || row.customerName || '—'}</p>
+          <p className="text-xs text-[#555570]" dir="ltr">{row.customer_phone || row.customerPhone || '—'}</p>
         </div>
       )
     },
@@ -167,14 +163,14 @@ export default function Requests() {
       key: 'city_id', label: 'المدينة',
       render: (v, row) => (
         <div>
-          <p className="text-sm text-gray-700">{cityName(v || row.city || '')}</p>
-          {row.area && <p className="text-xs text-gray-400">{row.area}</p>}
+          <p className="text-sm text-[#C0C0D8]">{cityName(v || row.city || '')}</p>
+          {row.area && <p className="text-xs text-[#555570]">{row.area}</p>}
         </div>
       )
     },
     {
       key: 'category_name_ar', label: 'التخصص',
-      render: (v, row) => <span className="text-sm text-gray-700">{v || row.categoryNameAr || '—'}</span>
+      render: (v, row) => <span className="text-sm text-[#C0C0D8]">{v || row.categoryNameAr || '—'}</span>
     },
     {
       key: 'urgency', label: 'الأولوية',
@@ -182,13 +178,13 @@ export default function Requests() {
         const u = URGENCY_MAP[v]
         return u
           ? <span className={`text-xs font-medium ${u.cls}`}>{u.label}</span>
-          : <span className="text-xs text-gray-400">—</span>
+          : <span className="text-xs text-[#444460]">—</span>
       }
     },
     {
       key: 'status', label: 'الحالة',
       render: (v) => {
-        const s = STATUS_MAP[v] || { label: '—', cls: 'bg-gray-100 text-gray-500' }
+        const s = STATUS_MAP[v] || { label: '—', cls: 'bg-white/5 text-[#666680]' }
         return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.cls}`}>{s.label}</span>
       }
     },
@@ -203,17 +199,17 @@ export default function Requests() {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex items-center gap-1">
-          <button onClick={() => setViewItem(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="عرض التفاصيل">
+          <button onClick={() => setViewItem(row)} className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors" title="عرض التفاصيل">
             <Eye className="w-3.5 h-3.5" />
           </button>
-          <button onClick={() => openAssign(row)} className="p-1.5 hover:bg-green-50 text-green-600 rounded-lg transition-colors" title="إسناد فني" data-testid="assign-btn">
+          <button onClick={() => openAssign(row)} className="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded-lg transition-colors" title="إسناد فني" data-testid="assign-btn">
             <UserCheck className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => { setEditItem(row); setNewStatus(row.status) }} className="p-1.5 hover:bg-[#FF7900]/10 text-[#FF7900] rounded-lg transition-colors" title="تغيير الحالة">
             <SlidersHorizontal className="w-3.5 h-3.5" />
           </button>
           {isSuperAdmin && (
-            <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors" title="حذف">
+            <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="حذف">
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
@@ -231,22 +227,24 @@ export default function Requests() {
       )}
 
       {/* فلاتر */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-4">
+      <div className="bg-[#0E0E17] rounded-2xl border border-white/5 p-4">
         <div className="flex flex-wrap gap-3 items-center">
           {isSuperAdmin && (
-            <select value={filterCity} onChange={e => { setFilterCity(e.target.value); setPage(1) }} className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
+            <select value={filterCity} onChange={e => { setFilterCity(e.target.value); setPage(1) }}
+              className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
               <option value="">كل المدن</option>
               {cities.map(c => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
             </select>
           )}
-          <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1) }} className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white">
+          <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1) }}
+            className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
             <option value="">كل الحالات</option>
             {Object.entries(STATUS_MAP).map(([v, { label }]) => (
               <option key={v} value={v}>{label}</option>
             ))}
           </select>
-          <span className="text-xs text-gray-400 flex-1">{visible.length} طلب</span>
-          <button onClick={load} className="p-2 hover:bg-gray-50 text-gray-500 rounded-xl border border-gray-200 transition-colors" title="تحديث">
+          <span className="text-xs text-[#555570] flex-1">{visible.length} طلب</span>
+          <button onClick={load} className="p-2 hover:bg-white/5 text-[#8888A8] rounded-xl border border-white/8 transition-colors" title="تحديث">
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
@@ -276,31 +274,31 @@ export default function Requests() {
                 ['الأولوية',     URGENCY_MAP[viewItem.urgency]?.label || '—'],
                 ['الوقت المفضل', viewItem.preferred_time || viewItem.preferredTime || '—'],
               ].map(([k, v]) => (
-                <div key={k} className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-0.5">{k}</p>
-                  <p className="font-medium text-gray-800 text-sm">{v || '—'}</p>
+                <div key={k} className="bg-white/5 rounded-xl p-3">
+                  <p className="text-xs text-[#555570] mb-0.5">{k}</p>
+                  <p className="font-medium text-[#D8D8EC] text-sm">{v || '—'}</p>
                 </div>
               ))}
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-0.5">الحالة</p>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_MAP[viewItem.status]?.cls || 'bg-gray-100 text-gray-500'}`}>
+              <div className="bg-white/5 rounded-xl p-3">
+                <p className="text-xs text-[#555570] mb-0.5">الحالة</p>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_MAP[viewItem.status]?.cls || 'bg-white/5 text-[#666680]'}`}>
                   {STATUS_MAP[viewItem.status]?.label || '—'}
                 </span>
               </div>
             </div>
             {(viewItem.assigned_technician_name || viewItem.assignedTechnicianName) && (
-              <div className="bg-blue-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-1">الفني المُسند</p>
-                <p className="text-sm font-medium text-gray-800">{viewItem.assigned_technician_name || viewItem.assignedTechnicianName}</p>
+              <div className="bg-blue-500/10 rounded-xl p-3">
+                <p className="text-xs text-[#555570] mb-1">الفني المُسند</p>
+                <p className="text-sm font-medium text-[#D8D8EC]">{viewItem.assigned_technician_name || viewItem.assignedTechnicianName}</p>
               </div>
             )}
             {(viewItem.problem_description || viewItem.problemDescription) && (
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-400 mb-1">وصف المشكلة</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{viewItem.problem_description || viewItem.problemDescription}</p>
+              <div className="bg-white/5 rounded-xl p-3">
+                <p className="text-xs text-[#555570] mb-1">وصف المشكلة</p>
+                <p className="text-sm text-[#C0C0D8] leading-relaxed">{viewItem.problem_description || viewItem.problemDescription}</p>
               </div>
             )}
-            <p className="text-xs text-gray-400 text-left" dir="ltr">
+            <p className="text-xs text-[#444460] text-left" dir="ltr">
               {(viewItem.created_at || viewItem.createdAt) ? new Date(viewItem.created_at || viewItem.createdAt).toLocaleString('ar-LY') : ''}
             </p>
           </div>
@@ -311,37 +309,37 @@ export default function Requests() {
       <FormModal open={!!assignItem} onClose={() => setAssignItem(null)} title="إسناد فني للطلب" onSubmit={handleAssign} loading={saving} submitLabel="إسناد الفني" size="md">
         {assignItem && (
           <div className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-3 text-sm">
-              <p className="text-xs text-gray-400 mb-1">الطلب</p>
-              <p className="font-medium text-gray-800">
+            <div className="bg-white/5 rounded-xl p-3 text-sm">
+              <p className="text-xs text-[#555570] mb-1">الطلب</p>
+              <p className="font-medium text-[#D8D8EC]">
                 {assignItem.customer_name || assignItem.customerName} — {assignItem.category_name_ar || assignItem.categoryNameAr}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-[#666680] mt-0.5">
                 {cityName(assignItem.city_id || assignItem.city || '')}
                 {assignItem.area ? ` · ${assignItem.area}` : ''}
               </p>
             </div>
             {eligibles.length === 0 ? (
               <div className="text-center py-6">
-                <Wrench className="w-10 h-10 text-gray-200 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-500">لا يوجد فنيون متاحون</p>
-                <p className="text-xs text-gray-400 mt-1">لا يوجد فنيون نشطون ومعتمدون في هذه المدينة لهذا التخصص</p>
+                <Wrench className="w-10 h-10 text-[#222240] mx-auto mb-2" />
+                <p className="text-sm font-medium text-[#666680]">لا يوجد فنيون متاحون</p>
+                <p className="text-xs text-[#444460] mt-1">لا يوجد فنيون نشطون ومعتمدون في هذه المدينة لهذا التخصص</p>
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-gray-400">{eligibles.length} فني متاح</p>
+                <p className="text-xs text-[#555570]">{eligibles.length} فني متاح</p>
                 <div className="space-y-2 max-h-72 overflow-y-auto">
                   {eligibles.map(tech => (
-                    <label key={tech.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedTechId === tech.id ? 'border-[#FF7900] bg-[#FF7900]/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
+                    <label key={tech.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedTechId === tech.id ? 'border-[#FF7900] bg-[#FF7900]/5' : 'border-white/8 hover:border-white/15 hover:bg-white/5'}`}>
                       <input type="radio" name="techSelect" value={tech.id} checked={selectedTechId === tech.id} onChange={() => setSelectedTechId(tech.id)} className="accent-[#FF7900]" data-testid="tech-radio" />
-                      <div className="w-9 h-9 rounded-full bg-[#071B33] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-[#1A1A30] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                         {tech.name_ar.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-800 text-sm">{tech.name_ar}</p>
+                        <p className="font-medium text-[#D8D8EC] text-sm">{tech.name_ar}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          {tech.phone && <span className="flex items-center gap-1 text-xs text-gray-400" dir="ltr"><Phone className="w-3 h-3" />{tech.phone}</span>}
-                          {tech.rating && <span className="flex items-center gap-0.5 text-xs text-amber-500"><Star className="w-3 h-3 fill-current" />{tech.rating}</span>}
+                          {tech.phone && <span className="flex items-center gap-1 text-xs text-[#555570]" dir="ltr"><Phone className="w-3 h-3" />{tech.phone}</span>}
+                          {tech.rating && <span className="flex items-center gap-0.5 text-xs text-amber-400"><Star className="w-3 h-3 fill-current" />{tech.rating}</span>}
                         </div>
                       </div>
                     </label>
@@ -357,8 +355,8 @@ export default function Requests() {
       <FormModal open={!!editItem} onClose={() => setEditItem(null)} title="تغيير حالة الطلب" onSubmit={handleStatusUpdate} loading={saving} submitLabel="حفظ">
         {editItem && (
           <div className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-700">
-              <span className="text-gray-400 text-xs block mb-0.5">الطلب</span>
+            <div className="bg-white/5 rounded-xl p-3 text-sm text-[#C0C0D8]">
+              <span className="text-[#555570] text-xs block mb-0.5">الطلب</span>
               {editItem.customer_name || editItem.customerName} — {editItem.category_name_ar || editItem.categoryNameAr}
             </div>
             <div>

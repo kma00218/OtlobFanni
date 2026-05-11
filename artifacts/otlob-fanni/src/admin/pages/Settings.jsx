@@ -59,10 +59,10 @@ export default function Settings() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="px-6 py-5 border-b border-gray-50">
-          <h2 className="font-bold text-[#071B33]">إعدادات التطبيق</h2>
-          <p className="text-gray-400 text-sm mt-0.5">تعديل الإعدادات العامة للتطبيق</p>
+      <div className="bg-[#0E0E17] rounded-2xl border border-white/5 overflow-hidden">
+        <div className="px-6 py-5 border-b border-white/5">
+          <h2 className="font-bold text-[#E8E8F0]">إعدادات التطبيق</h2>
+          <p className="text-[#666680] text-sm mt-0.5">تعديل الإعدادات العامة للتطبيق</p>
         </div>
 
         <form onSubmit={handleSave} className="p-6">
@@ -78,7 +78,7 @@ export default function Settings() {
                       onChange={e => handleChange(key, e.target.checked ? 'true' : 'false')}
                       className="w-4 h-4 accent-[#FF7900]"
                     />
-                    <span className="text-sm text-gray-600">{settings[key] === 'true' ? 'مفعّل' : 'معطّل'}</span>
+                    <span className="text-sm text-[#C0C0D8]">{settings[key] === 'true' ? 'مفعّل' : 'معطّل'}</span>
                   </label>
                 ) : (
                   <input
@@ -93,7 +93,7 @@ export default function Settings() {
             ))}
           </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-50">
+          <div className="mt-6 pt-4 border-t border-white/5">
             <button
               type="submit" disabled={saving}
               className={`flex items-center gap-2 font-medium px-6 py-2.5 rounded-xl transition-colors disabled:opacity-50 ${saved ? 'bg-green-500 text-white' : 'bg-[#FF7900] hover:bg-[#e86d00] text-white'}`}

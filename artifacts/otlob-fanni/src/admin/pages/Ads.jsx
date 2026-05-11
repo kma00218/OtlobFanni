@@ -87,8 +87,8 @@ export default function Ads() {
         <div className="flex items-center gap-3">
           {row.image_url && <img src={row.image_url} alt="" className="w-12 h-8 object-cover rounded-lg flex-shrink-0" onError={e => e.target.style.display='none'} />}
           <div>
-            <p className="font-medium text-gray-800">{v || '—'}</p>
-            <p className="text-xs text-gray-400">{row.title_en || ''}</p>
+            <p className="font-medium text-[#D8D8EC]">{v || '—'}</p>
+            <p className="text-xs text-[#555570]">{row.title_en || ''}</p>
           </div>
         </div>
       )
@@ -97,7 +97,7 @@ export default function Ads() {
     {
       key: 'start_date', label: 'الفترة',
       render: (v, row) => (
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-[#666680]">
           {v ? new Date(v).toLocaleDateString('ar-LY') : '—'}
           {row.end_date ? ` ← ${new Date(row.end_date).toLocaleDateString('ar-LY')}` : ''}
         </span>
@@ -106,7 +106,7 @@ export default function Ads() {
     {
       key: 'is_active', label: 'الحالة',
       render: (v, row) => (
-        <button onClick={() => toggleActive(row.id, v)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-green-600' : 'text-gray-400'}`}>
+        <button onClick={() => toggleActive(row.id, v)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-emerald-400' : 'text-[#444460]'}`}>
           {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
           {v ? 'نشط' : 'معطل'}
         </button>
@@ -116,8 +116,8 @@ export default function Ads() {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex gap-1">
-          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-          <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+          <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+          <button onClick={() => handleDelete(row.id)} className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
         </div>
       )
     },
@@ -154,7 +154,7 @@ export default function Ads() {
             <label className="form-label">الحالة</label>
             <label className="flex items-center gap-2 mt-2 cursor-pointer">
               <input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({...f, is_active: e.target.checked}))} className="w-4 h-4 accent-[#FF7900]" />
-              <span className="text-sm text-gray-700">إعلان نشط</span>
+              <span className="text-sm text-[#C0C0D8]">إعلان نشط</span>
             </label>
           </div>
           <div><label className="form-label">تاريخ البداية</label><input type="date" value={form.start_date} onChange={e => setForm(f => ({...f, start_date: e.target.value}))} className="form-input" /></div>

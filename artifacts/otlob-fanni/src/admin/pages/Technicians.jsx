@@ -184,8 +184,8 @@ export default function Technicians() {
       key: 'nameAr', label: 'الفني',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-gray-800">{v || row.name_ar || '—'}</p>
-          <p className="text-xs text-gray-400" dir="ltr">{row.phone}</p>
+          <p className="font-medium text-[#D8D8EC]">{v || row.name_ar || '—'}</p>
+          <p className="text-xs text-[#555570]" dir="ltr">{row.phone}</p>
         </div>
       ),
     },
@@ -195,11 +195,11 @@ export default function Technicians() {
       key: 'status', label: 'الحالة',
       render: (v) => {
         const map = {
-          available: ['متاح',    'text-green-600 bg-green-50'],
-          busy:      ['مشغول',   'text-amber-600 bg-amber-50'],
-          inactive:  ['غير نشط', 'text-gray-500  bg-gray-100'],
+          available: ['متاح',    'text-emerald-400 bg-emerald-500/10'],
+          busy:      ['مشغول',   'text-amber-400 bg-amber-500/10'],
+          inactive:  ['غير نشط', 'text-[#666680] bg-white/5'],
         }
-        const [l, c] = map[v] || ['—', 'bg-gray-100']
+        const [l, c] = map[v] || ['—', 'bg-white/5']
         return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c}`}>{l}</span>
       },
     },
@@ -210,7 +210,7 @@ export default function Technicians() {
         return (
           <button
             onClick={() => toggleActive(row)}
-            className={`text-xs flex items-center gap-1 ${active ? 'text-green-600' : 'text-gray-400'}`}
+            className={`text-xs flex items-center gap-1 ${active ? 'text-emerald-400' : 'text-[#444460]'}`}
           >
             {active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
             {active ? 'مفعّل' : 'معطّل'}
@@ -225,7 +225,7 @@ export default function Technicians() {
         return (
           <button
             onClick={() => toggleField(row, 'is_approved')}
-            className={`text-xs flex items-center gap-1 ${approved ? 'text-blue-600' : 'text-red-500'}`}
+            className={`text-xs flex items-center gap-1 ${approved ? 'text-blue-400' : 'text-red-400'}`}
           >
             {approved ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
             {approved ? 'معتمد' : 'غير معتمد'}
@@ -240,7 +240,7 @@ export default function Technicians() {
         return (
           <button
             onClick={() => toggleField(row, 'is_featured')}
-            className={featured ? 'text-[#FF7900]' : 'text-gray-300'}
+            className={featured ? 'text-[#FF7900]' : 'text-[#333350]'}
             title={featured ? 'إلغاء التمييز' : 'تمييز'}
           >
             <Star className="w-4 h-4" fill={featured ? 'currentColor' : 'none'} />
@@ -254,7 +254,7 @@ export default function Technicians() {
         <div className="flex gap-1">
           <button
             onClick={() => openEdit(row)}
-            className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors"
             title="تعديل"
           >
             <Pencil className="w-3.5 h-3.5" />
@@ -262,7 +262,7 @@ export default function Technicians() {
           {isSuperAdmin && (
             <button
               onClick={() => handleDelete(row)}
-              className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"
               title="حذف"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -283,7 +283,7 @@ export default function Technicians() {
       )}
 
       {/* فلاتر */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-4">
+      <div className="bg-[#0E0E17] rounded-2xl border border-white/5 p-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {isSuperAdmin && (
             <select
@@ -469,7 +469,7 @@ export default function Technicians() {
                   onChange={e => setForm(f => ({ ...f, [field]: e.target.checked }))}
                   className="w-4 h-4 accent-[#FF7900]"
                 />
-                <span className="text-sm text-gray-700">{label}</span>
+                <span className="text-sm text-[#C0C0D8]">{label}</span>
               </label>
             ))}
           </div>
