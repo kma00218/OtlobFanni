@@ -7,7 +7,6 @@ import CategoryCard from '../components/CategoryCard'
 import { categories } from '../data/services'
 import { ArrowLeft, ArrowRight, Building2 } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
-import { Button } from '@/components/ui/button'
 import AdBanner from '../components/AdBanner'
 
 // First 19 regular categories + "more" at the end = 20 total
@@ -89,14 +88,6 @@ export default function Home() {
         {/* إعلان بانر عام */}
         <AdBanner placement="banner" compact />
 
-        <div className="pb-4">
-          <Link href="/categories">
-            <Button className="w-full h-13 text-base font-bold rounded-2xl shadow-lg shadow-primary/20 gap-2">
-              {t('requestNow')}
-              {dir === 'rtl' ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
-            </Button>
-          </Link>
-        </div>
       </main>
     </div>
   )
