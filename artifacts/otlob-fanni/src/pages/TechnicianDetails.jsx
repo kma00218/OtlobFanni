@@ -124,7 +124,7 @@ export default function TechnicianDetails() {
 
         {/* بطاقة الملف الشخصي */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="h-20 bg-gradient-to-r from-[#071B33] to-[#1a3a5c] relative">
+          <div className="relative">
             {tech.isFeatured && (
               <span className="absolute top-2 left-2 bg-[#FF7900] text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
                 <Star className="w-2.5 h-2.5" fill="currentColor" /> {ar ? 'مميز' : 'Featured'}

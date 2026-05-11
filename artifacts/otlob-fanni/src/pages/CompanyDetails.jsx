@@ -116,8 +116,7 @@ export default function CompanyDetails() {
 
         {/* بطاقة الشركة الرئيسية */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="h-20 bg-gradient-to-r from-[#071B33] to-[#1a3a5c] relative" />
-          <div className="px-4 pb-4 -mt-10">
+          <div className="px-4 pt-4 pb-4">
             <div className="flex items-end gap-3 mb-3">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#071B33] flex items-center justify-center">
                 {logo
