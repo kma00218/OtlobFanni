@@ -239,69 +239,59 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav }) {
 }
 
 // ─── City Picker Step ────────────────────────────────────────────────────────
-const CITY_COLORS = [
-  '#FF7900','#007AFF','#34C759','#FF2D55','#5856D6',
-  '#FF9500','#30B0C7','#AF52DE','#FF3B30','#32ADE6',
-  '#00C7BE','#8E8E93','#1D3461','#FFCC00','#636366',
-]
-
 function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
   return (
-    <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={categoryName} />
 
       <main className="px-4 pt-5">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-20 h-20 rounded-[20px] mx-auto mb-3 flex items-center justify-center shadow-lg overflow-hidden"
-            style={{ background: 'linear-gradient(135deg,#FF7900,#d96400)' }}>
-            <img src={categoryIcon} alt="" className="w-14 h-14 object-contain" />
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center overflow-hidden bg-[#FF7900]/10">
+            <img src={categoryIcon} alt="" className="w-11 h-11 object-contain" />
           </div>
-          <h2 className="text-lg font-bold text-[#071B33]">
-            {ar ? 'اختر مدينتك' : 'Choose your city'}
+          <h2 className="text-xl font-black text-[#071B33]">
+            {ar ? 'اختر المدينة' : 'Select City'}
           </h2>
           <p className="text-sm text-gray-400 mt-1">
-            {ar
-              ? 'اختر المدينة لعرض الفنيين القريبين منك'
-              : 'Select a city to see nearby providers'}
+            {ar ? 'اختر مدينتك لعرض الفنيين المتاحين' : 'Choose your city to see available providers'}
           </p>
         </div>
 
         {/* All cities button */}
         <button
           onClick={() => onSelect('')}
-          className="w-full flex items-center gap-3 bg-white border-2 border-[#FF7900] rounded-2xl px-4 py-3.5 mb-4 shadow-sm active:scale-[0.98] transition-transform"
+          className="w-full flex items-center gap-3 bg-[#071B33] rounded-2xl px-4 py-4 mb-5 active:scale-[0.98] transition-transform shadow-md"
         >
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg,#071B33,#1a3a5c)' }}>
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
             <MapPin className="w-5 h-5 text-white" />
           </div>
-          <div className="text-start flex-1">
-            <p className="font-bold text-[#071B33] text-sm">{ar ? 'كل ليبيا' : 'All Libya'}</p>
-            <p className="text-xs text-gray-400">{ar ? 'عرض جميع الفنيين بدون تحديد مدينة' : 'Show all providers'}</p>
+          <div className={`flex-1 ${ar ? 'text-right' : 'text-left'}`}>
+            <p className="font-bold text-white text-sm">{ar ? 'كل ليبيا' : 'All Libya'}</p>
+            <p className="text-xs text-white/50 mt-0.5">{ar ? 'عرض جميع الفنيين' : 'Show all providers'}</p>
           </div>
-          <span className="text-[#FF7900]">{ar ? '←' : '→'}</span>
+          <span className="text-[#FF7900] text-lg">{ar ? '←' : '→'}</span>
         </button>
 
-        {/* Cities grid */}
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-          {ar ? 'أو اختر مدينة' : 'Or choose a city'}
+        {/* Section label */}
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-1">
+          {ar ? 'المدن' : 'Cities'}
         </p>
-        <div className="grid grid-cols-4 gap-3">
-          {cities.map((city, idx) => {
-            const color = CITY_COLORS[idx % CITY_COLORS.length]
-            const cityName = ar ? (city.name_ar || city.nameAr) : (city.name_en || city.nameEn)
+
+        {/* Cities — 2-column grid, big clean cards */}
+        <div className="grid grid-cols-2 gap-3">
+          {cities.map((city) => {
+            const cityName = ar ? (city.name_ar || city.nameAr || '') : (city.name_en || city.nameEn || '')
             return (
               <button
                 key={city.id}
                 onClick={() => onSelect(city.id)}
-                className="flex flex-col items-center gap-3 py-4 px-2 bg-white rounded-2xl border border-gray-100 shadow-sm active:scale-95 transition-transform"
+                className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl px-4 py-4 shadow-sm active:scale-[0.97] transition-transform text-start"
               >
-                <div className="w-16 h-16 rounded-[18px] flex items-center justify-center shadow-md flex-shrink-0"
-                  style={{ background: `linear-gradient(135deg,${color},${color}bb)` }}>
-                  <MapPin className="w-7 h-7 text-white" />
+                <div className="w-9 h-9 rounded-xl bg-[#071B33] flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-sm font-bold text-[#071B33] text-center leading-tight">{cityName}</span>
+                <span className="font-bold text-[#071B33] text-sm leading-tight flex-1">{cityName}</span>
               </button>
             )
           })}
