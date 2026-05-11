@@ -20,16 +20,21 @@ const DAYS = {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2,'0')}:00`)
 
-const inp = 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors'
-const sel = inp + ' appearance-none'
+const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
+const sel = inp + ' appearance-none cursor-pointer'
 
-function SectionTitle({ icon: Icon, children }) {
+function SectionTitle({ icon: Icon, step, children }) {
   return (
-    <div className="flex items-center gap-2 mb-4">
-      <div className="w-7 h-7 rounded-lg bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-3.5 h-3.5 text-[#FF7900]" />
+    <div className="flex items-center gap-3 mb-5 pb-4 border-b-2 border-gray-100">
+      {step !== undefined && (
+        <div className="w-7 h-7 rounded-full bg-[#FF7900] flex items-center justify-center flex-shrink-0 shadow-sm">
+          <span className="text-white text-xs font-bold">{step}</span>
+        </div>
+      )}
+      <div className="w-9 h-9 rounded-xl bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0 border border-[#FF7900]/20">
+        <Icon className="text-[#FF7900]" style={{ width: 18, height: 18 }} />
       </div>
-      <h2 className="font-bold text-[#071B33] text-base">{children}</h2>
+      <h2 className="font-bold text-[#071B33] text-[15px] flex-1 leading-tight">{children}</h2>
     </div>
   )
 }
@@ -37,11 +42,11 @@ function SectionTitle({ icon: Icon, children }) {
 function Field({ label, required, hint, children }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-gray-700">
-        {label}{required && <span className="text-[#FF7900] mr-0.5 ml-0.5">*</span>}
+      <label className="flex items-center gap-1 text-[13px] font-semibold text-gray-700">
+        {label}{required && <span className="text-[#FF7900] font-bold text-sm">*</span>}
       </label>
       {children}
-      {hint && <p className="text-xs text-gray-400">{hint}</p>}
+      {hint && <p className="text-xs text-gray-400 leading-relaxed mt-1">{hint}</p>}
     </div>
   )
 }
@@ -224,8 +229,8 @@ export default function JoinCompany() {
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* ── 1. Company Logo ─────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Camera}>{ar ? 'شعار الشركة' : 'Company Logo'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Camera} step={1}>{ar ? 'شعار الشركة' : 'Company Logo'}</SectionTitle>
             <div className="flex flex-col items-center gap-3">
               <div
                 className="relative w-28 h-28 rounded-2xl border-4 border-[#FF7900]/20 flex items-center justify-center cursor-pointer overflow-hidden bg-gray-100"
@@ -264,8 +269,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 2. Company Information ─────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Building2}>{ar ? 'معلومات الشركة' : 'Company Information'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Building2} step={2}>{ar ? 'معلومات الشركة' : 'Company Information'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'اسم الشركة / المؤسسة' : 'Company / Business Name'} required>
                 <input className={inp} required value={form.company_name}
@@ -324,8 +329,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 3. Service Information ──────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Briefcase}>{ar ? 'معلومات الخدمة' : 'Service Information'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Briefcase} step={3}>{ar ? 'معلومات الخدمة' : 'Service Information'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'تخصص الخدمة' : 'Service Category'} required>
                 <select className={sel} required value={form.category} onChange={e => set('category', e.target.value)}>
@@ -385,8 +390,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 4. Availability ─────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Clock}>{ar ? 'أوقات العمل والتوفر' : 'Working Hours & Availability'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Clock} step={4}>{ar ? 'أوقات العمل والتوفر' : 'Working Hours & Availability'}</SectionTitle>
             <div className="space-y-4">
 
               <Field label={ar ? 'هل الشركة متاحة الآن؟' : 'Company Available Now?'} required>
@@ -438,8 +443,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 5. Social Media ─────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Facebook}>{ar ? 'التواصل الاجتماعي' : 'Social Media'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Facebook} step={5}>{ar ? 'التواصل الاجتماعي' : 'Social Media'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'رابط فيسبوك' : 'Facebook Link'}
                 hint={ar ? 'اختياري' : 'Optional'}>
@@ -457,8 +462,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 6. Work Portfolio ───────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Image}>{ar ? 'معرض الأعمال (اختياري)' : 'Work Portfolio (Optional)'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Image} step={6}>{ar ? 'معرض الأعمال (اختياري)' : 'Work Portfolio (Optional)'}</SectionTitle>
             <p className="text-xs text-gray-400 mb-3">
               {ar ? `${workImages.length}/6 صور` : `${workImages.length}/6 photos`}
             </p>
@@ -484,8 +489,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 7. Official Documents ───────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Lock}>{ar ? 'الوثائق الرسمية (للاستخدام الداخلي فقط)' : 'Official Documents (Internal Use Only)'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Lock} step={7}>{ar ? 'الوثائق الرسمية (للاستخدام الداخلي فقط)' : 'Official Documents (Internal Use Only)'}</SectionTitle>
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4 flex items-start gap-2">
               <Lock className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-amber-700 leading-relaxed">
@@ -513,8 +518,8 @@ export default function JoinCompany() {
           </div>
 
           {/* ── 8. Terms & Submit ───────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={FileText}>{ar ? 'الشروط والأحكام' : 'Terms & Conditions'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={FileText} step={8}>{ar ? 'الشروط والأحكام' : 'Terms & Conditions'}</SectionTitle>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox" required

@@ -23,16 +23,21 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
   return `${h}:00`
 })
 
-const inp = 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors'
-const sel = inp + ' appearance-none'
+const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
+const sel = inp + ' appearance-none cursor-pointer'
 
-function SectionTitle({ icon: Icon, children }) {
+function SectionTitle({ icon: Icon, step, children }) {
   return (
-    <div className="flex items-center gap-2 mb-4">
-      <div className="w-7 h-7 rounded-lg bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-3.5 h-3.5 text-[#FF7900]" />
+    <div className="flex items-center gap-3 mb-5 pb-4 border-b-2 border-gray-100">
+      {step !== undefined && (
+        <div className="w-7 h-7 rounded-full bg-[#FF7900] flex items-center justify-center flex-shrink-0 shadow-sm">
+          <span className="text-white text-xs font-bold">{step}</span>
+        </div>
+      )}
+      <div className="w-9 h-9 rounded-xl bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0 border border-[#FF7900]/20">
+        <Icon className="w-4.5 h-4.5 text-[#FF7900]" style={{ width: 18, height: 18 }} />
       </div>
-      <h2 className="font-bold text-[#071B33] text-base">{children}</h2>
+      <h2 className="font-bold text-[#071B33] text-[15px] flex-1 leading-tight">{children}</h2>
     </div>
   )
 }
@@ -40,11 +45,11 @@ function SectionTitle({ icon: Icon, children }) {
 function Field({ label, required, hint, children }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-gray-700">
-        {label}{required && <span className="text-[#FF7900] mr-0.5 ml-0.5">*</span>}
+      <label className="flex items-center gap-1 text-[13px] font-semibold text-gray-700">
+        {label}{required && <span className="text-[#FF7900] font-bold text-sm">*</span>}
       </label>
       {children}
-      {hint && <p className="text-xs text-gray-400">{hint}</p>}
+      {hint && <p className="text-xs text-gray-400 leading-relaxed mt-1">{hint}</p>}
     </div>
   )
 }
@@ -217,8 +222,8 @@ export default function Join() {
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* ── 1. Profile Photo ─────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Camera}>{ar ? 'الصورة الشخصية' : 'Profile Photo'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Camera} step={1}>{ar ? 'الصورة الشخصية' : 'Profile Photo'}</SectionTitle>
             <div className="flex flex-col items-center gap-3">
               <div
                 className="relative w-28 h-28 rounded-full border-4 border-[#FF7900]/20 flex items-center justify-center cursor-pointer overflow-hidden bg-gray-100"
@@ -257,8 +262,8 @@ export default function Join() {
           </div>
 
           {/* ── 2. Personal Information ───────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={User}>{ar ? 'المعلومات الشخصية' : 'Personal Information'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={User} step={2}>{ar ? 'المعلومات الشخصية' : 'Personal Information'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'الاسم الكامل' : 'Full Name'} required>
                 <input className={inp} required value={form.full_name}
@@ -311,8 +316,8 @@ export default function Join() {
           </div>
 
           {/* ── 3. Professional Information ───────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Briefcase}>{ar ? 'المعلومات المهنية' : 'Professional Information'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Briefcase} step={3}>{ar ? 'المعلومات المهنية' : 'Professional Information'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'تخصص الخدمة' : 'Service Category'} required>
                 <select className={sel} required value={form.category} onChange={e => set('category', e.target.value)}>
@@ -373,8 +378,8 @@ export default function Join() {
           </div>
 
           {/* ── 4. Availability & Schedule ────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Clock}>{ar ? 'التوفر والجدول الزمني' : 'Availability & Schedule'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Clock} step={4}>{ar ? 'التوفر والجدول الزمني' : 'Availability & Schedule'}</SectionTitle>
             <div className="space-y-4">
 
               <Field label={ar ? 'هل أنت متاح الآن؟' : 'Available Now?'} required>
@@ -432,8 +437,8 @@ export default function Join() {
           </div>
 
           {/* ── 5. Documents (Internal Admin Use) ────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Lock}>{ar ? 'الوثائق الرسمية (للاستخدام الداخلي فقط)' : 'Official Documents (Internal Use Only)'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Lock} step={5}>{ar ? 'الوثائق الرسمية (للاستخدام الداخلي فقط)' : 'Official Documents (Internal Use Only)'}</SectionTitle>
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4 flex items-start gap-2">
               <Lock className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-amber-700 leading-relaxed">
@@ -464,8 +469,8 @@ export default function Join() {
           </div>
 
           {/* ── 6. Work Portfolio ─────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={Image}>{ar ? 'معرض الأعمال (حتى 6 صور)' : 'Work Portfolio (up to 6 photos)'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={Image} step={6}>{ar ? 'معرض الأعمال (حتى 6 صور)' : 'Work Portfolio (up to 6 photos)'}</SectionTitle>
             <div className="flex flex-wrap gap-2">
               {workImages.map((src, i) => (
                 <div key={i} className="relative w-[calc(33%-4px)] aspect-square rounded-xl overflow-hidden border border-gray-200">
@@ -490,8 +495,8 @@ export default function Join() {
           </div>
 
           {/* ── 7. Social Media ───────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <SectionTitle icon={FileText}>{ar ? 'التواصل الاجتماعي (اختياري)' : 'Social Media (optional)'}</SectionTitle>
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <SectionTitle icon={FileText} step={7}>{ar ? 'التواصل الاجتماعي (اختياري)' : 'Social Media (optional)'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'صفحة فيسبوك' : 'Facebook Page'}>
                 <input className={inp} type="url" value={form.facebook}
@@ -507,7 +512,7 @@ export default function Join() {
           </div>
 
           {/* ── 8. Terms ──────────────────────────────────────────────── */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <label className="flex items-start gap-3 cursor-pointer">
               <div className="relative flex-shrink-0 mt-0.5">
                 <input
