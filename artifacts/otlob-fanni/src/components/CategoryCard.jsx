@@ -24,6 +24,7 @@ const iconMap = {
   locks_doors:          '/icons/services/locks-doors.svg',
   'locks-doors':        '/icons/services/locks-doors.svg',
   contracting:          '/icons/services/contracting.svg',
+  tiles:                '/icons/services/tiles.svg',
   more:                 '/icons/services/more.svg',
 }
 

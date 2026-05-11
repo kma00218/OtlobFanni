@@ -19,7 +19,7 @@ export const categories = [
   { id: 'locks',          nameAr: 'أقفال وأبواب',      nameEn: 'Locks & Doors',        iconName: 'locks_doors',        sortOrder: 17 },
   { id: 'contracting',    nameAr: 'مقاولات',            nameEn: 'Contracting',          iconName: 'contracting',        sortOrder: 18 },
   // --- الإضافية ---
-  { id: 'tiles',          nameAr: 'بلاط وسيراميك',      nameEn: 'Tiles & Ceramics',     iconName: 'maintenance',        sortOrder: 19 },
+  { id: 'tiles',          nameAr: 'بلاط وسيراميك',      nameEn: 'Tiles & Ceramics',     iconName: 'tiles',              sortOrder: 19 },
   { id: 'gypsum',         nameAr: 'جبس وديكور',         nameEn: 'Gypsum & Decoration',  iconName: 'painting',           sortOrder: 20 },
   { id: 'satellite',      nameAr: 'ستلايت ورسيفر',     nameEn: 'Satellite & Receiver', iconName: 'network',            sortOrder: 21 },
   { id: 'pumps',          nameAr: 'مضخات مياه',         nameEn: 'Water Pumps',          iconName: 'plumbing',           sortOrder: 22 },

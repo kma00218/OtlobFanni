@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Tile grid: 2x2 with grout lines -->
+  <!-- Top-left tile -->
+  <rect x="8" y="8" width="38" height="38" rx="4" fill="#071B33"/>
+  <!-- Top-right tile -->
+  <rect x="54" y="8" width="38" height="38" rx="4" fill="#FF7900"/>
+  <!-- Bottom-left tile -->
+  <rect x="8" y="54" width="38" height="38" rx="4" fill="#FF7900"/>
+  <!-- Bottom-right tile -->
+  <rect x="54" y="54" width="38" height="38" rx="4" fill="#071B33"/>
+
+  <!-- Shine/highlight on top-left tile -->
+  <rect x="12" y="12" width="14" height="6" rx="2" fill="white" opacity="0.15"/>
+  <!-- Shine/highlight on top-right tile -->
+  <rect x="58" y="12" width="14" height="6" rx="2" fill="white" opacity="0.15"/>
+  <!-- Shine/highlight on bottom-left tile -->
+  <rect x="12" y="58" width="14" height="6" rx="2" fill="white" opacity="0.15"/>
+  <!-- Shine/highlight on bottom-right tile -->
+  <rect x="58" y="58" width="14" height="6" rx="2" fill="white" opacity="0.15"/>
+</svg>
