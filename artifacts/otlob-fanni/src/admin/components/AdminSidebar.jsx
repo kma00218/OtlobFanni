@@ -33,7 +33,7 @@ function SidebarNav({ location, visibleItems, onClose }) {
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               isActive
                 ? 'bg-[#FF7900] text-white shadow-lg shadow-[#FF7900]/20'
-                : 'text-[#7070A0] hover:bg-white/5 hover:text-[#C0C0E0]'
+                : 'text-white/70 hover:bg-white/5 hover:text-white'
             }`}
           >
             <Icon className="w-4 h-4 flex-shrink-0" />
