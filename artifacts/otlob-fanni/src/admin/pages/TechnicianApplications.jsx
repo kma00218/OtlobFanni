@@ -31,6 +31,7 @@ const DAY_AR = {
 export default function TechnicianApplications() {
   const { isSuperAdmin } = useAdmin()
   const [data, setData]         = useState([])
+  const [cities, setCities]     = useState([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
   const [filter, setFilter]     = useState('')
@@ -49,7 +50,10 @@ export default function TechnicianApplications() {
       .catch(() => setLoading(false))
   }
 
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    reload()
+    api.cities().then(setCities).catch(() => {})
+  }, [])
 
   const setStatus = async (id, status) => {
     const app = data.find(r => r.id === id)
@@ -67,12 +71,16 @@ export default function TechnicianApplications() {
         const phone = app.phone || ''
         if (name && phone) {
           try {
+            const appCity = app.city || ''
+            const cityRow = cities.find(c =>
+              c.nameAr === appCity || c.nameEn === appCity || c.id === appCity
+            )
             await api.admin.technicians.create({
               id:               'tech_' + app.id,
               name_ar:          name,
               phone:            phone,
               whatsapp:         app.whatsapp || phone,
-              city_id:          null,
+              city_id:          cityRow?.id || null,
               area:             app.area || '',
               category_id:      app.specialty || null,
               experience_years: EXP_YEARS[app.experience] ?? 0,
