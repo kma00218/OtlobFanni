@@ -159,22 +159,22 @@ export default function CompanyDetails() {
         </div>
 
         {/* أزرار التواصل */}
-        <div className="grid grid-cols-2 gap-3">
-          <a
-            href={`tel:${phone}`}
-            className="flex items-center justify-center gap-2 bg-[#071B33] text-white font-bold py-3.5 rounded-2xl text-sm active:scale-[0.98] transition-transform"
-          >
-            <Phone className="w-4 h-4" />
-            {ar ? 'اتصال' : 'Call'}
-          </a>
+        <div className="flex gap-2">
           <a
             href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}`}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center gap-2 bg-green-500 text-white font-bold py-3.5 rounded-2xl text-sm active:scale-[0.98] transition-transform"
+            className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
           >
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare className="w-3.5 h-3.5" />
             {ar ? 'واتساب' : 'WhatsApp'}
+          </a>
+          <a
+            href={`tel:${phone}`}
+            className="flex-1 bg-[#071B33] hover:bg-[#0f2d52] text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+          >
+            <Phone className="w-3.5 h-3.5" />
+            {ar ? 'اتصال' : 'Call'}
           </a>
         </div>
 
