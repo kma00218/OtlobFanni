@@ -167,6 +167,18 @@ export default function TechnicianDetails() {
                 </span>
               )}
             </div>
+            <div className="flex gap-2 mt-3">
+              <a href={`https://wa.me/${tech.whatsapp}`} target="_blank" rel="noreferrer"
+                className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]">
+                <MessageSquare className="w-3.5 h-3.5" />
+                {ar ? 'واتساب' : 'WhatsApp'}
+              </a>
+              <a href={`tel:${tech.phone}`}
+                className="flex-1 bg-[#071B33] hover:bg-[#0f2d52] text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]">
+                <Phone className="w-3.5 h-3.5" />
+                {ar ? 'اتصال' : 'Call'}
+              </a>
+            </div>
           </div>
         </div>
 
@@ -261,16 +273,6 @@ export default function TechnicianDetails() {
 
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg px-4 py-3 flex gap-2 max-w-[480px] mx-auto" dir={ar ? 'rtl' : 'ltr'}>
-        <a href={`https://wa.me/${tech.whatsapp}`} target="_blank" rel="noreferrer" className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]">
-          <MessageSquare className="w-3.5 h-3.5" />
-          {ar ? 'واتساب' : 'WhatsApp'}
-        </a>
-        <a href={`tel:${tech.phone}`} className="flex-1 bg-[#071B33] hover:bg-[#0f2d52] text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]">
-          <Phone className="w-3.5 h-3.5" />
-          {ar ? 'اتصال' : 'Call'}
-        </a>
-      </div>
     </div>
   )
 }
