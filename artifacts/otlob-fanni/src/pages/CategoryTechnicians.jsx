@@ -278,20 +278,18 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
           {ar ? 'المدن' : 'Cities'}
         </p>
 
-        {/* Cities — 2-column grid, big clean cards */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Cities — 4-column grid, name on card */}
+        <div className="grid grid-cols-4 gap-2.5">
           {cities.map((city) => {
             const cityName = ar ? (city.name_ar || city.nameAr || '') : (city.name_en || city.nameEn || '')
             return (
               <button
                 key={city.id}
                 onClick={() => onSelect(city.id)}
-                className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl px-4 py-4 shadow-sm active:scale-[0.97] transition-transform text-start"
+                className="flex flex-col items-center justify-center gap-1.5 bg-[#071B33] rounded-2xl py-4 px-1 active:scale-95 transition-transform shadow-sm aspect-square"
               >
-                <div className="w-9 h-9 rounded-xl bg-[#071B33] flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold text-[#071B33] text-sm leading-tight flex-1">{cityName}</span>
+                <MapPin className="w-4 h-4 text-white/60 flex-shrink-0" />
+                <span className="text-white font-bold text-[11px] text-center leading-tight w-full px-1 line-clamp-2">{cityName}</span>
               </button>
             )
           })}
