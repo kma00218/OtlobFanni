@@ -295,13 +295,13 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
               <button
                 key={city.id}
                 onClick={() => onSelect(city.id)}
-                className="flex flex-col items-center gap-2 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm active:scale-95 transition-transform"
+                className="flex flex-col items-center gap-3 py-4 px-2 bg-white rounded-2xl border border-gray-100 shadow-sm active:scale-95 transition-transform"
               >
-                <div className="w-12 h-12 rounded-[14px] flex items-center justify-center shadow-sm flex-shrink-0"
-                  style={{ background: `linear-gradient(135deg,${color}dd,${color}99)` }}>
-                  <MapPin className="w-5 h-5 text-white" />
+                <div className="w-16 h-16 rounded-[18px] flex items-center justify-center shadow-md flex-shrink-0"
+                  style={{ background: `linear-gradient(135deg,${color},${color}bb)` }}>
+                  <MapPin className="w-7 h-7 text-white" />
                 </div>
-                <span className="text-xs font-bold text-[#071B33] text-center leading-tight">{cityName}</span>
+                <span className="text-sm font-bold text-[#071B33] text-center leading-tight">{cityName}</span>
               </button>
             )
           })}
