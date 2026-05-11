@@ -287,7 +287,7 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
           {ar ? 'أو اختر مدينة' : 'Or choose a city'}
         </p>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           {cities.map((city, idx) => {
             const color = CITY_COLORS[idx % CITY_COLORS.length]
             const cityName = ar ? (city.name_ar || city.nameAr) : (city.name_en || city.nameEn)
