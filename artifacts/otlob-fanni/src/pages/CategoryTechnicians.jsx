@@ -337,10 +337,12 @@ export default function CategoryTechnicians() {
   }
   const categoryIcon = iconMap[category?.iconName] || iconMap[categoryId] || '/icons/services/maintenance.svg'
 
-  // Read city from URL query param so back-navigation restores the list view
-  const urlCity = new URLSearchParams(location.split('?')[1] || '').get('city') ?? ''
-  const cityChosen = urlCity !== null && location.includes('?city=')
-
+  const [cityChosen, setCityChosen] = useState(
+    () => window.location.search.includes('city=')
+  )
+  const [selectedCity, setSelectedCity] = useState(
+    () => new URLSearchParams(window.location.search).get('city') ?? ''
+  )
   const [cities, setCities]             = useState([])
   const [selectedCityName, setSelectedCityName] = useState('')
   const [techs, setTechs]               = useState([])
@@ -349,16 +351,27 @@ export default function CategoryTechnicians() {
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState(null)
 
+  // Sync state with URL when user presses browser back/forward
+  useEffect(() => {
+    const onPop = () => {
+      const city = new URLSearchParams(window.location.search).get('city') ?? ''
+      setSelectedCity(city)
+      setCityChosen(window.location.search.includes('city='))
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
   useEffect(() => {
     api.cities().then(setCities).catch(() => {})
   }, [])
 
   // Resolve city name once cities are loaded
   useEffect(() => {
-    if (!cities.length || !urlCity) return
-    const found = cities.find(c => c.id === urlCity)
+    if (!cities.length || !selectedCity) return
+    const found = cities.find(c => c.id === selectedCity)
     setSelectedCityName(ar ? (found?.name_ar || '') : (found?.name_en || ''))
-  }, [cities, urlCity, ar])
+  }, [cities, selectedCity, ar])
 
   // After city is chosen, load results
   useEffect(() => {
@@ -366,8 +379,8 @@ export default function CategoryTechnicians() {
     setLoading(true)
     setError(null)
     Promise.all([
-      api.technicians({ category: categoryId, city_id: urlCity || undefined }),
-      api.companies({ specialty: categoryId, city: urlCity || undefined }),
+      api.technicians({ category: categoryId, city_id: selectedCity || undefined }),
+      api.companies({ specialty: categoryId, city: selectedCity || undefined }),
     ])
       .then(([techData, compData]) => {
         setTechs(techData)
@@ -375,9 +388,11 @@ export default function CategoryTechnicians() {
         setLoading(false)
       })
       .catch(err => { setError(err.message); setLoading(false) })
-  }, [categoryId, cityChosen, urlCity])
+  }, [categoryId, cityChosen, selectedCity])
 
   const handleCitySelect = (cityId) => {
+    setSelectedCity(cityId)
+    setCityChosen(true)
     // Push a new history entry so back from TechnicianDetails returns to this list
     navigate(`/category/${categoryId}?city=${cityId}`)
   }
@@ -491,8 +506,8 @@ export default function CategoryTechnicians() {
                   : 'No technicians or companies found for this category. Try changing the city.'}
               </p>
             </div>
-            {urlCity && (
-              <button onClick={() => navigate(`/category/${categoryId}?city=`)}
+            {selectedCity && (
+              <button onClick={() => { setSelectedCity(''); setCityChosen(false); navigate(`/category/${categoryId}`) }}
                 className="text-[#FF7900] text-sm font-medium hover:underline">
                 {ar ? 'عرض كل المدن' : 'Show all cities'}
               </button>
