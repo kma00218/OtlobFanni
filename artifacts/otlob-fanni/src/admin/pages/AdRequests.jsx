@@ -77,7 +77,7 @@ function DetailModal({ req, onClose, onApprove, onReject }) {
             </div>
           )}
           {notes && <DetailRow label="ملاحظات إضافية" value={notes} />}
-          <DetailRow label="تاريخ الإرسال" value={createdAt ? new Date(createdAt).toLocaleString('ar-LY') : '—'} />
+          <DetailRow label="تاريخ الإرسال" value={createdAt ? new Date(createdAt).toLocaleString('en-GB') : '—'} />
           {req.status === 'pending' && (
             <div className="flex gap-3 pt-2">
               <button onClick={() => onApprove(req.id)} className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors">
@@ -241,7 +241,7 @@ export default function AdRequests() {
                       <td className="px-4 py-3 text-[#8888A8] max-w-[140px]"><span className="text-xs">{placement}</span></td>
                       <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
                       <td className="px-4 py-3 text-[#666680] text-xs whitespace-nowrap">
-                        {createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : '—'}
+                        {createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : '—'}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">

@@ -154,7 +154,7 @@ export default function Companies() {
     },
     {
       key: 'createdAt', label: 'تاريخ الانضمام',
-      render: (v) => v ? new Date(v).toLocaleDateString('ar-LY') : '—',
+      render: (v) => v ? new Date(v).toLocaleDateString('en-GB') : '—',
     },
     {
       key: 'id', label: 'إجراءات',
@@ -262,7 +262,7 @@ export default function Companies() {
                   <p className="text-xs text-[#555570] mt-0.5">{contactName}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-500/10 text-emerald-400">شركة مقبولة ✓</span>
-                    <span className="text-xs text-[#555570]">{createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}</span>
+                    <span className="text-xs text-[#555570]">{createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : ''}</span>
                   </div>
                 </div>
               </div>

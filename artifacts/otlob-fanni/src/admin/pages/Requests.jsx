@@ -192,7 +192,7 @@ export default function Requests() {
       key: 'created_at', label: 'التاريخ',
       render: (v, row) => {
         const d = v || row.createdAt
-        return d ? new Date(d).toLocaleDateString('ar-LY') : '—'
+        return d ? new Date(d).toLocaleDateString('en-GB') : '—'
       }
     },
     {
@@ -299,7 +299,7 @@ export default function Requests() {
               </div>
             )}
             <p className="text-xs text-[#444460] text-left" dir="ltr">
-              {(viewItem.created_at || viewItem.createdAt) ? new Date(viewItem.created_at || viewItem.createdAt).toLocaleString('ar-LY') : ''}
+              {(viewItem.created_at || viewItem.createdAt) ? new Date(viewItem.created_at || viewItem.createdAt).toLocaleString('en-GB') : ''}
             </p>
           </div>
         )}

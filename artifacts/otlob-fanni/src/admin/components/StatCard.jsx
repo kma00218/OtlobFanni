@@ -19,7 +19,7 @@ export default function StatCard({ title, value, icon: Icon, color = 'orange', s
           {loading ? (
             <div className="h-9 w-20 bg-white/8 rounded-xl animate-pulse" />
           ) : (
-            <p className="text-4xl font-black text-white tabular-nums leading-none">{(value ?? 0).toLocaleString('ar-EG')}</p>
+            <p className="text-4xl font-black text-white tabular-nums leading-none">{(value ?? 0).toLocaleString('en-US')}</p>
           )}
           {subtitle && !loading && (
             <p className="text-xs text-[#555570] mt-2 font-medium">{subtitle}</p>

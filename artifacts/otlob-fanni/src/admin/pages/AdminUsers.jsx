@@ -126,7 +126,7 @@ export default function AdminUsers() {
     },
     {
       key: 'createdAt', label: 'تاريخ الإنشاء',
-      render: (v) => v ? new Date(v).toLocaleDateString('ar-LY') : '—'
+      render: (v) => v ? new Date(v).toLocaleDateString('en-GB') : '—'
     },
     {
       key: 'id', label: 'إجراءات',

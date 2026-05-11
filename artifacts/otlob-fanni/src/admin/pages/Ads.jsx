@@ -98,8 +98,8 @@ export default function Ads() {
       key: 'start_date', label: 'الفترة',
       render: (v, row) => (
         <span className="text-xs text-[#666680]">
-          {v ? new Date(v).toLocaleDateString('ar-LY') : '—'}
-          {row.end_date ? ` ← ${new Date(row.end_date).toLocaleDateString('ar-LY')}` : ''}
+          {v ? new Date(v).toLocaleDateString('en-GB') : '—'}
+          {row.end_date ? ` ← ${new Date(row.end_date).toLocaleDateString('en-GB')}` : ''}
         </span>
       )
     },

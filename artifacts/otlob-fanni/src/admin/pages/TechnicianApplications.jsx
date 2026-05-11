@@ -172,7 +172,7 @@ export default function TechnicianApplications() {
     },
     {
       key: 'createdAt', label: 'تاريخ التقديم',
-      render: (v) => v ? new Date(v).toLocaleDateString('ar-LY') : '—',
+      render: (v) => v ? new Date(v).toLocaleDateString('en-GB') : '—',
     },
     {
       key: 'id', label: 'إجراءات',
@@ -302,7 +302,7 @@ export default function TechnicianApplications() {
                       {STATUS[viewItem.status]?.label}
                     </span>
                     <span className="text-xs text-[#555570]">
-                      {createdAt ? new Date(createdAt).toLocaleDateString('ar-LY') : ''}
+                      {createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : ''}
                     </span>
                   </div>
                 </div>

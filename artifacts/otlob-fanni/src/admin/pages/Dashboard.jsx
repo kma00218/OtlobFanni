@@ -245,7 +245,7 @@ export default function Dashboard() {
               <span className="text-[#8888A8] text-sm flex-1">{label}</span>
               {loading
                 ? <div className="h-5 w-8 bg-white/8 rounded animate-pulse" />
-                : <span className={`font-black text-lg ${color}`}>{(value ?? 0).toLocaleString('ar-EG')}</span>
+                : <span className={`font-black text-lg ${color}`}>{(value ?? 0).toLocaleString('en-US')}</span>
               }
             </div>
           ))}
@@ -281,7 +281,7 @@ export default function Dashboard() {
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-white truncate">{r.customer_name || 'غير محدد'}</p>
                       <p className="text-xs text-[#666680] truncate mt-0.5">
-                        {r.category_name || r.category_id || '—'} &nbsp;·&nbsp; {r.city_name || r.city_id || '—'} &nbsp;·&nbsp; {r.created_at ? new Date(r.created_at).toLocaleDateString('ar-LY') : '—'}
+                        {r.category_name || r.category_id || '—'} &nbsp;·&nbsp; {r.city_name || r.city_id || '—'} &nbsp;·&nbsp; {r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB') : '—'}
                       </p>
                     </div>
                     <StatusBadge status={r.status} />
@@ -332,7 +332,7 @@ export default function Dashboard() {
                       }
                     </td>
                     <td className="px-5 py-3.5 text-[#666680] text-xs whitespace-nowrap">
-                      {t.created_at || t.approvedAt ? new Date(t.created_at || t.approvedAt).toLocaleDateString('ar-LY') : '—'}
+                      {t.created_at || t.approvedAt ? new Date(t.created_at || t.approvedAt).toLocaleDateString('en-GB') : '—'}
                     </td>
                   </tr>
                 ))}
