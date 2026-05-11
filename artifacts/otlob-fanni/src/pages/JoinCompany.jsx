@@ -1,17 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { categories } from '../data/services'
 import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook } from 'lucide-react'
 import api from '../lib/api'
-
-const CITIES = [
-  { ar: 'طرابلس', en: 'Tripoli' }, { ar: 'بنغازي', en: 'Benghazi' },
-  { ar: 'مصراتة', en: 'Misrata' }, { ar: 'الزاوية', en: 'Zawiya' },
-  { ar: 'سبها',   en: 'Sabha'   }, { ar: 'زوارة',  en: 'Zuwara'  },
-  { ar: 'زليتن', en: 'Zliten'   }, { ar: 'الخمس', en: 'Al Khoms' },
-  { ar: 'سرت',   en: 'Sirte'    }, { ar: 'طبرق',  en: 'Tobruk'   },
-]
 
 const DAYS = {
   ar: ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],
@@ -89,6 +81,9 @@ export default function JoinCompany() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const logoInputRef = useRef(null)
+
+  const [cities, setCities] = useState([])
+  useEffect(() => { api.cities().then(setCities).catch(() => {}) }, [])
 
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -308,8 +303,8 @@ export default function JoinCompany() {
                 <Field label={ar ? 'المدينة' : 'City'} required>
                   <select className={sel} required value={form.city} onChange={e => set('city', e.target.value)}>
                     <option value="">{ar ? 'اختر...' : 'Select...'}</option>
-                    {CITIES.map(c => (
-                      <option key={c.en} value={ar ? c.ar : c.en}>{ar ? c.ar : c.en}</option>
+                    {cities.map(c => (
+                      <option key={c.id} value={ar ? c.nameAr : c.nameEn}>{ar ? c.nameAr : c.nameEn}</option>
                     ))}
                   </select>
                 </Field>
