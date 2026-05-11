@@ -57,7 +57,21 @@ router.get("/companies", async (req, res): Promise<void> => {
     .orderBy(desc(companyApplicationsTable.createdAt));
 
   if (specialty) companies = companies.filter(c => c.specialty === specialty);
-  if (city)      companies = companies.filter(c => c.city === city);
+
+  if (city) {
+    // city param may be a city ID (e.g. "c2") or a plain name — resolve to both Arabic + English names
+    const [cityRow] = await db.select().from(citiesTable).where(eq(citiesTable.id, city));
+    if (cityRow) {
+      companies = companies.filter(c =>
+        c.city === cityRow.nameAr ||
+        c.city === cityRow.nameEn ||
+        c.city === cityRow.id
+      );
+    } else {
+      // fallback: treat city as a plain text match
+      companies = companies.filter(c => c.city === city);
+    }
+  }
 
   res.json(companies);
 });
