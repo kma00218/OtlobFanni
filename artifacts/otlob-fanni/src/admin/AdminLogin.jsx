@@ -37,12 +37,12 @@ export default function AdminLogin() {
           >
             <Wrench className="w-8 h-8 text-[#FF7900]" />
           </div>
-          <h1 className="text-2xl font-bold text-[#E8E8F0]">لوحة التحكم</h1>
+          <h1 className="text-2xl font-bold text-white">لوحة التحكم</h1>
           <p className="text-[#555570] mt-1 text-sm">اطلب فني — Otlob Fanni</p>
         </div>
 
         <div className="bg-[#0E0E17] rounded-2xl border border-white/8 shadow-2xl shadow-black/60 p-8">
-          <h2 className="text-lg font-bold text-[#E8E8F0] mb-6">تسجيل الدخول</h2>
+          <h2 className="text-lg font-bold text-white mb-6">تسجيل الدخول</h2>
 
           {error && (
             <div className="mb-5 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-2">

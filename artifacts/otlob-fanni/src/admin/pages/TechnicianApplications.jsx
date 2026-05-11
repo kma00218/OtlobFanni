@@ -143,7 +143,7 @@ export default function TechnicianApplications() {
             }
           </div>
           <div>
-            <p className="font-medium text-[#D8D8EC] text-sm">{v}</p>
+            <p className="font-medium text-white text-sm">{v}</p>
             <p className="text-xs text-[#555570]" dir="ltr">{row.phone}</p>
           </div>
         </div>
@@ -293,7 +293,7 @@ export default function TechnicianApplications() {
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-[#E8E8F0] text-lg leading-tight">{name}</h3>
+                  <h3 className="font-bold text-white text-lg leading-tight">{name}</h3>
                   <p className="text-sm text-[#8888A8] mt-0.5">
                     {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
                   </p>
@@ -501,7 +501,7 @@ function IC({ label, value, dir, valueClass }) {
   return (
     <div className="bg-white/5 rounded-xl p-3">
       <p className="text-xs text-[#555570] mb-0.5">{label}</p>
-      <p className={`font-medium text-[#D8D8EC] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+      <p className={`font-medium text-white text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }

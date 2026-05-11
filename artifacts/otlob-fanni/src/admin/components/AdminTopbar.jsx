@@ -35,7 +35,7 @@ export default function AdminTopbar({ onMenuClick, currentPath }) {
 
       <div className="flex items-center gap-2.5 flex-1">
         <div className="w-1 h-5 bg-[#FF7900] rounded-full" />
-        <h1 className="text-[#E8E8F0] font-bold text-base">{title}</h1>
+        <h1 className="text-white font-bold text-base">{title}</h1>
       </div>
 
       <div className="flex items-center gap-2">

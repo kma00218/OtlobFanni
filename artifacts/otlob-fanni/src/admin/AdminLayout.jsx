@@ -26,7 +26,7 @@ function AccessDenied() {
         <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <Shield className="w-8 h-8 text-red-400" />
         </div>
-        <h2 className="text-lg font-bold text-[#E8E8F0] mb-1">غير مصرح</h2>
+        <h2 className="text-lg font-bold text-white mb-1">غير مصرح</h2>
         <p className="text-[#666680] text-sm">ليس لديك صلاحية للوصول إلى هذه الصفحة</p>
       </div>
     </div>

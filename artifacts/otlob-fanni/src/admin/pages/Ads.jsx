@@ -87,7 +87,7 @@ export default function Ads() {
         <div className="flex items-center gap-3">
           {row.image_url && <img src={row.image_url} alt="" className="w-12 h-8 object-cover rounded-lg flex-shrink-0" onError={e => e.target.style.display='none'} />}
           <div>
-            <p className="font-medium text-[#D8D8EC]">{v || '—'}</p>
+            <p className="font-medium text-white">{v || '—'}</p>
             <p className="text-xs text-[#555570]">{row.title_en || ''}</p>
           </div>
         </div>

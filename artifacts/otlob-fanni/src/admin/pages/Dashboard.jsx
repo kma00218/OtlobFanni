@@ -62,7 +62,7 @@ export default function Dashboard() {
             <HardDrive size={18} className="text-[#7070A0]" />
           </div>
           <div>
-            <h3 className="font-bold text-[#D0D0E8] text-sm">سعة التخزين</h3>
+            <h3 className="font-bold text-white text-sm">سعة التخزين</h3>
             <p className="text-xs text-[#444460]">Object Storage — Replit</p>
           </div>
           {storageUsage && (
@@ -123,7 +123,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Pie */}
         <div className="bg-[#0E0E17] rounded-2xl border border-white/5 p-5">
-          <h3 className="font-bold text-[#D0D0E8] text-sm mb-4">الطلبات حسب الحالة</h3>
+          <h3 className="font-bold text-white text-sm mb-4">الطلبات حسب الحالة</h3>
           {loading ? (
             <div className="h-48 bg-white/3 rounded-xl animate-pulse" />
           ) : requestsByStatus.length === 0 ? (
@@ -157,7 +157,7 @@ export default function Dashboard() {
         {/* Recent Requests */}
         <div className="bg-[#0E0E17] rounded-2xl border border-white/5 overflow-hidden lg:col-span-2">
           <div className="px-5 py-4 border-b border-white/5">
-            <h3 className="font-bold text-[#D0D0E8] text-sm">آخر الطلبات</h3>
+            <h3 className="font-bold text-white text-sm">آخر الطلبات</h3>
           </div>
           <div className="divide-y divide-white/3">
             {loading
@@ -188,7 +188,7 @@ export default function Dashboard() {
       {/* Recent Techs */}
       <div className="bg-[#0E0E17] rounded-2xl border border-white/5 overflow-hidden">
         <div className="px-5 py-4 border-b border-white/5">
-          <h3 className="font-bold text-[#D0D0E8] text-sm">آخر الفنيين المضافين</h3>
+          <h3 className="font-bold text-white text-sm">آخر الفنيين المضافين</h3>
         </div>
         {loading ? (
           <div className="p-4 space-y-2">

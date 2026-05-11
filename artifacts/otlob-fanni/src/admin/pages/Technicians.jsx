@@ -184,7 +184,7 @@ export default function Technicians() {
       key: 'nameAr', label: 'الفني',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-[#D8D8EC]">{v || row.name_ar || '—'}</p>
+          <p className="font-medium text-white">{v || row.name_ar || '—'}</p>
           <p className="text-xs text-[#555570]" dir="ltr">{row.phone}</p>
         </div>
       ),

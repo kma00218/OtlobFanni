@@ -65,7 +65,7 @@ export default function Categories() {
 
   const columns = [
     { key: 'icon', label: 'الأيقونة', width: '80px', render: (v) => <span className="text-[#FF7900] font-mono text-xs bg-[#FF7900]/10 px-2 py-1 rounded-lg">{v || 'Wrench'}</span> },
-    { key: 'name_ar', label: 'الاسم عربي',     render: (v) => <span className="font-medium text-[#D8D8EC]">{v}</span> },
+    { key: 'name_ar', label: 'الاسم عربي',     render: (v) => <span className="font-medium text-white">{v}</span> },
     { key: 'name_en', label: 'الاسم إنجليزي',  render: (v) => <span dir="ltr" className="text-[#8888A8]">{v}</span> },
     { key: 'sort_order', label: 'الترتيب', width: '80px' },
     {

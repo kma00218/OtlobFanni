@@ -18,7 +18,7 @@ function DetailRow({ label, value }) {
   return (
     <div className="flex flex-col gap-0.5">
       <span className="text-xs text-[#555570] font-semibold">{label}</span>
-      <span className="text-sm text-[#D8D8EC] break-all">{value}</span>
+      <span className="text-sm text-white break-all">{value}</span>
     </div>
   )
 }
@@ -43,7 +43,7 @@ function DetailModal({ req, onClose, onApprove, onReject }) {
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-[#0E0E17] border border-white/8 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10">
-          <h2 className="font-bold text-[#E8E8F0] text-base">تفاصيل طلب الإعلان</h2>
+          <h2 className="font-bold text-white text-base">تفاصيل طلب الإعلان</h2>
           <button onClick={onClose} className="text-[#555570] hover:text-[#8888A8]"><X className="w-5 h-5" /></button>
         </div>
         <div className="p-5 space-y-4">
@@ -172,7 +172,7 @@ export default function AdRequests() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#E8E8F0]">طلبات الإعلانات</h1>
+          <h1 className="text-xl font-bold text-white">طلبات الإعلانات</h1>
           <p className="text-sm text-[#666680] mt-0.5">إدارة طلبات الإعلان من الأنشطة التجارية</p>
         </div>
       </div>
@@ -196,7 +196,7 @@ export default function AdRequests() {
 
       <div className="bg-[#0E0E17] rounded-2xl border border-white/5 overflow-hidden">
         <div className="px-5 py-3.5 border-b border-white/5 flex items-center justify-between gap-3">
-          <h2 className="font-bold text-[#E8E8F0] text-sm">
+          <h2 className="font-bold text-white text-sm">
             {filter ? `${STATUS_MAP[filter]?.[0]} (${filtered.length})` : `جميع الطلبات (${requests.length})`}
           </h2>
           {filter && <button onClick={() => setFilter('')} className="text-xs text-[#FF7900] hover:underline">عرض الكل</button>}
@@ -232,7 +232,7 @@ export default function AdRequests() {
                   return (
                     <tr key={r.id} className="border-b border-white/3 hover:bg-white/3 transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-[#D8D8EC]">{business}</p>
+                        <p className="font-medium text-white">{business}</p>
                         <p className="text-xs text-[#555570]">{bType}</p>
                       </td>
                       <td className="px-4 py-3 text-[#C0C0D8]">{contact}</td>

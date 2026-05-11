@@ -64,7 +64,7 @@ export default function Cities() {
   }
 
   const columns = [
-    { key: 'name_ar', label: 'الاسم عربي', render: (v) => <span className="font-medium text-[#D8D8EC]">{v}</span> },
+    { key: 'name_ar', label: 'الاسم عربي', render: (v) => <span className="font-medium text-white">{v}</span> },
     { key: 'name_en', label: 'الاسم إنجليزي', render: (v) => <span dir="ltr" className="text-[#8888A8]">{v}</span> },
     { key: 'sort_order', label: 'الترتيب', width: '80px' },
     {

@@ -19,7 +19,7 @@ export default function FormModal({ open, onClose, title, children, onSubmit, lo
     >
       <div className={`bg-[#0E0E17] border border-white/8 rounded-2xl shadow-2xl shadow-black/60 w-full ${sizeClass} max-h-[90vh] flex flex-col`}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h3 className="text-base font-bold text-[#E8E8F0]">{title}</h3>
+          <h3 className="text-base font-bold text-white">{title}</h3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#555570] hover:text-[#C0C0E0]"

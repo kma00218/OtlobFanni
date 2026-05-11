@@ -61,7 +61,7 @@ export default function Settings() {
 
       <div className="bg-[#0E0E17] rounded-2xl border border-white/5 overflow-hidden">
         <div className="px-6 py-5 border-b border-white/5">
-          <h2 className="font-bold text-[#E8E8F0]">إعدادات التطبيق</h2>
+          <h2 className="font-bold text-white">إعدادات التطبيق</h2>
           <p className="text-[#666680] text-sm mt-0.5">تعديل الإعدادات العامة للتطبيق</p>
         </div>
 

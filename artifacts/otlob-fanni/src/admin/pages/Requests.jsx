@@ -154,7 +154,7 @@ export default function Requests() {
       key: 'customer_name', label: 'العميل',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-[#D8D8EC] text-sm">{v || row.customerName || '—'}</p>
+          <p className="font-medium text-white text-sm">{v || row.customerName || '—'}</p>
           <p className="text-xs text-[#555570]" dir="ltr">{row.customer_phone || row.customerPhone || '—'}</p>
         </div>
       )
@@ -276,7 +276,7 @@ export default function Requests() {
               ].map(([k, v]) => (
                 <div key={k} className="bg-white/5 rounded-xl p-3">
                   <p className="text-xs text-[#555570] mb-0.5">{k}</p>
-                  <p className="font-medium text-[#D8D8EC] text-sm">{v || '—'}</p>
+                  <p className="font-medium text-white text-sm">{v || '—'}</p>
                 </div>
               ))}
               <div className="bg-white/5 rounded-xl p-3">
@@ -289,7 +289,7 @@ export default function Requests() {
             {(viewItem.assigned_technician_name || viewItem.assignedTechnicianName) && (
               <div className="bg-blue-500/10 rounded-xl p-3">
                 <p className="text-xs text-[#555570] mb-1">الفني المُسند</p>
-                <p className="text-sm font-medium text-[#D8D8EC]">{viewItem.assigned_technician_name || viewItem.assignedTechnicianName}</p>
+                <p className="text-sm font-medium text-white">{viewItem.assigned_technician_name || viewItem.assignedTechnicianName}</p>
               </div>
             )}
             {(viewItem.problem_description || viewItem.problemDescription) && (
@@ -311,7 +311,7 @@ export default function Requests() {
           <div className="space-y-4">
             <div className="bg-white/5 rounded-xl p-3 text-sm">
               <p className="text-xs text-[#555570] mb-1">الطلب</p>
-              <p className="font-medium text-[#D8D8EC]">
+              <p className="font-medium text-white">
                 {assignItem.customer_name || assignItem.customerName} — {assignItem.category_name_ar || assignItem.categoryNameAr}
               </p>
               <p className="text-xs text-[#666680] mt-0.5">
@@ -336,7 +336,7 @@ export default function Requests() {
                         {tech.name_ar.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-[#D8D8EC] text-sm">{tech.name_ar}</p>
+                        <p className="font-medium text-white text-sm">{tech.name_ar}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           {tech.phone && <span className="flex items-center gap-1 text-xs text-[#555570]" dir="ltr"><Phone className="w-3 h-3" />{tech.phone}</span>}
                           {tech.rating && <span className="flex items-center gap-0.5 text-xs text-amber-400"><Star className="w-3 h-3 fill-current" />{tech.rating}</span>}

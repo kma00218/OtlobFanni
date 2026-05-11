@@ -132,7 +132,7 @@ export default function Companies() {
               }
             </div>
             <div>
-              <p className="font-semibold text-[#D8D8EC] text-sm">{v || '—'}</p>
+              <p className="font-semibold text-white text-sm">{v || '—'}</p>
               <p className="text-xs text-[#555570]">{contact || '—'}</p>
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function Companies() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
-                    <h3 className="font-bold text-[#E8E8F0] text-lg">{compName}</h3>
+                    <h3 className="font-bold text-white text-lg">{compName}</h3>
                   </div>
                   <p className="text-sm text-[#8888A8]">
                     {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
@@ -565,7 +565,7 @@ function IC({ label, value, dir, valueClass }) {
   return (
     <div className="bg-white/5 rounded-xl p-3">
       <p className="text-xs text-[#555570] mb-0.5">{label}</p>
-      <p className={`font-medium text-[#D8D8EC] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+      <p className={`font-medium text-white text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }

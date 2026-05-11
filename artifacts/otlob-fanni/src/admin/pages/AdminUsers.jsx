@@ -98,7 +98,7 @@ export default function AdminUsers() {
       key: 'name', label: 'المستخدم',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-[#D8D8EC]">{v || '—'}</p>
+          <p className="font-medium text-white">{v || '—'}</p>
           <p className="text-xs text-[#555570]" dir="ltr">{row.email}</p>
         </div>
       )
@@ -106,7 +106,7 @@ export default function AdminUsers() {
     {
       key: 'role', label: 'الدور',
       render: (v) => (
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${v === 'super_admin' ? 'bg-white/10 text-[#E8E8F0]' : 'bg-[#FF7900]/10 text-[#FF7900]'}`}>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${v === 'super_admin' ? 'bg-white/10 text-white' : 'bg-[#FF7900]/10 text-[#FF7900]'}`}>
           {v === 'super_admin' ? 'Super Admin' : 'Sub Admin'}
         </span>
       )
@@ -203,19 +203,19 @@ export default function AdminUsers() {
                 <CheckCircle className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-bold text-[#E8E8F0]">تم إنشاء الحساب بنجاح</h3>
+                <h3 className="font-bold text-white">تم إنشاء الحساب بنجاح</h3>
                 <p className="text-xs text-[#555570]">احفظ بيانات الدخول</p>
               </div>
             </div>
             <div className="bg-white/5 rounded-xl p-4 space-y-3 mb-4">
               <div>
                 <p className="text-xs text-[#555570] mb-0.5">البريد الإلكتروني</p>
-                <p className="font-mono text-sm text-[#D8D8EC]" dir="ltr">{successInfo.email}</p>
+                <p className="font-mono text-sm text-white" dir="ltr">{successInfo.email}</p>
               </div>
               <div>
                 <p className="text-xs text-[#555570] mb-0.5">كلمة المرور</p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-mono text-sm text-[#D8D8EC]" dir="ltr">{successInfo.password}</p>
+                  <p className="font-mono text-sm text-white" dir="ltr">{successInfo.password}</p>
                   <button onClick={() => copyToClipboard(`${successInfo.email}\n${successInfo.password}`)} className="text-[#FF7900] hover:text-[#e86d00]">
                     {copied ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>

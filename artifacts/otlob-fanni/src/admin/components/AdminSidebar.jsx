@@ -76,7 +76,7 @@ export default function AdminSidebar({ open, onClose }) {
           <Shield className="w-4 h-4 text-[#FF7900]" />
         </div>
         <div className="min-w-0">
-          <p className="text-[#D0D0E8] text-sm font-medium truncate">{profile?.full_name || 'المسؤول'}</p>
+          <p className="text-white text-sm font-medium truncate">{profile?.full_name || 'المسؤول'}</p>
           <p className="text-[#555570] text-xs">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
         </div>
       </div>

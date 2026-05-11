@@ -17,7 +17,7 @@ export default function StatCard({ title, value, icon: Icon, color = 'orange', s
           {loading ? (
             <div className="h-8 w-16 bg-white/5 rounded-lg animate-pulse" />
           ) : (
-            <p className="text-3xl font-bold text-[#E8E8F0] tabular-nums">{value ?? 0}</p>
+            <p className="text-3xl font-bold text-white tabular-nums">{value ?? 0}</p>
           )}
           {subtitle && <p className="text-xs text-[#444460] mt-1.5">{subtitle}</p>}
         </div>
