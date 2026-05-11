@@ -238,6 +238,79 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav }) {
   )
 }
 
+// ─── City Picker Step ────────────────────────────────────────────────────────
+const CITY_COLORS = [
+  '#FF7900','#007AFF','#34C759','#FF2D55','#5856D6',
+  '#FF9500','#30B0C7','#AF52DE','#FF3B30','#32ADE6',
+  '#00C7BE','#8E8E93','#1D3461','#FFCC00','#636366',
+]
+
+function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
+  return (
+    <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+      <BackHeader title={categoryName} />
+
+      <main className="px-4 pt-5">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 rounded-[20px] mx-auto mb-3 flex items-center justify-center shadow-lg overflow-hidden"
+            style={{ background: 'linear-gradient(135deg,#FF7900,#d96400)' }}>
+            <img src={categoryIcon} alt="" className="w-14 h-14 object-contain" />
+          </div>
+          <h2 className="text-lg font-bold text-[#071B33]">
+            {ar ? 'اختر مدينتك' : 'Choose your city'}
+          </h2>
+          <p className="text-sm text-gray-400 mt-1">
+            {ar
+              ? 'اختر المدينة لعرض الفنيين القريبين منك'
+              : 'Select a city to see nearby providers'}
+          </p>
+        </div>
+
+        {/* All cities button */}
+        <button
+          onClick={() => onSelect('')}
+          className="w-full flex items-center gap-3 bg-white border-2 border-[#FF7900] rounded-2xl px-4 py-3.5 mb-4 shadow-sm active:scale-[0.98] transition-transform"
+        >
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg,#071B33,#1a3a5c)' }}>
+            <MapPin className="w-5 h-5 text-white" />
+          </div>
+          <div className="text-start flex-1">
+            <p className="font-bold text-[#071B33] text-sm">{ar ? 'كل ليبيا' : 'All Libya'}</p>
+            <p className="text-xs text-gray-400">{ar ? 'عرض جميع الفنيين بدون تحديد مدينة' : 'Show all providers'}</p>
+          </div>
+          <span className="text-[#FF7900]">{ar ? '←' : '→'}</span>
+        </button>
+
+        {/* Cities grid */}
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+          {ar ? 'أو اختر مدينة' : 'Or choose a city'}
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {cities.map((city, idx) => {
+            const color = CITY_COLORS[idx % CITY_COLORS.length]
+            const cityName = ar ? (city.name_ar || city.nameAr) : (city.name_en || city.nameEn)
+            return (
+              <button
+                key={city.id}
+                onClick={() => onSelect(city.id)}
+                className="flex flex-col items-center gap-2 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm active:scale-95 transition-transform"
+              >
+                <div className="w-12 h-12 rounded-[14px] flex items-center justify-center shadow-sm flex-shrink-0"
+                  style={{ background: `linear-gradient(135deg,${color}dd,${color}99)` }}>
+                  <MapPin className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs font-bold text-[#071B33] text-center leading-tight">{cityName}</span>
+              </button>
+            )
+          })}
+        </div>
+      </main>
+    </div>
+  )
+}
+
 export default function CategoryTechnicians() {
   const { lang } = useLang()
   const ar = lang === 'ar'
@@ -250,20 +323,37 @@ export default function CategoryTechnicians() {
   const category = categories.find(c => c.id === categoryId)
   const categoryName = ar ? (category?.nameAr || '') : (category?.nameEn || '')
 
+  const iconMap = {
+    electricity:'/icons/services/electricity.svg', plumbing:'/icons/services/plumbing.svg',
+    ac:'/icons/services/ac.svg', painting:'/icons/services/painting.svg',
+    carpentry:'/icons/services/carpentry.svg', cleaning:'/icons/services/cleaning.svg',
+    moving:'/icons/services/moving.svg', cctv:'/icons/services/cctv.svg',
+    network:'/icons/services/network.svg', maintenance:'/icons/services/maintenance.svg',
+    appliances:'/icons/services/appliances.svg', welding:'/icons/services/welding.svg',
+    aluminum_glass:'/icons/services/aluminum-glass.svg', waterproofing:'/icons/services/waterproofing.svg',
+    thermal_insulation:'/icons/services/thermal-insulation.svg', gas:'/icons/services/gas.svg',
+    locks_doors:'/icons/services/locks-doors.svg', contracting:'/icons/services/contracting.svg',
+    tiles:'/icons/services/tiles.svg', more:'/icons/services/more.svg',
+  }
+  const categoryIcon = iconMap[category?.iconName] || iconMap[categoryId] || '/icons/services/maintenance.svg'
+
   const [cities, setCities]             = useState([])
+  const [cityChosen, setCityChosen]     = useState(false)   // has user picked a city yet?
   const [selectedCity, setSelectedCity] = useState('')
+  const [selectedCityName, setSelectedCityName] = useState('')
   const [techs, setTechs]               = useState([])
   const [companies, setCompanies]       = useState([])
   const [search, setSearch]             = useState('')
-  const [loading, setLoading]           = useState(true)
+  const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState(null)
 
   useEffect(() => {
     api.cities().then(setCities).catch(() => {})
   }, [])
 
+  // After city is chosen, load results
   useEffect(() => {
-    if (!categoryId) return
+    if (!categoryId || !cityChosen) return
     setLoading(true)
     setError(null)
     Promise.all([
@@ -276,7 +366,31 @@ export default function CategoryTechnicians() {
         setLoading(false)
       })
       .catch(err => { setError(err.message); setLoading(false) })
-  }, [categoryId, selectedCity])
+  }, [categoryId, cityChosen, selectedCity])
+
+  const handleCitySelect = (cityId) => {
+    setSelectedCity(cityId)
+    if (cityId) {
+      const found = cities.find(c => c.id === cityId)
+      setSelectedCityName(ar ? (found?.name_ar || '') : (found?.name_en || ''))
+    } else {
+      setSelectedCityName('')
+    }
+    setCityChosen(true)
+  }
+
+  // Show city picker if not yet chosen
+  if (!cityChosen) {
+    return (
+      <CityPicker
+        cities={cities}
+        categoryName={categoryName}
+        categoryIcon={categoryIcon}
+        ar={ar}
+        onSelect={handleCitySelect}
+      />
+    )
+  }
 
   const filteredTechs = techs.filter(t => {
     if (!search) return true
@@ -304,46 +418,42 @@ export default function CategoryTechnicians() {
 
       <main className="px-4 pt-4 space-y-4">
 
-        {/* شعار التخصص */}
+        {/* شعار التخصص + المدينة */}
         <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-100 p-3.5 shadow-sm">
-          <div className="w-12 h-12 bg-[#FF7900]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-            <ServiceImageIcon iconName={category?.iconName || categoryId} size="md" />
+          <div className="w-12 h-12 bg-[#FF7900]/10 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <img src={categoryIcon} alt="" className="w-9 h-9 object-contain" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="font-bold text-[#071B33] text-base">{categoryName}</p>
-            <p className="text-xs text-gray-400">
-              {loading
-                ? (ar ? 'جارٍ التحميل...' : 'Loading...')
-                : ar
-                  ? `${totalCount} مقدّم خدمة متاح`
-                  : `${totalCount} provider${totalCount !== 1 ? 's' : ''} available`
-              }
-            </p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <MapPin className="w-3 h-3 text-[#FF7900] flex-shrink-0" />
+              <p className="text-xs text-gray-500 font-medium">
+                {selectedCityName || (ar ? 'كل ليبيا' : 'All Libya')}
+              </p>
+              <span className="text-gray-300">·</span>
+              <p className="text-xs text-gray-400">
+                {loading ? (ar ? 'جارٍ التحميل...' : 'Loading...') : ar ? `${totalCount} مقدّم` : `${totalCount} providers`}
+              </p>
+            </div>
           </div>
+          <button
+            onClick={() => { setCityChosen(false); setTechs([]); setCompanies([]) }}
+            className="flex-shrink-0 bg-[#F2F2F7] text-[#071B33] text-xs font-bold px-3 py-1.5 rounded-xl active:scale-95 transition-transform"
+          >
+            {ar ? 'غيّر المدينة' : 'Change'}
+          </button>
         </div>
 
-        {/* فلتر المدينة + بحث */}
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 ${ar ? 'right-3' : 'left-3'}`} />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder={ar ? 'بحث...' : 'Search...'}
-              className={`w-full border border-gray-200 rounded-xl py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${ar ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
-            />
-          </div>
-          <select
-            value={selectedCity}
-            onChange={e => setSelectedCity(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 min-w-[100px]"
-          >
-            <option value="">{ar ? 'كل المدن' : 'All Cities'}</option>
-            {cities.map(c => (
-              <option key={c.id} value={c.id}>{ar ? c.name_ar : c.name_en}</option>
-            ))}
-          </select>
+        {/* بحث */}
+        <div className="relative">
+          <Search className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 ${ar ? 'right-3' : 'left-3'}`} />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder={ar ? 'بحث عن فني أو شركة...' : 'Search provider...'}
+            className={`w-full border border-gray-200 rounded-xl py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${ar ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
+          />
         </div>
 
         {/* إعلان */}
