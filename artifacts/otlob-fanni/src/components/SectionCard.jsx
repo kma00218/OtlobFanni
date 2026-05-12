@@ -14,6 +14,10 @@ const SECTION_COLORS = {
   more_services:     ['#374151', '#1f2937'],
 }
 
+const SECTION_IMAGE = {
+  home_services: '/icons/sections/home_services.jpeg',
+}
+
 const SECTION_ICON = {
   home_services:     Home,
   car_services:      Car,
@@ -32,6 +36,7 @@ export default function SectionCard({ section }) {
   const count = categories.filter(c => c.sectionId === section.id && c.id !== 'more').length
   const [c1, c2] = SECTION_COLORS[section.id] || SECTION_COLORS.more_services
   const Icon = SECTION_ICON[section.id] || MoreHorizontal
+  const customImage = SECTION_IMAGE[section.id]
 
   return (
     <Link href={`/section/${section.id}`}>
@@ -40,20 +45,25 @@ export default function SectionCard({ section }) {
         style={{ minHeight: 190 }}
       >
         {/* Icon container — 96px */}
-        <div
-          className="rounded-[22px] flex items-center justify-center shadow-md flex-shrink-0"
-          style={{
-            width: 96,
-            height: 96,
-            background: `linear-gradient(145deg, ${c1}, ${c2})`,
-          }}
-        >
-          <Icon
-            size={48}
-            color="white"
-            strokeWidth={1.6}
+        {customImage ? (
+          <img
+            src={customImage}
+            alt=""
+            draggable="false"
+            style={{ width: 96, height: 96, borderRadius: 22, objectFit: 'cover', flexShrink: 0 }}
           />
-        </div>
+        ) : (
+          <div
+            className="rounded-[22px] flex items-center justify-center shadow-md flex-shrink-0"
+            style={{
+              width: 96,
+              height: 96,
+              background: `linear-gradient(145deg, ${c1}, ${c2})`,
+            }}
+          >
+            <Icon size={48} color="white" strokeWidth={1.6} />
+          </div>
+        )}
 
         {/* Labels */}
         <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
