@@ -1,27 +1,28 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
 import { categories } from '../data/services'
+import { Home, Car, HardHat, ShieldCheck, Truck, Leaf, Briefcase, MoreHorizontal } from 'lucide-react'
 
 const SECTION_COLORS = {
-  home_services:     ['#FF7900', '#e86d00'],
-  car_services:      ['#071B33', '#1a3a5c'],
-  construction:      ['#B45309', '#92400E'],
-  tech_security:     ['#1D4ED8', '#1E50A2'],
-  moving_general:    ['#7C3AED', '#6D28D9'],
-  gardens_pools:     ['#059669', '#047857'],
-  business_services: ['#0891B2', '#065B7A'],
-  more_services:     ['#475569', '#334155'],
+  home_services:     ['#FF7900', '#d96300'],
+  car_services:      ['#071B33', '#0f2d52'],
+  construction:      ['#B45309', '#7c3700'],
+  tech_security:     ['#1D4ED8', '#1238a8'],
+  moving_general:    ['#6D28D9', '#4c1db0'],
+  gardens_pools:     ['#047857', '#025c42'],
+  business_services: ['#0369A1', '#024e7a'],
+  more_services:     ['#374151', '#1f2937'],
 }
 
-const SECTION_ICON_MAP = {
-  home_services:     '/icons/services/electricity.svg',
-  car_services:      '/icons/services/maintenance.svg',
-  construction:      '/icons/services/contracting.svg',
-  tech_security:     '/icons/services/cctv.svg',
-  moving_general:    '/icons/services/moving.svg',
-  gardens_pools:     '/icons/services/cleaning.svg',
-  business_services: '/icons/services/maintenance.svg',
-  more_services:     '/icons/services/more.svg',
+const SECTION_ICON = {
+  home_services:     Home,
+  car_services:      Car,
+  construction:      HardHat,
+  tech_security:     ShieldCheck,
+  moving_general:    Truck,
+  gardens_pools:     Leaf,
+  business_services: Briefcase,
+  more_services:     MoreHorizontal,
 }
 
 export default function SectionCard({ section }) {
@@ -30,7 +31,7 @@ export default function SectionCard({ section }) {
   const name = ar ? section.nameAr : section.nameEn
   const count = categories.filter(c => c.sectionId === section.id && c.id !== 'more').length
   const [c1, c2] = SECTION_COLORS[section.id] || SECTION_COLORS.more_services
-  const iconSrc = SECTION_ICON_MAP[section.id] || '/icons/services/maintenance.svg'
+  const Icon = SECTION_ICON[section.id] || MoreHorizontal
 
   return (
     <Link href={`/section/${section.id}`}>
@@ -40,19 +41,17 @@ export default function SectionCard({ section }) {
       >
         {/* Icon container — 96px */}
         <div
-          className="rounded-[24px] flex items-center justify-center shadow-md flex-shrink-0"
+          className="rounded-[22px] flex items-center justify-center shadow-md flex-shrink-0"
           style={{
-            width: 96, height: 96,
-            background: `linear-gradient(135deg, ${c1}, ${c2})`,
+            width: 96,
+            height: 96,
+            background: `linear-gradient(145deg, ${c1}, ${c2})`,
           }}
         >
-          <img
-            src={iconSrc}
-            alt=""
-            style={{ width: 56, height: 56 }}
-            className="object-contain"
-            draggable="false"
-            onError={e => { e.currentTarget.src = '/icons/services/maintenance.svg' }}
+          <Icon
+            size={48}
+            color="white"
+            strokeWidth={1.6}
           />
         </div>
 
