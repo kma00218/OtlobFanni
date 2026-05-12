@@ -12,7 +12,7 @@ const DAYS = {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2,'0')}:00`)
 
-const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
+const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
 const sel = inp + ' appearance-none cursor-pointer'
 
 function SectionTitle({ icon: Icon, step, children }) {
