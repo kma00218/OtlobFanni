@@ -24,6 +24,9 @@ import Messages from "./pages/Messages";
 import More from "./pages/More";
 import JoinUs from "./pages/JoinUs";
 import AdvertiseWithUs from "./pages/AdvertiseWithUs";
+import About from "./pages/About";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 // Admin
 import AdminLogin from "./admin/AdminLogin";
@@ -81,6 +84,9 @@ function AppContent() {
             <Route path="/more" component={More} />
             <Route path="/join-us" component={JoinUs} />
             <Route path="/advertise" component={AdvertiseWithUs} />
+            <Route path="/about" component={About} />
+            <Route path="/terms" component={Terms} />
+            <Route path="/privacy" component={Privacy} />
             <Route component={NotFound} />
           </Switch>
           <BottomNav />

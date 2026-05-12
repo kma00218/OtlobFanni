@@ -1,0 +1,309 @@
+نفّذ هذه المهمة فقط.
+
+المطلوب:
+أضف صفحات قانونية ومعلوماتية داخل تطبيق "اطلب فني" لتكون مناسبة للنشر على Google Play.
+
+لا تغيّر التصميم العام.
+لا تغيّر قاعدة البيانات.
+لا تغيّر لوحة التحكم إلا إذا كان ضروريًا لإضافة الروابط.
+لا تستخدم Supabase.
+لا تستخدم higher power mode.
+لا تضف ميزات جديدة.
+نفّذ الصفحات فقط.
+
+أضف داخل صفحة "المزيد" الروابط التالية:
+
+1. عن التطبيق
+2. شروط الخدمة
+3. سياسة الخصوصية
+4. تواصل معنا / الدعم
+
+المسارات المقترحة:
+- /about
+- /terms
+- /privacy
+- /contact
+
+يجب أن تكون الصفحات باللغتين العربية والإنجليزية حسب لغة التطبيق.
+
+--------------------------------
+صفحة: عن التطبيق
+--------------------------------
+
+العنوان العربي:
+عن تطبيق اطلب فني
+
+النص العربي:
+اطلب فني هو تطبيق ليبي يساعد المستخدمين على الوصول إلى الفنيين والشركات القريبة منهم في مجالات الخدمات المنزلية، السيارات، البناء والتشطيب، التقنية والأمن، النقل، الطاقة، والخدمات التجارية.
+
+يعمل التطبيق كدليل خدمات يسهّل التواصل بين المستخدم ومقدم الخدمة عبر الهاتف أو واتساب. يقوم فريق الإدارة بمراجعة طلبات انضمام الفنيين والشركات قبل ظهورهم داخل التطبيق، وذلك للمساعدة في تحسين جودة الخدمة وبناء الثقة.
+
+التطبيق لا ينفذ الخدمة بنفسه، ولا يعمل كجهة توظيف مباشرة، بل يوفر وسيلة سهلة للعثور على مقدمي الخدمات والتواصل معهم.
+
+العنوان الإنجليزي:
+About Otlob Fanni
+
+النص الإنجليزي:
+Otlob Fanni is a Libyan service directory app that helps users find nearby technicians and service companies in home services, car services, construction, technology and security, moving, energy, and business services.
+
+The app helps users contact service providers directly by phone or WhatsApp. Technician and company applications are reviewed by the admin team before appearing publicly in the app to help improve service quality and trust.
+
+The app does not provide the services directly and does not act as an employer. It only helps connect users with available service providers.
+
+--------------------------------
+صفحة: شروط الخدمة
+--------------------------------
+
+العنوان العربي:
+شروط الخدمة
+
+النص العربي:
+باستخدامك لتطبيق اطلب فني، فإنك توافق على الشروط التالية:
+
+1. طبيعة التطبيق
+اطلب فني هو منصة دليل خدمات تساعد المستخدمين على العثور على فنيين وشركات والتواصل معهم. التطبيق لا يضمن جودة الخدمة المقدمة من أي فني أو شركة، ولا يكون طرفًا مباشرًا في الاتفاق بين المستخدم ومقدم الخدمة.
+
+2. مسؤولية المستخدم
+يتحمل المستخدم مسؤولية اختيار مقدم الخدمة المناسب، والاتفاق معه على السعر، الموعد، وطبيعة العمل قبل بدء الخدمة.
+
+3. مسؤولية الفنيين والشركات
+يلتزم الفني أو الشركة بإدخال بيانات صحيحة، مثل الاسم، رقم الهاتف، المدينة، التخصص، وصف الخدمة، وصور الأعمال. يحق لإدارة التطبيق رفض أو إخفاء أو حذف أي حساب يحتوي على بيانات غير صحيحة أو محتوى غير مناسب.
+
+4. الموافقة والمراجعة
+جميع طلبات انضمام الفنيين والشركات تخضع لمراجعة الإدارة قبل الظهور داخل التطبيق. لا يحق لأي مقدم خدمة الظهور العام قبل الموافقة.
+
+5. الأسعار
+أي أسعار ظاهرة داخل التطبيق هي أسعار تقريبية أو تبدأ من مبلغ معين، وقد تختلف حسب طبيعة الخدمة والمكان والاتفاق بين المستخدم ومقدم الخدمة.
+
+6. المحتوى الممنوع
+يمنع نشر أي محتوى مسيء، مضلل، غير قانوني، أو صور وبيانات لا تخص صاحب الحساب. يحق للإدارة حذف أي محتوى مخالف.
+
+7. التواصل الخارجي
+قد يستخدم التطبيق روابط خارجية مثل واتساب أو مواقع أخرى. عند الانتقال إلى خدمة خارجية، تخضع لاستخدامك لشروط وسياسات تلك الخدمة.
+
+8. حدود المسؤولية
+لا يتحمل تطبيق اطلب فني مسؤولية أي ضرر أو خسارة أو خلاف يحدث بين المستخدم ومقدم الخدمة. التطبيق يوفر وسيلة تواصل فقط.
+
+9. التعديل على الشروط
+قد يتم تحديث هذه الشروط من وقت لآخر، وسيتم نشر النسخة المحدثة داخل التطبيق.
+
+النص الإنجليزي:
+Terms of Service
+
+By using Otlob Fanni, you agree to the following terms:
+
+1. Nature of the App
+Otlob Fanni is a service directory platform that helps users find and contact technicians and service companies. The app does not guarantee the quality of services provided by any technician or company and is not a direct party to any agreement between the user and the service provider.
+
+2. User Responsibility
+Users are responsible for choosing the appropriate service provider and agreeing on price, timing, and service details before any work begins.
+
+3. Technician and Company Responsibility
+Technicians and companies must provide accurate information, including name, phone number, city, service category, service description, and work images. The app administration may reject, hide, or remove any account that contains false information or inappropriate content.
+
+4. Review and Approval
+All technician and company applications are subject to admin review before appearing publicly in the app.
+
+5. Prices
+Any prices shown in the app are approximate or starting prices and may vary depending on the service, location, and agreement between the user and the service provider.
+
+6. Prohibited Content
+Users and service providers must not publish offensive, misleading, illegal, or unauthorized content. The administration may remove any violating content.
+
+7. External Communication
+The app may include external links such as WhatsApp or websites. When using external services, their own terms and policies apply.
+
+8. Limitation of Liability
+Otlob Fanni is not responsible for any damage, loss, dispute, or issue that occurs between users and service providers. The app only provides a connection tool.
+
+9. Changes to Terms
+These terms may be updated from time to time, and the updated version will be published inside the app.
+
+--------------------------------
+صفحة: سياسة الخصوصية
+--------------------------------
+
+العنوان العربي:
+سياسة الخصوصية
+
+النص العربي:
+توضح سياسة الخصوصية هذه كيفية جمع واستخدام وحماية البيانات داخل تطبيق اطلب فني.
+
+1. البيانات التي قد نجمعها
+قد يجمع التطبيق البيانات التالية:
+- الاسم
+- رقم الهاتف
+- رقم واتساب
+- المدينة والمنطقة
+- نوع الخدمة أو التخصص
+- وصف الخدمة
+- صورة شخصية أو شعار الشركة
+- صور الأعمال السابقة
+- روابط التواصل الاجتماعي الاختيارية
+- بيانات طلبات الانضمام أو طلبات التواصل
+- أي معلومات يرسلها المستخدم طوعًا عبر النماذج داخل التطبيق
+
+لا نطلب في المرحلة الحالية مستندات قانونية أو بطاقات هوية أو سجل تجاري من المستخدمين أو مقدمي الخدمات.
+
+2. كيف نستخدم البيانات
+نستخدم البيانات من أجل:
+- عرض بيانات الفنيين والشركات بعد موافقة الإدارة
+- تمكين المستخدمين من التواصل مع مقدمي الخدمات
+- مراجعة طلبات الانضمام
+- تحسين جودة التطبيق
+- تقديم الدعم والرد على الاستفسارات
+- منع الحسابات أو المحتوى غير المناسب
+
+3. البيانات التي تظهر للعامة
+بعد موافقة الإدارة، قد تظهر بعض بيانات مقدم الخدمة داخل التطبيق، مثل:
+- الاسم أو اسم الشركة
+- المدينة والمنطقة
+- التخصص
+- وصف الخدمة
+- رقم الهاتف أو واتساب
+- صورة الملف أو شعار الشركة
+- صور الأعمال
+
+لا يتم عرض أي بيانات داخلية أو معلومات غير مخصصة للنشر العام.
+
+4. مشاركة البيانات
+لا نبيع بيانات المستخدمين. قد تتم مشاركة بعض البيانات فقط عند الضرورة لتشغيل التطبيق أو عند استخدام خدمات خارجية مثل واتساب أو رابط موقع خارجي. عند استخدام خدمات خارجية، تخضع البيانات لسياسات تلك الخدمات.
+
+5. تخزين البيانات
+يتم تخزين بيانات التطبيق داخل أنظمة التخزين الخاصة بالمشروع. يتم حفظ البيانات المنظمة في قاعدة البيانات، بينما يتم حفظ الصور والملفات في نظام تخزين الملفات عند الحاجة.
+
+6. حماية البيانات
+نستخدم إجراءات مناسبة للمساعدة في حماية البيانات من الوصول غير المصرح به أو الاستخدام غير المناسب. ومع ذلك، لا توجد وسيلة تخزين أو نقل عبر الإنترنت آمنة بنسبة 100%.
+
+7. حذف أو تعديل البيانات
+يمكن لمقدم الخدمة طلب تعديل أو حذف بياناته من خلال التواصل مع إدارة التطبيق عبر صفحة الدعم أو وسائل التواصل الرسمية.
+
+8. الأطفال
+التطبيق غير موجه للأطفال. إذا تبين أن بيانات طفل تم إدخالها بدون موافقة مناسبة، يمكن التواصل معنا لحذفها.
+
+9. التحديثات
+قد يتم تحديث سياسة الخصوصية من وقت لآخر. سيتم نشر النسخة المحدثة داخل التطبيق.
+
+10. التواصل معنا
+لأي استفسار بخصوص الخصوصية أو حذف البيانات، يمكن التواصل معنا عبر صفحة الدعم داخل التطبيق أو عبر الموقع:
+otlobfanni.ly
+
+النص الإنجليزي:
+Privacy Policy
+
+This Privacy Policy explains how Otlob Fanni collects, uses, and protects data inside the app.
+
+1. Data We May Collect
+The app may collect the following data:
+- Name
+- Phone number
+- WhatsApp number
+- City and area
+- Service category or specialty
+- Service description
+- Personal photo or company logo
+- Work gallery images
+- Optional social media links
+- Technician/company application data or contact request data
+- Any information voluntarily submitted through forms inside the app
+
+At this stage, we do not request legal documents, ID cards, or commercial registration documents from users or service providers.
+
+2. How We Use Data
+We use data to:
+- Display technician and company profiles after admin approval
+- Enable users to contact service providers
+- Review service provider applications
+- Improve app quality
+- Provide support and respond to inquiries
+- Prevent inappropriate accounts or content
+
+3. Publicly Visible Data
+After admin approval, some service provider data may appear publicly in the app, such as:
+- Name or company name
+- City and area
+- Service category
+- Service description
+- Phone or WhatsApp number
+- Profile photo or company logo
+- Work images
+
+Internal or non-public data is not displayed publicly.
+
+4. Data Sharing
+We do not sell user data. Some data may be shared only when necessary to operate the app or when using external services such as WhatsApp or external website links. External services are governed by their own privacy policies.
+
+5. Data Storage
+App data is stored within the project’s storage systems. Structured data is stored in the database, while images and files are stored in file storage when needed.
+
+6. Data Security
+We use reasonable measures to help protect data from unauthorized access or misuse. However, no method of internet transmission or storage is 100% secure.
+
+7. Data Deletion or Correction
+Service providers may request correction or deletion of their data by contacting the app administration through the support page or official contact channels.
+
+8. Children
+The app is not directed to children. If we learn that a child’s data was submitted without appropriate consent, users may contact us to request deletion.
+
+9. Updates
+This Privacy Policy may be updated from time to time. The updated version will be published inside the app.
+
+10. Contact Us
+For privacy questions or data deletion requests, contact us through the support page inside the app or through:
+otlobfanni.ly
+
+--------------------------------
+صفحة: تواصل معنا / الدعم
+--------------------------------
+
+العنوان العربي:
+الدعم والتواصل
+
+النص العربي:
+إذا كان لديك سؤال، مشكلة، طلب تعديل بيانات، أو طلب حذف حساب، يمكنك التواصل مع إدارة تطبيق اطلب فني.
+
+أزرار الصفحة:
+- واتساب الدعم
+- اتصال
+- البريد الإلكتروني
+- زيارة الموقع
+
+ضع الرابط:
+https://otlobfanni.ly
+
+إذا لم يكن البريد الإلكتروني جاهزًا، استخدم:
+info@otlobfanni.ly
+أو اجعل البريد قابلًا للتعديل من إعدادات التطبيق.
+
+العنوان الإنجليزي:
+Support & Contact
+
+النص الإنجليزي:
+If you have a question, issue, data correction request, or account deletion request, you can contact the Otlob Fanni administration.
+
+Buttons:
+- WhatsApp Support
+- Call
+- Email
+- Visit Website
+
+Website:
+https://otlobfanni.ly
+
+--------------------------------
+متطلبات مهمة
+--------------------------------
+
+1. أضف روابط هذه الصفحات داخل صفحة "المزيد".
+2. أضف رابط سياسة الخصوصية في صفحة التسجيل "انضم إلينا" قرب الموافقة على الشروط.
+3. عند الضغط على "الشروط والأحكام" في نموذج الانضمام، افتح صفحة /terms.
+4. عند الضغط على "سياسة الخصوصية" في نموذج الانضمام، افتح صفحة /privacy.
+5. اجعل صفحة /privacy قابلة للفتح من المتصفح مباشرة، لأن Google Play يحتاج Privacy Policy URL.
+6. لا تستخدم نصوص قانونية مبالغ فيها.
+7. لا تذكر أن التطبيق يقدم خدمات طبية أو مالية.
+8. لا تذكر أي جمع للوثائق القانونية لأننا حذفناها من النموذج.
+9. تأكد أن النصوص تظهر عربي/إنجليزي حسب اللغة.
+10. لا توجد صفحات فارغة.
+11. لا توجد أخطاء في Console.
+
+توقف بعد تنفيذ هذه المهمة فقط.

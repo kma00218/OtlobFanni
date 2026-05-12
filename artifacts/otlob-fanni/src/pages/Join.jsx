@@ -548,9 +548,15 @@ export default function Join() {
                 </div>
               </div>
               <span className="text-sm text-gray-600 leading-relaxed">
-                {ar
-                  ? 'أوافق على الشروط والأحكام وسياسة الخصوصية لمنصة اطلب فني، وأقر بصحة جميع البيانات المدخلة.'
-                  : 'I agree to the Terms & Conditions and Privacy Policy of Otlob Fanni, and confirm all submitted information is accurate.'}
+                {ar ? 'أوافق على ' : 'I agree to the '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#FF7900] underline font-medium" onClick={e => e.stopPropagation()}>
+                  {ar ? 'الشروط والأحكام' : 'Terms & Conditions'}
+                </a>
+                {ar ? ' و' : ' and '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#FF7900] underline font-medium" onClick={e => e.stopPropagation()}>
+                  {ar ? 'سياسة الخصوصية' : 'Privacy Policy'}
+                </a>
+                {ar ? ' لمنصة اطلب فني، وأقر بصحة جميع البيانات المدخلة.' : ' of Otlob Fanni, and confirm all submitted information is accurate.'}
                 <span className="text-[#FF7900] mx-0.5">*</span>
               </span>
             </label>

@@ -524,9 +524,17 @@ export default function JoinCompany() {
                 className="mt-1 w-4 h-4 accent-[#FF7900] flex-shrink-0"
               />
               <span className="text-sm text-gray-600 leading-relaxed">
+                {ar ? 'أوافق على ' : 'I agree to '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#FF7900] underline font-medium" onClick={e => e.stopPropagation()}>
+                  {ar ? 'شروط وأحكام' : 'Terms & Conditions'}
+                </a>
+                {ar ? ' و' : ' and '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#FF7900] underline font-medium" onClick={e => e.stopPropagation()}>
+                  {ar ? 'سياسة الخصوصية' : 'Privacy Policy'}
+                </a>
                 {ar
-                  ? 'أوافق على شروط وأحكام منصة اطلب فني، وأؤكد أن جميع البيانات المدخلة صحيحة ودقيقة.'
-                  : 'I agree to Otlob Fanni\'s terms and conditions, and confirm that all submitted information is accurate.'}
+                  ? ' لمنصة اطلب فني، وأؤكد أن جميع البيانات المدخلة صحيحة ودقيقة.'
+                  : ' of Otlob Fanni, and confirm that all submitted information is accurate.'}
               </span>
             </label>
           </div>
