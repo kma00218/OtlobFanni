@@ -66,6 +66,7 @@ function AppContent() {
             <Route path="/orders" component={Orders} />
             <Route path="/favorites" component={Favorites} />
             <Route path="/messages" component={Messages} />
+            <Route path="/support" component={Messages} />
             <Route path="/more" component={More} />
             <Route path="/join-us" component={JoinUs} />
             <Route path="/advertise" component={AdvertiseWithUs} />
