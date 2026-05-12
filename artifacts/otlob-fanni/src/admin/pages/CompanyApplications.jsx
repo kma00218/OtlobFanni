@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Building2, Shield } from 'lucide-react'
-import { categories } from '../../data/services'
 import api from '../../lib/api'
 
 const EXP_LABEL = {
@@ -21,8 +20,6 @@ const DAY_AR = {
   Tuesday:'الثلاثاء', Wednesday:'الأربعاء', Thursday:'الخميس', Friday:'الجمعة',
 }
 
-const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
-
 export default function CompanyApplications() {
   const [data, setData]         = useState([])
   const [loading, setLoading]   = useState(true)
@@ -34,9 +31,15 @@ export default function CompanyApplications() {
   const [specialtyAction, setSpecialtyAction] = useState('none')
   const [linkCatId, setLinkCatId]             = useState('')
   const [allCats, setAllCats]                 = useState([])
+  const [categories, setCategories]           = useState([])
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  const catLabel = (id) => {
+    const cat = categories.find(c => c.id === id)
+    return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
   }
 
   const reload = () => {
@@ -46,12 +49,12 @@ export default function CompanyApplications() {
       .catch(() => setLoading(false))
   }
 
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    reload()
+    api.categories().then(cats => { setCategories(cats); setAllCats(cats) }).catch(() => {})
+  }, [])
 
   useEffect(() => {
-    if (viewItem?.customSpecialty) {
-      api.categories().then(setAllCats).catch(() => {})
-    }
     setSpecialtyAction('none')
     setLinkCatId('')
   }, [viewItem?.id])
@@ -132,7 +135,7 @@ export default function CompanyApplications() {
       key: 'specialty', label: 'التخصص',
       render: (v, row) => row.customSpecialty
         ? <span className="text-amber-400 text-xs font-medium">{row.customSpecialty}</span>
-        : (CAT_LABEL[v] || v || '—'),
+        : (catLabel(v) || v || '—'),
     },
     {
       key: 'yearsActive', label: 'سنوات النشاط',
@@ -274,7 +277,7 @@ export default function CompanyApplications() {
                     <h3 className="font-bold text-white text-lg leading-tight">{compName}</h3>
                   </div>
                   <p className="text-sm text-[#8888A8]">
-                    {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
+                    {catLabel(viewItem.specialty) || viewItem.specialty} • {viewItem.city}
                   </p>
                   {contactName && (
                     <p className="text-xs text-[#555570] mt-0.5">جهة التواصل: {contactName}</p>
@@ -358,7 +361,7 @@ export default function CompanyApplications() {
               {/* Service info */}
               <Sec icon={Briefcase} title="معلومات الخدمة">
                 <G2>
-                  <IC label="التخصص"       value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
+                  <IC label="التخصص"       value={catLabel(viewItem.specialty) || viewItem.specialty} />
                   <IC label="سنوات النشاط" value={EXP_LABEL[yearsActive] || yearsActive} />
                   <IC label="السعر الأدنى"  value={priceFrom ? `${priceFrom} د.ل` : '—'} />
                   <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />

@@ -6,7 +6,7 @@ import {
   Image, Shield, Zap, User, Settings2,
 } from 'lucide-react'
 import api from '../../lib/api'
-import { sections as SECTIONS, categories as STATIC_CATS } from '../../data/services'
+import { sections as SECTIONS } from '../../data/services'
 
 const PAGE_SIZE = 15
 

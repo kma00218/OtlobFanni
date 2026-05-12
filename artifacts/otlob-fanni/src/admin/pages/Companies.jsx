@@ -6,7 +6,6 @@ import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle
 } from 'lucide-react'
-import { categories } from '../../data/services'
 import api from '../../lib/api'
 
 const EXP_LABEL = {
@@ -29,8 +28,6 @@ const DAY_OPTIONS = [
   { en: 'Friday',    ar: 'الجمعة'   },
 ]
 
-const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
-
 const emptyForm = {
   company_name: '', contact_name: '', phone: '', whatsapp: '',
   commercial_reg: '', city: '', area: '', address: '',
@@ -51,10 +48,16 @@ export default function Companies() {
   const [form, setForm]             = useState(emptyForm)
   const [saving, setSaving]         = useState(false)
   const [lightbox, setLightbox]     = useState(null)
+  const [categories, setCategories] = useState([])
   const [toast, setToast]           = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  const catLabel = (id) => {
+    const cat = categories.find(c => c.id === id)
+    return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
   }
 
   const reload = () => {
@@ -64,7 +67,10 @@ export default function Companies() {
       .catch(() => setLoading(false))
   }
 
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    reload()
+    api.categories().then(setCategories).catch(() => {})
+  }, [])
 
   const handleRevoke = async (id) => {
     if (!confirm('هل تريد إلغاء الموافقة على هذه الشركة؟ ستعود إلى قائمة الطلبات.')) return
@@ -158,7 +164,7 @@ export default function Companies() {
     { key: 'city', label: 'المدينة', render: v => v || '—' },
     {
       key: 'specialty', label: 'التخصص',
-      render: (v) => CAT_LABEL[v] || v || '—',
+      render: (v) => catLabel(v) || v || '—',
     },
     {
       key: 'yearsActive', label: 'سنوات النشاط',
@@ -269,7 +275,7 @@ export default function Companies() {
                     <h3 className="font-bold text-white text-lg">{compName}</h3>
                   </div>
                   <p className="text-sm text-[#8888A8]">
-                    {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
+                    {catLabel(viewItem.specialty) || viewItem.specialty} • {viewItem.city}
                   </p>
                   <p className="text-xs text-[#555570] mt-0.5">{contactName}</p>
                   <div className="flex items-center gap-2 mt-2">
@@ -300,7 +306,7 @@ export default function Companies() {
 
               <Sec icon={Briefcase} title="معلومات الخدمة">
                 <G2>
-                  <IC label="التخصص"       value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
+                  <IC label="التخصص"       value={catLabel(viewItem.specialty) || viewItem.specialty} />
                   <IC label="سنوات النشاط" value={EXP_LABEL[yearsActive] || yearsActive} />
                   <IC label="السعر الأدنى"  value={priceFrom ? `${priceFrom} د.ل` : '—'} />
                   <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />

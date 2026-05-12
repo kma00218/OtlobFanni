@@ -21,10 +21,25 @@ export default function Categories() {
 
   const showToast = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000) }
 
+  const normalize = (row) => ({
+    id:         row.id,
+    name_ar:    row.name_ar    || row.nameAr    || '',
+    name_en:    row.name_en    || row.nameEn    || '',
+    icon:       row.icon       || row.iconName  || 'Wrench',
+    section_id: row.section_id || row.sectionId || '',
+    sort_order: row.sort_order ?? row.sortOrder  ?? 0,
+    is_active:  row.is_active  ?? row.isActive  ?? true,
+  })
+
   const reload = () => {
     setLoading(true)
     api.admin.categories.list()
-      .then(rows => { rows.sort((a, b) => (a.sort_order||0) - (b.sort_order||0)); setData(rows); setLoading(false) })
+      .then(rows => {
+        const normalized = rows.map(normalize)
+        normalized.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+        setData(normalized)
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
   }
 

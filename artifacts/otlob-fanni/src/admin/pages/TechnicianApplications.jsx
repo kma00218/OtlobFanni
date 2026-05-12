@@ -3,14 +3,11 @@ import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
-import { categories } from '../../data/services'
 import api from '../../lib/api'
 
 const EXP_YEARS = {
   less1: 0, '1-2': 2, '3-5': 5, '6-10': 10, '10+': 11,
 }
-
-const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',
@@ -41,9 +38,15 @@ export default function TechnicianApplications() {
   const [specialtyAction, setSpecialtyAction] = useState('none')
   const [linkCatId, setLinkCatId]         = useState('')
   const [allCats, setAllCats]             = useState([])
+  const [categories, setCategories]       = useState([])
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  const catLabel = (id) => {
+    const cat = categories.find(c => c.id === id)
+    return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
   }
 
   const reload = () => {
@@ -56,12 +59,10 @@ export default function TechnicianApplications() {
   useEffect(() => {
     reload()
     api.cities().then(setCities).catch(() => {})
+    api.categories().then(cats => { setCategories(cats); setAllCats(cats) }).catch(() => {})
   }, [])
 
   useEffect(() => {
-    if (viewItem?.customSpecialty) {
-      api.categories().then(setAllCats).catch(() => {})
-    }
     setSpecialtyAction('none')
     setLinkCatId('')
   }, [viewItem?.id])
@@ -178,7 +179,7 @@ export default function TechnicianApplications() {
       key: 'specialty', label: 'التخصص',
       render: (v, row) => row.customSpecialty
         ? <span className="text-amber-400 text-xs font-medium">{row.customSpecialty}</span>
-        : (CAT_LABEL[v] || v || '—'),
+        : (catLabel(v) || v || '—'),
     },
     {
       key: 'experience', label: 'الخبرة',
@@ -316,7 +317,7 @@ export default function TechnicianApplications() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-white text-lg leading-tight">{name}</h3>
                   <p className="text-sm text-[#8888A8] mt-0.5">
-                    {CAT_LABEL[viewItem.specialty] || viewItem.specialty} • {viewItem.city}
+                    {catLabel(viewItem.specialty) || viewItem.specialty} • {viewItem.city}
                   </p>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS[viewItem.status]?.cls}`}>
@@ -395,7 +396,7 @@ export default function TechnicianApplications() {
               {/* Professional */}
               <Sec icon={Briefcase} title="المعلومات المهنية">
                 <G2>
-                  <IC label="التخصص"         value={CAT_LABEL[viewItem.specialty] || viewItem.specialty} />
+                  <IC label="التخصص"         value={catLabel(viewItem.specialty) || viewItem.specialty} />
                   <IC label="سنوات الخبرة"   value={EXP_LABEL[viewItem.experience] || viewItem.experience} />
                   <IC label="نوع العمل"      value={viewItem.type === 'company' ? 'شركة / مؤسسة' : 'فردي'} />
                   <IC label="نطاق الخدمة"   value={svcRadius ? `${svcRadius} كم` : '—'} />
