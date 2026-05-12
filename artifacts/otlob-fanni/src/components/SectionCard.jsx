@@ -1,96 +1,58 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import { categories } from '../data/services'
-import { Home, Car, HardHat, ShieldCheck, Truck, Leaf, Briefcase, MoreHorizontal, Zap } from 'lucide-react'
-
-const SECTION_COLORS = {
-  home_services:     ['#FF7900', '#d96300'],
-  car_services:      ['#071B33', '#0f2d52'],
-  construction:      ['#B45309', '#7c3700'],
-  tech_security:     ['#1D4ED8', '#1238a8'],
-  moving_general:    ['#6D28D9', '#4c1db0'],
-  gardens_pools:     ['#047857', '#025c42'],
-  energy_generators: ['#D97706', '#b45309'],
-  business_services: ['#0369A1', '#024e7a'],
-  more_services:     ['#374151', '#1f2937'],
-}
-
-const SECTION_IMAGE = {
-  home_services:     '/icons/sections/home_services.jpeg',
-  tech_security:     '/icons/sections/tech_security.jpeg',
-  more_services:     '/icons/sections/more_services.png',
-  business_services: '/icons/sections/business_services.jpeg',
-  gardens_pools:     '/icons/sections/gardens_pools.jpeg',
-  moving_general:    '/icons/sections/moving_general.jpeg',
-  car_services:      '/icons/sections/car_services.jpeg',
-  construction:      '/icons/sections/construction.jpeg',
-}
+import {
+  Home, Car, HardHat, Camera, Truck,
+  TreePine, Zap, Store, LayoutGrid,
+} from 'lucide-react'
 
 const SECTION_ICON = {
   home_services:     Home,
   car_services:      Car,
   construction:      HardHat,
-  tech_security:     ShieldCheck,
+  tech_security:     Camera,
   moving_general:    Truck,
-  gardens_pools:     Leaf,
+  gardens_pools:     TreePine,
   energy_generators: Zap,
-  business_services: Briefcase,
-  more_services:     MoreHorizontal,
+  business_services: Store,
+  more_services:     LayoutGrid,
+}
+
+const SECTION_GRADIENT = {
+  home_services:     ['#FF7900', '#e85e00'],
+  car_services:      ['#1E40AF', '#0f2472'],
+  construction:      ['#D97706', '#b35500'],
+  tech_security:     ['#6366F1', '#4338CA'],
+  moving_general:    ['#8B5CF6', '#6D28D9'],
+  gardens_pools:     ['#10B981', '#047857'],
+  energy_generators: ['#F59E0B', '#D97706'],
+  business_services: ['#0EA5E9', '#0369A1'],
+  more_services:     ['#6B7280', '#374151'],
 }
 
 export default function SectionCard({ section }) {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const name = ar ? section.nameAr : section.nameEn
-  const count = categories.filter(c => c.sectionId === section.id && c.id !== 'more').length
-  const [c1, c2] = SECTION_COLORS[section.id] || SECTION_COLORS.more_services
-  const Icon = SECTION_ICON[section.id] || MoreHorizontal
-  const customImage = SECTION_IMAGE[section.id]
+  const Icon = SECTION_ICON[section.id] || LayoutGrid
+  const [c1, c2] = SECTION_GRADIENT[section.id] || SECTION_GRADIENT.more_services
 
   return (
     <Link href={`/section/${section.id}`}>
-      <div
-        className="bg-white rounded-[24px] px-3 py-5 flex flex-col items-center gap-3 shadow-sm border border-gray-100 active:scale-[0.95] transition-transform cursor-pointer select-none"
-        style={{ minHeight: 190 }}
-      >
-        {/* Icon container — 96px */}
-        {customImage ? (
-          <img
-            src={customImage}
-            alt=""
-            draggable="false"
-            style={{ width: 96, height: 96, borderRadius: 22, objectFit: 'cover', flexShrink: 0 }}
-          />
-        ) : (
-          <div
-            className="rounded-[22px] flex items-center justify-center shadow-md flex-shrink-0"
-            style={{
-              width: 96,
-              height: 96,
-              background: `linear-gradient(145deg, ${c1}, ${c2})`,
-            }}
-          >
-            <Icon size={48} color="white" strokeWidth={1.6} />
-          </div>
-        )}
-
-        {/* Labels */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
-          <p className="font-bold text-[#071B33] text-[13px] leading-snug">{name}</p>
-          <p className="text-gray-400 text-[11px]">
-            {count > 0
-              ? `${count} ${ar ? 'تخصص' : 'spec.'}`
-              : (ar ? 'تخصصات حسب الطلب' : 'On-demand')}
-          </p>
-        </div>
-
-        {/* View badge */}
-        <span
-          className="text-[11px] font-semibold px-4 py-1 rounded-full"
-          style={{ background: '#FFF3E8', color: '#FF7900' }}
+      <div className="flex flex-col items-center gap-2 active:scale-[0.88] transition-transform duration-100 cursor-pointer select-none">
+        <div
+          className="flex items-center justify-center shadow-lg"
+          style={{
+            width: 76,
+            height: 76,
+            borderRadius: 20,
+            background: `linear-gradient(150deg, ${c1} 0%, ${c2} 100%)`,
+          }}
         >
-          {ar ? 'عرض' : 'View'}
-        </span>
+          <Icon size={36} color="white" strokeWidth={1.7} />
+        </div>
+        <p className="font-semibold text-[#071B33] text-[11.5px] leading-snug text-center w-[80px] line-clamp-2">
+          {name}
+        </p>
       </div>
     </Link>
   )

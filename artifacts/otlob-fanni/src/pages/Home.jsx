@@ -55,9 +55,11 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-x-2 gap-y-5 px-1">
             {activeSections.map(section => (
-              <SectionCard key={section.id} section={section} />
+              <div key={section.id} className="flex justify-center">
+                <SectionCard section={section} />
+              </div>
             ))}
           </div>
 
