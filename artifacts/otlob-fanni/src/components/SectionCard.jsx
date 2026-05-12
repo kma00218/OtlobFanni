@@ -17,6 +17,7 @@ const SECTION_COLORS = {
 const SECTION_IMAGE = {
   home_services: '/icons/sections/home_services.jpeg',
   tech_security: '/icons/sections/tech_security.jpeg',
+  more_services: '/icons/sections/more_services.png',
 }
 
 const SECTION_ICON = {
