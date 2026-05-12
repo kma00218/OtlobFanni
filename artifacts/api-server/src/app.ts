@@ -1,6 +1,8 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import path from "path";
+import { existsSync } from "fs";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -30,5 +32,16 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use("/api", router);
+
+// In production, serve the built frontend static files and handle SPA routing
+if (process.env.NODE_ENV === "production") {
+  const staticDir = path.join(process.cwd(), "artifacts/otlob-fanni/dist/public");
+  if (existsSync(staticDir)) {
+    app.use(express.static(staticDir));
+    app.get("*", (_req, res) => {
+      res.sendFile(path.join(staticDir, "index.html"));
+    });
+  }
+}
 
 export default app;
