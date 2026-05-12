@@ -265,18 +265,20 @@ router.post("/ad-requests", async (req, res): Promise<void> => {
   const [req_] = await db
     .insert(adRequestsTable)
     .values({
-      id:           body.id,
-      companyName:  body.company_name,
-      contactName:  body.contact_name,
-      phone:        body.phone,
-      whatsapp:     body.whatsapp,
-      adType:       body.ad_type || body.adType,
-      placement:    body.placement,
-      budget:       body.budget,
-      description:  body.description,
-      linkUrl:      body.link_url || body.linkUrl,
-      imagePreview: body.image_preview || body.imagePreview,
-      status:       "pending",
+      id:                  body.id,
+      companyName:         body.company_name,
+      contactName:         body.contact_name,
+      phone:               body.phone,
+      whatsapp:            body.whatsapp,
+      city:                body.city || null,
+      businessType:        body.business_type || null,
+      adTitle:             body.ad_title || null,
+      adDescription:       body.ad_description || null,
+      requestedPlacement:  body.requested_placement || null,
+      websiteOrSocialLink: body.website_or_social_link || null,
+      notes:               body.notes || null,
+      imagePreview:        body.image_preview || body.imagePreview || null,
+      status:              "pending",
     })
     .returning();
 

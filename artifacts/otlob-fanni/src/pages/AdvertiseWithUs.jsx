@@ -40,6 +40,7 @@ export default function AdvertiseWithUs() {
   const [form, setForm] = useState(emptyForm)
   const [imagePreview, setImagePreview] = useState(null)
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState({})
 
   const set = (field, val) => {
@@ -72,12 +73,14 @@ export default function AdvertiseWithUs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting) return
     const errs = validate()
     if (Object.keys(errs).length > 0) {
       setErrors(errs)
       return
     }
 
+    setSubmitting(true)
     try {
       await api.submitAdRequest({
         id: 'adr_' + Date.now(),
@@ -96,6 +99,7 @@ export default function AdvertiseWithUs() {
       })
     } catch (_) {}
 
+    setSubmitting(false)
     setSubmitted(true)
   }
 
@@ -144,7 +148,6 @@ export default function AdvertiseWithUs() {
       <BackHeader title={ar ? 'أعلن معنا' : 'Advertise With Us'} />
 
       <main className="px-4 pt-4 space-y-4">
-        {/* Header card */}
         <div className="bg-gradient-to-br from-[#071B33] to-[#1a3a5c] rounded-2xl p-5 flex items-center gap-4">
           <div className="w-12 h-12 bg-[#FF7900] rounded-xl flex items-center justify-center flex-shrink-0">
             <Megaphone className="w-6 h-6 text-white" />
@@ -161,10 +164,8 @@ export default function AdvertiseWithUs() {
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
 
-          {/* اسم النشاط */}
           <div>
             <Label required>{ar ? 'اسم النشاط التجاري' : 'Business Name'}</Label>
             <input
@@ -175,7 +176,6 @@ export default function AdvertiseWithUs() {
             />
           </div>
 
-          {/* اسم المسؤول */}
           <div>
             <Label required>{ar ? 'اسم المسؤول' : 'Contact Name'}</Label>
             <input
@@ -186,7 +186,6 @@ export default function AdvertiseWithUs() {
             />
           </div>
 
-          {/* الهاتف + واتساب */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label required>{ar ? 'رقم الهاتف' : 'Phone'}</Label>
@@ -212,29 +211,27 @@ export default function AdvertiseWithUs() {
             </div>
           </div>
 
-          {/* المدينة */}
-          <div>
-            <Label required>{ar ? 'المدينة' : 'City'}</Label>
-            <input
-              className={inputCls('city')}
-              value={form.city}
-              onChange={e => set('city', e.target.value)}
-              placeholder={ar ? 'مثال: طرابلس' : 'e.g. Tripoli'}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label required>{ar ? 'المدينة' : 'City'}</Label>
+              <input
+                className={inputCls('city')}
+                value={form.city}
+                onChange={e => set('city', e.target.value)}
+                placeholder={ar ? 'مثال: طرابلس' : 'e.g. Tripoli'}
+              />
+            </div>
+            <div>
+              <Label required>{ar ? 'نوع النشاط' : 'Business Type'}</Label>
+              <input
+                className={inputCls('businessType')}
+                value={form.businessType}
+                onChange={e => set('businessType', e.target.value)}
+                placeholder={ar ? 'مثال: مطعم، متجر...' : 'e.g. Restaurant...'}
+              />
+            </div>
           </div>
 
-          {/* نوع النشاط */}
-          <div>
-            <Label required>{ar ? 'نوع النشاط' : 'Business Type'}</Label>
-            <input
-              className={inputCls('businessType')}
-              value={form.businessType}
-              onChange={e => set('businessType', e.target.value)}
-              placeholder={ar ? 'مثال: مطعم، متجر، شركة خدمات...' : 'e.g. Restaurant, Store, Services...'}
-            />
-          </div>
-
-          {/* مكان الإعلان */}
           <div>
             <Label required>{ar ? 'مكان الإعلان المطلوب' : 'Requested Placement'}</Label>
             <select
@@ -249,7 +246,6 @@ export default function AdvertiseWithUs() {
             </select>
           </div>
 
-          {/* عنوان الإعلان */}
           <div>
             <Label required>{ar ? 'عنوان الإعلان' : 'Ad Title'}</Label>
             <input
@@ -260,7 +256,6 @@ export default function AdvertiseWithUs() {
             />
           </div>
 
-          {/* وصف الإعلان */}
           <div>
             <Label required>{ar ? 'وصف الإعلان' : 'Ad Description'}</Label>
             <textarea
@@ -272,7 +267,6 @@ export default function AdvertiseWithUs() {
             />
           </div>
 
-          {/* رابط الموقع (اختياري) */}
           <div>
             <Label>{ar ? 'رابط الموقع أو صفحة التواصل' : 'Website or Social Link'}</Label>
             <input
@@ -284,7 +278,6 @@ export default function AdvertiseWithUs() {
             />
           </div>
 
-          {/* صورة الإعلان (اختياري) */}
           <div>
             <Label>{ar ? 'صورة الإعلان' : 'Ad Image'}</Label>
             <input
@@ -305,7 +298,6 @@ export default function AdvertiseWithUs() {
             )}
           </div>
 
-          {/* ملاحظات (اختياري) */}
           <div>
             <Label>{ar ? 'ملاحظات إضافية' : 'Additional Notes'}</Label>
             <textarea
@@ -317,7 +309,6 @@ export default function AdvertiseWithUs() {
             />
           </div>
 
-          {/* الشروط */}
           <div
             className={`flex items-start gap-3 p-3 rounded-xl border ${errors.acceptedTerms ? 'border-red-300 bg-red-50' : 'border-gray-100 bg-gray-50'}`}
             onClick={() => set('acceptedTerms', !form.acceptedTerms)}
@@ -334,9 +325,13 @@ export default function AdvertiseWithUs() {
 
           <button
             type="submit"
-            className="w-full bg-[#FF7900] text-white font-bold py-3.5 rounded-xl text-base mt-2 active:scale-[0.98] transition-transform"
+            disabled={submitting}
+            className="w-full bg-[#FF7900] disabled:bg-[#FF7900]/50 text-white font-bold py-3.5 rounded-xl text-base mt-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
-            {ar ? 'إرسال طلب الإعلان' : 'Submit Ad Request'}
+            {submitting
+              ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{ar ? 'جارٍ الإرسال...' : 'Sending...'}</>
+              : (ar ? 'إرسال طلب الإعلان' : 'Submit Ad Request')
+            }
           </button>
         </form>
       </main>
