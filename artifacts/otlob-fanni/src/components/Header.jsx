@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { MapPin, Bell, Loader2 } from 'lucide-react'
+import { MapPin, Bell, Loader2, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 async function reverseGeocode(lat, lon, lang) {
@@ -88,6 +88,25 @@ export default function Header() {
       </button>
 
       <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: 'اطلب فني – Otlob Fanni',
+                text: lang === 'ar'
+                  ? 'دليل الفنيين والحرفيين في ليبيا – اطلب فني'
+                  : 'Libya\'s technician & craftsman directory – Otlob Fanni',
+                url: 'https://otlobfanni.ly',
+              })
+            } else {
+              navigator.clipboard?.writeText('https://otlobfanni.ly')
+            }
+          }}
+        >
+          <Share2 className="h-5 w-5 text-foreground" />
+        </Button>
         <Button variant="ghost" size="icon" onClick={toggleLang} className="font-bold text-foreground text-sm">
           {lang === 'ar' ? 'EN' : 'AR'}
         </Button>
