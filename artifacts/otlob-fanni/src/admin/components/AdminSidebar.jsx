@@ -84,7 +84,7 @@ function NavItem({ item, location, stats, onClose, isSuperAdmin }) {
         group flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-150 relative
         ${isActive
           ? 'text-white shadow-lg shadow-[#FF7900]/20'
-          : 'text-[#6060A0] hover:text-[#C0C0E0] hover:bg-white/5'
+          : 'text-white/60 hover:text-white hover:bg-white/5'
         }
       `}
       style={isActive ? {
@@ -95,11 +95,11 @@ function NavItem({ item, location, stats, onClose, isSuperAdmin }) {
       {isActive && (
         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-[#FF7900] rounded-l-full" />
       )}
-      <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#FF7900]' : 'text-[#4040A0] group-hover:text-[#8080C0]'}`} />
+      <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#FF7900]' : 'text-white/40 group-hover:text-white/80'}`} />
       <span className="flex-1 truncate">{item.label}</span>
       {showBadge && <NavBadge count={badge} color={item.badgeColor} />}
       {item.statsKey && badge > 0 && !showBadge && (
-        <span className="text-[10px] font-bold text-[#4040A0]">{badge}</span>
+        <span className="text-[10px] font-bold text-white/50">{badge}</span>
       )}
     </Link>
   )
@@ -140,7 +140,7 @@ export default function AdminSidebar({ open, onClose }) {
           <p className="text-[#FF7900]/70 text-[11px] font-medium">لوحة التحكم</p>
         </div>
         {onClose && (
-          <button onClick={onClose} className="mr-auto text-[#4040A0] hover:text-[#8080C0] lg:hidden transition-colors">
+          <button onClick={onClose} className="mr-auto text-white/40 hover:text-white/80 lg:hidden transition-colors">
             <X className="w-5 h-5" />
           </button>
         )}
@@ -155,7 +155,7 @@ export default function AdminSidebar({ open, onClose }) {
           return (
             <div key={group.id} className="mb-1">
               {group.label && (
-                <p className="text-[#3A3A60] text-[10px] font-black uppercase tracking-widest px-4 py-2 mt-2">
+                <p className="text-white/35 text-[10px] font-black uppercase tracking-widest px-4 py-2 mt-2">
                   {group.label}
                 </p>
               )}
@@ -190,7 +190,7 @@ export default function AdminSidebar({ open, onClose }) {
             <p className="text-white text-sm font-bold truncate">{profile?.full_name || 'المسؤول'}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <Shield className="w-3 h-3 text-[#FF7900]" />
-              <p className="text-[#6060A0] text-[11px] font-medium">
+              <p className="text-white/50 text-[11px] font-medium">
                 {isSuperAdmin ? 'Super Admin' : 'Sub Admin'}
               </p>
             </div>
@@ -198,7 +198,7 @@ export default function AdminSidebar({ open, onClose }) {
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl text-sm font-medium text-[#5050A0] hover:bg-red-500/10 hover:text-red-400 transition-all"
+          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl text-sm font-medium text-white/50 hover:bg-red-500/10 hover:text-red-400 transition-all"
         >
           <LogOut className="w-4 h-4" />
           تسجيل الخروج
