@@ -22,6 +22,7 @@ const SECTION_IMAGE = {
   gardens_pools:     '/icons/sections/gardens_pools.jpeg',
   moving_general:    '/icons/sections/moving_general.jpeg',
   car_services:      '/icons/sections/car_services.jpeg',
+  construction:      '/icons/sections/construction.jpeg',
 }
 
 const SECTION_ICON = {
