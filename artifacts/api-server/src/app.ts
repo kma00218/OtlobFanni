@@ -44,18 +44,18 @@ if (process.env.NODE_ENV === "production") {
 
   if (existsSync(staticDir)) {
     app.use(express.static(staticDir));
-    app.get("/{*path}", (_req, res) => {
+    app.use((_req, res) => {
       const indexPath = path.join(staticDir, "index.html");
       res.sendFile(indexPath, (err) => {
         if (err) {
           logger.error({ err, indexPath }, "Failed to send index.html");
-          res.status(500).send("Server Error");
+          if (!res.headersSent) res.status(500).send("Server Error");
         }
       });
     });
   } else {
     logger.error({ staticDir }, "Frontend static files not found — did the build run?");
-    app.get("/{*path}", (_req, res) => {
+    app.use((_req, res) => {
       res.status(503).send("Frontend not built");
     });
   }
