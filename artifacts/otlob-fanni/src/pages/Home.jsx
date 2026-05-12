@@ -65,14 +65,14 @@ export default function Home() {
 
           {/* كل التخصصات — زر بارز */}
           <Link href="/categories">
-            <div className="mt-4 flex items-center justify-center gap-2 border border-[#FF7900]/30 rounded-2xl py-3.5 bg-[#FFF3E8] active:bg-[#ffe0c0] transition-colors cursor-pointer select-none">
-              <LayoutGrid className="w-4 h-4 text-[#FF7900]" />
-              <span className="text-sm font-bold text-[#FF7900]">
+            <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl py-4 bg-[#FF7900] active:bg-[#e06a00] transition-colors cursor-pointer select-none shadow-md shadow-[#FF7900]/30">
+              <LayoutGrid className="w-5 h-5 text-white" />
+              <span className="text-base font-extrabold text-white tracking-wide">
                 {ar ? 'كل التخصصات' : 'All Specialties'}
               </span>
               {dir === 'rtl'
-                ? <ArrowLeft className="w-3.5 h-3.5 text-[#FF7900]" />
-                : <ArrowRight className="w-3.5 h-3.5 text-[#FF7900]" />}
+                ? <ArrowLeft className="w-4 h-4 text-white" />
+                : <ArrowRight className="w-4 h-4 text-white" />}
             </div>
           </Link>
         </div>
