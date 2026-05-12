@@ -1,4 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,6 +34,14 @@ import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
 
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  return null;
+}
+
 function AppContent() {
   const [location] = useLocation();
   const isAdminPath = location.startsWith("/admin");
@@ -40,6 +49,7 @@ function AppContent() {
   if (isAdminPath) {
     return (
       <AdminProvider>
+        <ScrollToTop />
         <Switch>
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/:rest*" component={AdminLayout} />
@@ -51,6 +61,7 @@ function AppContent() {
   return (
     <LanguageProvider>
       <TooltipProvider>
+        <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
           <Switch>
             <Route path="/" component={Home} />
