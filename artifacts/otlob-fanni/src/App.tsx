@@ -9,6 +9,7 @@ import { AdminProvider } from "./context/AdminContext";
 // Public Pages
 import Home from "./pages/Home";
 import Categories from "./pages/Categories";
+import Section from "./pages/Section";
 import CategoryTechnicians from "./pages/CategoryTechnicians";
 import TechnicianDetails from "./pages/TechnicianDetails";
 import Companies from "./pages/Companies";
@@ -54,6 +55,7 @@ function AppContent() {
           <Switch>
             <Route path="/" component={Home} />
             <Route path="/categories" component={Categories} />
+            <Route path="/section/:id" component={Section} />
             <Route path="/category/:id" component={CategoryTechnicians} />
             <Route path="/technician/:id" component={TechnicianDetails} />
             <Route path="/companies" component={Companies} />

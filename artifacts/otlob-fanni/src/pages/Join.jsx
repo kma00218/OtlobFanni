@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
-import { categories } from '../data/services'
+import { sections, categories } from '../data/services'
 import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image } from 'lucide-react'
 import api from '../lib/api'
 
@@ -100,7 +100,7 @@ export default function Join() {
   const [form, setForm] = useState({
     full_name: '', phone: '', whatsapp: '', national_id: '',
     city: '', area: '', address: '',
-    category: '', experience: '', type: 'individual',
+    section: '', category: '', experience: '', type: 'individual',
     description: '', certifications: '',
     price_from: '', price_to: '',
     available_now: 'yes', emergency: 'no',
@@ -111,6 +111,7 @@ export default function Join() {
   })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  const setSection = (v) => setForm(f => ({ ...f, section: v, category: '' }))
   const toggleDay = (d) => setDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])
 
   const handleProfilePhoto = (e) => {
@@ -308,12 +309,33 @@ export default function Join() {
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <SectionTitle icon={Briefcase} step={3}>{ar ? 'المعلومات المهنية' : 'Professional Information'}</SectionTitle>
             <div className="space-y-4">
-              <Field label={ar ? 'تخصص الخدمة' : 'Service Category'} required>
-                <select className={sel} required value={form.category} onChange={e => set('category', e.target.value)}>
-                  <option value="">{ar ? 'اختر التخصص...' : 'Select category...'}</option>
-                  {categories.filter(c => c.id !== 'more').map(c => (
-                    <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>
+              <Field label={ar ? 'القسم الرئيسي' : 'Main Section'} required>
+                <select className={sel} required value={form.section} onChange={e => setSection(e.target.value)}>
+                  <option value="">{ar ? 'اختر القسم...' : 'Select section...'}</option>
+                  {sections.map(s => (
+                    <option key={s.id} value={s.id}>{ar ? s.nameAr : s.nameEn}</option>
                   ))}
+                </select>
+              </Field>
+
+              <Field label={ar ? 'التخصص' : 'Specialty'} required>
+                <select
+                  className={sel}
+                  required
+                  value={form.category}
+                  onChange={e => set('category', e.target.value)}
+                  disabled={!form.section}
+                >
+                  <option value="">
+                    {!form.section
+                      ? (ar ? 'اختر القسم أولاً...' : 'Select section first...')
+                      : (ar ? 'اختر التخصص...' : 'Select specialty...')}
+                  </option>
+                  {categories
+                    .filter(c => c.sectionId === form.section && c.id !== 'more')
+                    .map(c => (
+                      <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>
+                    ))}
                 </select>
               </Field>
 

@@ -288,8 +288,8 @@ router.post("/categories", async (req, res): Promise<void> => {
   const body = req.body;
   const [cat] = await db.insert(categoriesTable).values({
     id: body.id, nameAr: body.name_ar, nameEn: body.name_en,
-    iconName: body.icon_name, sortOrder: body.sort_order || 0,
-    isActive: body.is_active ?? true,
+    iconName: body.icon_name || body.icon, sectionId: body.section_id || null,
+    sortOrder: body.sort_order || 0, isActive: body.is_active ?? true,
   }).returning();
   res.status(201).json(cat);
 });
@@ -298,11 +298,13 @@ router.patch("/categories/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const body = req.body;
   const updates: Record<string, unknown> = {};
-  if (body.name_ar !== undefined)   updates.nameAr = body.name_ar;
-  if (body.name_en !== undefined)   updates.nameEn = body.name_en;
-  if (body.icon_name !== undefined) updates.iconName = body.icon_name;
+  if (body.name_ar !== undefined)    updates.nameAr = body.name_ar;
+  if (body.name_en !== undefined)    updates.nameEn = body.name_en;
+  if (body.icon_name !== undefined)  updates.iconName = body.icon_name;
+  if (body.icon !== undefined)       updates.iconName = body.icon;
+  if (body.section_id !== undefined) updates.sectionId = body.section_id;
   if (body.sort_order !== undefined) updates.sortOrder = body.sort_order;
-  if (body.is_active !== undefined) updates.isActive = body.is_active;
+  if (body.is_active !== undefined)  updates.isActive = body.is_active;
   const [cat] = await db.update(categoriesTable).set(updates).where(eq(categoriesTable.id, raw)).returning();
   if (!cat) { res.status(404).json({ error: "Not found" }); return; }
   res.json(cat);

@@ -4,6 +4,7 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
 import api from '../../lib/api'
+import { sections } from '../../data/services'
 
 const ICONS = ['Zap','Droplets','Wind','Paintbrush','Hammer','Sparkles','Truck','Camera','Wifi','Wrench','Tv','Flame','Square','Droplet','Thermometer','Gauge','Lock','Building2','AirVent','Grid3X3','Star','Package','Settings','Home']
 
@@ -14,7 +15,7 @@ export default function Categories() {
   const [search, setSearch]   = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editItem, setEditItem]   = useState(null)
-  const [form, setForm]     = useState({ name_ar: '', name_en: '', icon: 'Wrench', sort_order: 0 })
+  const [form, setForm]     = useState({ name_ar: '', name_en: '', icon: 'Wrench', sort_order: 0, section_id: '' })
   const [saving, setSaving] = useState(false)
   const [toast, setToast]   = useState(null)
 
@@ -31,8 +32,12 @@ export default function Categories() {
 
   const filtered = data.filter(r => !search || r.name_ar?.includes(search) || r.name_en?.toLowerCase().includes(search.toLowerCase()))
 
-  const openAdd  = () => { setEditItem(null); setForm({ name_ar: '', name_en: '', icon: 'Wrench', sort_order: data.length + 1 }); setModalOpen(true) }
-  const openEdit = (row) => { setEditItem(row); setForm({ name_ar: row.name_ar, name_en: row.name_en, icon: row.icon || 'Wrench', sort_order: row.sort_order || 0 }); setModalOpen(true) }
+  const openAdd  = () => { setEditItem(null); setForm({ name_ar: '', name_en: '', icon: 'Wrench', sort_order: data.length + 1, section_id: '' }); setModalOpen(true) }
+  const openEdit = (row) => {
+    setEditItem(row)
+    setForm({ name_ar: row.name_ar, name_en: row.name_en, icon: row.icon || 'Wrench', sort_order: row.sort_order || 0, section_id: row.section_id || '' })
+    setModalOpen(true)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setSaving(true)
@@ -63,11 +68,17 @@ export default function Categories() {
     } catch { showToast('حدث خطأ', 'error') }
   }
 
+  const getSectionLabel = (sectionId) => {
+    const s = sections.find(sec => sec.id === sectionId)
+    return s ? s.nameAr : (sectionId || '—')
+  }
+
   const columns = [
     { key: 'icon', label: 'الأيقونة', width: '80px', render: (v) => <span className="text-[#FF7900] font-mono text-xs bg-[#FF7900]/10 px-2 py-1 rounded-lg">{v || 'Wrench'}</span> },
     { key: 'name_ar', label: 'الاسم عربي',     render: (v) => <span className="font-medium text-white">{v}</span> },
     { key: 'name_en', label: 'الاسم إنجليزي',  render: (v) => <span dir="ltr" className="text-[#8888A8]">{v}</span> },
-    { key: 'sort_order', label: 'الترتيب', width: '80px' },
+    { key: 'section_id', label: 'القسم', render: (v) => <span className="text-xs text-[#8888A8]">{getSectionLabel(v)}</span> },
+    { key: 'sort_order', label: 'الترتيب', width: '70px' },
     {
       key: 'is_active', label: 'الحالة',
       render: (v, row) => (
@@ -105,6 +116,13 @@ export default function Categories() {
         <div className="space-y-4">
           <div><label className="form-label">الاسم بالعربي *</label><input required value={form.name_ar} onChange={e => setForm(f => ({...f, name_ar: e.target.value}))} className="form-input" placeholder="كهرباء" /></div>
           <div><label className="form-label">الاسم بالإنجليزي *</label><input required value={form.name_en} onChange={e => setForm(f => ({...f, name_en: e.target.value}))} className="form-input" placeholder="Electricity" dir="ltr" /></div>
+          <div>
+            <label className="form-label">القسم الرئيسي</label>
+            <select value={form.section_id} onChange={e => setForm(f => ({...f, section_id: e.target.value}))} className="form-input">
+              <option value="">— بدون قسم —</option>
+              {sections.map(s => <option key={s.id} value={s.id}>{s.nameAr}</option>)}
+            </select>
+          </div>
           <div>
             <label className="form-label">الأيقونة</label>
             <select value={form.icon} onChange={e => setForm(f => ({...f, icon: e.target.value}))} className="form-input">

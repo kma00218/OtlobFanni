@@ -29,62 +29,64 @@ const iconMap = {
 }
 
 const COLORS = {
-  electricity:          ['#FF7900', '#CC5500'],
-  plumbing:             ['#1E50A2', '#0F2F70'],
-  ac:                   ['#0891B2', '#065B7A'],
-  painting:             ['#FF7900', '#CC5500'],
-  carpentry:            ['#92400E', '#6B2D07'],
-  cleaning:             ['#059669', '#03704F'],
-  moving:               ['#6D28D9', '#4C1D95'],
-  cctv:                 ['#1E50A2', '#0F2F70'],
-  networks:             ['#0891B2', '#065B7A'],
-  maintenance:          ['#475569', '#2D3E52'],
-  appliances:           ['#0891B2', '#065B7A'],
-  welding:              ['#FF7900', '#CC5500'],
-  aluminum:             ['#475569', '#2D3E52'],
-  waterproof:           ['#1E50A2', '#0F2F70'],
-  thermal:              ['#FF7900', '#CC5500'],
-  gas:                  ['#92400E', '#6B2D07'],
-  locks:                ['#475569', '#2D3E52'],
-  contracting:          ['#071B33', '#0a2849'],
-  tiles:                ['#6D28D9', '#4C1D95'],
-  gypsum:               ['#FF7900', '#CC5500'],
-  satellite:            ['#0891B2', '#065B7A'],
-  pumps:                ['#1E50A2', '#0F2F70'],
-  gardens:              ['#059669', '#03704F'],
-  more:                 ['#071B33', '#0a2849'],
-}
-
-const ID_TO_COLOR_KEY = {
-  electricity: 'electricity',
-  plumbing:    'plumbing',
-  ac:          'ac',
-  painting:    'painting',
-  carpentry:   'carpentry',
-  cleaning:    'cleaning',
-  moving:      'moving',
-  cctv:        'cctv',
-  networks:    'networks',
-  maintenance: 'maintenance',
-  appliances:  'appliances',
-  welding:     'welding',
-  aluminum:    'aluminum',
-  waterproof:  'waterproof',
-  thermal:     'thermal',
-  gas:         'gas',
-  locks:       'locks',
-  contracting: 'contracting',
-  tiles:       'tiles',
-  gypsum:      'gypsum',
-  satellite:   'satellite',
-  pumps:       'pumps',
-  gardens:     'gardens',
-  more:        'more',
+  electricity:      ['#FF7900', '#CC5500'],
+  plumbing:         ['#1E50A2', '#0F2F70'],
+  ac:               ['#0891B2', '#065B7A'],
+  painting:         ['#FF7900', '#CC5500'],
+  carpentry:        ['#92400E', '#6B2D07'],
+  cleaning:         ['#059669', '#03704F'],
+  moving:           ['#6D28D9', '#4C1D95'],
+  cctv:             ['#1E50A2', '#0F2F70'],
+  networks:         ['#0891B2', '#065B7A'],
+  maintenance:      ['#475569', '#2D3E52'],
+  appliances:       ['#0891B2', '#065B7A'],
+  welding:          ['#FF7900', '#CC5500'],
+  aluminum:         ['#475569', '#2D3E52'],
+  waterproof:       ['#1E50A2', '#0F2F70'],
+  thermal:          ['#FF7900', '#CC5500'],
+  gas:              ['#92400E', '#6B2D07'],
+  locks:            ['#475569', '#2D3E52'],
+  contracting:      ['#071B33', '#0a2849'],
+  tiles:            ['#6D28D9', '#4C1D95'],
+  gypsum:           ['#FF7900', '#CC5500'],
+  satellite:        ['#0891B2', '#065B7A'],
+  pumps:            ['#1E50A2', '#0F2F70'],
+  gardens:          ['#059669', '#03704F'],
+  more:             ['#071B33', '#0a2849'],
+  // Car services
+  car_mechanic:     ['#475569', '#2D3E52'],
+  auto_electrician: ['#FF7900', '#CC5500'],
+  car_body:         ['#6D28D9', '#4C1D95'],
+  tire_repair:      ['#475569', '#2D3E52'],
+  car_battery:      ['#071B33', '#0a2849'],
+  car_ac:           ['#0891B2', '#065B7A'],
+  towing:           ['#92400E', '#6B2D07'],
+  car_wash:         ['#059669', '#03704F'],
+  car_diagnostics:  ['#1E50A2', '#0F2F70'],
+  oil_change:       ['#92400E', '#6B2D07'],
+  // Construction
+  concrete:         ['#475569', '#2D3E52'],
+  roofing:          ['#071B33', '#0a2849'],
+  // Tech & Security
+  alarm:            ['#FF7900', '#CC5500'],
+  computer:         ['#1E50A2', '#0F2F70'],
+  mobile_repair:    ['#6D28D9', '#4C1D95'],
+  access_control:   ['#071B33', '#0a2849'],
+  // Moving & General
+  workers:          ['#475569', '#2D3E52'],
+  loading:          ['#6D28D9', '#4C1D95'],
+  tank_cleaning:    ['#1E50A2', '#0F2F70'],
+  pest_control:     ['#92400E', '#6B2D07'],
+  // Gardens & Pools
+  landscaping:      ['#059669', '#03704F'],
+  garden:           ['#059669', '#03704F'],
+  pool:             ['#0891B2', '#065B7A'],
+  pool_cleaning:    ['#059669', '#03704F'],
+  irrigation:       ['#1E50A2', '#0F2F70'],
 }
 
 function getColors(category) {
-  const key = ID_TO_COLOR_KEY[category.id] || 'maintenance'
-  return COLORS[key] || COLORS.maintenance
+  return COLORS[category.id] || COLORS.maintenance
 }
 
 export default function CategoryCard({ category }) {
@@ -97,7 +99,6 @@ export default function CategoryCard({ category }) {
   return (
     <Link href={href}>
       <div className="flex flex-col items-center gap-1.5 select-none cursor-pointer active:scale-90 transition-transform duration-150">
-        {/* iPhone-style icon */}
         <div
           className="w-[70px] h-[70px] rounded-[18px] flex items-center justify-center shadow-lg overflow-hidden"
           style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
@@ -111,7 +112,6 @@ export default function CategoryCard({ category }) {
             onError={(e) => { e.currentTarget.src = '/icons/services/maintenance.svg' }}
           />
         </div>
-        {/* Label */}
         <span className="text-[12px] font-bold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[76px]">
           {name}
         </span>

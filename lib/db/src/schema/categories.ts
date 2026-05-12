@@ -7,6 +7,7 @@ export const categoriesTable = pgTable("categories", {
   nameAr:     text("name_ar").notNull(),
   nameEn:     text("name_en").notNull(),
   iconName:   text("icon_name"),
+  sectionId:  text("section_id"),
   sortOrder:  integer("sort_order").default(0),
   isActive:   boolean("is_active").default(true),
 });

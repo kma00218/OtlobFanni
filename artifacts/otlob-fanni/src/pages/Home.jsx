@@ -3,20 +3,15 @@ import { useLang } from '../context/LanguageContext'
 import Header from '../components/Header'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
-import CategoryCard from '../components/CategoryCard'
-import { categories } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2 } from 'lucide-react'
+import SectionCard from '../components/SectionCard'
+import { sections } from '../data/services'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 
-// First 19 regular categories + "more" at the end = 20 total
-const homeCategories = [
-  ...categories.filter(c => c.id !== 'more').slice(0, 19),
-  categories.find(c => c.id === 'more'),
-]
-
 export default function Home() {
-  const { t, dir } = useLang()
+  const { dir, lang } = useLang()
+  const ar = lang === 'ar'
   const [, navigate] = useLocation()
   const logoClickCount = useRef(0)
   const logoClickTimer = useRef(null)
@@ -34,37 +29,51 @@ export default function Home() {
     }, 5000)
   }
 
+  const activeSections = sections.filter(s => s.isActive && s.id !== 'more_services')
+
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">
       <Header />
 
-      <main className="px-4 pt-2 pb-4 flex flex-col gap-3">
+      <main className="px-4 pt-2 pb-4 flex flex-col gap-4">
         <div className="text-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>
           <Logo />
         </div>
 
         <SearchBar />
 
-        {/* إعلان الصفحة الرئيسية */}
         <AdBanner placement="home" dismissible />
 
         <div>
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-base font-bold text-foreground">{t('categories')}</h2>
+            <h2 className="text-base font-bold text-foreground">
+              {ar ? 'الأقسام الرئيسية' : 'Main Sections'}
+            </h2>
             <Link href="/categories" className="text-primary text-sm font-medium flex items-center gap-1">
-              {t('viewAll')}
+              {ar ? 'كل التخصصات' : 'All Specialties'}
               {dir === 'rtl' ? <ArrowLeft className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
             </Link>
           </div>
 
-          <div className="grid grid-cols-4 gap-3">
-            {homeCategories.map(category => (
-              <CategoryCard key={category.id} category={category} />
+          <div className="flex flex-col gap-2.5">
+            {activeSections.map(section => (
+              <SectionCard key={section.id} section={section} />
             ))}
           </div>
+
+          <Link href="/categories">
+            <div className="mt-3 flex items-center justify-center gap-2 border border-gray-200 rounded-2xl py-3.5 bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer select-none">
+              <LayoutGrid className="w-4 h-4 text-[#FF7900]" />
+              <span className="text-sm font-semibold text-[#071B33]">
+                {ar ? 'عرض كل التخصصات' : 'View All Specialties'}
+              </span>
+              {dir === 'rtl'
+                ? <ArrowLeft className="w-3.5 h-3.5 text-gray-400" />
+                : <ArrowRight className="w-3.5 h-3.5 text-gray-400" />}
+            </div>
+          </Link>
         </div>
 
-        {/* بانر الشركات */}
         <Link href="/companies">
           <div className="rounded-2xl overflow-hidden bg-gradient-to-r from-[#071B33] to-[#1a3a5c] px-4 py-4 flex items-center gap-3 shadow-md active:scale-[0.98] transition-transform cursor-pointer">
             <div className="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -72,23 +81,20 @@ export default function Home() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white font-bold text-sm leading-tight">
-                {dir === 'rtl' ? 'الشركات المعتمدة' : 'Verified Companies'}
+                {ar ? 'الشركات المعتمدة' : 'Verified Companies'}
               </p>
               <p className="text-white/60 text-xs mt-0.5">
-                {dir === 'rtl' ? 'تعاقد مع شركات موثوقة في مجالك' : 'Partner with trusted companies in your area'}
+                {ar ? 'تعاقد مع شركات موثوقة في مجالك' : 'Partner with trusted companies in your area'}
               </p>
             </div>
             {dir === 'rtl'
               ? <ArrowLeft className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
-              : <ArrowRight className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
-            }
+              : <ArrowRight className="w-4 h-4 text-[#FF7900] flex-shrink-0" />}
           </div>
         </Link>
 
-        {/* إعلان بانر عام */}
         <AdBanner placement="banner" compact />
       </main>
-
     </div>
   )
 }
