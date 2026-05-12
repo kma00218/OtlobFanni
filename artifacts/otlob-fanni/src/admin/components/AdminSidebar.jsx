@@ -1,119 +1,230 @@
+import { useEffect, useState } from 'react'
 import { useLocation, Link } from 'wouter'
 import { useAdmin } from '../../context/AdminContext'
 import {
-  LayoutDashboard, Users, Wrench, MapPin, ClipboardList,
-  Megaphone, Settings, Activity, LogOut, X, Shield, Tag, FileCheck, Newspaper, Building2
+  LayoutDashboard, Wrench, Building2, Tag, MapPin, FileCheck,
+  Megaphone, Users, Settings, Activity, LogOut, X, Shield,
+  ClipboardList, Newspaper, ChevronDown, ChevronUp,
 } from 'lucide-react'
+import api from '../../lib/api'
 
-const navItems = [
-  { path: '/admin/dashboard',               label: 'لوحة التحكم',    icon: LayoutDashboard, superOnly: false },
-  { path: '/admin/technicians',             label: 'الفنيون',         icon: Wrench,          superOnly: false },
-  { path: '/admin/technician-applications', label: 'طلبات الفنيين',   icon: FileCheck,       superOnly: false },
-  { path: '/admin/companies',               label: 'الشركات',         icon: Building2,       superOnly: false },
-  { path: '/admin/company-applications',    label: 'طلبات الشركات',   icon: Building2,       superOnly: false },
-  { path: '/admin/ad-requests',             label: 'طلبات الإعلانات', icon: Newspaper,       superOnly: false },
-  { path: '/admin/categories',  label: 'التخصصات',    icon: Tag,        superOnly: true },
-  { path: '/admin/cities',      label: 'المدن',        icon: MapPin,     superOnly: true },
-  { path: '/admin/ads',         label: 'الإعلانات',   icon: Megaphone,  superOnly: true },
-  { path: '/admin/users',       label: 'المستخدمون',  icon: Users,      superOnly: true },
-  { path: '/admin/settings',    label: 'الإعدادات',   icon: Settings,   superOnly: true },
-  { path: '/admin/logs',        label: 'سجل النشاط',  icon: Activity,   superOnly: true },
+const NAV_GROUPS = [
+  {
+    id: 'main',
+    items: [
+      { path: '/admin/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
+    ]
+  },
+  {
+    id: 'directory',
+    label: 'الدليل',
+    items: [
+      { path: '/admin/technicians',  label: 'الفنيون',    icon: Wrench,    statsKey: 'totalTechs' },
+      { path: '/admin/companies',    label: 'الشركات',    icon: Building2, statsKey: 'totalCompanies' },
+      { path: '/admin/categories',   label: 'التخصصات',  icon: Tag,       superOnly: true },
+      { path: '/admin/cities',       label: 'المدن',      icon: MapPin,    superOnly: true },
+    ]
+  },
+  {
+    id: 'requests',
+    label: 'الطلبات والانضمام',
+    items: [
+      { path: '/admin/technician-applications', label: 'طلبات الفنيين',   icon: FileCheck,    badgeKey: 'pendingTechApps',    badgeColor: 'orange' },
+      { path: '/admin/company-applications',    label: 'طلبات الشركات',   icon: Building2,    badgeKey: 'pendingCompanyApps', badgeColor: 'orange' },
+      { path: '/admin/requests',                label: 'طلبات الخدمة',    icon: ClipboardList, badgeKey: 'newRequests',        badgeColor: 'blue' },
+      { path: '/admin/ad-requests',             label: 'طلبات الإعلانات', icon: Newspaper,    badgeKey: 'pendingAdRequests',  badgeColor: 'purple' },
+    ]
+  },
+  {
+    id: 'ads',
+    label: 'الإعلانات',
+    items: [
+      { path: '/admin/ads', label: 'الإعلانات النشطة', icon: Megaphone, superOnly: true, statsKey: 'activeAds' },
+    ]
+  },
+  {
+    id: 'system',
+    label: 'النظام',
+    superOnly: true,
+    items: [
+      { path: '/admin/users',    label: 'المستخدمون', icon: Users,    superOnly: true },
+      { path: '/admin/settings', label: 'الإعدادات',  icon: Settings, superOnly: true },
+      { path: '/admin/logs',     label: 'سجل النشاط', icon: Activity, superOnly: true },
+    ]
+  },
 ]
 
-function SidebarNav({ location, visibleItems, onClose }) {
+function NavBadge({ count, color = 'orange' }) {
+  if (!count || count <= 0) return null
+  const colors = {
+    orange: 'bg-[#FF7900] text-white',
+    blue:   'bg-blue-500 text-white',
+    purple: 'bg-purple-500 text-white',
+    green:  'bg-emerald-500 text-white',
+  }
   return (
-    <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-      {visibleItems.map(({ path, label, icon: Icon }) => {
-        const isActive = location === path || location.startsWith(path + '/')
-        return (
-          <Link
-            key={path}
-            href={path}
-            onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              isActive
-                ? 'bg-[#FF7900] text-white shadow-lg shadow-[#FF7900]/20'
-                : 'text-white/70 hover:bg-white/5 hover:text-white'
-            }`}
-          >
-            <Icon className="w-4 h-4 flex-shrink-0" />
-            {label}
-          </Link>
-        )
-      })}
-    </nav>
+    <span className={`${colors[color]} text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center leading-none`}>
+      {count > 99 ? '99+' : count}
+    </span>
+  )
+}
+
+function NavItem({ item, location, stats, onClose, isSuperAdmin }) {
+  if (item.superOnly && !isSuperAdmin) return null
+
+  const isActive = location === item.path || location.startsWith(item.path + '/')
+  const badge = item.badgeKey ? stats[item.badgeKey] : (item.statsKey ? stats[item.statsKey] : null)
+  const showBadge = item.badgeKey && badge > 0
+
+  return (
+    <Link
+      href={item.path}
+      onClick={onClose}
+      className={`
+        group flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-150 relative
+        ${isActive
+          ? 'text-white shadow-lg shadow-[#FF7900]/20'
+          : 'text-[#6060A0] hover:text-[#C0C0E0] hover:bg-white/5'
+        }
+      `}
+      style={isActive ? {
+        background: 'linear-gradient(135deg, rgba(255,121,0,0.25), rgba(255,121,0,0.12))',
+        border: '1px solid rgba(255,121,0,0.3)',
+      } : {}}
+    >
+      {isActive && (
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-[#FF7900] rounded-l-full" />
+      )}
+      <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#FF7900]' : 'text-[#4040A0] group-hover:text-[#8080C0]'}`} />
+      <span className="flex-1 truncate">{item.label}</span>
+      {showBadge && <NavBadge count={badge} color={item.badgeColor} />}
+      {item.statsKey && badge > 0 && !showBadge && (
+        <span className="text-[10px] font-bold text-[#4040A0]">{badge}</span>
+      )}
+    </Link>
   )
 }
 
 export default function AdminSidebar({ open, onClose }) {
   const [location] = useLocation()
   const { isSuperAdmin, profile, signOut } = useAdmin()
-  const visibleItems = navItems.filter(item => !item.superOnly || isSuperAdmin)
+  const [stats, setStats] = useState({})
 
-  const header = (
-    <div className="px-5 py-5 border-b border-white/5">
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-[#FF7900] rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#FF7900]/30">
+  useEffect(() => {
+    api.admin.stats()
+      .then(s => setStats(s))
+      .catch(() => {})
+  }, [location])
+
+  const [, navigate] = useLocation()
+
+  const handleSignOut = () => {
+    signOut()
+    navigate('/admin/login')
+  }
+
+  const initials = (profile?.full_name || 'A').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
+      {/* Logo Header */}
+      <div className="px-5 py-5 flex items-center gap-3 flex-shrink-0">
+        <div
+          className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#FF7900]/30"
+          style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)' }}
+        >
           <Wrench className="w-5 h-5 text-white" />
         </div>
         <div>
-          <p className="text-white font-bold text-sm leading-tight">اطلب فني</p>
-          <p className="text-[#FF7900]/70 text-xs">لوحة التحكم</p>
+          <p className="text-white font-black text-base leading-tight">اطلب فني</p>
+          <p className="text-[#FF7900]/70 text-[11px] font-medium">لوحة التحكم</p>
         </div>
         {onClose && (
-          <button onClick={onClose} className="mr-auto text-[#555570] hover:text-white lg:hidden transition-colors">
+          <button onClick={onClose} className="mr-auto text-[#4040A0] hover:text-[#8080C0] lg:hidden transition-colors">
             <X className="w-5 h-5" />
           </button>
         )}
       </div>
-    </div>
-  )
 
-  const userInfo = (
-    <div className="px-4 py-3 mx-3 my-3 bg-white/5 rounded-xl border border-white/5">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#FF7900]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-          <Shield className="w-4 h-4 text-[#FF7900]" />
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+        {NAV_GROUPS.map(group => {
+          if (group.superOnly && !isSuperAdmin) return null
+          const visibleItems = group.items.filter(item => !item.superOnly || isSuperAdmin)
+          if (visibleItems.length === 0) return null
+          return (
+            <div key={group.id} className="mb-1">
+              {group.label && (
+                <p className="text-[#3A3A60] text-[10px] font-black uppercase tracking-widest px-4 py-2 mt-2">
+                  {group.label}
+                </p>
+              )}
+              {visibleItems.map(item => (
+                <NavItem
+                  key={item.path}
+                  item={item}
+                  location={location}
+                  stats={stats}
+                  onClose={onClose}
+                  isSuperAdmin={isSuperAdmin}
+                />
+              ))}
+            </div>
+          )
+        })}
+      </nav>
+
+      {/* User Card */}
+      <div className="px-3 pb-4 flex-shrink-0 space-y-2">
+        <div
+          className="rounded-2xl p-3.5 flex items-center gap-3"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-xs font-black shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)' }}
+          >
+            {initials}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-sm font-bold truncate">{profile?.full_name || 'المسؤول'}</p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <Shield className="w-3 h-3 text-[#FF7900]" />
+              <p className="text-[#6060A0] text-[11px] font-medium">
+                {isSuperAdmin ? 'Super Admin' : 'Sub Admin'}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="text-white text-sm font-medium truncate">{profile?.full_name || 'المسؤول'}</p>
-          <p className="text-[#555570] text-xs">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
-        </div>
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl text-sm font-medium text-[#5050A0] hover:bg-red-500/10 hover:text-red-400 transition-all"
+        >
+          <LogOut className="w-4 h-4" />
+          تسجيل الخروج
+        </button>
       </div>
     </div>
   )
 
-  const footer = (
-    <div className="px-3 py-4 border-t border-white/5">
-      <button
-        onClick={signOut}
-        className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-[#555570] hover:bg-red-500/10 hover:text-red-400 transition-all"
-      >
-        <LogOut className="w-4 h-4" />
-        تسجيل الخروج
-      </button>
-    </div>
-  )
-
-  const sidebarContent = (
-    <>
-      {header}
-      {userInfo}
-      <SidebarNav location={location} visibleItems={visibleItems} onClose={onClose ?? undefined} />
-      {footer}
-    </>
-  )
-
   return (
     <>
-      <aside className="hidden lg:flex flex-col w-60 bg-[#0A0A14] h-screen sticky top-0 flex-shrink-0 border-l border-white/5">
+      {/* Desktop sidebar */}
+      <aside
+        className="hidden lg:flex flex-col w-64 h-screen sticky top-0 flex-shrink-0"
+        style={{ background: '#09090F', borderLeft: '1px solid rgba(255,255,255,0.05)' }}
+      >
         {sidebarContent}
       </aside>
 
+      {/* Mobile overlay */}
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-          <aside className="absolute right-0 top-0 bottom-0 w-60 bg-[#0A0A14] flex flex-col shadow-2xl border-l border-white/5">
+          <aside
+            className="absolute right-0 top-0 bottom-0 w-64 flex flex-col shadow-2xl"
+            style={{ background: '#09090F', borderLeft: '1px solid rgba(255,255,255,0.05)' }}
+          >
             {sidebarContent}
           </aside>
         </div>

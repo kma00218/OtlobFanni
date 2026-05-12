@@ -1,7 +1,7 @@
 import { X, Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
 
-export default function FormModal({ open, onClose, title, children, onSubmit, loading, submitLabel = 'حفظ', size = 'md' }) {
+export default function FormModal({ open, onClose, title, children, onSubmit, loading, submitLabel = 'حفظ', size = 'md', hideFooter = false }) {
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -13,46 +13,73 @@ export default function FormModal({ open, onClose, title, children, onSubmit, lo
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       dir="rtl"
     >
-      <div className={`bg-[#0E0E17] border border-white/8 rounded-2xl shadow-2xl shadow-black/60 w-full ${sizeClass} max-h-[90vh] flex flex-col`}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <h3 className="text-base font-bold text-white">{title}</h3>
+      <div
+        className={`w-full ${sizeClass} max-h-[90vh] flex flex-col rounded-3xl shadow-2xl`}
+        style={{
+          background: 'linear-gradient(145deg, #0F0F1D, #0A0A15)',
+          border: '1px solid rgba(255,255,255,0.09)',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)',
+        }}
+      >
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-6 py-5 flex-shrink-0"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <h3 className="text-base font-black text-white tracking-tight">{title}</h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#555570] hover:text-[#C0C0E0]"
+            className="p-2 rounded-xl transition-all text-[#4040A0] hover:text-white"
+            style={{ border: '1px solid rgba(255,255,255,0.07)' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1 p-6">
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 px-6 py-5">
           <form id="modal-form" onSubmit={onSubmit}>
             {children}
           </form>
         </div>
 
-        <div className="flex gap-3 justify-start px-6 py-4 border-t border-white/5">
-          <button
-            type="submit"
-            form="modal-form"
-            disabled={loading}
-            className="bg-[#FF7900] hover:bg-[#e86d00] text-white font-semibold px-6 py-2.5 rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2 text-sm shadow-lg shadow-[#FF7900]/20"
+        {/* Footer */}
+        {!hideFooter && (
+          <div
+            className="flex gap-3 px-6 py-4 flex-shrink-0"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
           >
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {submitLabel}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="bg-white/5 hover:bg-white/10 border border-white/8 text-[#9090B0] hover:text-[#C0C0E0] font-medium px-6 py-2.5 rounded-xl transition-colors text-sm"
-          >
-            إلغاء
-          </button>
-        </div>
+            <button
+              type="submit"
+              form="modal-form"
+              disabled={loading}
+              className="flex items-center gap-2 font-bold text-white text-sm px-6 py-2.5 rounded-2xl transition-all active:scale-[0.97] disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(135deg, #FF7900, #FF9500)',
+                boxShadow: '0 4px 20px rgba(255,121,0,0.3)',
+              }}
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {submitLabel}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="font-medium text-[#8080B0] hover:text-white text-sm px-6 py-2.5 rounded-2xl transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              إلغاء
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
