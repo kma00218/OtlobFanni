@@ -44,6 +44,32 @@ const iconMap = {
   restaurant_staff:     '/icons/services/restaurant_staff.svg',
   // Construction
   plastering:           '/icons/services/plastering.svg',
+  // Business Services (maintenance variants)
+  shop_maintenance:         '/icons/services/shop_maintenance.svg',
+  restaurant_maintenance:   '/icons/services/restaurant_maintenance.svg',
+  office_maintenance:       '/icons/services/office_maintenance.svg',
+  signs:                    '/icons/services/signs.svg',
+  // Gardens & Pools
+  landscaping:              '/icons/services/landscaping.svg',
+  garden:                   '/icons/services/garden.svg',
+  pool:                     '/icons/services/pool.svg',
+  pool_cleaning:            '/icons/services/pool_cleaning.svg',
+  // Moving & General
+  workers:                  '/icons/services/workers.svg',
+  pest_control:             '/icons/services/pest_control.svg',
+  tank_cleaning:            '/icons/services/tank_cleaning.svg',
+  // Tech & Security
+  computer:                 '/icons/services/computer.svg',
+  mobile_repair:            '/icons/services/mobile_repair.svg',
+  satellite:                '/icons/services/satellite.svg',
+  alarm:                    '/icons/services/alarm.svg',
+  // Car Services
+  car_mechanic:             '/icons/services/car_mechanic.svg',
+  tire_repair:              '/icons/services/tire_repair.svg',
+  car_battery:              '/icons/services/car_battery.svg',
+  car_wash:                 '/icons/services/car_wash.svg',
+  oil_change:               '/icons/services/oil_change.svg',
+  car_diagnostics:          '/icons/services/car_diagnostics.svg',
 }
 
 const COLORS = {
