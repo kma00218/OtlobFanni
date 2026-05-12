@@ -197,7 +197,7 @@ export default function SectionCard({ section }) {
         >
           {svg}
         </div>
-        <p className="font-semibold text-[#071B33] text-[11.5px] leading-snug text-center w-[80px] line-clamp-2">
+        <p className="font-bold text-[#071B33] text-[13.5px] leading-snug text-center w-[80px] line-clamp-2">
           {name}
         </p>
       </div>
