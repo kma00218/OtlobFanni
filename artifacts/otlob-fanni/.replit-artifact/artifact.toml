@@ -17,15 +17,6 @@ localPort = 23988
 [services.development]
 run = "pnpm --filter @workspace/otlob-fanni run dev"
 
-[services.production]
-build = [ "pnpm", "--filter", "@workspace/otlob-fanni", "run", "build" ]
-publicDir = "artifacts/otlob-fanni/dist/public"
-serve = "static"
-
-[[services.production.rewrites]]
-from = "/*"
-to = "/index.html"
-
 [services.env]
 PORT = "23988"
 BASE_PATH = "/"
