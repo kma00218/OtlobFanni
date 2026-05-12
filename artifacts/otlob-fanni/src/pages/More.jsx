@@ -1,5 +1,5 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, UserPlus, Building2 } from 'lucide-react';
+import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, UserPlus, Building2, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ITEMS = [
@@ -75,8 +75,29 @@ export default function More() {
 
   return (
     <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
-      <div className="px-5 pt-5 pb-3">
+      <div className="px-5 pt-5 pb-3 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#071B33]">{ar ? 'المزيد' : 'More'}</h1>
+        <button
+          onClick={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: 'اطلب فني – Otlob Fanni',
+                text: ar
+                  ? 'دليل الفنيين والحرفيين في ليبيا – اطلب فني'
+                  : "Libya's technician & craftsman directory – Otlob Fanni",
+                url: 'https://otlobfanni.ly',
+              })
+            } else {
+              navigator.clipboard?.writeText('https://otlobfanni.ly')
+            }
+          }}
+          className="flex flex-col items-center justify-center gap-0.5 active:scale-90 transition-transform duration-150"
+        >
+          <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
+            <Share2 className="h-[18px] w-[18px] text-white" />
+          </div>
+          <span className="text-[9px] font-semibold text-gray-500 leading-none">share</span>
+        </button>
       </div>
 
       <div className="px-5 mb-6">
