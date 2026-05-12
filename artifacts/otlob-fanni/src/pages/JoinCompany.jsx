@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { sections, categories } from '../data/services'
-import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook } from 'lucide-react'
+import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook, Info } from 'lucide-react'
 import api from '../lib/api'
 
 const DAYS = {
@@ -211,13 +211,23 @@ export default function JoinCompany() {
 
       <main className="pt-20 pb-12 px-4 max-w-[480px] mx-auto">
 
-        <div className="text-center mb-8">
+        <div className="text-center mb-5">
           <div className="inline-flex items-center gap-2 bg-[#071B33]/8 px-4 py-1.5 rounded-full mb-3">
             <Building2 className="w-4 h-4 text-[#071B33]" />
             <span className="text-xs font-bold text-[#071B33]">{ar ? 'تسجيل شركة / مؤسسة' : 'Company / Business Registration'}</span>
           </div>
           <h1 className="text-lg font-bold text-[#071B33] mb-1">{ar ? 'نموذج تسجيل الشركات' : 'Company Registration Form'}</h1>
           <p className="text-gray-500 text-sm">{ar ? 'أكمل جميع البيانات المطلوبة للانضمام إلى المنصة كشركة' : 'Complete all required fields to join the platform as a company'}</p>
+        </div>
+
+        {/* Multi-specialty note */}
+        <div className="mb-5 flex items-start gap-2.5 rounded-2xl px-4 py-3" style={{ background: '#FFF4E8' }}>
+          <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-[#5a3a1a] leading-relaxed">
+            {ar
+              ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
+              : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

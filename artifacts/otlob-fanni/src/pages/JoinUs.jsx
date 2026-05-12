@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, Star, CheckCircle2 } from 'lucide-react'
+import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, Star, CheckCircle2, Info } from 'lucide-react'
 
 export default function JoinUs() {
   const { lang, toggleLang } = useLang()
@@ -151,6 +151,16 @@ export default function JoinUs() {
             </div>
           </div>
         </Link>
+
+        {/* Multi-specialty note */}
+        <div className="mx-1 mt-2 flex items-start gap-2.5 rounded-2xl px-4 py-3" style={{ background: '#FFF4E8' }}>
+          <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-[#5a3a1a] leading-relaxed">
+            {ar
+              ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
+              : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
+          </p>
+        </div>
 
       </div>
     </div>

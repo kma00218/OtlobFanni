@@ -1,0 +1,102 @@
+نفّذ هذه المهمة فقط.
+Implement this task only.
+
+لا تغيّر الحقول.
+Do not change the form fields.
+
+لا تغيّر التصميم العام.
+Do not change the general design.
+
+لا تغيّر قاعدة البيانات.
+Do not change the database.
+
+لا تغيّر لوحة التحكم.
+Do not change the admin panel.
+
+لا تضف اختيار أكثر من تخصص الآن.
+Do not add multi-specialty selection now.
+
+لا تستخدم higher power mode.
+Do not use higher power mode.
+
+المطلوب:
+Required:
+
+أضف ملاحظة واضحة في صفحة "انضم إلينا" للفنيين والشركات.
+Add a clear note on the "Join Us" page for technicians and companies.
+
+النص العربي:
+Arabic text:
+"إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص."
+
+النص الإنجليزي:
+English text:
+"If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty."
+
+مكان الإضافة الأول:
+First placement:
+
+في صفحة "انضم إلينا" الرئيسية، تحت زري:
+On the main "Join Us" page, under the two buttons:
+- انضم كفني / Join as Technician
+- انضم كشركة / Join as Company
+
+مكان الإضافة الثاني:
+Second placement:
+
+داخل نموذج التسجيل نفسه، تحت عنوان النموذج أو تحت جملة:
+Inside the registration form itself, under the form title or under:
+- نموذج تسجيل الفنيين / Technician Registration Form
+- نموذج تسجيل الشركات / Company Registration Form
+
+طريقة العرض:
+Display style:
+
+اجعل الملاحظة داخل صندوق صغير وواضح.
+Show the note inside a small clear box.
+
+الخلفية تكون خفيفة مثل:
+Use a light background such as:
+#F7F8FA
+أو
+or
+#FFF4E8
+
+النص يكون واضحًا ومقروءًا.
+The text should be clear and readable.
+
+يمكن استخدام أيقونة معلومات صغيرة إذا كانت موجودة.
+You may use a small info icon if already available.
+
+لا تجعل الملاحظة كبيرة أو مزعجة.
+Do not make the note large or distracting.
+
+مهم:
+Important:
+
+في الوضع العربي، اعرض النص العربي فقط.
+In Arabic mode, show only the Arabic text.
+
+في الوضع الإنجليزي، اعرض النص الإنجليزي فقط.
+In English mode, show only the English text.
+
+بعد التنفيذ تأكد أن:
+After implementation, verify that:
+
+1. الملاحظة تظهر تحت أزرار "انضم كفني" و "انضم كشركة".
+   The note appears under the "Join as Technician" and "Join as Company" buttons.
+
+2. الملاحظة تظهر داخل نموذج التسجيل تحت عنوان النموذج.
+   The note appears inside the registration form under the form title.
+
+3. زر إرسال الطلب ما زال يعمل.
+   The submit button still works.
+
+4. لا توجد أخطاء في Console.
+   There are no Console errors.
+
+5. لم يتم تغيير أي شيء آخر.
+   Nothing else was changed.
+
+توقف بعد هذه المهمة فقط.
+Stop after this task only.
