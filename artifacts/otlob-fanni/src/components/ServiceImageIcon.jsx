@@ -59,6 +59,7 @@ const iconMap = {
   car_wash:                 '/icons/services/car_wash.svg',
   oil_change:               '/icons/services/oil_change.svg',
   car_diagnostics:          '/icons/services/car_diagnostics.svg',
+  heavy_truck_driver:       '/icons/services/heavy_truck_driver.svg',
 }
 
 export default function ServiceImageIcon({ iconName, className = '' }) {
