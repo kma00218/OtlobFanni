@@ -46,7 +46,7 @@ export const categories = [
   { id: 'thermal',      sectionId: 'construction', nameAr: 'عزل حراري',         nameEn: 'Thermal Insulation',  iconName: 'thermal_insulation', sortOrder: 27 },
   { id: 'concrete',     sectionId: 'construction', nameAr: 'أعمال خرسانة',      nameEn: 'Concrete Works',      iconName: 'contracting',        sortOrder: 28 },
   { id: 'roofing',      sectionId: 'construction', nameAr: 'أعمال أسقف',        nameEn: 'Roofing',             iconName: 'contracting',        sortOrder: 29 },
-  { id: 'plastering',        sectionId: 'construction', nameAr: 'عامل لياسة ومحارة',   nameEn: 'Plastering Worker',   iconName: 'contracting', sortOrder: 66 },
+  { id: 'plastering',        sectionId: 'construction', nameAr: 'عامل لياسة ومحارة',   nameEn: 'Plastering Worker',   iconName: 'plastering', sortOrder: 66 },
   { id: 'excavator',         sectionId: 'construction', nameAr: 'سائق حفار',           nameEn: 'Excavator Operator',  iconName: 'contracting', sortOrder: 71 },
   { id: 'loader',            sectionId: 'construction', nameAr: 'سائق كاشيك / لودر',   nameEn: 'Loader Operator',     iconName: 'contracting', sortOrder: 72 },
   { id: 'heavy_equipment',   sectionId: 'construction', nameAr: 'معدات ثقيلة',         nameEn: 'Heavy Equipment',     iconName: 'contracting', sortOrder: 73 },
