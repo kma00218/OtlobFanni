@@ -47,7 +47,7 @@ export const categories = [
   { id: 'concrete',     sectionId: 'construction', nameAr: 'أعمال خرسانة',      nameEn: 'Concrete Works',      iconName: 'maintenance',        sortOrder: 28 },
   { id: 'roofing',      sectionId: 'construction', nameAr: 'أعمال أسقف',        nameEn: 'Roofing',             iconName: 'solar',              sortOrder: 29 },
   { id: 'plastering',        sectionId: 'construction', nameAr: 'عامل لياسة ومحارة',   nameEn: 'Plastering Worker',   iconName: 'plastering',  sortOrder: 66 },
-  { id: 'excavator',         sectionId: 'construction', nameAr: 'سائق حفار',           nameEn: 'Excavator Operator',  iconName: 'shop_maintenance', sortOrder: 71 },
+  { id: 'excavator',         sectionId: 'construction', nameAr: 'سائق حفار',           nameEn: 'Excavator Operator',  iconName: 'carpentry', sortOrder: 71 },
   { id: 'loader',            sectionId: 'construction', nameAr: 'سائق كاشيك / لودر',   nameEn: 'Loader Operator',     iconName: 'workers',     sortOrder: 72 },
   { id: 'heavy_equipment',   sectionId: 'construction', nameAr: 'معدات ثقيلة',         nameEn: 'Heavy Equipment',     iconName: 'generator',   sortOrder: 73 },
   { id: 'crusher_materials', sectionId: 'construction', nameAr: 'كسارة ومواد بناء',    nameEn: 'Crusher & Building Materials', iconName: 'backup_power', sortOrder: 74 },
