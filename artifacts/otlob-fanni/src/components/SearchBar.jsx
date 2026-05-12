@@ -9,6 +9,7 @@ export default function SearchBar() {
   const [, navigate] = useLocation()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
   const inputRef = useRef(null)
   const containerRef = useRef(null)
 
@@ -34,11 +35,11 @@ export default function SearchBar() {
     inputRef.current?.focus()
   }
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setOpen(false)
+        setFocused(false)
       }
     }
     document.addEventListener('mousedown', handler)
@@ -51,34 +52,49 @@ export default function SearchBar() {
 
   return (
     <div ref={containerRef} className="relative w-full" dir={dir}>
-      {/* Input */}
-      <div className="relative">
-        <div className={`absolute inset-y-0 ${dir === 'rtl' ? 'right-3' : 'left-3'} flex items-center pointer-events-none`}>
-          <Search className="h-5 w-5 text-muted-foreground" />
-        </div>
+      {/* Search input row */}
+      <div className={`flex items-center gap-2 rounded-2xl transition-all duration-200 ${
+        focused
+          ? 'shadow-[0_0_0_3px_rgba(255,121,0,0.25)] bg-white'
+          : 'shadow-[0_4px_20px_rgba(0,0,0,0.10)] bg-white'
+      }`}>
+        {/* Search icon button */}
+        <button
+          onClick={() => inputRef.current?.focus()}
+          className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-[#FF7900] rounded-xl m-1 transition-transform active:scale-95"
+          style={{ borderRadius: '14px' }}
+        >
+          <Search className="w-5 h-5 text-white" />
+        </button>
+
+        {/* Input */}
         <input
           ref={inputRef}
           type="search"
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true) }}
-          onFocus={() => query.trim() && setOpen(true)}
+          onFocus={() => { setFocused(true); query.trim() && setOpen(true) }}
+          onBlur={() => setFocused(false)}
           placeholder={t('searchPlaceholder')}
           autoComplete="off"
-          className={`w-full bg-card border border-gray-200 focus:border-[#FF7900] focus:ring-2 focus:ring-[#FF7900]/20 outline-none rounded-full h-12 text-base transition-all ${dir === 'rtl' ? 'pr-10 pl-10' : 'pl-10 pr-10'}`}
+          className="flex-1 bg-transparent outline-none text-[#071B33] placeholder-gray-400 text-base font-medium h-14 min-w-0"
+          style={{ direction: dir }}
         />
+
+        {/* Clear button */}
         {query.length > 0 && (
           <button
             onMouseDown={e => { e.preventDefault(); handleClear() }}
-            className={`absolute inset-y-0 ${dir === 'rtl' ? 'left-3' : 'right-3'} flex items-center text-gray-400 hover:text-gray-600`}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors me-2"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 text-gray-500" />
           </button>
         )}
       </div>
 
       {/* Dropdown results */}
       {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
           {results.map((cat, i) => (
             <button
               key={cat.id}
@@ -104,7 +120,7 @@ export default function SearchBar() {
 
       {/* No results */}
       {open && query.trim().length > 0 && results.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 px-4 py-5 z-50 text-center">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 px-4 py-5 z-50 text-center">
           <p className="text-gray-400 text-sm">
             {ar ? 'لا توجد نتائج لـ' : 'No results for'}{' '}
             <span className="text-[#071B33] font-bold">"{query}"</span>
