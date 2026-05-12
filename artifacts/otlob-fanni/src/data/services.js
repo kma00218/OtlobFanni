@@ -22,6 +22,7 @@ export const categories = [
   { id: 'locks',          sectionId: 'home_services',  nameAr: 'أقفال وأبواب',       nameEn: 'Locks & Doors',      iconName: 'locks_doors',  sortOrder: 8  },
   { id: 'pumps',          sectionId: 'home_services',  nameAr: 'مضخات مياه',         nameEn: 'Water Pumps',        iconName: 'plumbing',     sortOrder: 9  },
   { id: 'gas',            sectionId: 'home_services',  nameAr: 'تأسيس غاز',          nameEn: 'Gas Installation',   iconName: 'gas',          sortOrder: 10 },
+  { id: 'home_help',      sectionId: 'home_services',  nameAr: 'مساعدة منزلية وتنظيف', nameEn: 'Home Help & Cleaning', iconName: 'cleaning',     sortOrder: 75 },
 
   // ── 2. خدمات سيارات ───────────────────────────────────────────────────────
   { id: 'car_mechanic',     sectionId: 'car_services', nameAr: 'ميكانيكي سيارات',    nameEn: 'Car Mechanic',             iconName: 'car_mechanic',    sortOrder: 11 },
@@ -45,7 +46,11 @@ export const categories = [
   { id: 'thermal',      sectionId: 'construction', nameAr: 'عزل حراري',         nameEn: 'Thermal Insulation',  iconName: 'thermal_insulation', sortOrder: 27 },
   { id: 'concrete',     sectionId: 'construction', nameAr: 'أعمال خرسانة',      nameEn: 'Concrete Works',      iconName: 'contracting',        sortOrder: 28 },
   { id: 'roofing',      sectionId: 'construction', nameAr: 'أعمال أسقف',        nameEn: 'Roofing',             iconName: 'contracting',        sortOrder: 29 },
-  { id: 'plastering',   sectionId: 'construction', nameAr: 'عامل لياسة ومحارة', nameEn: 'Plastering Worker',   iconName: 'plastering',         sortOrder: 66 },
+  { id: 'plastering',        sectionId: 'construction', nameAr: 'عامل لياسة ومحارة',   nameEn: 'Plastering Worker',   iconName: 'contracting', sortOrder: 66 },
+  { id: 'excavator',         sectionId: 'construction', nameAr: 'سائق حفار',           nameEn: 'Excavator Operator',  iconName: 'contracting', sortOrder: 71 },
+  { id: 'loader',            sectionId: 'construction', nameAr: 'سائق كاشيك / لودر',   nameEn: 'Loader Operator',     iconName: 'contracting', sortOrder: 72 },
+  { id: 'heavy_equipment',   sectionId: 'construction', nameAr: 'معدات ثقيلة',         nameEn: 'Heavy Equipment',     iconName: 'contracting', sortOrder: 73 },
+  { id: 'crusher_materials', sectionId: 'construction', nameAr: 'كسارة ومواد بناء',    nameEn: 'Crusher & Building Materials', iconName: 'contracting', sortOrder: 74 },
 
   // ── 4. تقنية وأمن ─────────────────────────────────────────────────────────
   { id: 'cctv',          sectionId: 'tech_security', nameAr: 'كاميرات مراقبة',     nameEn: 'CCTV',                   iconName: 'cctv',         sortOrder: 30 },
@@ -57,12 +62,16 @@ export const categories = [
   { id: 'access_control',sectionId: 'tech_security', nameAr: 'أنظمة دخول وبوابات', nameEn: 'Access Control',         iconName: 'locks_doors',  sortOrder: 36 },
 
   // ── 5. نقل وخدمات عامة ────────────────────────────────────────────────────
-  { id: 'moving',       sectionId: 'moving_general', nameAr: 'نقل أثاث',         nameEn: 'Furniture Moving',    iconName: 'moving',      sortOrder: 37 },
-  { id: 'maintenance',  sectionId: 'moving_general', nameAr: 'صيانة عامة',        nameEn: 'General Maintenance', iconName: 'maintenance', sortOrder: 38 },
-  { id: 'workers',      sectionId: 'moving_general', nameAr: 'عمالة يومية',       nameEn: 'Daily Workers',       iconName: 'workers',      sortOrder: 39 },
-  { id: 'loading',      sectionId: 'moving_general', nameAr: 'تحميل وتنزيل',      nameEn: 'Loading & Unloading', iconName: 'moving',       sortOrder: 40 },
-  { id: 'tank_cleaning',sectionId: 'moving_general', nameAr: 'تنظيف خزانات',      nameEn: 'Tank Cleaning',       iconName: 'tank_cleaning',sortOrder: 41 },
-  { id: 'pest_control', sectionId: 'moving_general', nameAr: 'مكافحة حشرات',      nameEn: 'Pest Control',        iconName: 'pest_control', sortOrder: 42 },
+  { id: 'moving',                 sectionId: 'moving_general', nameAr: 'نقل أثاث',             nameEn: 'Furniture Moving',                  iconName: 'moving',      sortOrder: 37 },
+  { id: 'maintenance',            sectionId: 'moving_general', nameAr: 'صيانة عامة',            nameEn: 'General Maintenance',               iconName: 'maintenance', sortOrder: 38 },
+  { id: 'workers',                sectionId: 'moving_general', nameAr: 'عمالة يومية',           nameEn: 'Daily Workers',                     iconName: 'maintenance', sortOrder: 39 },
+  { id: 'loading',                sectionId: 'moving_general', nameAr: 'تحميل وتنزيل',          nameEn: 'Loading & Unloading',               iconName: 'moving',      sortOrder: 40 },
+  { id: 'tank_cleaning',          sectionId: 'moving_general', nameAr: 'تنظيف خزانات',          nameEn: 'Tank Cleaning',                     iconName: 'tank_cleaning',sortOrder: 41 },
+  { id: 'pest_control',           sectionId: 'moving_general', nameAr: 'مكافحة حشرات',          nameEn: 'Pest Control',                      iconName: 'pest_control', sortOrder: 42 },
+  { id: 'truck_driver',           sectionId: 'moving_general', nameAr: 'سائق شاحنة',            nameEn: 'Truck Driver',                      iconName: 'moving',      sortOrder: 67 },
+  { id: 'heavy_transport',        sectionId: 'moving_general', nameAr: 'نقل ثقيل',              nameEn: 'Heavy Transport',                   iconName: 'moving',      sortOrder: 68 },
+  { id: 'tipper_truck',           sectionId: 'moving_general', nameAr: 'قلاب ودنبر',            nameEn: 'Tipper Truck',                      iconName: 'moving',      sortOrder: 69 },
+  { id: 'construction_transport', sectionId: 'moving_general', nameAr: 'نقل مواد بناء',         nameEn: 'Construction Materials Transport',   iconName: 'moving',      sortOrder: 70 },
 
   // ── 6. حدائق ومسابح ───────────────────────────────────────────────────────
   { id: 'landscaping',  sectionId: 'gardens_pools', nameAr: 'تنسيق حدائق',      nameEn: 'Landscaping',         iconName: 'landscaping',  sortOrder: 43 },
