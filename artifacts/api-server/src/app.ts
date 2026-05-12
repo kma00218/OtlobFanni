@@ -1,8 +1,9 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import path from "path";
 import { existsSync } from "fs";
+import http from "http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -32,6 +33,28 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use("/api", router);
+
+// In development, proxy all non-API requests to the Vite dev server
+if (process.env.NODE_ENV !== "production") {
+  const VITE_PORT = 23988;
+  app.use((req: Request, res: Response) => {
+    const options = {
+      hostname: "127.0.0.1",
+      port: VITE_PORT,
+      path: req.url,
+      method: req.method,
+      headers: { ...req.headers, host: `localhost:${VITE_PORT}` },
+    };
+    const proxy = http.request(options, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode ?? 200, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+    proxy.on("error", () => {
+      if (!res.headersSent) res.status(502).send("Vite dev server unavailable");
+    });
+    req.pipe(proxy, { end: true });
+  });
+}
 
 // In production, serve the built frontend static files and handle SPA routing
 if (process.env.NODE_ENV === "production") {
