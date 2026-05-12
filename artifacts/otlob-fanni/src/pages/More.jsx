@@ -1,5 +1,5 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Mail, Globe, Megaphone, MessageCircle, UserPlus, Building2 } from 'lucide-react';
+import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, UserPlus, Building2 } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ITEMS = [
@@ -20,12 +20,12 @@ const ITEMS = [
     shadow: 'shadow-orange-200',
   },
   {
-    icon: MessageCircle,
+    icon: HelpCircle,
     labelAr: 'الدعم',
     labelEn: 'Support',
-    path: '/messages',
-    bg: 'from-[#5856D6] to-[#3634A3]',
-    shadow: 'shadow-purple-200',
+    path: '/support',
+    bg: 'from-[#0EA5E9] to-[#0369A1]',
+    shadow: 'shadow-sky-200',
   },
   {
     icon: Megaphone,
