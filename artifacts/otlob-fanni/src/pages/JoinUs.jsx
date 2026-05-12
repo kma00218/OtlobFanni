@@ -39,9 +39,9 @@ export default function JoinUs() {
       <div className="px-5 space-y-5 mt-2">
 
         {/* Multi-specialty note */}
-        <div className="flex items-start gap-2.5 rounded-2xl px-4 py-3" style={{ background: '#FFF4E8' }}>
+        <div className="flex items-start gap-2.5 rounded-2xl px-4 py-3.5 border-2 border-[#FF7900]/50" style={{ background: '#FFF4E8' }}>
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-[#5a3a1a] leading-relaxed">
+          <p className="text-xs font-bold text-[#3d2200] leading-relaxed">
             {ar
               ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
               : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
@@ -73,14 +73,14 @@ export default function JoinUs() {
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كفني' : 'Join as Technician'}
                 </h2>
-                <p className="text-white/75 text-xs leading-relaxed">
+                <p className="text-white font-semibold text-xs leading-relaxed">
                   {ar
                     ? 'سجّل مهاراتك واستقبل طلبات من عملاء في منطقتك'
                     : 'Register your skills and receive requests from local clients'}
                 </p>
                 <div className="flex items-center gap-3 mt-3">
                   {[ar ? 'مجاناً' : 'Free', ar ? 'سريع' : 'Fast', ar ? 'آمن' : 'Secure'].map(tag => (
-                    <span key={tag} className="flex items-center gap-1 text-white/80 text-[10px] font-medium">
+                    <span key={tag} className="flex items-center gap-1 text-white text-[10px] font-bold">
                       <CheckCircle2 className="w-3 h-3" /> {tag}
                     </span>
                   ))}
@@ -130,14 +130,14 @@ export default function JoinUs() {
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كشركة' : 'Join as Company'}
                 </h2>
-                <p className="text-white/75 text-xs leading-relaxed">
+                <p className="text-white font-semibold text-xs leading-relaxed">
                   {ar
                     ? 'سجّل شركتك واحصل على عملاء جدد في منطقتك'
                     : 'Register your company and reach new clients nearby'}
                 </p>
                 <div className="flex items-center gap-3 mt-3">
                   {[ar ? 'موثوق' : 'Trusted', ar ? 'نمو' : 'Growth', ar ? 'دعم' : 'Support'].map(tag => (
-                    <span key={tag} className="flex items-center gap-1 text-white/80 text-[10px] font-medium">
+                    <span key={tag} className="flex items-center gap-1 text-white text-[10px] font-bold">
                       <CheckCircle2 className="w-3 h-3" /> {tag}
                     </span>
                   ))}
