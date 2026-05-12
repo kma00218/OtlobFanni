@@ -3,11 +3,21 @@ import { Link } from 'wouter'
 import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, Star, CheckCircle2 } from 'lucide-react'
 
 export default function JoinUs() {
-  const { lang } = useLang()
+  const { lang, toggleLang } = useLang()
   const ar = lang === 'ar'
 
   return (
     <div className="min-h-screen pb-28 pt-14" style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d4f 50%, #1a3f6b 100%)' }} dir={ar ? 'rtl' : 'ltr'}>
+
+      {/* Language toggle */}
+      <div className={`fixed top-0 left-0 right-0 z-50 flex ${ar ? 'justify-start' : 'justify-end'} px-4 pt-3 max-w-[480px] mx-auto`}>
+        <button
+          onClick={toggleLang}
+          className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-3 py-1.5 rounded-lg transition-colors"
+        >
+          {lang === 'ar' ? 'EN' : 'AR'}
+        </button>
+      </div>
 
       {/* Header */}
       <div className="px-6 pt-8 pb-6 text-center">
