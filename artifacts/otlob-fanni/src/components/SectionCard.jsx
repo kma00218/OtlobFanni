@@ -19,6 +19,7 @@ const SECTION_IMAGE = {
   tech_security:     '/icons/sections/tech_security.jpeg',
   more_services:     '/icons/sections/more_services.png',
   business_services: '/icons/sections/business_services.png',
+  gardens_pools:     '/icons/sections/gardens_pools.jpeg',
 }
 
 const SECTION_ICON = {
