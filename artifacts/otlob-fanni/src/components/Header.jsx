@@ -87,10 +87,8 @@ export default function Header() {
         </span>
       </button>
 
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="flex items-center gap-2">
+        <button
           onClick={() => {
             if (navigator.share) {
               navigator.share({
@@ -104,9 +102,13 @@ export default function Header() {
               navigator.clipboard?.writeText('https://otlobfanni.ly')
             }
           }}
+          className="flex flex-col items-center justify-center gap-0.5 active:scale-90 transition-transform duration-150"
         >
-          <Share2 className="h-5 w-5 text-foreground" />
-        </Button>
+          <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
+            <Share2 className="h-[18px] w-[18px] text-white" />
+          </div>
+          <span className="text-[9px] font-semibold text-gray-500 leading-none">share</span>
+        </button>
         <Button variant="ghost" size="icon" onClick={toggleLang} className="font-bold text-foreground text-sm">
           {lang === 'ar' ? 'EN' : 'AR'}
         </Button>
