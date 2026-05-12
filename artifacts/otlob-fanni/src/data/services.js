@@ -5,8 +5,9 @@ export const sections = [
   { id: 'tech_security',     nameAr: 'تقنية وأمن',             nameEn: 'Technology & Security',      iconName: 'cctv',        sortOrder: 4, isActive: true },
   { id: 'moving_general',    nameAr: 'نقل وخدمات عامة',        nameEn: 'Moving & General Services',  iconName: 'moving',      sortOrder: 5, isActive: true },
   { id: 'gardens_pools',     nameAr: 'حدائق ومسابح',           nameEn: 'Gardens & Pools',            iconName: 'cleaning',    sortOrder: 6, isActive: true },
-  { id: 'business_services', nameAr: 'الخدمات التجارية',        nameEn: 'Business Services',          iconName: 'maintenance', sortOrder: 7, isActive: true },
-  { id: 'more_services',     nameAr: 'المزيد من الخدمات',       nameEn: 'More Services',              iconName: 'more',        sortOrder: 8, isActive: true },
+  { id: 'energy_generators', nameAr: 'الطاقة والمولدات',        nameEn: 'Energy & Generators',        iconName: 'energy_generators', sortOrder: 7, isActive: true },
+  { id: 'business_services', nameAr: 'الخدمات التجارية',        nameEn: 'Business Services',          iconName: 'maintenance', sortOrder: 8, isActive: true },
+  { id: 'more_services',     nameAr: 'المزيد من الخدمات',       nameEn: 'More Services',              iconName: 'more',        sortOrder: 9, isActive: true },
 ]
 
 export const categories = [
@@ -69,7 +70,15 @@ export const categories = [
   { id: 'pool_cleaning',sectionId: 'gardens_pools', nameAr: 'تنظيف مسابح',      nameEn: 'Pool Cleaning',       iconName: 'cleaning',    sortOrder: 46 },
   { id: 'irrigation',   sectionId: 'gardens_pools', nameAr: 'شبكات ري',         nameEn: 'Irrigation Systems',  iconName: 'plumbing',    sortOrder: 47 },
 
-  // ── 7. الخدمات التجارية ───────────────────────────────────────────────────
+  // ── 7. الطاقة والمولدات ───────────────────────────────────────────────────
+  { id: 'generator',        sectionId: 'energy_generators', nameAr: 'صيانة مولدات',              nameEn: 'Generator Maintenance',    iconName: 'generator',         sortOrder: 54 },
+  { id: 'generator_install',sectionId: 'energy_generators', nameAr: 'تركيب مولدات',              nameEn: 'Generator Installation',   iconName: 'generator_install',  sortOrder: 55 },
+  { id: 'solar',            sectionId: 'energy_generators', nameAr: 'طاقة شمسية',                nameEn: 'Solar Energy',             iconName: 'solar',              sortOrder: 56 },
+  { id: 'battery_inverter', sectionId: 'energy_generators', nameAr: 'بطاريات وإنفرتر',           nameEn: 'Batteries & Inverters',    iconName: 'battery_inverter',   sortOrder: 57 },
+  { id: 'ups',              sectionId: 'energy_generators', nameAr: 'صيانة UPS',                 nameEn: 'UPS Maintenance',          iconName: 'ups',                sortOrder: 58 },
+  { id: 'backup_power',     sectionId: 'energy_generators', nameAr: 'تمديدات كهرباء احتياطية',   nameEn: 'Backup Power Wiring',      iconName: 'backup_power',       sortOrder: 59 },
+
+  // ── 8. الخدمات التجارية ───────────────────────────────────────────────────
   { id: 'shop_maintenance',     sectionId: 'business_services', nameAr: 'صيانة محلات',          nameEn: 'Shop Maintenance',      iconName: 'maintenance', sortOrder: 48 },
   { id: 'office_cleaning',      sectionId: 'business_services', nameAr: 'تنظيف شركات ومكاتب',   nameEn: 'Office Cleaning',       iconName: 'cleaning',    sortOrder: 49 },
   { id: 'shop_cctv',            sectionId: 'business_services', nameAr: 'تجهيز كاميرات للمحلات', nameEn: 'Shop CCTV Setup',       iconName: 'cctv',        sortOrder: 50 },

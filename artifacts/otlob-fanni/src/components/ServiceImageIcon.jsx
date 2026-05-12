@@ -23,6 +23,13 @@ const iconMap = {
   ac_units: '/icons/services/ac-units.svg',
   'ac-units': '/icons/services/ac-units.svg',
   more: '/icons/services/more.svg',
+  energy_generators: '/icons/services/electricity.svg',
+  generator:         '/icons/services/maintenance.svg',
+  generator_install: '/icons/services/maintenance.svg',
+  solar:             '/icons/services/electricity.svg',
+  battery_inverter:  '/icons/services/maintenance.svg',
+  ups:               '/icons/services/maintenance.svg',
+  backup_power:      '/icons/services/electricity.svg',
 }
 
 export default function ServiceImageIcon({ iconName, className = '' }) {

@@ -41,7 +41,14 @@ const ICON_MAP = {
   cctv:        Cctv,
   networks:    Router,
   moving:      Truck,
-  more:        CircleEllipsis,
+  more:              CircleEllipsis,
+  energy_generators: Zap,
+  generator:         Wrench,
+  generator_install: Wrench,
+  solar:             Zap,
+  battery_inverter:  Wrench,
+  ups:               Wrench,
+  backup_power:      Zap,
 }
 
 export default function ServiceIcon({ iconName, size = 32, strokeWidth = 1.8, className = '' }) {

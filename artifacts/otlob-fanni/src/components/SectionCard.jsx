@@ -1,7 +1,7 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
 import { categories } from '../data/services'
-import { Home, Car, HardHat, ShieldCheck, Truck, Leaf, Briefcase, MoreHorizontal } from 'lucide-react'
+import { Home, Car, HardHat, ShieldCheck, Truck, Leaf, Briefcase, MoreHorizontal, Zap } from 'lucide-react'
 
 const SECTION_COLORS = {
   home_services:     ['#FF7900', '#d96300'],
@@ -10,6 +10,7 @@ const SECTION_COLORS = {
   tech_security:     ['#1D4ED8', '#1238a8'],
   moving_general:    ['#6D28D9', '#4c1db0'],
   gardens_pools:     ['#047857', '#025c42'],
+  energy_generators: ['#D97706', '#b45309'],
   business_services: ['#0369A1', '#024e7a'],
   more_services:     ['#374151', '#1f2937'],
 }
@@ -32,6 +33,7 @@ const SECTION_ICON = {
   tech_security:     ShieldCheck,
   moving_general:    Truck,
   gardens_pools:     Leaf,
+  energy_generators: Zap,
   business_services: Briefcase,
   more_services:     MoreHorizontal,
 }
