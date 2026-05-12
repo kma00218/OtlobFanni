@@ -4,6 +4,7 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
 import api from '../../lib/api'
+import { sections as SECTIONS } from '../../data/services'
 
 const EXP_YEARS = {
   less1: 0, '1-2': 2, '3-5': 5, '6-10': 10, '10+': 11,
@@ -47,6 +48,14 @@ export default function TechnicianApplications() {
   const catLabel = (id) => {
     const cat = categories.find(c => c.id === id)
     return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
+  }
+
+  const sectionLabel = (categoryId) => {
+    const cat = categories.find(c => c.id === categoryId)
+    const sectionId = cat?.sectionId || cat?.section_id
+    if (!sectionId) return '—'
+    const sec = SECTIONS.find(s => s.id === sectionId)
+    return sec ? sec.nameAr : sectionId
   }
 
   const reload = () => {
@@ -396,7 +405,8 @@ export default function TechnicianApplications() {
               {/* Professional */}
               <Sec icon={Briefcase} title="المعلومات المهنية">
                 <G2>
-                  <IC label="التخصص"         value={catLabel(viewItem.specialty) || viewItem.specialty} />
+                  <IC label="القسم الرئيسي"  value={sectionLabel(viewItem.specialty)} valueClass="text-[#FF7900] font-semibold" />
+                  <IC label="التخصص / الخدمة" value={catLabel(viewItem.specialty) || viewItem.specialty} />
                   <IC label="سنوات الخبرة"   value={EXP_LABEL[viewItem.experience] || viewItem.experience} />
                   <IC label="نوع العمل"      value={viewItem.type === 'company' ? 'شركة / مؤسسة' : 'فردي'} />
                   <IC label="نطاق الخدمة"   value={svcRadius ? `${svcRadius} كم` : '—'} />

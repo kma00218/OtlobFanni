@@ -3,6 +3,7 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Building2, Shield } from 'lucide-react'
 import api from '../../lib/api'
+import { sections as SECTIONS } from '../../data/services'
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',
@@ -40,6 +41,14 @@ export default function CompanyApplications() {
   const catLabel = (id) => {
     const cat = categories.find(c => c.id === id)
     return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
+  }
+
+  const sectionLabel = (categoryId) => {
+    const cat = categories.find(c => c.id === categoryId)
+    const sectionId = cat?.sectionId || cat?.section_id
+    if (!sectionId) return '—'
+    const sec = SECTIONS.find(s => s.id === sectionId)
+    return sec ? sec.nameAr : sectionId
   }
 
   const reload = () => {
@@ -361,10 +370,11 @@ export default function CompanyApplications() {
               {/* Service info */}
               <Sec icon={Briefcase} title="معلومات الخدمة">
                 <G2>
-                  <IC label="التخصص"       value={catLabel(viewItem.specialty) || viewItem.specialty} />
-                  <IC label="سنوات النشاط" value={EXP_LABEL[yearsActive] || yearsActive} />
-                  <IC label="السعر الأدنى"  value={priceFrom ? `${priceFrom} د.ل` : '—'} />
-                  <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />
+                  <IC label="القسم الرئيسي"   value={sectionLabel(viewItem.specialty)} valueClass="text-[#FF7900] font-semibold" />
+                  <IC label="التخصص / الخدمة" value={catLabel(viewItem.specialty) || viewItem.specialty} />
+                  <IC label="سنوات النشاط"    value={EXP_LABEL[yearsActive] || yearsActive} />
+                  <IC label="السعر الأدنى"     value={priceFrom ? `${priceFrom} د.ل` : '—'} />
+                  <IC label="السعر الأقصى"     value={priceTo   ? `${priceTo} د.ل`   : '—'} />
                 </G2>
                 {viewItem.description && (
                   <div className="mt-2.5 bg-white/5 rounded-xl p-3">
