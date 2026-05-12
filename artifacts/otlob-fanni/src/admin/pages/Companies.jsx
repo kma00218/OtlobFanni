@@ -19,6 +19,16 @@ const DAY_AR = {
   Tuesday:'الثلاثاء', Wednesday:'الأربعاء', Thursday:'الخميس', Friday:'الجمعة',
 }
 
+const DAY_OPTIONS = [
+  { en: 'Saturday',  ar: 'السبت'    },
+  { en: 'Sunday',    ar: 'الأحد'    },
+  { en: 'Monday',    ar: 'الاثنين'  },
+  { en: 'Tuesday',   ar: 'الثلاثاء' },
+  { en: 'Wednesday', ar: 'الأربعاء' },
+  { en: 'Thursday',  ar: 'الخميس'   },
+  { en: 'Friday',    ar: 'الجمعة'   },
+]
+
 const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 
 const emptyForm = {
@@ -26,6 +36,7 @@ const emptyForm = {
   commercial_reg: '', city: '', area: '', address: '',
   specialty: '', years_active: '', description: '', certifications: '',
   price_from: '', price_to: '', available_now: false, emergency: false,
+  working_days: [],
   hours_from: '', hours_to: '', service_radius: '', facebook: '', instagram: '',
 }
 
@@ -89,6 +100,7 @@ export default function Companies() {
       service_radius: row.serviceRadius || '',
       facebook:       row.facebook      || '',
       instagram:      row.instagram     || '',
+      working_days:   row.workingDays   || [],
     })
     setViewItem(null)
   }
@@ -530,6 +542,40 @@ export default function Companies() {
               <textarea rows={3} value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 className="form-input resize-none" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="form-label">الشهادات والاعتمادات</label>
+              <textarea rows={2} value={form.certifications}
+                onChange={e => setForm(f => ({ ...f, certifications: e.target.value }))}
+                className="form-input resize-none"
+                placeholder="مثال: ISO 9001، شهادة اتحاد المقاولين..." />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="form-label">أيام العمل</label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {DAY_OPTIONS.map(({ en, ar }) => {
+                  const selected = (form.working_days || []).includes(en)
+                  return (
+                    <button
+                      key={en}
+                      type="button"
+                      onClick={() => setForm(f => ({
+                        ...f,
+                        working_days: selected
+                          ? (f.working_days || []).filter(d => d !== en)
+                          : [...(f.working_days || []), en]
+                      }))}
+                      className={`text-xs px-3 py-1.5 rounded-xl border transition-all font-medium ${
+                        selected
+                          ? 'bg-[#FF7900]/15 border-[#FF7900]/40 text-[#FF7900]'
+                          : 'bg-white/3 border-white/10 text-[#666680] hover:border-white/20'
+                      }`}
+                    >
+                      {ar}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
             <div className="sm:col-span-2 flex gap-6">
               {[['available_now', 'متاح الآن'], ['emergency', 'طوارئ 24/7']].map(([field, label]) => (
