@@ -11,6 +11,7 @@ const iconMap = {
   moving:               '/icons/services/moving.svg',
   cctv:                 '/icons/services/cctv.svg',
   network:              '/icons/services/network.svg',
+  networks:             '/icons/services/network.svg',
   maintenance:          '/icons/services/maintenance.svg',
   'general-maintenance':'/icons/services/maintenance.svg',
   appliances:           '/icons/services/appliances.svg',
@@ -26,6 +27,23 @@ const iconMap = {
   contracting:          '/icons/services/contracting.svg',
   tiles:                '/icons/services/tiles.svg',
   more:                 '/icons/services/more.svg',
+  // Energy & Generators
+  energy_generators:    '/icons/services/electricity.svg',
+  generator:            '/icons/services/generator.svg',
+  generator_install:    '/icons/services/generator_install.svg',
+  solar:                '/icons/services/solar.svg',
+  battery_inverter:     '/icons/services/battery_inverter.svg',
+  ups:                  '/icons/services/ups.svg',
+  backup_power:         '/icons/services/backup_power.svg',
+  // Business Services
+  coffee_machine:       '/icons/services/coffee_machine.svg',
+  restaurant_equipment: '/icons/services/restaurant_equipment.svg',
+  shawarma:             '/icons/services/shawarma.svg',
+  grill:                '/icons/services/grill.svg',
+  pastry:               '/icons/services/pastry.svg',
+  restaurant_staff:     '/icons/services/restaurant_staff.svg',
+  // Construction
+  plastering:           '/icons/services/plastering.svg',
 }
 
 const COLORS = {
