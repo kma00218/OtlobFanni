@@ -1,18 +1,94 @@
-import { useLang } from '../context/LanguageContext';
-import { MapPin, Bell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react'
+import { useLang } from '../context/LanguageContext'
+import { MapPin, Bell, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+async function reverseGeocode(lat, lon, lang) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=${lang}`,
+      { headers: { 'Accept-Language': lang } }
+    )
+    const data = await res.json()
+    const addr = data.address || {}
+    // Prefer city > town > county > state
+    return (
+      addr.city     ||
+      addr.town     ||
+      addr.village  ||
+      addr.county   ||
+      addr.state    ||
+      data.display_name?.split(',')[0] ||
+      null
+    )
+  } catch {
+    return null
+  }
+}
 
 export default function Header() {
-  const { dir, t, toggleLang, lang } = useLang();
+  const { dir, t, toggleLang, lang } = useLang()
+  const [locationLabel, setLocationLabel] = useState(null)
+  const [locState, setLocState] = useState('idle') // idle | loading | granted | denied
+
+  const requestLocation = () => {
+    if (!navigator.geolocation) return
+    setLocState('loading')
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords
+        const label = await reverseGeocode(latitude, longitude, lang)
+        setLocationLabel(label)
+        setLocState('granted')
+      },
+      () => {
+        setLocState('denied')
+      },
+      { timeout: 8000 }
+    )
+  }
+
+  // Auto-request on mount
+  useEffect(() => {
+    // Only auto-request if permission was previously granted
+    navigator.permissions?.query({ name: 'geolocation' }).then(result => {
+      if (result.state === 'granted') requestLocation()
+    }).catch(() => {})
+  }, [])
+
+  // Re-resolve label if language changes and we already have permission
+  useEffect(() => {
+    if (locState === 'granted' && locationLabel) {
+      navigator.geolocation?.getCurrentPosition(async (pos) => {
+        const label = await reverseGeocode(pos.coords.latitude, pos.coords.longitude, lang)
+        if (label) setLocationLabel(label)
+      })
+    }
+  }, [lang])
+
+  const displayLabel = locationLabel || t('location')
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center justify-between px-4 max-w-[480px] mx-auto">
-      <div className="flex items-center gap-2">
-        <MapPin className="text-primary h-5 w-5" />
-        <span className="font-medium text-foreground text-sm">{t('location')}</span>
-      </div>
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={toggleLang} className="font-bold text-foreground">
+      {/* Location button — tappable to request GPS */}
+      <button
+        onClick={requestLocation}
+        disabled={locState === 'loading'}
+        className="flex items-center gap-1.5 active:opacity-70 transition-opacity min-w-0"
+        title={locState === 'denied' ? 'Location access denied' : 'Tap to update location'}
+      >
+        {locState === 'loading' ? (
+          <Loader2 className="h-4 w-4 text-primary animate-spin flex-shrink-0" />
+        ) : (
+          <MapPin className={`h-4 w-4 flex-shrink-0 ${locState === 'granted' ? 'text-primary' : 'text-gray-400'}`} />
+        )}
+        <span className={`font-medium text-sm truncate max-w-[160px] ${locState === 'granted' ? 'text-foreground' : 'text-gray-500'}`}>
+          {displayLabel}
+        </span>
+      </button>
+
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={toggleLang} className="font-bold text-foreground text-sm">
           {lang === 'ar' ? 'EN' : 'AR'}
         </Button>
         <Button variant="ghost" size="icon">
@@ -20,5 +96,5 @@ export default function Header() {
         </Button>
       </div>
     </header>
-  );
+  )
 }
