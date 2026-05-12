@@ -5,7 +5,7 @@ const SECTION_SVG = {
 
   /* ── 1. خدمات منزلية: بيت + مفتاح صيانة ────────────────────────────── */
   home_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* House body filled */}
       <path d="M3 11L12 3l9 8v9a1 1 0 01-1 1H4a1 1 0 01-1-1v-9z"
         fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
@@ -20,7 +20,7 @@ const SECTION_SVG = {
 
   /* ── 2. خدمات سيارات: سيارة + مفتاح صيانة ──────────────────────────── */
   car_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Car body */}
       <path d="M2 14.5v2a1 1 0 001 1h1M20 17.5h1a1 1 0 001-1v-2"
         stroke="white" strokeWidth="2"/>
@@ -39,7 +39,7 @@ const SECTION_SVG = {
 
   /* ── 3. بناء وتشطيب: خوذة بناء + طوب ───────────────────────────────── */
   construction: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Hard hat dome */}
       <path d="M3 14a9 7 0 0118 0" fill="rgba(255,255,255,0.2)" stroke="white" strokeWidth="2.2"/>
       {/* Hat brim */}
@@ -54,25 +54,25 @@ const SECTION_SVG = {
     </svg>
   ),
 
-  /* ── 4. تقنية وأمن: درع + كاميرا ────────────────────────────────────── */
+  /* ── 4. تقنية وأمن: درع + قفل ────────────────────────────────────── */
   tech_security: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-      {/* Shield filled */}
-      <path d="M12 22s-8-4.5-8-11V4.5l8-2.5 8 2.5V11c0 6.5-8 11-8 11z"
-        fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
-      {/* Camera body */}
-      <rect x="7" y="9" width="10" height="7.5" rx="1.5" fill="rgba(255,255,255,0.28)" stroke="white" strokeWidth="1.8"/>
-      {/* Lens */}
-      <circle cx="12" cy="12.5" r="2.2" stroke="white" strokeWidth="1.7" fill="rgba(255,255,255,0.15)"/>
-      <circle cx="12" cy="12.5" r="0.8" fill="white"/>
-      {/* Flash bump */}
-      <path d="M15.5 9V7.5a1 1 0 011-1h1" stroke="white" strokeWidth="1.5"/>
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Shield */}
+      <path d="M12 2L4 5.5V11c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V5.5L12 2z"
+        fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="1.8"/>
+      {/* Lock body */}
+      <rect x="8.5" y="12" width="7" height="5.5" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.7"/>
+      {/* Lock shackle */}
+      <path d="M9.5 12V9.5a2.5 2.5 0 015 0V12" stroke="white" strokeWidth="1.8" fill="none"/>
+      {/* Keyhole */}
+      <circle cx="12" cy="14.2" r="1" fill="white"/>
+      <path d="M12 15.2v1.5" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
     </svg>
   ),
 
   /* ── 5. نقل وخدمات عامة: شاحنة + صندوق ─────────────────────────────── */
   moving_general: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Truck cargo */}
       <rect x="1" y="6" width="14" height="12" rx="1" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
       {/* Cab */}
@@ -91,7 +91,7 @@ const SECTION_SVG = {
 
   /* ── 6. حدائق ومسابح: ورقة نبات + موجات ماء ─────────────────────────── */
   gardens_pools: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Leaf filled */}
       <path d="M18 3C18 3 12 2 5 6c0 9 7 13 13 11 0 0 1-8-3-12C13 3 18 3 18 3z"
         fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="2"/>
@@ -108,7 +108,7 @@ const SECTION_SVG = {
 
   /* ── 7. الخدمات التجارية: محل + ترس ─────────────────────────────────── */
   business_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Building facade */}
       <path d="M2 21V9l10-7 10 7v12H2z" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="2"/>
       {/* Shop awning */}
@@ -126,7 +126,7 @@ const SECTION_SVG = {
 
   /* ── 8. الطاقة والمولدات: بطارية + برق ──────────────────────────────── */
   energy_generators: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Battery body */}
       <rect x="2" y="7" width="18" height="10" rx="2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2.2"/>
       {/* Battery positive terminal */}
@@ -140,7 +140,7 @@ const SECTION_SVG = {
 
   /* ── 9. المزيد من الخدمات: شبكة مربعات متنوعة ───────────────────────── */
   more_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Row 1 */}
       <rect x="2" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
       <rect x="9" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.6"/>
