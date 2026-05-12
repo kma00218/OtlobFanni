@@ -45,6 +45,7 @@ export const categories = [
   { id: 'thermal',      sectionId: 'construction', nameAr: 'عزل حراري',         nameEn: 'Thermal Insulation',  iconName: 'thermal_insulation', sortOrder: 27 },
   { id: 'concrete',     sectionId: 'construction', nameAr: 'أعمال خرسانة',      nameEn: 'Concrete Works',      iconName: 'contracting',        sortOrder: 28 },
   { id: 'roofing',      sectionId: 'construction', nameAr: 'أعمال أسقف',        nameEn: 'Roofing',             iconName: 'contracting',        sortOrder: 29 },
+  { id: 'plastering',   sectionId: 'construction', nameAr: 'عامل لياسة ومحارة', nameEn: 'Plastering Worker',   iconName: 'plastering',         sortOrder: 66 },
 
   // ── 4. تقنية وأمن ─────────────────────────────────────────────────────────
   { id: 'cctv',          sectionId: 'tech_security', nameAr: 'كاميرات مراقبة',     nameEn: 'CCTV',                   iconName: 'cctv',        sortOrder: 30 },
@@ -79,12 +80,18 @@ export const categories = [
   { id: 'backup_power',     sectionId: 'energy_generators', nameAr: 'تمديدات كهرباء احتياطية',   nameEn: 'Backup Power Wiring',      iconName: 'backup_power',       sortOrder: 59 },
 
   // ── 8. الخدمات التجارية ───────────────────────────────────────────────────
-  { id: 'shop_maintenance',     sectionId: 'business_services', nameAr: 'صيانة محلات',          nameEn: 'Shop Maintenance',      iconName: 'maintenance', sortOrder: 48 },
-  { id: 'office_cleaning',      sectionId: 'business_services', nameAr: 'تنظيف شركات ومكاتب',   nameEn: 'Office Cleaning',       iconName: 'cleaning',    sortOrder: 49 },
-  { id: 'shop_cctv',            sectionId: 'business_services', nameAr: 'تجهيز كاميرات للمحلات', nameEn: 'Shop CCTV Setup',       iconName: 'cctv',        sortOrder: 50 },
-  { id: 'restaurant_maintenance',sectionId: 'business_services',nameAr: 'صيانة مطاعم',          nameEn: 'Restaurant Maintenance',iconName: 'maintenance', sortOrder: 51 },
-  { id: 'office_maintenance',   sectionId: 'business_services', nameAr: 'صيانة مكاتب',          nameEn: 'Office Maintenance',    iconName: 'maintenance', sortOrder: 52 },
-  { id: 'signs',                sectionId: 'business_services', nameAr: 'لوحات وإعلانات',        nameEn: 'Signs & Advertising',   iconName: 'more',        sortOrder: 53 },
+  { id: 'shop_maintenance',     sectionId: 'business_services', nameAr: 'صيانة محلات',                    nameEn: 'Shop Maintenance',                       iconName: 'maintenance',       sortOrder: 48 },
+  { id: 'office_cleaning',      sectionId: 'business_services', nameAr: 'تنظيف شركات ومكاتب',             nameEn: 'Office Cleaning',                        iconName: 'cleaning',          sortOrder: 49 },
+  { id: 'shop_cctv',            sectionId: 'business_services', nameAr: 'تجهيز كاميرات للمحلات',          nameEn: 'Shop CCTV Setup',                        iconName: 'cctv',              sortOrder: 50 },
+  { id: 'restaurant_maintenance',sectionId: 'business_services',nameAr: 'صيانة مطاعم',                    nameEn: 'Restaurant Maintenance',                 iconName: 'maintenance',       sortOrder: 51 },
+  { id: 'office_maintenance',   sectionId: 'business_services', nameAr: 'صيانة مكاتب',                    nameEn: 'Office Maintenance',                     iconName: 'maintenance',       sortOrder: 52 },
+  { id: 'signs',                sectionId: 'business_services', nameAr: 'لوحات وإعلانات',                 nameEn: 'Signs & Advertising',                    iconName: 'more',              sortOrder: 53 },
+  { id: 'coffee_machine',       sectionId: 'business_services', nameAr: 'فني ماكينة قهوة',                nameEn: 'Coffee Machine Technician',               iconName: 'coffee_machine',    sortOrder: 60 },
+  { id: 'restaurant_equipment', sectionId: 'business_services', nameAr: 'فني معدات مطاعم ومقاهي',         nameEn: 'Restaurant & Cafe Equipment Technician',  iconName: 'restaurant_equipment', sortOrder: 61 },
+  { id: 'shawarma',             sectionId: 'business_services', nameAr: 'أسطى شاورما',                    nameEn: 'Shawarma Worker',                        iconName: 'shawarma',          sortOrder: 62 },
+  { id: 'grill',                sectionId: 'business_services', nameAr: 'أسطى مشاوي',                     nameEn: 'Grill Worker',                           iconName: 'grill',             sortOrder: 63 },
+  { id: 'pastry',               sectionId: 'business_services', nameAr: 'أسطى معجنات وبريوش وكريب',       nameEn: 'Pastry, Brioche & Crepe Worker',          iconName: 'pastry',            sortOrder: 64 },
+  { id: 'restaurant_staff',     sectionId: 'business_services', nameAr: 'عمالة مطاعم ومقاهي',             nameEn: 'Restaurant & Cafe Staff',                iconName: 'restaurant_staff',  sortOrder: 65 },
 
   // ── 8. المزيد (placeholder — يُضاف التخصصات عند موافقة الأدمن) ──────────────
   { id: 'more', sectionId: 'more_services', nameAr: 'خدمات أخرى', nameEn: 'Other Services', iconName: 'more', sortOrder: 99 },
