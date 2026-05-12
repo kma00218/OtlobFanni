@@ -162,6 +162,7 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
       area:           body.area,
       address:        body.address,
       specialty:      body.specialty || body.category,
+      customSpecialty: body.custom_specialty || null,
       experience:     body.experience,
       type:           body.type,
       description:    body.description,

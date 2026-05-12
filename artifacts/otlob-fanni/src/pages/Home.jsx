@@ -4,7 +4,7 @@ import Header from '../components/Header'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
-import { sections } from '../data/services'
+import { sections, categories } from '../data/services'
 import { ArrowLeft, ArrowRight, Building2, LayoutGrid } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
@@ -29,7 +29,11 @@ export default function Home() {
     }, 5000)
   }
 
-  const activeSections = sections.filter(s => s.isActive)
+  // Only show sections that have at least 1 real specialty (excluding 'more' placeholder)
+  const activeSections = sections.filter(s =>
+    s.isActive &&
+    categories.some(c => c.sectionId === s.id && c.id !== 'more')
+  )
 
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">
@@ -60,6 +64,19 @@ export default function Home() {
               <SectionCard key={section.id} section={section} />
             ))}
           </div>
+
+          {/* كل التخصصات — زر بارز */}
+          <Link href="/categories">
+            <div className="mt-4 flex items-center justify-center gap-2 border border-[#FF7900]/30 rounded-2xl py-3.5 bg-[#FFF3E8] active:bg-[#ffe0c0] transition-colors cursor-pointer select-none">
+              <LayoutGrid className="w-4 h-4 text-[#FF7900]" />
+              <span className="text-sm font-bold text-[#FF7900]">
+                {ar ? 'كل التخصصات' : 'All Specialties'}
+              </span>
+              {dir === 'rtl'
+                ? <ArrowLeft className="w-3.5 h-3.5 text-[#FF7900]" />
+                : <ArrowRight className="w-3.5 h-3.5 text-[#FF7900]" />}
+            </div>
+          </Link>
         </div>
 
         <Link href="/companies">

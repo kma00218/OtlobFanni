@@ -88,6 +88,28 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
     .where(eq(technicianApplicationsTable.id, raw))
     .returning();
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
+
+  // Auto-create category when approving a technician with a custom specialty
+  if (status === "approved" && app.customSpecialty) {
+    const customName = app.customSpecialty.trim();
+    const allCats = await db.select().from(categoriesTable);
+    const existing = allCats.find(
+      c => c.nameAr === customName || c.nameEn === customName
+    );
+    if (!existing) {
+      const catId = "custom_" + Date.now();
+      await db.insert(categoriesTable).values({
+        id: catId,
+        nameAr: customName,
+        nameEn: customName,
+        iconName: "more",
+        sectionId: "more_services",
+        sortOrder: 99,
+        isActive: true,
+      }).onConflictDoNothing();
+    }
+  }
+
   res.json(app);
 });
 

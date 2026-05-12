@@ -100,7 +100,7 @@ export default function Join() {
   const [form, setForm] = useState({
     full_name: '', phone: '', whatsapp: '', national_id: '',
     city: '', area: '', address: '',
-    section: '', category: '', experience: '', type: 'individual',
+    section: '', category: '', customSpecialty: '', experience: '', type: 'individual',
     description: '', certifications: '',
     price_from: '', price_to: '',
     available_now: 'yes', emergency: 'no',
@@ -144,7 +144,8 @@ export default function Join() {
         city:            form.city,
         area:            form.area,
         address:         form.address,
-        specialty:       form.category,
+        specialty:       form.category === '__other__' ? (form.customSpecialty || 'other') : form.category,
+        custom_specialty: form.category === '__other__' ? form.customSpecialty : undefined,
         experience:      form.experience,
         type:            form.type,
         description:     form.description,
@@ -336,8 +337,21 @@ export default function Join() {
                     .map(c => (
                       <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>
                     ))}
+                  <option value="__other__">{ar ? '✏️ تخصص آخر' : '✏️ Other Specialty'}</option>
                 </select>
               </Field>
+
+              {form.category === '__other__' && (
+                <Field label={ar ? 'اكتب تخصصك' : 'Write your specialty'} required>
+                  <input
+                    className={inp}
+                    required
+                    value={form.customSpecialty}
+                    onChange={e => set('customSpecialty', e.target.value)}
+                    placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'}
+                  />
+                </Field>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label={ar ? 'سنوات الخبرة' : 'Experience'} required>
