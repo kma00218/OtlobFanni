@@ -29,7 +29,7 @@ export default function Home() {
     }, 5000)
   }
 
-  const activeSections = sections.filter(s => s.isActive && s.id !== 'more_services')
+  const activeSections = sections.filter(s => s.isActive)
 
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">
@@ -55,23 +55,11 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="flex flex-col gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {activeSections.map(section => (
               <SectionCard key={section.id} section={section} />
             ))}
           </div>
-
-          <Link href="/categories">
-            <div className="mt-3 flex items-center justify-center gap-2 border border-gray-200 rounded-2xl py-3.5 bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer select-none">
-              <LayoutGrid className="w-4 h-4 text-[#FF7900]" />
-              <span className="text-sm font-semibold text-[#071B33]">
-                {ar ? 'عرض كل التخصصات' : 'View All Specialties'}
-              </span>
-              {dir === 'rtl'
-                ? <ArrowLeft className="w-3.5 h-3.5 text-gray-400" />
-                : <ArrowRight className="w-3.5 h-3.5 text-gray-400" />}
-            </div>
-          </Link>
         </div>
 
         <Link href="/companies">

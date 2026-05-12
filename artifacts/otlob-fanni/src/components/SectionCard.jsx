@@ -1,16 +1,15 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { categories } from '../data/services'
 
 const SECTION_COLORS = {
-  home_services:  ['#FF7900', '#CC5500'],
-  car_services:   ['#071B33', '#0a2849'],
-  construction:   ['#92400E', '#6B2D07'],
-  tech_security:  ['#1E50A2', '#0F2F70'],
-  moving_general: ['#6D28D9', '#4C1D95'],
-  gardens_pools:  ['#059669', '#03704F'],
-  more_services:  ['#475569', '#2D3E52'],
+  home_services:  ['#FF7900', '#e86d00'],
+  car_services:   ['#071B33', '#1a3a5c'],
+  construction:   ['#B45309', '#92400E'],
+  tech_security:  ['#1D4ED8', '#1E50A2'],
+  moving_general: ['#7C3AED', '#6D28D9'],
+  gardens_pools:  ['#059669', '#047857'],
+  more_services:  ['#475569', '#334155'],
 }
 
 const SECTION_ICON_MAP = {
@@ -23,8 +22,8 @@ const SECTION_ICON_MAP = {
   more_services:  '/icons/services/more.svg',
 }
 
-export default function SectionCard({ section }) {
-  const { lang, dir } = useLang()
+export default function SectionCard({ section, wide }) {
+  const { lang } = useLang()
   const ar = lang === 'ar'
   const name = ar ? section.nameAr : section.nameEn
   const count = categories.filter(c => c.sectionId === section.id && c.id !== 'more').length
@@ -33,27 +32,36 @@ export default function SectionCard({ section }) {
 
   return (
     <Link href={`/section/${section.id}`}>
-      <div className="flex items-center gap-3.5 bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-[0.97] transition-transform cursor-pointer select-none">
+      <div
+        className="bg-white rounded-[24px] p-4 flex flex-col items-center gap-3 shadow-sm border border-gray-100 active:scale-[0.95] transition-transform cursor-pointer select-none"
+        style={{ minHeight: 160 }}
+      >
         <div
-          className="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-md"
+          className="w-16 h-16 rounded-[20px] flex items-center justify-center shadow-md flex-shrink-0"
           style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
         >
           <img
             src={iconSrc}
             alt=""
-            className="w-7 h-7 object-contain"
+            className="w-10 h-10 object-contain"
+            draggable="false"
             onError={e => { e.currentTarget.src = '/icons/services/maintenance.svg' }}
           />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-bold text-[#071B33] text-sm leading-tight">{name}</p>
-          <p className="text-gray-400 text-xs mt-0.5">
-            {count} {ar ? 'تخصص' : 'specialties'}
+
+        <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
+          <p className="font-bold text-[#071B33] text-[13px] leading-tight">{name}</p>
+          <p className="text-gray-400 text-[11px]">
+            {count} {ar ? 'تخصص' : 'spec.'}
           </p>
         </div>
-        {dir === 'rtl'
-          ? <ArrowLeft className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
-          : <ArrowRight className="w-4 h-4 text-[#FF7900] flex-shrink-0" />}
+
+        <span
+          className="text-[11px] font-semibold px-3 py-1 rounded-full"
+          style={{ background: '#FFF3E8', color: '#FF7900' }}
+        >
+          {ar ? 'عرض' : 'View'}
+        </span>
       </div>
     </Link>
   )
