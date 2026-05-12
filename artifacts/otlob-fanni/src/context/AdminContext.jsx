@@ -50,12 +50,10 @@ export function AdminProvider({ children }) {
       isSuperAdmin,
       isSubAdmin,
       isAdmin,
-      isDemoMode: false,
       cityId: null,
       signIn,
       signOut,
       logActivity,
-      activateDemo: () => {},
     }}>
       {children}
     </AdminContext.Provider>
