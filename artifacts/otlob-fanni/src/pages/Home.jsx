@@ -29,11 +29,7 @@ export default function Home() {
     }, 5000)
   }
 
-  // Only show sections that have at least 1 real specialty (excluding 'more' placeholder)
-  const activeSections = sections.filter(s =>
-    s.isActive &&
-    categories.some(c => c.sectionId === s.id && c.id !== 'more')
-  )
+  const activeSections = sections.filter(s => s.isActive)
 
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">

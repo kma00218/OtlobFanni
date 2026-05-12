@@ -81,7 +81,7 @@ router.get("/technician-applications", async (_req, res): Promise<void> => {
 
 router.patch("/technician-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status } = req.body;
+  const { status, createCategory, linkCategoryId } = req.body;
   const [app] = await db
     .update(technicianApplicationsTable)
     .set({ status })
@@ -89,28 +89,25 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
     .returning();
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
 
-  // Auto-create category when approving a technician with a custom specialty
-  if (status === "approved" && app.customSpecialty) {
+  let resolvedCategoryId: string | null = linkCategoryId || null;
+
+  if (status === "approved" && app.customSpecialty && createCategory === true) {
     const customName = app.customSpecialty.trim();
     const allCats = await db.select().from(categoriesTable);
-    const existing = allCats.find(
-      c => c.nameAr === customName || c.nameEn === customName
-    );
+    const existing = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
     if (!existing) {
       const catId = "custom_" + Date.now();
       await db.insert(categoriesTable).values({
-        id: catId,
-        nameAr: customName,
-        nameEn: customName,
-        iconName: "more",
-        sectionId: "more_services",
-        sortOrder: 99,
-        isActive: true,
+        id: catId, nameAr: customName, nameEn: customName,
+        iconName: "more", sectionId: "more_services", sortOrder: 99, isActive: true,
       }).onConflictDoNothing();
+      resolvedCategoryId = catId;
+    } else {
+      resolvedCategoryId = existing.id;
     }
   }
 
-  res.json(app);
+  res.json({ ...app, resolvedCategoryId });
 });
 
 router.delete("/technician-applications/:id", async (req, res): Promise<void> => {
@@ -184,14 +181,42 @@ router.get("/company-applications", async (_req, res): Promise<void> => {
 
 router.patch("/company-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status } = req.body;
+  const { status, createCategory, linkCategoryId } = req.body;
+
+  let resolvedCategoryId: string | null = linkCategoryId || null;
+  const updates: Record<string, unknown> = { status };
+
+  if (status === "approved") {
+    if (createCategory === true) {
+      const [existingApp] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
+      if (existingApp?.customSpecialty) {
+        const customName = existingApp.customSpecialty.trim();
+        const allCats = await db.select().from(categoriesTable);
+        const existingCat = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
+        if (!existingCat) {
+          const catId = "custom_" + Date.now();
+          await db.insert(categoriesTable).values({
+            id: catId, nameAr: customName, nameEn: customName,
+            iconName: "more", sectionId: "more_services", sortOrder: 99, isActive: true,
+          }).onConflictDoNothing();
+          resolvedCategoryId = catId;
+        } else {
+          resolvedCategoryId = existingCat.id;
+        }
+      }
+    }
+    if (resolvedCategoryId) {
+      updates.specialty = resolvedCategoryId;
+    }
+  }
+
   const [app] = await db
     .update(companyApplicationsTable)
-    .set({ status })
+    .set(updates)
     .where(eq(companyApplicationsTable.id, raw))
     .returning();
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
-  res.json(app);
+  res.json({ ...app, resolvedCategoryId });
 });
 
 router.delete("/company-applications/:id", async (req, res): Promise<void> => {

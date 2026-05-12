@@ -65,15 +65,15 @@ export const api = {
     stats: () => get('/admin/stats'),
 
     technicianApplications: {
-      list:   ()              => get('/admin/technician-applications'),
-      update: (id, status)   => patch(`/admin/technician-applications/${id}`, { status }),
-      delete: (id)           => del(`/admin/technician-applications/${id}`),
+      list:   ()                      => get('/admin/technician-applications'),
+      update: (id, status, opts = {}) => patch(`/admin/technician-applications/${id}`, { status, ...opts }),
+      delete: (id)                    => del(`/admin/technician-applications/${id}`),
     },
 
     companyApplications: {
-      list:   ()             => get('/admin/company-applications'),
-      update: (id, status)  => patch(`/admin/company-applications/${id}`, { status }),
-      delete: (id)          => del(`/admin/company-applications/${id}`),
+      list:   ()                      => get('/admin/company-applications'),
+      update: (id, status, opts = {}) => patch(`/admin/company-applications/${id}`, { status, ...opts }),
+      delete: (id)                    => del(`/admin/company-applications/${id}`),
     },
 
     technicians: {

@@ -76,7 +76,9 @@ export default function SectionCard({ section }) {
         <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
           <p className="font-bold text-[#071B33] text-[13px] leading-snug">{name}</p>
           <p className="text-gray-400 text-[11px]">
-            {count} {ar ? 'تخصص' : 'spec.'}
+            {count > 0
+              ? `${count} ${ar ? 'تخصص' : 'spec.'}`
+              : (ar ? 'تخصصات حسب الطلب' : 'On-demand')}
           </p>
         </div>
 

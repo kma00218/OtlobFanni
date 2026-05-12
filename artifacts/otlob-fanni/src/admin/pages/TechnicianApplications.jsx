@@ -35,9 +35,12 @@ export default function TechnicianApplications() {
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
   const [filter, setFilter]     = useState('')
-  const [viewItem, setViewItem] = useState(null)
-  const [lightbox, setLightbox] = useState(null)
-  const [toast, setToast]       = useState(null)
+  const [viewItem, setViewItem]           = useState(null)
+  const [lightbox, setLightbox]           = useState(null)
+  const [toast, setToast]                 = useState(null)
+  const [specialtyAction, setSpecialtyAction] = useState('none')
+  const [linkCatId, setLinkCatId]         = useState('')
+  const [allCats, setAllCats]             = useState([])
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -55,10 +58,25 @@ export default function TechnicianApplications() {
     api.cities().then(setCities).catch(() => {})
   }, [])
 
+  useEffect(() => {
+    if (viewItem?.customSpecialty) {
+      api.categories().then(setAllCats).catch(() => {})
+    }
+    setSpecialtyAction('none')
+    setLinkCatId('')
+  }, [viewItem?.id])
+
   const setStatus = async (id, status) => {
     const app = data.find(r => r.id === id)
     try {
-      await api.admin.technicianApplications.update(id, status)
+      const opts = {}
+      if (status === 'approved' && app?.customSpecialty) {
+        if (specialtyAction === 'create') opts.createCategory = true
+        if (specialtyAction === 'link' && linkCatId) opts.linkCategoryId = linkCatId
+      }
+      const result = await api.admin.technicianApplications.update(id, status, opts)
+      const resolvedCatId = result?.resolvedCategoryId || null
+
       if (status === 'approved') {
         setData(prev => prev.filter(r => r.id !== id))
         if (viewItem?.id === id) setViewItem(null)
@@ -75,6 +93,7 @@ export default function TechnicianApplications() {
             const cityRow = cities.find(c =>
               c.nameAr === appCity || c.nameEn === appCity || c.id === appCity
             )
+            const effectiveCatId = resolvedCatId || (specialtyAction === 'link' ? linkCatId : null) || app.specialty || null
             await api.admin.technicians.create({
               id:               'tech_' + app.id,
               name_ar:          name,
@@ -82,7 +101,7 @@ export default function TechnicianApplications() {
               whatsapp:         app.whatsapp || phone,
               city_id:          cityRow?.id || null,
               area:             app.area || '',
-              category_id:      app.specialty || null,
+              category_id:      effectiveCatId,
               experience_years: EXP_YEARS[app.experience] ?? 0,
               price_from:       parseFloat(app.priceFrom || app.price_from) || 0,
               price_to:         parseFloat(app.priceTo   || app.price_to)   || 0,
@@ -157,7 +176,9 @@ export default function TechnicianApplications() {
     { key: 'area', label: 'المنطقة', render: (v) => v || '—' },
     {
       key: 'specialty', label: 'التخصص',
-      render: (v) => CAT_LABEL[v] || v || '—',
+      render: (v, row) => row.customSpecialty
+        ? <span className="text-amber-400 text-xs font-medium">{row.customSpecialty}</span>
+        : (CAT_LABEL[v] || v || '—'),
     },
     {
       key: 'experience', label: 'الخبرة',
@@ -307,6 +328,51 @@ export default function TechnicianApplications() {
                   </div>
                 </div>
               </div>
+
+              {/* Custom Specialty Banner */}
+              {viewItem.customSpecialty && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <p className="text-amber-400 text-xs font-bold tracking-wide">تخصص مكتوب يدوياً — المزيد من الخدمات</p>
+                  </div>
+                  <div className="bg-white/8 rounded-xl px-3 py-2.5">
+                    <p className="text-white font-semibold text-sm">"{viewItem.customSpecialty}"</p>
+                  </div>
+                  {viewItem.status === 'pending' && (
+                    <div className="space-y-2.5">
+                      <p className="text-xs text-[#8888A8] font-medium">إجراء التخصص عند القبول:</p>
+                      <div className="space-y-2">
+                        {[
+                          { v: 'none',   label: 'قبول بدون إنشاء تخصص جديد' },
+                          { v: 'create', label: 'إنشاء تخصص جديد في "المزيد من الخدمات"' },
+                          { v: 'link',   label: 'ربط بتخصص موجود' },
+                        ].map(opt => (
+                          <label key={opt.v} className="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="radio" name="specAction" value={opt.v}
+                              checked={specialtyAction === opt.v}
+                              onChange={() => setSpecialtyAction(opt.v)}
+                              className="accent-[#FF7900]" />
+                            <span className="text-xs text-[#C0C0E0] group-hover:text-white transition-colors">{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {specialtyAction === 'link' && (
+                        <select
+                          value={linkCatId}
+                          onChange={e => setLinkCatId(e.target.value)}
+                          className="w-full bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                        >
+                          <option value="">اختر التخصص الموجود...</option>
+                          {allCats.filter(c => c.id !== 'more').map(c => (
+                            <option key={c.id} value={c.id}>{c.nameAr || c.nameEn}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Personal */}
               <Sec icon={Phone} title="المعلومات الشخصية">
