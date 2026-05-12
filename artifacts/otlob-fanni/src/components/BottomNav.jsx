@@ -11,7 +11,7 @@ const TABS = [
     bg: 'from-[#071B33] to-[#1a3a5c]',
     shadow: 'shadow-slate-300',
     svg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
         <path d="M9 21V12h6v9"/>
       </svg>
@@ -26,7 +26,7 @@ const TABS = [
     bg: 'from-[#34C759] to-[#248a3d]',
     shadow: 'shadow-green-200',
     svg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
         <circle cx="9" cy="7" r="4"/>
         <line x1="19" y1="8" x2="19" y2="14"/>
@@ -43,7 +43,7 @@ const TABS = [
     bg: 'from-[#FF2D55] to-[#c4002e]',
     shadow: 'shadow-rose-200',
     svg: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
     ),
@@ -57,7 +57,7 @@ const TABS = [
     bg: 'from-[#8E8E93] to-[#636366]',
     shadow: 'shadow-gray-300',
     svg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
         <circle cx="5" cy="12" r="1.5" fill="currentColor"/>
         <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
         <circle cx="19" cy="12" r="1.5" fill="currentColor"/>
