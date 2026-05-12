@@ -120,6 +120,7 @@ export const api = {
       list:   ()         => get('/admin/admin-users'),
       create: (data)     => post('/admin/admin-users', data),
       update: (id, data) => patch(`/admin/admin-users/${id}`, data),
+      delete: (id)       => del(`/admin/admin-users/${id}`),
     },
 
     storageUsage: () => get('/admin/storage-usage'),

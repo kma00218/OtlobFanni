@@ -495,4 +495,14 @@ router.patch("/admin-users/:id", async (req, res): Promise<void> => {
   res.json(user);
 });
 
+router.delete("/admin-users/:id", async (req, res): Promise<void> => {
+  const idNum = parseInt(Array.isArray(req.params.id) ? req.params.id[0] : req.params.id, 10);
+  if (isNaN(idNum)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [target] = await db.select().from(adminsTable).where(eq(adminsTable.id, idNum));
+  if (!target) { res.status(404).json({ error: "Not found" }); return; }
+  if (target.role === "super_admin") { res.status(403).json({ error: "لا يمكن حذف المدير العام" }); return; }
+  await db.delete(adminsTable).where(eq(adminsTable.id, idNum));
+  res.sendStatus(204);
+});
+
 export default router;

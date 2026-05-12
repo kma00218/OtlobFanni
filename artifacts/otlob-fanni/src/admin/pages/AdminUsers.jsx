@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Plus, Copy, CheckCircle, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Plus, Copy, CheckCircle, ToggleLeft, ToggleRight, Trash2 } from 'lucide-react'
 import api from '../../lib/api'
 
 export default function AdminUsers() {
@@ -87,6 +87,15 @@ export default function AdminUsers() {
     } catch { showToast('حدث خطأ', 'error') }
   }
 
+  const deleteAdmin = async (row) => {
+    if (!confirm(`هل أنت متأكد من حذف حساب "${row.name}" نهائيًا؟`)) return
+    try {
+      await api.admin.adminUsers.delete(row.id)
+      setData(prev => prev.filter(u => u.id !== row.id))
+      showToast('تم حذف الحساب نهائيًا')
+    } catch (err) { showToast(err.message || 'حدث خطأ', 'error') }
+  }
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
     setCopied(true)
@@ -131,9 +140,14 @@ export default function AdminUsers() {
     {
       key: 'id', label: 'إجراءات',
       render: (v, row) => row.role === 'sub_admin' ? (
-        <button onClick={() => openEdit(row)} className="text-xs text-blue-400 hover:text-blue-300 font-medium px-2 py-1 hover:bg-blue-500/10 rounded-lg transition-colors">
-          تعديل
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => openEdit(row)} className="text-xs text-blue-400 hover:text-blue-300 font-medium px-2 py-1 hover:bg-blue-500/10 rounded-lg transition-colors">
+            تعديل
+          </button>
+          <button onClick={() => deleteAdmin(row)} className="text-xs text-red-400 hover:text-red-300 font-medium px-2 py-1 hover:bg-red-500/10 rounded-lg transition-colors flex items-center gap-1">
+            <Trash2 className="w-3 h-3" /> حذف
+          </button>
+        </div>
       ) : <span className="text-xs text-[#333350]">—</span>
     },
   ]
