@@ -3,7 +3,7 @@
  * Base URL: متغير VITE_API_URL أو '/api-server/api' كافتراضي
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : '/api-server/api')
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 async function request(method, path, body) {
   const url = `${API_BASE}${path}`
