@@ -18,7 +18,7 @@ const SECTION_IMAGE = {
   home_services:     '/icons/sections/home_services.jpeg',
   tech_security:     '/icons/sections/tech_security.jpeg',
   more_services:     '/icons/sections/more_services.png',
-  business_services: '/icons/sections/business_services.png',
+  business_services: '/icons/sections/business_services.jpeg',
   gardens_pools:     '/icons/sections/gardens_pools.jpeg',
   moving_general:    '/icons/sections/moving_general.jpeg',
   car_services:      '/icons/sections/car_services.jpeg',
