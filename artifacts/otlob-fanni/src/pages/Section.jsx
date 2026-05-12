@@ -26,7 +26,7 @@ export default function Section() {
       <BackHeader title={title} />
 
       <main className="px-4 py-6 space-y-4">
-        <AdBanner placement="categories" dismissible />
+        <AdBanner placement="section_page" sectionId={id} dismissible />
 
         {sectionCats.length === 0 ? (
           <div className="text-center py-16">

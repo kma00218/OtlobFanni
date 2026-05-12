@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -11,6 +11,9 @@ export const adsTable = pgTable("ads", {
   imageUrl:       text("image_url"),
   linkUrl:        text("link_url"),
   placement:      text("placement").notNull(),
+  sectionId:      text("section_id"),
+  categoryId:     text("category_id"),
+  sortOrder:      integer("sort_order").default(0),
   isActive:       boolean("is_active").default(true),
   startDate:      text("start_date"),
   endDate:        text("end_date"),

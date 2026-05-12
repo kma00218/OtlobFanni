@@ -150,7 +150,7 @@ router.get("/ads", async (req, res): Promise<void> => {
         placement ? eq(adsTable.placement, placement) : undefined,
       )
     )
-    .orderBy(desc(adsTable.createdAt));
+    .orderBy(adsTable.sortOrder, desc(adsTable.createdAt));
 
   const filtered = ads.filter(ad => {
     if (ad.endDate && ad.endDate < today) return false;

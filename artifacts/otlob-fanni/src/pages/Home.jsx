@@ -75,6 +75,11 @@ export default function Home() {
                 : <ArrowRight className="w-4 h-4 text-white" />}
             </div>
           </Link>
+
+          {/* إعلان بعد زر كل التخصصات */}
+          <div className="mt-4">
+            <AdBanner placement="home_after_all_specialties" compact />
+          </div>
         </div>
 
         <AdBanner placement="banner" compact />

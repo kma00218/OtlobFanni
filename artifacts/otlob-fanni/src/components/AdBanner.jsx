@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ExternalLink, X } from 'lucide-react'
 import api from '../lib/api'
 
@@ -11,7 +11,6 @@ function BannerCard({ ad, onDismiss, compact }) {
 
   return (
     <div className="relative rounded-2xl overflow-hidden border border-[#FF7900]/20 bg-gradient-to-br from-[#FFF8F0] to-white shadow-sm">
-      {/* Dismiss button */}
       {onDismiss && (
         <button
           onClick={onDismiss}
@@ -21,7 +20,6 @@ function BannerCard({ ad, onDismiss, compact }) {
         </button>
       )}
 
-      {/* Sponsored badge */}
       <div className="absolute top-2 right-2 z-10">
         <span className="bg-[#FF7900]/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
           إعلان
@@ -89,43 +87,92 @@ function FeaturedCard({ ad }) {
 
 // ── Main exported component ─────────────────────────────────────────────────
 /**
- * placement: 'home' | 'categories' | 'technicians' | 'banner'
- * variant: 'banner' (full-width card) | 'featured' (inline 2-col card for grid)
+ * placement: one of the defined placement keys or 'global'
+ * variant: 'banner' (full-width rotating card) | 'featured' (inline 2-col card for grid)
  * compact: smaller height
  * dismissible: show X button
+ * sectionId / categoryId: for targeted placements
  */
-export default function AdBanner({ placement, variant = 'banner', compact = false, dismissible = false, className = '' }) {
+export default function AdBanner({
+  placement,
+  variant = 'banner',
+  compact = false,
+  dismissible = false,
+  className = '',
+  sectionId = null,
+  categoryId = null,
+}) {
   const [ads, setAds] = useState([])
-  const [dismissed, setDismissed] = useState(new Set())
+  const [dismissed, setDismissed] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const timerRef = useRef(null)
 
   useEffect(() => {
     if (!placement) return
-    api.ads(placement).then(setAds).catch(() => {})
-  }, [placement])
+    // fetch this placement + global ads
+    Promise.all([
+      api.ads(placement).catch(() => []),
+      api.ads('global').catch(() => []),
+    ]).then(([placed, global]) => {
+      // merge, dedup by id
+      const merged = [...placed]
+      for (const g of global) {
+        if (!merged.find(a => a.id === g.id)) merged.push(g)
+      }
 
-  const visible = ads.filter(a => !dismissed.has(a.id))
-  if (visible.length === 0) return null
+      // filter by sectionId / categoryId if provided
+      const filtered = merged.filter(ad => {
+        if (ad.placement === 'section_page' && sectionId) {
+          return (ad.section_id || ad.sectionId) === sectionId
+        }
+        if (ad.placement === 'category_page' && categoryId) {
+          return (ad.category_id || ad.categoryId) === categoryId
+        }
+        return true
+      })
+
+      // sort by sortOrder
+      filtered.sort((a, b) => (a.sort_order ?? a.sortOrder ?? 0) - (b.sort_order ?? b.sortOrder ?? 0))
+      setAds(filtered)
+      setCurrentIndex(0)
+    })
+  }, [placement, sectionId, categoryId])
+
+  // Rotate ads every 5 seconds
+  useEffect(() => {
+    if (ads.length <= 1) return
+    timerRef.current = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % ads.length)
+    }, 5000)
+    return () => clearInterval(timerRef.current)
+  }, [ads.length])
+
+  if (ads.length === 0 || dismissed) return null
+
+  const currentAd = ads[currentIndex]
 
   if (variant === 'featured') {
-    return (
-      <>
-        {visible.map(ad => (
-          <FeaturedCard key={ad.id} ad={ad} />
-        ))}
-      </>
-    )
+    return <FeaturedCard ad={currentAd} />
   }
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      {visible.map(ad => (
-        <BannerCard
-          key={ad.id}
-          ad={ad}
-          compact={compact}
-          onDismiss={dismissible ? () => setDismissed(prev => new Set([...prev, ad.id])) : null}
-        />
-      ))}
+    <div className={className}>
+      <BannerCard
+        ad={currentAd}
+        compact={compact}
+        onDismiss={dismissible ? () => setDismissed(true) : null}
+      />
+      {ads.length > 1 && (
+        <div className="flex justify-center gap-1 mt-1.5">
+          {ads.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-[#FF7900]' : 'bg-gray-300'}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

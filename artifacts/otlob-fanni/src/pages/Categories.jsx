@@ -13,7 +13,7 @@ export default function Categories() {
       <BackHeader title={ar ? 'كل التخصصات' : 'All Specialties'} />
 
       <main className="px-4 py-6 space-y-6">
-        <AdBanner placement="categories" dismissible />
+        <AdBanner placement="all_specialties_page" dismissible />
 
         {sections.filter(s => s.isActive).map(section => {
           const sectionCats = categories.filter(c => c.sectionId === section.id && c.id !== 'more')

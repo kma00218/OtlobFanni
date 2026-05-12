@@ -4,33 +4,16 @@ import BackHeader from '../components/BackHeader'
 import { Megaphone, CheckCircle } from 'lucide-react'
 import api from '../lib/api'
 
-const PLACEMENTS_AR = [
-  'إعلان في الصفحة الرئيسية',
-  'إعلان داخل صفحة التخصصات',
-  'إعلان داخل قائمة الفنيين',
-  'إعلان مميز',
-]
-
-const PLACEMENTS_EN = [
-  'Homepage Ad',
-  'Inside Categories Page',
-  'Inside Technicians List',
-  'Featured Ad',
-]
-
 const emptyForm = {
-  businessName: '',
-  contactName: '',
+  companyName: '',
   phone: '',
   whatsapp: '',
-  city: '',
-  businessType: '',
-  requestedPlacement: '',
+  email: '',
   adTitle: '',
   adDescription: '',
   websiteOrSocialLink: '',
+  city: '',
   notes: '',
-  acceptedTerms: false,
 }
 
 export default function AdvertiseWithUs() {
@@ -38,6 +21,7 @@ export default function AdvertiseWithUs() {
   const ar = lang === 'ar'
 
   const [form, setForm] = useState(emptyForm)
+  const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -51,6 +35,7 @@ export default function AdvertiseWithUs() {
   const handleImage = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setImageFile(file)
     const reader = new FileReader()
     reader.onload = (ev) => setImagePreview(ev.target.result)
     reader.readAsDataURL(file)
@@ -58,16 +43,11 @@ export default function AdvertiseWithUs() {
 
   const validate = () => {
     const errs = {}
-    if (!form.businessName.trim()) errs.businessName = true
-    if (!form.contactName.trim()) errs.contactName = true
+    if (!form.companyName.trim()) errs.companyName = true
     if (!form.phone.trim()) errs.phone = true
     if (!form.whatsapp.trim()) errs.whatsapp = true
-    if (!form.city.trim()) errs.city = true
-    if (!form.businessType.trim()) errs.businessType = true
-    if (!form.requestedPlacement) errs.requestedPlacement = true
     if (!form.adTitle.trim()) errs.adTitle = true
     if (!form.adDescription.trim()) errs.adDescription = true
-    if (!form.acceptedTerms) errs.acceptedTerms = true
     return errs
   }
 
@@ -84,28 +64,28 @@ export default function AdvertiseWithUs() {
     try {
       await api.submitAdRequest({
         id: 'adr_' + Date.now(),
-        company_name: form.businessName,
-        contact_name: form.contactName,
+        company_name: form.companyName,
         phone: form.phone,
         whatsapp: form.whatsapp,
-        city: form.city,
-        business_type: form.businessType,
-        requested_placement: form.requestedPlacement,
+        email: form.email || null,
         ad_title: form.adTitle,
         ad_description: form.adDescription,
-        website_or_social_link: form.websiteOrSocialLink,
-        notes: form.notes,
+        website_or_social_link: form.websiteOrSocialLink || null,
+        city: form.city || null,
+        notes: form.notes || null,
         image_preview: imagePreview || null,
+        status: 'pending',
       })
-    } catch (_) {}
-
+      setSubmitted(true)
+    } catch (_) {
+      setSubmitted(true)
+    }
     setSubmitting(false)
-    setSubmitted(true)
   }
 
   const inputCls = (field) =>
     `w-full border-2 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition ${
-      errors[field] ? 'border-red-400 bg-red-50' : 'border-gray-800 bg-blue-50'
+      errors[field] ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-white'
     }`
 
   const Label = ({ children, required }) => (
@@ -133,7 +113,7 @@ export default function AdvertiseWithUs() {
             </p>
           </div>
           <button
-            onClick={() => { setForm(emptyForm); setImagePreview(null); setSubmitted(false) }}
+            onClick={() => { setForm(emptyForm); setImagePreview(null); setImageFile(null); setSubmitted(false) }}
             className="mt-2 bg-[#FF7900] text-white font-bold px-6 py-2.5 rounded-xl text-sm"
           >
             {ar ? 'إرسال طلب جديد' : 'Submit Another Request'}
@@ -157,9 +137,7 @@ export default function AdvertiseWithUs() {
               {ar ? 'أعلن معنا في اطلب فني' : 'Advertise with Otlob Fanni'}
             </p>
             <p className="text-white/60 text-xs mt-0.5">
-              {ar
-                ? 'اوصل لآلاف العملاء يومياً'
-                : 'Reach thousands of customers daily'}
+              {ar ? 'اوصل لآلاف العملاء يومياً' : 'Reach thousands of customers daily'}
             </p>
           </div>
         </div>
@@ -167,22 +145,12 @@ export default function AdvertiseWithUs() {
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
 
           <div>
-            <Label required>{ar ? 'اسم النشاط التجاري' : 'Business Name'}</Label>
+            <Label required>{ar ? 'اسم المعلن / الشركة' : 'Advertiser / Company Name'}</Label>
             <input
-              className={inputCls('businessName')}
-              value={form.businessName}
-              onChange={e => set('businessName', e.target.value)}
+              className={inputCls('companyName')}
+              value={form.companyName}
+              onChange={e => set('companyName', e.target.value)}
               placeholder={ar ? 'مثال: مطعم الشروق' : 'e.g. Sunrise Restaurant'}
-            />
-          </div>
-
-          <div>
-            <Label required>{ar ? 'اسم المسؤول' : 'Contact Name'}</Label>
-            <input
-              className={inputCls('contactName')}
-              value={form.contactName}
-              onChange={e => set('contactName', e.target.value)}
-              placeholder={ar ? 'الاسم الكامل' : 'Full name'}
             />
           </div>
 
@@ -211,39 +179,16 @@ export default function AdvertiseWithUs() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label required>{ar ? 'المدينة' : 'City'}</Label>
-              <input
-                className={inputCls('city')}
-                value={form.city}
-                onChange={e => set('city', e.target.value)}
-                placeholder={ar ? 'مثال: طرابلس' : 'e.g. Tripoli'}
-              />
-            </div>
-            <div>
-              <Label required>{ar ? 'نوع النشاط' : 'Business Type'}</Label>
-              <input
-                className={inputCls('businessType')}
-                value={form.businessType}
-                onChange={e => set('businessType', e.target.value)}
-                placeholder={ar ? 'مثال: مطعم، متجر...' : 'e.g. Restaurant...'}
-              />
-            </div>
-          </div>
-
           <div>
-            <Label required>{ar ? 'مكان الإعلان المطلوب' : 'Requested Placement'}</Label>
-            <select
-              className={inputCls('requestedPlacement')}
-              value={form.requestedPlacement}
-              onChange={e => set('requestedPlacement', e.target.value)}
-            >
-              <option value="">{ar ? 'اختر...' : 'Select...'}</option>
-              {(ar ? PLACEMENTS_AR : PLACEMENTS_EN).map((p, i) => (
-                <option key={i} value={PLACEMENTS_AR[i]}>{p}</option>
-              ))}
-            </select>
+            <Label>{ar ? 'البريد الإلكتروني' : 'Email'}</Label>
+            <input
+              className={inputCls('email')}
+              value={form.email}
+              onChange={e => set('email', e.target.value)}
+              placeholder={ar ? 'اختياري' : 'Optional'}
+              dir="ltr"
+              type="email"
+            />
           </div>
 
           <div>
@@ -257,24 +202,13 @@ export default function AdvertiseWithUs() {
           </div>
 
           <div>
-            <Label required>{ar ? 'وصف الإعلان' : 'Ad Description'}</Label>
+            <Label required>{ar ? 'وصف قصير للإعلان' : 'Ad Description'}</Label>
             <textarea
               className={inputCls('adDescription') + ' resize-none'}
               rows={3}
               value={form.adDescription}
               onChange={e => set('adDescription', e.target.value)}
               placeholder={ar ? 'وصف مختصر لنشاطك وعروضك...' : 'Brief description of your business and offers...'}
-            />
-          </div>
-
-          <div>
-            <Label>{ar ? 'رابط الموقع أو صفحة التواصل' : 'Website or Social Link'}</Label>
-            <input
-              className={inputCls('websiteOrSocialLink')}
-              value={form.websiteOrSocialLink}
-              onChange={e => set('websiteOrSocialLink', e.target.value)}
-              placeholder="https://..."
-              dir="ltr"
             />
           </div>
 
@@ -291,11 +225,32 @@ export default function AdvertiseWithUs() {
                 <img src={imagePreview} alt="preview" className="h-28 w-auto rounded-xl border border-gray-200 object-cover" />
                 <button
                   type="button"
-                  onClick={() => setImagePreview(null)}
+                  onClick={() => { setImagePreview(null); setImageFile(null) }}
                   className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center leading-none"
                 >×</button>
               </div>
             )}
+          </div>
+
+          <div>
+            <Label>{ar ? 'رابط الإعلان' : 'Ad Link'}</Label>
+            <input
+              className={inputCls('websiteOrSocialLink')}
+              value={form.websiteOrSocialLink}
+              onChange={e => set('websiteOrSocialLink', e.target.value)}
+              placeholder="https://..."
+              dir="ltr"
+            />
+          </div>
+
+          <div>
+            <Label>{ar ? 'المدينة' : 'City'}</Label>
+            <input
+              className={inputCls('city')}
+              value={form.city}
+              onChange={e => set('city', e.target.value)}
+              placeholder={ar ? 'اختياري — مثال: طرابلس' : 'Optional — e.g. Tripoli'}
+            />
           </div>
 
           <div>
@@ -307,20 +262,6 @@ export default function AdvertiseWithUs() {
               onChange={e => set('notes', e.target.value)}
               placeholder={ar ? 'أي معلومات أخرى تريد إضافتها...' : 'Any other information...'}
             />
-          </div>
-
-          <div
-            className={`flex items-start gap-3 p-3 rounded-xl border ${errors.acceptedTerms ? 'border-red-300 bg-red-50' : 'border-gray-100 bg-gray-50'}`}
-            onClick={() => set('acceptedTerms', !form.acceptedTerms)}
-          >
-            <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5 border-2 cursor-pointer transition-colors ${form.acceptedTerms ? 'bg-[#FF7900] border-[#FF7900]' : 'border-gray-300'}`}>
-              {form.acceptedTerms && <span className="text-white text-xs font-bold">✓</span>}
-            </div>
-            <p className="text-sm text-gray-600 cursor-pointer select-none leading-relaxed">
-              {ar
-                ? 'أوافق على الشروط والأحكام الخاصة بالإعلانات في التطبيق'
-                : 'I agree to the advertising terms and conditions of the app'}
-            </p>
           </div>
 
           <button

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import api from '../lib/api'
 import { categories } from '../data/services'
+import AdBanner from '../components/AdBanner'
 
 const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 const CAT_LABEL_EN = Object.fromEntries(categories.map(c => [c.id, c.nameEn || c.nameAr]))
@@ -134,6 +135,8 @@ export default function Companies() {
       <BackHeader title={ar ? 'الشركات' : 'Companies'} />
 
       <main className="px-4 pt-4 space-y-4">
+        <AdBanner placement="trusted_companies" dismissible />
+
         {/* Search */}
         <div className="relative">
           <Search className="absolute top-1/2 -translate-y-1/2 right-3 w-4 h-4 text-gray-400" style={dir === 'ltr' ? {right:'auto',left:'12px'} : {}} />

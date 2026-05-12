@@ -375,7 +375,11 @@ router.post("/ads", async (req, res): Promise<void> => {
     id: body.id, titleAr: body.title_ar, titleEn: body.title_en,
     descriptionAr: body.description_ar, descriptionEn: body.description_en,
     imageUrl: body.image_url, linkUrl: body.link_url,
-    placement: body.placement, isActive: body.is_active ?? true,
+    placement: body.placement,
+    sectionId:  body.section_id  || null,
+    categoryId: body.category_id || null,
+    sortOrder:  body.sort_order  ?? 0,
+    isActive: body.is_active ?? true,
     startDate: body.start_date, endDate: body.end_date,
   }).returning();
   res.status(201).json(ad);
@@ -391,6 +395,9 @@ router.patch("/ads/:id", async (req, res): Promise<void> => {
   if (body.image_url !== undefined)     updates.imageUrl = body.image_url;
   if (body.link_url !== undefined)      updates.linkUrl = body.link_url;
   if (body.placement !== undefined)     updates.placement = body.placement;
+  if (body.section_id !== undefined)    updates.sectionId = body.section_id;
+  if (body.category_id !== undefined)   updates.categoryId = body.category_id;
+  if (body.sort_order !== undefined)    updates.sortOrder = body.sort_order;
   if (body.is_active !== undefined)     updates.isActive = body.is_active;
   if (body.start_date !== undefined)    updates.startDate = body.start_date;
   if (body.end_date !== undefined)      updates.endDate = body.end_date;

@@ -462,7 +462,7 @@ export default function CategoryTechnicians() {
         </div>
 
         {/* إعلان */}
-        <AdBanner placement="technicians" dismissible />
+        <AdBanner placement="category_page" categoryId={categoryId} dismissible />
 
         {/* القائمة */}
         {loading ? (
