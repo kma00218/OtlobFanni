@@ -37,20 +37,21 @@ const SECTION_SVG = {
     </svg>
   ),
 
-  /* ── 3. بناء وتشطيب: خوذة بناء + طوب ───────────────────────────────── */
+  /* ── 3. بناء وتشطيب: مجرفة + جدار طوب ───────────────────────────────── */
   construction: (
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-      {/* Hard hat dome */}
-      <path d="M3 14a9 7 0 0118 0" fill="rgba(255,255,255,0.2)" stroke="white" strokeWidth="2.2"/>
-      {/* Hat brim */}
-      <rect x="1.5" y="14" width="21" height="3" rx="1.5" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="2"/>
-      {/* Vent line on top */}
-      <path d="M12 5v4" stroke="white" strokeWidth="2.2"/>
-      <path d="M9 8.5a3 3 0 016 0" stroke="white" strokeWidth="1.8"/>
-      {/* Brick row below hat */}
-      <rect x="3" y="19" width="5" height="3" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
-      <rect x="9.5" y="19" width="5" height="3" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
-      <rect x="16" y="19" width="5" height="3" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
+      {/* Brick wall — 3 rows */}
+      {/* Row 1 */}
+      <rect x="2" y="13" width="9" height="3.5" rx="0.6" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.5"/>
+      <rect x="12.5" y="13" width="9.5" height="3.5" rx="0.6" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.5"/>
+      {/* Row 2 */}
+      <rect x="2" y="17.5" width="6" height="3.5" rx="0.6" fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="1.5"/>
+      <rect x="9.5" y="17.5" width="7" height="3.5" rx="0.6" fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="1.5"/>
+      <rect x="18" y="17.5" width="4" height="3.5" rx="0.6" fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="1.5"/>
+      {/* Trowel handle */}
+      <line x1="17" y1="2.5" x2="12" y2="8" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Trowel blade */}
+      <path d="M12 8 L6.5 10.5 L9 13 L12 8z" fill="white" stroke="white" strokeWidth="0.8" strokeLinejoin="round"/>
     </svg>
   ),
 
