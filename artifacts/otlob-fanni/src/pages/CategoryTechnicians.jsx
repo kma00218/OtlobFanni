@@ -50,7 +50,7 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav }) {
   const rating = tech.rating || 0
   const reviewsCount = tech.reviewsCount ?? tech.reviews_count ?? 0
   const priceFrom = tech.priceFrom ?? tech.price_from ?? 0
-  const city = tech.city_name || tech.city || ''
+  const city = (ar ? tech.city_name_ar : tech.city_name_en) || tech.city_name_ar || tech.city_name || tech.city || ''
   const area = tech.area || ''
 
   return (

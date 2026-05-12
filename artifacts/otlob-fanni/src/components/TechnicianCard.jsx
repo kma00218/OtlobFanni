@@ -6,7 +6,9 @@ export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
   const name     = lang === 'ar' ? technician.nameAr     : technician.nameEn;
   const specialty = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
-  const city     = lang === 'ar' ? technician.cityAr     : technician.cityEn;
+  const city     = lang === 'ar'
+    ? (technician.cityAr || technician.city_name_ar || technician.city || '')
+    : (technician.cityEn || technician.city_name_en || technician.city_name_ar || technician.city || '');
   const status   = lang === 'ar' ? technician.statusAr   : technician.statusEn;
   const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2);
 
