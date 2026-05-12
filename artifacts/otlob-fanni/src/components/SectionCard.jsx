@@ -2,87 +2,164 @@ import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
 
 const SECTION_SVG = {
+
+  /* ── 1. خدمات منزلية: بيت + مفتاح صيانة ────────────────────────────── */
   home_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V10.5z"/>
-      <path d="M9 21V12h6v9"/>
-      <path d="M20 14a2.5 2.5 0 00-3.5 3.5L14 20l1 1 2.5-2.5A2.5 2.5 0 0020 14z" strokeWidth="1.4"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* House body filled */}
+      <path d="M3 11L12 3l9 8v9a1 1 0 01-1 1H4a1 1 0 01-1-1v-9z"
+        fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+      {/* Door */}
+      <path d="M10 23V16h4v7" stroke="white" strokeWidth="1.9"/>
+      {/* Wrench — circle head + diagonal handle */}
+      <circle cx="19.5" cy="6.5" r="3" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.8"/>
+      <line x1="17.4" y1="8.6" x2="14.5" y2="11.5" stroke="white" strokeWidth="2.6" strokeLinecap="round"/>
+      <line x1="13.5" y1="12.5" x2="15" y2="14" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
     </svg>
   ),
+
+  /* ── 2. خدمات سيارات: سيارة + مفتاح صيانة ──────────────────────────── */
   car_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 17H3a1 1 0 01-1-1v-4l2.5-5.5h13L20 12v4a1 1 0 01-1 1h-2"/>
-      <circle cx="7.5" cy="17" r="2.5"/>
-      <circle cx="16.5" cy="17" r="2.5"/>
-      <path d="M10 17h4"/>
-      <path d="M7 11h10"/>
-      <path d="M15.5 6.5l1 4.5M8.5 6.5l-1 4.5"/>
-      <path d="M17 5a2 2 0 100 2 2 2 0 000-2z" strokeWidth="1.3" fill="rgba(255,255,255,0.25)"/>
-      <line x1="17" y1="7" x2="19" y2="9" strokeWidth="1.5"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Car body */}
+      <path d="M2 14.5v2a1 1 0 001 1h1M20 17.5h1a1 1 0 001-1v-2"
+        stroke="white" strokeWidth="2"/>
+      <path d="M3 14.5l2.5-5.5h13l2.5 5.5H3z"
+        fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.9"/>
+      {/* Windows */}
+      <path d="M6 14.5l1.5-3.5h9l1.5 3.5" stroke="white" strokeWidth="1.5" fill="rgba(255,255,255,0.22)"/>
+      {/* Wheels */}
+      <circle cx="7" cy="17.5" r="2.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="2"/>
+      <circle cx="17" cy="17.5" r="2.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="2"/>
+      {/* Wrench — small top-right */}
+      <circle cx="20.5" cy="4.5" r="2.5" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.6"/>
+      <line x1="18.7" y1="6.3" x2="16.5" y2="8.5" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
     </svg>
   ),
+
+  /* ── 3. بناء وتشطيب: خوذة بناء + طوب ───────────────────────────────── */
   construction: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 17.5a10 5.5 0 0120 0"/>
-      <path d="M12 5v7"/>
-      <path d="M8.5 12a3.5 3.5 0 017 0"/>
-      <rect x="1.5" y="17.5" width="21" height="3" rx="1.5"/>
-      <circle cx="12" cy="4" r="1.5" fill="white" strokeWidth="0"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Hard hat dome */}
+      <path d="M3 14a9 7 0 0118 0" fill="rgba(255,255,255,0.2)" stroke="white" strokeWidth="2.2"/>
+      {/* Hat brim */}
+      <rect x="1.5" y="14" width="21" height="3" rx="1.5" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="2"/>
+      {/* Vent line on top */}
+      <path d="M12 5v4" stroke="white" strokeWidth="2.2"/>
+      <path d="M9 8.5a3 3 0 016 0" stroke="white" strokeWidth="1.8"/>
+      {/* Brick row below hat */}
+      <rect x="3" y="19" width="5" height="3" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
+      <rect x="9.5" y="19" width="5" height="3" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
+      <rect x="16" y="19" width="5" height="3" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
     </svg>
   ),
+
+  /* ── 4. تقنية وأمن: درع + كاميرا ────────────────────────────────────── */
   tech_security: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s-7-4-7-10V5l7-3 7 3v7c0 6-7 10-7 10z"/>
-      <rect x="8.5" y="9" width="7" height="5.5" rx="1" strokeWidth="1.4"/>
-      <circle cx="12" cy="11.75" r="1.5" strokeWidth="1.3"/>
-      <path d="M15.5 9l1.5-2" strokeWidth="1.3"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Shield filled */}
+      <path d="M12 22s-8-4.5-8-11V4.5l8-2.5 8 2.5V11c0 6.5-8 11-8 11z"
+        fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+      {/* Camera body */}
+      <rect x="7" y="9" width="10" height="7.5" rx="1.5" fill="rgba(255,255,255,0.28)" stroke="white" strokeWidth="1.8"/>
+      {/* Lens */}
+      <circle cx="12" cy="12.5" r="2.2" stroke="white" strokeWidth="1.7" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="12" cy="12.5" r="0.8" fill="white"/>
+      {/* Flash bump */}
+      <path d="M15.5 9V7.5a1 1 0 011-1h1" stroke="white" strokeWidth="1.5"/>
     </svg>
   ),
+
+  /* ── 5. نقل وخدمات عامة: شاحنة + صندوق ─────────────────────────────── */
   moving_general: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="6" width="14" height="11" rx="1"/>
-      <path d="M15 9h3.5L22 13.5V17h-7V9z"/>
-      <circle cx="5.5" cy="18.5" r="1.5"/>
-      <circle cx="18.5" cy="18.5" r="1.5"/>
-      <line x1="1" y1="11" x2="15" y2="11" strokeWidth="1.2"/>
-      <line x1="4" y1="6" x2="4" y2="11" strokeWidth="1.2"/>
-      <line x1="8" y1="6" x2="8" y2="11" strokeWidth="1.2"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Truck cargo */}
+      <rect x="1" y="6" width="14" height="12" rx="1" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+      {/* Cab */}
+      <path d="M15 9.5h4l3 4.5V18h-7V9.5z" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="2"/>
+      {/* Wheels */}
+      <circle cx="5" cy="19.5" r="2" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.9"/>
+      <circle cx="19" cy="19.5" r="2" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.9"/>
+      {/* Box on cargo */}
+      <rect x="3.5" y="8.5" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
+      <line x1="3.5" y1="11" x2="8.5" y2="11" stroke="white" strokeWidth="1.2"/>
+      <line x1="6" y1="8.5" x2="6" y2="13.5" stroke="white" strokeWidth="1.2"/>
+      {/* Cabin window */}
+      <path d="M16 10.5h2.5l1.5 2.5H16v-2.5z" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.2"/>
     </svg>
   ),
+
+  /* ── 6. حدائق ومسابح: ورقة نبات + موجات ماء ─────────────────────────── */
   gardens_pools: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 8C17 8 12 2 4 4c0 8 6 13 13 11"/>
-      <path d="M11 13L7 9"/>
-      <path d="M3 18.5c1.5-1.5 3-1.5 4.5 0s3 1.5 4.5 0 3-1.5 4.5 0 3 1.5 4.5 0" strokeWidth="1.5"/>
-      <path d="M3 21.5c1.5-1.5 3-1.5 4.5 0s3 1.5 4.5 0 3-1.5 4.5 0 3 1.5 4.5 0" strokeWidth="1.5"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Leaf filled */}
+      <path d="M18 3C18 3 12 2 5 6c0 9 7 13 13 11 0 0 1-8-3-12C13 3 18 3 18 3z"
+        fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="2"/>
+      {/* Leaf vein */}
+      <path d="M5 6l6 7" stroke="white" strokeWidth="1.8"/>
+      <path d="M11 13l-1 3" stroke="white" strokeWidth="1.6"/>
+      {/* Water waves */}
+      <path d="M2 18.5c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"
+        stroke="white" strokeWidth="2" fill="none"/>
+      <path d="M2 21.5c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"
+        stroke="white" strokeWidth="1.6" fill="none"/>
     </svg>
   ),
+
+  /* ── 7. الخدمات التجارية: محل + ترس ─────────────────────────────────── */
   business_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21V9l9-6 9 6v12H3z"/>
-      <line x1="3" y1="9" x2="21" y2="9"/>
-      <rect x="9.5" y="13" width="5" height="8"/>
-      <line x1="12" y1="13" x2="12" y2="21" strokeWidth="1.2"/>
-      <rect x="5" y="12" width="2.5" height="4" rx="0.5" strokeWidth="1.2"/>
-      <rect x="16.5" y="12" width="2.5" height="4" rx="0.5" strokeWidth="1.2"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Building facade */}
+      <path d="M2 21V9l10-7 10 7v12H2z" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="2"/>
+      {/* Shop awning */}
+      <path d="M2 9h20" stroke="white" strokeWidth="1.8"/>
+      {/* Door */}
+      <rect x="9.5" y="14" width="5" height="7" rx="0.5" fill="rgba(255,255,255,0.28)" stroke="white" strokeWidth="1.7"/>
+      {/* Windows */}
+      <rect x="4" y="11.5" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.4"/>
+      <rect x="16" y="11.5" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.4"/>
+      {/* Gear badge bottom-right */}
+      <circle cx="19.5" cy="19.5" r="2.5" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.5"/>
+      <circle cx="19.5" cy="19.5" r="1" fill="white"/>
     </svg>
   ),
+
+  /* ── 8. الطاقة والمولدات: بطارية + برق ──────────────────────────────── */
   energy_generators: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Battery body */}
+      <rect x="2" y="7" width="18" height="10" rx="2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2.2"/>
+      {/* Battery positive terminal */}
+      <path d="M20 10.5v3" stroke="white" strokeWidth="2.2" strokeLinecap="butt"/>
+      <rect x="20" y="10" width="2.5" height="4" rx="1" fill="white"/>
+      {/* Lightning bolt inside battery */}
+      <path d="M13 8.5L9 13h4.5L8 22l9-10.5h-4.5L13 8.5z"
+        fill="white" stroke="none"/>
     </svg>
   ),
+
+  /* ── 9. المزيد من الخدمات: شبكة مربعات متنوعة ───────────────────────── */
   more_services: (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="5" height="5" rx="1"/>
-      <rect x="10" y="3" width="5" height="5" rx="1"/>
-      <rect x="17" y="3" width="5" height="5" rx="1"/>
-      <rect x="3" y="10" width="5" height="5" rx="1"/>
-      <rect x="10" y="10" width="5" height="5" rx="1"/>
-      <rect x="17" y="10" width="5" height="5" rx="1"/>
-      <rect x="3" y="17" width="5" height="5" rx="1"/>
-      <rect x="10" y="17" width="5" height="5" rx="1"/>
-      <rect x="17" y="17" width="5" height="5" rx="1"/>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {/* Row 1 */}
+      <rect x="2" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
+      <rect x="9" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.6"/>
+      <rect x="16" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
+      {/* Row 2 */}
+      <rect x="2" y="9" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.6"/>
+      <rect x="9" y="9" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
+      <rect x="16" y="9" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.6"/>
+      {/* Row 3 */}
+      <rect x="2" y="16" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
+      <rect x="9" y="16" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.6"/>
+      <rect x="16" y="16" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
+      {/* Small tools inside some squares */}
+      <line x1="5" y1="4" x2="5" y2="6.5" stroke="white" strokeWidth="1.4"/>
+      <line x1="3.5" y1="4" x2="6.5" y2="4" stroke="white" strokeWidth="1.4"/>
+      <circle cx="19" cy="5" r="1.2" fill="white"/>
+      <circle cx="12" cy="12" r="1.5" stroke="white" strokeWidth="1.4" fill="rgba(255,255,255,0.2)"/>
+      <line x1="10.5" y1="12" x2="13.5" y2="12" stroke="white" strokeWidth="1.3"/>
+      <line x1="12" y1="10.5" x2="12" y2="13.5" stroke="white" strokeWidth="1.3"/>
     </svg>
   ),
 }
