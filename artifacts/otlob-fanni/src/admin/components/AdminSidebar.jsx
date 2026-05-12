@@ -31,7 +31,6 @@ const NAV_GROUPS = [
     items: [
       { path: '/admin/technician-applications', label: 'طلبات الفنيين',   icon: FileCheck,    badgeKey: 'pendingTechApps',    badgeColor: 'orange' },
       { path: '/admin/company-applications',    label: 'طلبات الشركات',   icon: Building2,    badgeKey: 'pendingCompanyApps', badgeColor: 'orange' },
-      { path: '/admin/requests',                label: 'طلبات الخدمة',    icon: ClipboardList, badgeKey: 'newRequests',        badgeColor: 'blue' },
       { path: '/admin/ad-requests',             label: 'طلبات الإعلانات', icon: Newspaper,    badgeKey: 'pendingAdRequests',  badgeColor: 'purple' },
     ]
   },
