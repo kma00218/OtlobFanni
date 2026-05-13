@@ -107,7 +107,7 @@ export default function Terms() {
           </div>
         </div>
         <p className="text-xs text-gray-400 text-center pb-2">
-          {ar ? 'آخر تحديث: 2025' : 'Last updated: 2025'} · www.otlobfanni.ly
+          {ar ? 'آخر تحديث: 2026' : 'Last updated: 2026'} · www.otlobfanni.ly
         </p>
       </main>
     </div>
