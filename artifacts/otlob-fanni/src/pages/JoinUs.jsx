@@ -51,7 +51,7 @@ export default function JoinUs() {
         {/* Technician Card */}
         <Link href="/join">
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
-            style={{ background: 'linear-gradient(135deg, #34C759 0%, #1a9e3f 100%)' }}>
+            style={{ background: 'linear-gradient(135deg, #1e8c3a 0%, #0f5c24 100%)' }}>
 
             {/* Background decoration */}
             <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
@@ -73,7 +73,7 @@ export default function JoinUs() {
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كفني' : 'Join as Technician'}
                 </h2>
-                <p className="text-white font-bold text-sm leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
+                <p className="text-white font-bold text-base leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
                   {ar
                     ? 'سجّل مهاراتك واستقبل طلبات من عملاء في منطقتك'
                     : 'Register your skills and receive requests from local clients'}
@@ -108,7 +108,7 @@ export default function JoinUs() {
         {/* Company Card */}
         <Link href="/join-company">
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
-            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}>
+            style={{ background: 'linear-gradient(135deg, #c45e00 0%, #8a3f00 100%)' }}>
 
             {/* Background decoration */}
             <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full bg-white/10" />
@@ -130,7 +130,7 @@ export default function JoinUs() {
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كشركة' : 'Join as Company'}
                 </h2>
-                <p className="text-white font-bold text-sm leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
+                <p className="text-white font-bold text-base leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
                   {ar
                     ? 'سجّل شركتك واحصل على عملاء جدد في منطقتك'
                     : 'Register your company and reach new clients nearby'}
