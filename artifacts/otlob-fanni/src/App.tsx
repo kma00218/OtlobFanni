@@ -8,6 +8,7 @@ import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
 import { Download } from "lucide-react";
 import NotificationPrompt from "./components/NotificationPrompt";
+import LocationPrompt from "./components/LocationPrompt";
 
 // Public Pages
 import Home from "./pages/Home";
@@ -139,6 +140,7 @@ function AppContent() {
           <BottomNav />
           <InstallFAB />
           <NotificationPrompt />
+          <LocationPrompt />
         </div>
         <Toaster />
       </TooltipProvider>
