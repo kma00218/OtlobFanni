@@ -186,7 +186,8 @@ export default function More() {
     {
       labelAr: 'الدعم',
       labelEn: 'Support',
-      href: '/support',
+      href: 'https://wa.me/4915735139486',
+      external: true,
       bg: 'bg-gradient-to-br from-[#0EA5E9] to-[#0369A1]',
       icon: <HelpCircle className="w-6 h-6 text-white" strokeWidth={2} />,
     },
