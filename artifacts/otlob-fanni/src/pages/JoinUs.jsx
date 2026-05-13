@@ -73,7 +73,7 @@ export default function JoinUs() {
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كفني' : 'Join as Technician'}
                 </h2>
-                <p className="text-white font-semibold text-xs leading-relaxed">
+                <p className="text-white font-bold text-sm leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
                   {ar
                     ? 'سجّل مهاراتك واستقبل طلبات من عملاء في منطقتك'
                     : 'Register your skills and receive requests from local clients'}
@@ -130,7 +130,7 @@ export default function JoinUs() {
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كشركة' : 'Join as Company'}
                 </h2>
-                <p className="text-white font-semibold text-xs leading-relaxed">
+                <p className="text-white font-bold text-sm leading-relaxed" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
                   {ar
                     ? 'سجّل شركتك واحصل على عملاء جدد في منطقتك'
                     : 'Register your company and reach new clients nearby'}
