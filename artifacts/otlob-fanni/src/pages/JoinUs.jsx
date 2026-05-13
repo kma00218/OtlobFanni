@@ -1,22 +1,51 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, Star, CheckCircle2, Info } from 'lucide-react'
+import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, Star, CheckCircle2, Info, Share2 } from 'lucide-react'
 
 export default function JoinUs() {
   const { lang, toggleLang } = useLang()
   const ar = lang === 'ar'
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'اطلب فني – Otlob Fanni',
+        text: lang === 'ar'
+          ? 'دليل الفنيين والحرفيين في ليبيا – اطلب فني'
+          : "Libya's technician & craftsman directory – Otlob Fanni",
+        url: 'https://otlobfanni.ly',
+      })
+    } else {
+      navigator.clipboard?.writeText('https://otlobfanni.ly')
+    }
+  }
+
   return (
     <div className="min-h-screen pb-28 pt-14" style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d4f 50%, #1a3f6b 100%)' }} dir={ar ? 'rtl' : 'ltr'}>
 
-      {/* Language toggle */}
-      <div className={`fixed top-0 left-0 right-0 z-50 flex ${ar ? 'justify-start' : 'justify-end'} px-4 pt-3 max-w-[480px] mx-auto`}>
-        <button
-          onClick={toggleLang}
-          className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-3 py-1.5 rounded-lg transition-colors"
-        >
-          {lang === 'ar' ? 'EN' : 'AR'}
-        </button>
+      {/* Language toggle + Share */}
+      <div className={`fixed top-0 left-0 right-0 z-50 flex items-end justify-between px-4 pt-2 max-w-[480px] mx-auto`}>
+        <div />
+        <div className="flex items-end gap-3">
+          <button
+            onClick={handleShare}
+            className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
+          >
+            <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
+              <Share2 className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-[10px] font-semibold text-white/60 leading-none">{ar ? 'مشاركة' : 'share'}</span>
+          </button>
+          <button
+            onClick={toggleLang}
+            className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
+          >
+            <div className="w-10 h-10 rounded-[12px] flex items-center justify-center font-extrabold text-base text-white" style={{ background: '#FF7900' }}>
+              {lang === 'ar' ? 'EN' : 'AR'}
+            </div>
+            <span className="text-[10px] font-semibold text-white/60 leading-none">{lang === 'ar' ? 'English' : 'عربي'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Header */}
