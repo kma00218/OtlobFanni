@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
 import { Download } from "lucide-react";
+import NotificationPrompt from "./components/NotificationPrompt";
 
 // Public Pages
 import Home from "./pages/Home";
@@ -136,6 +137,7 @@ function AppContent() {
           </Switch>
           <BottomNav />
           <InstallFAB />
+          <NotificationPrompt />
         </div>
         <Toaster />
       </TooltipProvider>

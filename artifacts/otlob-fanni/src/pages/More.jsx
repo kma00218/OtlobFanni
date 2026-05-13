@@ -1,7 +1,8 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell } from 'lucide-react';
 import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
+import { NotificationSettingsRow } from '../components/NotificationPrompt';
 
 const IOS_STEPS_AR = [
   { n: '1', text: 'افتح التطبيق في متصفح Safari' },
@@ -28,40 +29,50 @@ const AND_STEPS_EN = [
   { n: '4', text: 'Tap "Install" — done!' },
 ]
 
-function SectionCard({ title, children }) {
+function IconGrid({ title, titleIcon, items, ar }) {
   return (
-    <div className="px-5 mb-4">
-      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">{title}</p>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
-        {children}
+    <div className="px-4 mb-4">
+      <div className={`flex items-center gap-2 mb-2 px-1 ${ar ? 'flex-row-reverse justify-end' : ''}`}>
+        <span className="text-base">{titleIcon}</span>
+        <p className="text-sm font-bold text-gray-500">{title}</p>
+      </div>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+        <div className="grid grid-cols-4 gap-y-4">
+          {items.map((item, idx) => {
+            const inner = (
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-14 h-14 rounded-[16px] flex items-center justify-center shadow-sm ${item.bg}`}>
+                  {item.icon}
+                </div>
+                <span className="text-[11px] font-medium text-gray-600 text-center leading-tight w-full px-0.5 truncate">
+                  {ar ? item.labelAr : item.labelEn}
+                </span>
+              </div>
+            )
+            if (item.external) {
+              return (
+                <a key={idx} href={item.href} target="_blank" rel="noopener noreferrer" className="flex justify-center active:scale-90 transition-transform">
+                  {inner}
+                </a>
+              )
+            }
+            if (item.onClick) {
+              return (
+                <button key={idx} onClick={item.onClick} className="flex justify-center active:scale-90 transition-transform">
+                  {inner}
+                </button>
+              )
+            }
+            return (
+              <Link key={idx} href={item.href} className="flex justify-center active:scale-90 transition-transform">
+                {inner}
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
-}
-
-function RowItem({ icon, iconBg, label, sublabel, href, onPress, isLast, ar }) {
-  const chevron = ar ? <ChevronLeft className="w-4 h-4 text-gray-300 flex-shrink-0" /> : <ChevronRight className="w-4 h-4 text-gray-300 flex-shrink-0" />
-  const inner = (
-    <div className="flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 transition-colors cursor-pointer">
-      <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 ${iconBg}`}>
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-800">{label}</p>
-        {sublabel && <p className="text-xs text-gray-400 mt-0.5">{sublabel}</p>}
-      </div>
-      {chevron}
-    </div>
-  )
-  if (href) {
-    const isExternal = href.startsWith('http') || href.startsWith('https') || href.startsWith('wa.')
-    if (isExternal) {
-      return <a href={href} target="_blank" rel="noopener noreferrer">{inner}</a>
-    }
-    return <Link href={href}>{inner}</Link>
-  }
-  if (onPress) return <button onClick={onPress} className="w-full text-start">{inner}</button>
-  return <div>{inner}</div>
 }
 
 export default function More() {
@@ -85,6 +96,121 @@ export default function More() {
     if (outcome === 'accepted') { setInstalled(true); setInstallPrompt(null) }
   }
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'اطلب فني – Otlob Fanni',
+        text: ar ? 'دليل الفنيين والحرفيين في ليبيا – اطلب فني' : "Libya's technician & craftsman directory – Otlob Fanni",
+        url: 'https://otlobfanni.ly',
+      })
+    } else {
+      navigator.clipboard?.writeText('https://otlobfanni.ly')
+    }
+  }
+
+  const followItems = [
+    {
+      labelAr: 'الموقع',
+      labelEn: 'Website',
+      href: 'https://otlobfanni.ly',
+      external: true,
+      bg: 'bg-gradient-to-br from-[#FF7900] to-[#c45e00]',
+      icon: <ExternalLink className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'تيك توك',
+      labelEn: 'TikTok',
+      href: 'https://tiktok.com/@otlobfanni',
+      external: true,
+      bg: 'bg-[#010101]',
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
+          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+        </svg>
+      ),
+    },
+    {
+      labelAr: 'إنستغرام',
+      labelEn: 'Instagram',
+      href: 'https://instagram.com/otlobfanni',
+      external: true,
+      bg: 'bg-gradient-to-br from-[#E1306C] to-[#833AB4]',
+      icon: <Instagram className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'فيسبوك',
+      labelEn: 'Facebook',
+      href: 'https://facebook.com/otlobfanni',
+      external: true,
+      bg: 'bg-[#1877F2]',
+      icon: <Facebook className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+  ]
+
+  const quickItems = [
+    {
+      labelAr: 'أعلن معنا',
+      labelEn: 'Advertise',
+      href: '/advertise',
+      bg: 'bg-gradient-to-br from-[#FF9500] to-[#cc7700]',
+      icon: <Megaphone className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'مشاركة',
+      labelEn: 'Share',
+      onClick: handleShare,
+      bg: 'bg-[#7B2FBE]',
+      icon: <Share2 className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'الخصوصية',
+      labelEn: 'Privacy',
+      href: '/privacy',
+      bg: 'bg-gradient-to-br from-[#636366] to-[#48484a]',
+      icon: <Shield className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'عن التطبيق',
+      labelEn: 'About',
+      href: '/about',
+      bg: 'bg-gradient-to-br from-[#30B0C7] to-[#1a7a8a]',
+      icon: <Info className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'المفضلة',
+      labelEn: 'Favorites',
+      href: '/favorites',
+      bg: 'bg-gradient-to-br from-[#FF2D55] to-[#c4002e]',
+      icon: <Heart className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'الدعم',
+      labelEn: 'Support',
+      href: '/support',
+      bg: 'bg-gradient-to-br from-[#0EA5E9] to-[#0369A1]',
+      icon: <HelpCircle className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'شروط الخدمة',
+      labelEn: 'Terms',
+      href: '/terms',
+      bg: 'bg-gradient-to-br from-[#AF52DE] to-[#7b2fa6]',
+      icon: <FileText className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
+    {
+      labelAr: 'واتساب',
+      labelEn: 'WhatsApp',
+      href: 'https://wa.me/4915735139486',
+      external: true,
+      bg: 'bg-[#25D366]',
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      ),
+    },
+  ]
+
   return (
     <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
@@ -92,22 +218,10 @@ export default function More() {
       <div className="px-5 pt-5 pb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#071B33]">{ar ? 'المزيد' : 'More'}</h1>
         <button
-          onClick={() => {
-            if (navigator.share) {
-              navigator.share({
-                title: 'اطلب فني – Otlob Fanni',
-                text: ar
-                  ? 'دليل الفنيين والحرفيين في ليبيا – اطلب فني'
-                  : "Libya's technician & craftsman directory – Otlob Fanni",
-                url: 'https://otlobfanni.ly',
-              })
-            } else {
-              navigator.clipboard?.writeText('https://otlobfanni.ly')
-            }
-          }}
+          onClick={handleShare}
           className="flex flex-col items-center justify-center gap-0.5 active:scale-90 transition-transform duration-150"
         >
-          <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
+          <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-[#7B2FBE]">
             <Share2 className="h-[18px] w-[18px] text-white" />
           </div>
           <span className="text-[9px] font-semibold text-gray-500 leading-none">share</span>
@@ -115,7 +229,7 @@ export default function More() {
       </div>
 
       {/* Language Toggle */}
-      <div className="px-5 mb-5">
+      <div className="px-4 mb-4">
         <button
           onClick={toggleLang}
           className="w-full flex items-center gap-3 bg-white rounded-2xl px-4 py-3.5 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform"
@@ -134,7 +248,7 @@ export default function More() {
       </div>
 
       {/* Install App Section */}
-      <div id="install-section" className="px-5 mb-5">
+      <div id="install-section" className="px-4 mb-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: 'linear-gradient(135deg, #071B33 0%, #1a3a5c 100%)' }}>
             <div className="w-9 h-9 rounded-[10px] bg-white/20 flex items-center justify-center flex-shrink-0">
@@ -199,108 +313,31 @@ export default function More() {
         </div>
       </div>
 
-      {/* Section 1: التواصل */}
-      <SectionCard title={ar ? 'التواصل' : 'Contact'}>
-        <RowItem
-          ar={ar}
-          href="https://wa.me/4915735139486"
-          iconBg="bg-[#25D366]"
-          icon={
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-          }
-          label={ar ? 'تواصل معنا عبر واتساب' : 'Contact us via WhatsApp'}
-          sublabel={ar ? 'نرد على استفساراتك بسرعة' : 'We respond to your inquiries quickly'}
-        />
-        <RowItem
-          ar={ar}
-          href="/advertise"
-          iconBg="bg-gradient-to-br from-[#FF9500] to-[#cc7700]"
-          icon={<Megaphone className="w-5 h-5 text-white" />}
-          label={ar ? 'أعلن معنا' : 'Advertise with Us'}
-          sublabel={ar ? 'وصول لآلاف الزبائن في ليبيا' : 'Reach thousands of customers in Libya'}
-        />
-      </SectionCard>
+      {/* Section: تابعنا / Follow Us */}
+      <IconGrid
+        ar={ar}
+        title={ar ? 'تابعنا' : 'Follow Us'}
+        titleIcon="👥"
+        items={followItems}
+      />
 
-      {/* Section 2: روابطنا */}
-      <SectionCard title={ar ? 'روابطنا' : 'Our Links'}>
-        <RowItem
-          ar={ar}
-          href="https://otlobfanni.ly"
-          iconBg="bg-gradient-to-br from-[#FF7900] to-[#c45e00]"
-          icon={<ExternalLink className="w-5 h-5 text-white" />}
-          label={ar ? 'الموقع الرسمي' : 'Official Website'}
-          sublabel="otlobfanni.ly"
-        />
-        <RowItem
-          ar={ar}
-          href="https://facebook.com/otlobfanni"
-          iconBg="bg-[#1877F2]"
-          icon={<Facebook className="w-5 h-5 text-white" />}
-          label={ar ? 'فيسبوك' : 'Facebook'}
-          sublabel="@otlobfanni"
-        />
-        <RowItem
-          ar={ar}
-          href="https://instagram.com/otlobfanni"
-          iconBg="bg-gradient-to-br from-[#E1306C] to-[#833AB4]"
-          icon={<Instagram className="w-5 h-5 text-white" />}
-          label={ar ? 'إنستغرام' : 'Instagram'}
-          sublabel="@otlobfanni"
-        />
-        <RowItem
-          ar={ar}
-          href="https://tiktok.com/@otlobfanni"
-          iconBg="bg-[#010101]"
-          icon={
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-              <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
-            </svg>
-          }
-          label={ar ? 'تيك توك' : 'TikTok'}
-          sublabel="@otlobfanni"
-        />
-      </SectionCard>
+      {/* Section: روابط سريعة / Quick Links */}
+      <IconGrid
+        ar={ar}
+        title={ar ? 'روابط سريعة' : 'Quick Links'}
+        titleIcon="🔗"
+        items={quickItems}
+      />
 
-      {/* Section 3: التطبيق */}
-      <SectionCard title={ar ? 'التطبيق' : 'App'}>
-        <RowItem
-          ar={ar}
-          href="/favorites"
-          iconBg="bg-gradient-to-br from-[#FF2D55] to-[#c4002e]"
-          icon={<Heart className="w-5 h-5 text-white" />}
-          label={ar ? 'المفضلة' : 'Favorites'}
-        />
-        <RowItem
-          ar={ar}
-          href="/support"
-          iconBg="bg-gradient-to-br from-[#0EA5E9] to-[#0369A1]"
-          icon={<HelpCircle className="w-5 h-5 text-white" />}
-          label={ar ? 'الدعم' : 'Support'}
-        />
-        <RowItem
-          ar={ar}
-          href="/about"
-          iconBg="bg-gradient-to-br from-[#30B0C7] to-[#1a7a8a]"
-          icon={<Info className="w-5 h-5 text-white" />}
-          label={ar ? 'عن التطبيق' : 'About the App'}
-        />
-        <RowItem
-          ar={ar}
-          href="/terms"
-          iconBg="bg-gradient-to-br from-[#AF52DE] to-[#7b2fa6]"
-          icon={<FileText className="w-5 h-5 text-white" />}
-          label={ar ? 'شروط الخدمة' : 'Terms of Service'}
-        />
-        <RowItem
-          ar={ar}
-          href="/privacy"
-          iconBg="bg-gradient-to-br from-[#636366] to-[#48484a]"
-          icon={<Shield className="w-5 h-5 text-white" />}
-          label={ar ? 'سياسة الخصوصية' : 'Privacy Policy'}
-        />
-      </SectionCard>
+      {/* Notifications Row */}
+      <div className="px-4 mb-4">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">
+          {ar ? 'الإشعارات' : 'Notifications'}
+        </p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <NotificationSettingsRow ar={ar} />
+        </div>
+      </div>
 
       <div className="mt-4 mb-2 text-center">
         <p className="text-gray-400 text-xs">Otlob Fanni v1.0.0</p>
