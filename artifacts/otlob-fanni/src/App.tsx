@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation, useRouter } from "wouter";
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -48,7 +48,7 @@ function ScrollToTop() {
 }
 
 function InstallFAB() {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { lang } = useLang();
   const [installPrompt, setInstallPrompt] = useState<any>(null);
 
@@ -66,11 +66,10 @@ function InstallFAB() {
       installPrompt.prompt();
       return;
     }
-    // Navigate to /more and scroll to install section
-    window.location.href = '/more#install-section';
+    navigate('/more');
     setTimeout(() => {
       document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
-    }, 400);
+    }, 300);
   };
 
   return (
