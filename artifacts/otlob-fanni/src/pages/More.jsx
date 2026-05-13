@@ -174,7 +174,7 @@ export default function More() {
       </div>
 
       {/* Install App Section */}
-      <div className="px-5 mt-8">
+      <div id="install-section" className="px-5 mt-8">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
 
           {/* Header */}

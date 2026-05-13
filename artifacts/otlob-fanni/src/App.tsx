@@ -1,11 +1,12 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import { LanguageProvider } from "./context/LanguageContext";
+import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
+import { Download } from "lucide-react";
 
 // Public Pages
 import Home from "./pages/Home";
@@ -44,6 +45,49 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [location]);
   return null;
+}
+
+function InstallFAB() {
+  const [location] = useLocation();
+  const { lang } = useLang();
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: any) => { e.preventDefault(); setInstallPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  // Hide on /more page (install section is already visible there)
+  if (location === '/more') return null;
+
+  const handleClick = async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      return;
+    }
+    // Navigate to /more and scroll to install section
+    window.location.href = '/more#install-section';
+    setTimeout(() => {
+      document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 400);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="fixed bottom-24 z-50 flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform font-bold text-white text-sm"
+      style={{
+        background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        boxShadow: '0 4px 20px rgba(255,121,0,0.4)',
+      }}
+    >
+      <Download className="w-4 h-4" />
+      {lang === 'ar' ? 'ثبّت التطبيق' : 'Install App'}
+    </button>
+  );
 }
 
 function AppContent() {
@@ -92,6 +136,7 @@ function AppContent() {
             <Route component={NotFound} />
           </Switch>
           <BottomNav />
+          <InstallFAB />
         </div>
         <Toaster />
       </TooltipProvider>
