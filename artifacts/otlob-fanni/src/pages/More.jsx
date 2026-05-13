@@ -230,21 +230,31 @@ export default function More() {
 
       {/* Language Toggle */}
       <div className="px-4 mb-4">
-        <button
-          onClick={toggleLang}
-          className="w-full flex items-center gap-3 bg-white rounded-2xl px-4 py-3.5 shadow-sm border border-gray-100 active:scale-[0.98] transition-transform"
-        >
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#071B33] to-[#1a3a5c] flex items-center justify-center shadow-md shadow-slate-300 flex-shrink-0">
-            <Globe className="w-5 h-5 text-white" />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3.5">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#071B33] to-[#1a3a5c] flex items-center justify-center shadow-md shadow-slate-300 flex-shrink-0">
+              <Globe className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 text-start">
+              <p className="font-semibold text-gray-800 text-sm">{ar ? 'اللغة' : 'Language'}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{ar ? 'العربية / English' : 'Arabic / English'}</p>
+            </div>
           </div>
-          <div className="flex-1 text-start">
-            <p className="font-semibold text-gray-800 text-sm">{ar ? 'تغيير اللغة' : 'Change Language'}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{ar ? 'Switch to English' : 'التبديل للعربية'}</p>
+          <div className="flex mt-3 rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+            <button
+              onClick={() => lang !== 'ar' && toggleLang()}
+              className={`flex-1 py-2 text-sm font-bold transition-all duration-200 ${ar ? 'bg-[#FF7900] text-white shadow-sm' : 'text-gray-400'}`}
+            >
+              العربية
+            </button>
+            <button
+              onClick={() => lang !== 'en' && toggleLang()}
+              className={`flex-1 py-2 text-sm font-bold transition-all duration-200 ${!ar ? 'bg-[#FF7900] text-white shadow-sm' : 'text-gray-400'}`}
+            >
+              English
+            </button>
           </div>
-          <span className="bg-[#FF7900] text-white text-xs font-bold px-2.5 py-1 rounded-lg">
-            {ar ? 'EN' : 'AR'}
-          </span>
-        </button>
+        </div>
       </div>
 
       {/* Install App Section */}
