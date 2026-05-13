@@ -41,7 +41,7 @@ export default function JoinUs() {
         {/* Multi-specialty note */}
         <div className="flex items-start gap-2.5 rounded-2xl px-4 py-3.5 border-2 border-[#FF7900]/50" style={{ background: '#FFF4E8' }}>
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
-          <p className="text-xs font-bold text-[#3d2200] leading-relaxed">
+          <p className="text-sm font-bold text-[#3d2200] leading-relaxed">
             {ar
               ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
               : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
