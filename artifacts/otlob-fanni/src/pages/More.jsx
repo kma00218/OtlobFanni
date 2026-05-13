@@ -264,7 +264,8 @@ export default function More() {
               onClick={() => setInstallTab('ios')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${installTab === 'ios' ? 'bg-[#071B33] text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200'}`}
             >
-              <span>🍎</span> iPhone / iPad
+              <svg viewBox="0 0 814 1000" className="w-4 h-4 fill-current flex-shrink-0"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.3 269-317.3 70.1 0 128.4 46.4 172.5 46.4 42.8 0 109.6-49 192.5-49 30.9 0 111.1 2.6 168.3 87.1zm-174.5-73.4c-9-37.6-32.6-75.9-65.6-99.5C514.4 143.5 475 126 435.6 126c-5.8 0-11.6.6-17.4 1.3 24.4 38.3 39.1 80.4 39.1 123.8 0 43.4-14.7 85.5-39.1 123.8 5.2.6 10.4.6 15.6.6 41.5 0 84.7-19.8 118-54.4 21.1-21.9 36.5-48.1 42.8-74.2 3.4-16.5 5.2-32.6 5.2-48.7-.6-1.3-.6-1.3-.6-1.9z"/></svg>
+              iPhone / iPad
             </button>
             <button
               onClick={() => setInstallTab('android')}
