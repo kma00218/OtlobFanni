@@ -43,8 +43,8 @@ export default function JoinUs() {
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
           <p className="text-base font-bold text-[#3d2200] leading-relaxed">
             {ar
-              ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
-              : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
+              ? 'تعمل في أكثر من تخصص؟ أرسل طلبًا منفصلًا لكل تخصص.'
+              : 'Work in multiple specialties? Submit a separate application for each.'}
           </p>
         </div>
 
