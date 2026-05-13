@@ -120,7 +120,7 @@ export default function More() {
     {
       labelAr: 'تيك توك',
       labelEn: 'TikTok',
-      href: 'https://tiktok.com/@otlobfanni',
+      href: 'https://www.tiktok.com/@otlobfanni',
       external: true,
       bg: 'bg-[#010101]',
       icon: (
@@ -132,7 +132,7 @@ export default function More() {
     {
       labelAr: 'إنستغرام',
       labelEn: 'Instagram',
-      href: 'https://instagram.com/otlobfanni',
+      href: 'https://www.instagram.com/otlobfanni',
       external: true,
       bg: 'bg-gradient-to-br from-[#E1306C] to-[#833AB4]',
       icon: <Instagram className="w-6 h-6 text-white" strokeWidth={2} />,
@@ -140,7 +140,7 @@ export default function More() {
     {
       labelAr: 'فيسبوك',
       labelEn: 'Facebook',
-      href: 'https://facebook.com/otlobfanni',
+      href: 'https://www.facebook.com/otlobfanni.ly',
       external: true,
       bg: 'bg-[#1877F2]',
       icon: <Facebook className="w-6 h-6 text-white" strokeWidth={2} />,
