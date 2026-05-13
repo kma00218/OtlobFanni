@@ -87,7 +87,7 @@ export default function Header() {
         </span>
       </button>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-end gap-3">
         <button
           onClick={() => {
             if (navigator.share) {
@@ -102,23 +102,22 @@ export default function Header() {
               navigator.clipboard?.writeText('https://otlobfanni.ly')
             }
           }}
-          className="flex flex-col items-center justify-center gap-0.5 active:scale-90 transition-transform duration-150"
+          className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
         >
-          <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
-            <Share2 className="h-[18px] w-[18px] text-white" />
+          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
+            <Share2 className="h-5 w-5 text-white" />
           </div>
-          <span className="text-[9px] font-semibold text-gray-500 leading-none">share</span>
+          <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'مشاركة' : 'share'}</span>
         </button>
         <button
           onClick={toggleLang}
-          className="flex items-center justify-center px-3 h-9 rounded-xl font-extrabold text-sm text-white active:scale-90 transition-transform"
-          style={{ background: '#FF7900', minWidth: 44 }}
+          className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
         >
-          {lang === 'ar' ? 'EN' : 'AR'}
+          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center font-extrabold text-base text-white" style={{ background: '#FF7900' }}>
+            {lang === 'ar' ? 'EN' : 'AR'}
+          </div>
+          <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'English' : 'عربي'}</span>
         </button>
-        <Button variant="ghost" size="icon">
-          <Bell className="h-5 w-5 text-foreground" />
-        </Button>
       </div>
     </header>
   )
