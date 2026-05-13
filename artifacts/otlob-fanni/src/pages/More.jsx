@@ -153,28 +153,8 @@ export default function More() {
         </button>
       </div>
 
-      <div className="px-5">
-        <div className="grid grid-cols-3 gap-x-4 gap-y-6">
-          {ITEMS.map((item, idx) => {
-            const Icon = item.icon
-            return (
-              <Link key={idx} href={item.path}>
-                <div className="flex flex-col items-center gap-2 active:scale-90 transition-transform duration-150 cursor-pointer select-none">
-                  <div className={`w-[72px] h-[72px] rounded-[18px] bg-gradient-to-br ${item.bg} flex items-center justify-center shadow-lg ${item.shadow}`}>
-                    <Icon className="w-8 h-8 text-white drop-shadow" strokeWidth={1.8} />
-                  </div>
-                  <span className="text-xs font-medium text-gray-700 text-center leading-tight max-w-[72px]">
-                    {ar ? item.labelAr : item.labelEn}
-                  </span>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
       {/* Install App Section */}
-      <div id="install-section" className="px-5 mt-8">
+      <div id="install-section" className="px-5 mb-6">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
 
           {/* Header */}
@@ -249,7 +229,27 @@ export default function More() {
         </div>
       </div>
 
-      <div className="mt-8 text-center">
+      <div className="px-5 mb-6">
+        <div className="grid grid-cols-3 gap-x-4 gap-y-6">
+          {ITEMS.map((item, idx) => {
+            const Icon = item.icon
+            return (
+              <Link key={idx} href={item.path}>
+                <div className="flex flex-col items-center gap-2 active:scale-90 transition-transform duration-150 cursor-pointer select-none">
+                  <div className={`w-[72px] h-[72px] rounded-[18px] bg-gradient-to-br ${item.bg} flex items-center justify-center shadow-lg ${item.shadow}`}>
+                    <Icon className="w-8 h-8 text-white drop-shadow" strokeWidth={1.8} />
+                  </div>
+                  <span className="text-xs font-medium text-gray-700 text-center leading-tight max-w-[72px]">
+                    {ar ? item.labelAr : item.labelEn}
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="mt-4 text-center">
         <p className="text-gray-400 text-xs">Otlob Fanni v1.0.0</p>
       </div>
     </div>
