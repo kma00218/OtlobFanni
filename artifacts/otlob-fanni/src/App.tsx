@@ -24,6 +24,7 @@ import Orders from "./pages/Orders";
 import Favorites from "./pages/Favorites";
 import Messages from "./pages/Messages";
 import More from "./pages/More";
+import Support from "./pages/Support";
 import JoinUs from "./pages/JoinUs";
 import AdvertiseWithUs from "./pages/AdvertiseWithUs";
 import About from "./pages/About";
@@ -125,7 +126,7 @@ function AppContent() {
             <Route path="/orders" component={Orders} />
             <Route path="/favorites" component={Favorites} />
             <Route path="/messages" component={Messages} />
-            <Route path="/support" component={Messages} />
+            <Route path="/support" component={Support} />
             <Route path="/more" component={More} />
             <Route path="/join-us" component={JoinUs} />
             <Route path="/advertise" component={AdvertiseWithUs} />
