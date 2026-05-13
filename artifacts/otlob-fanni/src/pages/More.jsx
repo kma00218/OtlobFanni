@@ -1,24 +1,8 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, UserPlus, Building2, Share2 } from 'lucide-react';
+import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, UserPlus, Building2, Share2, Heart } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ITEMS = [
-  {
-    icon: UserPlus,
-    labelAr: 'انضم كفني',
-    labelEn: 'Join as Tech',
-    path: '/join',
-    bg: 'from-[#34C759] to-[#248a3d]',
-    shadow: 'shadow-green-200',
-  },
-  {
-    icon: Building2,
-    labelAr: 'انضم كشركة',
-    labelEn: 'Join as Co.',
-    path: '/join-company',
-    bg: 'from-[#FF7900] to-[#d96400]',
-    shadow: 'shadow-orange-200',
-  },
   {
     icon: HelpCircle,
     labelAr: 'الدعم',
@@ -36,20 +20,28 @@ const ITEMS = [
     shadow: 'shadow-amber-200',
   },
   {
-    icon: Mail,
-    labelAr: 'تواصل معنا',
-    labelEn: 'Contact Us',
-    path: '/contact',
+    icon: Heart,
+    labelAr: 'المفضلة',
+    labelEn: 'Favorites',
+    path: '/favorites',
     bg: 'from-[#FF2D55] to-[#c4002e]',
     shadow: 'shadow-rose-200',
   },
   {
     icon: Info,
-    labelAr: 'عن التطبيق',
-    labelEn: 'About App',
+    labelAr: 'من نحن',
+    labelEn: 'About Us',
     path: '/about',
     bg: 'from-[#30B0C7] to-[#1a7a8a]',
     shadow: 'shadow-cyan-200',
+  },
+  {
+    icon: Shield,
+    labelAr: 'سياسة الخصوصية',
+    labelEn: 'Privacy',
+    path: '/privacy',
+    bg: 'from-[#636366] to-[#48484a]',
+    shadow: 'shadow-gray-300',
   },
   {
     icon: FileText,
@@ -60,12 +52,12 @@ const ITEMS = [
     shadow: 'shadow-purple-200',
   },
   {
-    icon: Shield,
-    labelAr: 'سياسة الخصوصية',
-    labelEn: 'Privacy',
-    path: '/privacy',
-    bg: 'from-[#636366] to-[#48484a]',
-    shadow: 'shadow-gray-300',
+    icon: Mail,
+    labelAr: 'تواصل معنا',
+    labelEn: 'Contact Us',
+    path: '/contact',
+    bg: 'from-[#FF2D55] to-[#c4002e]',
+    shadow: 'shadow-rose-200',
   },
 ]
 

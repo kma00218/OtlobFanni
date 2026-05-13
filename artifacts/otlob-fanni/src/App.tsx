@@ -27,6 +27,7 @@ import AdvertiseWithUs from "./pages/AdvertiseWithUs";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import AllSpecialties from "./pages/AllSpecialties";
 
 // Admin
 import AdminLogin from "./admin/AdminLogin";
@@ -84,6 +85,7 @@ function AppContent() {
             <Route path="/more" component={More} />
             <Route path="/join-us" component={JoinUs} />
             <Route path="/advertise" component={AdvertiseWithUs} />
+            <Route path="/all-specialties" component={AllSpecialties} />
             <Route path="/about" component={About} />
             <Route path="/terms" component={Terms} />
             <Route path="/privacy" component={Privacy} />

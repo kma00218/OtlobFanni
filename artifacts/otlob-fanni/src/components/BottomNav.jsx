@@ -18,6 +18,23 @@ const TABS = [
     ),
   },
   {
+    id: 'all-specialties',
+    path: '/all-specialties',
+    exact: false,
+    labelAr: 'كل التخصصات',
+    labelEn: 'All Specialties',
+    bg: 'from-[#FF7900] to-[#d96400]',
+    shadow: 'shadow-orange-200',
+    svg: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+    ),
+  },
+  {
     id: 'join-us',
     path: '/join-us',
     exact: false,
@@ -31,22 +48,6 @@ const TABS = [
         <circle cx="9" cy="7" r="4"/>
         <line x1="19" y1="8" x2="19" y2="14"/>
         <line x1="16" y1="11" x2="22" y2="11"/>
-      </svg>
-    ),
-  },
-  {
-    id: 'support',
-    path: '/support',
-    exact: false,
-    labelAr: 'الدعم',
-    labelEn: 'Support',
-    bg: 'from-[#0EA5E9] to-[#0369A1]',
-    shadow: 'shadow-sky-200',
-    svg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
-        <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
       </svg>
     ),
   },
