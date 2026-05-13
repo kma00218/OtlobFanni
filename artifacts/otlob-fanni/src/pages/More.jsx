@@ -63,28 +63,28 @@ const ITEMS = [
 ]
 
 const IOS_STEPS_AR = [
-  { n: '١', text: 'افتح التطبيق في متصفح Safari' },
-  { n: '٢', text: 'اضغط على زر المشاركة في أسفل الشاشة (مربع مع سهم للأعلى ⬆)' },
-  { n: '٣', text: 'اختر "إضافة إلى الشاشة الرئيسية"' },
-  { n: '٤', text: 'اضغط "إضافة" — خلصت!' },
+  { n: '1', text: 'افتح التطبيق في متصفح Safari' },
+  { n: '2', text: 'اضغط على زر المشاركة في أسفل الشاشة (مربع مع سهم للأعلى ⬆)' },
+  { n: '3', text: 'اختر "إضافة إلى الشاشة الرئيسية"' },
+  { n: '4', text: 'اضغط "إضافة" — خلصت!' },
 ]
 const IOS_STEPS_EN = [
-  { n: '١', text: 'Open the app in Safari browser' },
-  { n: '٢', text: 'Tap the Share button at the bottom (box with arrow ⬆)' },
-  { n: '٣', text: 'Select "Add to Home Screen"' },
-  { n: '٤', text: 'Tap "Add" — done!' },
+  { n: '1', text: 'Open the app in Safari browser' },
+  { n: '2', text: 'Tap the Share button at the bottom (box with arrow ⬆)' },
+  { n: '3', text: 'Select "Add to Home Screen"' },
+  { n: '4', text: 'Tap "Add" — done!' },
 ]
 const AND_STEPS_AR = [
-  { n: '١', text: 'افتح التطبيق في متصفح Chrome' },
-  { n: '٢', text: 'اضغط على النقاط الثلاث ⋮ في أعلى الشاشة' },
-  { n: '٣', text: 'اختر "إضافة إلى الشاشة الرئيسية" أو "تثبيت التطبيق"' },
-  { n: '٤', text: 'اضغط "تثبيت" — خلصت!' },
+  { n: '1', text: 'افتح التطبيق في متصفح Chrome' },
+  { n: '2', text: 'اضغط على النقاط الثلاث ⋮ في أعلى الشاشة' },
+  { n: '3', text: 'اختر "إضافة إلى الشاشة الرئيسية" أو "تثبيت التطبيق"' },
+  { n: '4', text: 'اضغط "تثبيت" — خلصت!' },
 ]
 const AND_STEPS_EN = [
-  { n: '١', text: 'Open the app in Chrome browser' },
-  { n: '٢', text: 'Tap the three dots ⋮ at the top right' },
-  { n: '٣', text: 'Select "Add to Home Screen" or "Install App"' },
-  { n: '٤', text: 'Tap "Install" — done!' },
+  { n: '1', text: 'Open the app in Chrome browser' },
+  { n: '2', text: 'Tap the three dots ⋮ at the top right' },
+  { n: '3', text: 'Select "Add to Home Screen" or "Install App"' },
+  { n: '4', text: 'Tap "Install" — done!' },
 ]
 
 export default function More() {
