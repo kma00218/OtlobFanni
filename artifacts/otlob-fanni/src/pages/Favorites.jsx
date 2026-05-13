@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { Heart, MapPin, Phone, MessageSquare, Star, Zap, Building2 } from 'lucide-react'
 import { Link } from 'wouter'
-import api from '../lib/api'
+import api, { getFileUrl } from '../lib/api'
 
 function Stars({ rating }) {
   return (
@@ -18,7 +18,7 @@ function Stars({ rating }) {
 
 function TechRow({ tech, ar, onRemove }) {
   const name     = tech.nameAr || tech.name_ar || ''
-  const photo    = tech.profilePhoto || tech.profile_photo || null
+  const photo    = getFileUrl(tech.profilePhoto || tech.profile_photo || null)
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0,2) || '?'
   const avail    = tech.availableNow ?? tech.available_now ?? (tech.status === 'available')
   const emergency= tech.emergency || false
@@ -77,7 +77,7 @@ function TechRow({ tech, ar, onRemove }) {
 
 function CompanyRow({ company, ar, onRemove }) {
   const name     = company.companyName || company.company_name || ''
-  const logo     = company.companyLogo || company.company_logo || null
+  const logo     = getFileUrl(company.companyLogo || company.company_logo || null)
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0,2) || '؟'
   const avail    = company.availableNow ?? company.available_now ?? false
   const emergency= company.emergency || false

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { Megaphone, CheckCircle } from 'lucide-react'
-import api from '../lib/api'
+import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const emptyForm = {
   companyName: '',
@@ -21,8 +21,9 @@ export default function AdvertiseWithUs() {
   const ar = lang === 'ar'
 
   const [form, setForm] = useState(emptyForm)
-  const [imageFile, setImageFile] = useState(null)
+  const [imagePath, setImagePath] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
+  const [imageUploading, setImageUploading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState({})
@@ -32,13 +33,21 @@ export default function AdvertiseWithUs() {
     setErrors(prev => ({ ...prev, [field]: undefined }))
   }
 
-  const handleImage = (e) => {
+  const handleImage = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setImageFile(file)
-    const reader = new FileReader()
-    reader.onload = (ev) => setImagePreview(ev.target.result)
-    reader.readAsDataURL(file)
+    const preview = URL.createObjectURL(file)
+    setImagePreview(preview)
+    setImageUploading(true)
+    try {
+      const objectPath = await uploadFile(file)
+      setImagePath(objectPath)
+    } catch {
+      setImagePreview(null)
+      setImagePath(null)
+    } finally {
+      setImageUploading(false)
+    }
   }
 
   const validate = () => {
@@ -73,7 +82,7 @@ export default function AdvertiseWithUs() {
         website_or_social_link: form.websiteOrSocialLink || null,
         city: form.city || null,
         notes: form.notes || null,
-        image_preview: imagePreview || null,
+        image_preview: imagePath || null,
         status: 'pending',
       })
       setSubmitted(true)
@@ -223,11 +232,16 @@ export default function AdvertiseWithUs() {
             {imagePreview && (
               <div className="mt-2 relative inline-block">
                 <img src={imagePreview} alt="preview" className="h-28 w-auto rounded-xl border border-gray-200 object-cover" />
-                <button
-                  type="button"
-                  onClick={() => { setImagePreview(null); setImageFile(null) }}
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center leading-none"
-                >×</button>
+                {imageUploading ? (
+                  <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <button type="button"
+                    onClick={() => { setImagePreview(null); setImagePath(null) }}
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center leading-none"
+                  >×</button>
+                )}
               </div>
             )}
           </div>
@@ -266,10 +280,12 @@ export default function AdvertiseWithUs() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || imageUploading}
             className="w-full bg-[#FF7900] disabled:bg-[#FF7900]/50 text-white font-bold py-3.5 rounded-xl text-base mt-2 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
-            {submitting
+            {imageUploading
+              ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{ar ? 'جارٍ رفع الصورة...' : 'Uploading image...'}</>
+              : submitting
               ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{ar ? 'جارٍ الإرسال...' : 'Sending...'}</>
               : (ar ? 'إرسال طلب الإعلان' : 'Submit Ad Request')
             }

@@ -5,7 +5,7 @@ import { useLocation } from 'wouter'
 import {
   MapPin, Phone, Search, Building2, Zap, Briefcase, Clock, ChevronLeft, ChevronRight
 } from 'lucide-react'
-import api from '../lib/api'
+import api, { getFileUrl } from '../lib/api'
 import { categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
 
@@ -21,7 +21,7 @@ function CompanyCard({ company, lang, onOpen }) {
   const ar = lang === 'ar'
   const name = company.company_name || company.companyName || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2) || '?'
-  const logo = company.company_logo || company.companyLogo || null
+  const logo = getFileUrl(company.company_logo || company.companyLogo || null)
   const city = company.city || ''
   const area = company.area || ''
   const specialty = company.specialty || ''

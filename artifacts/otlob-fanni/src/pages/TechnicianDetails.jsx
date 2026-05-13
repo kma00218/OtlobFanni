@@ -7,7 +7,7 @@ import {
   Clock, DollarSign, Image as ImageIcon, CheckCircle, XCircle,
   Facebook, Instagram,
 } from 'lucide-react'
-import api from '../lib/api'
+import api, { getFileUrl } from '../lib/api'
 
 const DAY_AR = {
   Saturday: 'السبت', Sunday: 'الأحد', Monday: 'الاثنين',
@@ -46,8 +46,8 @@ function normalizeTech(t, cities = [], categories = []) {
     categoryId:     t.category_id || t.categoryId || '',
     categoryNameAr: cat?.name_ar || cat?.nameAr || t.category_id || t.categoryId || '',
     categoryNameEn: cat?.name_en || cat?.nameEn || t.category_id || t.categoryId || '',
-    photoUrl:       t.profile_photo || t.profilePhoto || null,
-    workImages:     t.work_images  || t.workImages || [],
+    photoUrl:       getFileUrl(t.profile_photo || t.profilePhoto || null),
+    workImages:     (t.work_images || t.workImages || []).map(getFileUrl),
     rating:         Number(t.rating || 0),
     reviewsCount:   Number(t.reviews_count || t.reviewsCount || 0),
     priceFrom:      Number(t.price_from || t.priceFrom || 0),

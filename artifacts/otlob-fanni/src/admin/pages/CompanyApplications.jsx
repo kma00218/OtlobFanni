@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Building2, Shield } from 'lucide-react'
-import api from '../../lib/api'
+import api, { getFileUrl } from '../../lib/api'
 import { sections as SECTIONS } from '../../data/services'
 
 const EXP_LABEL = {
@@ -115,7 +115,7 @@ export default function CompanyApplications() {
     {
       key: 'companyName', label: 'الشركة / المؤسسة',
       render: (v, row) => {
-        const logo = row.companyLogo || row.company_logo
+        const logo = getFileUrl(row.companyLogo || row.company_logo)
         const contact = row.contactName || row.contact_name
         return (
           <div className="flex items-center gap-2.5">
@@ -252,8 +252,8 @@ export default function CompanyApplications() {
         {viewItem && (() => {
           const compName    = viewItem.companyName  || viewItem.company_name  || ''
           const contactName = viewItem.contactName  || viewItem.contact_name  || ''
-          const logo        = viewItem.companyLogo  || viewItem.company_logo  || null
-          const workImgs    = viewItem.workImages   || viewItem.work_images   || []
+          const logo        = getFileUrl(viewItem.companyLogo  || viewItem.company_logo  || null)
+          const workImgs    = (viewItem.workImages || viewItem.work_images || []).map(getFileUrl)
           const availNow    = viewItem.availableNow ?? viewItem.available_now ?? false
           const hoursFrom   = viewItem.hoursFrom    || viewItem.hours_from    || ''
           const hoursTo     = viewItem.hoursTo      || viewItem.hours_to      || ''
@@ -262,8 +262,8 @@ export default function CompanyApplications() {
           const priceTo     = viewItem.priceTo      || viewItem.price_to      || ''
           const svcRadius   = viewItem.serviceRadius|| viewItem.service_radius|| ''
           const commReg     = viewItem.commercialReg|| viewItem.commercial_reg|| ''
-          const commDoc     = viewItem.commercialDoc|| viewItem.commercial_doc|| null
-          const workLic     = viewItem.workLicense  || viewItem.work_license  || null
+          const commDoc     = getFileUrl(viewItem.commercialDoc|| viewItem.commercial_doc|| null)
+          const workLic     = getFileUrl(viewItem.workLicense  || viewItem.work_license  || null)
           const yearsActive = viewItem.yearsActive  || viewItem.years_active  || ''
           const createdAt   = viewItem.createdAt    || viewItem.created_at    || ''
 

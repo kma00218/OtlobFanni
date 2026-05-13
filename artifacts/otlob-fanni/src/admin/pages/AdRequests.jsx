@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Eye, CheckCircle, XCircle, Trash2, X, ExternalLink, Phone, MapPin, Megaphone, Building2, ChevronDown } from 'lucide-react'
-import api from '../../lib/api'
+import api, { getFileUrl } from '../../lib/api'
 import { sections, categories } from '../../data/services'
 
 const STATUS_MAP = {
@@ -231,7 +231,7 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
   const city      = req.city || ''
   const link      = req.websiteOrSocialLink || req.website_or_social_link || ''
   const notes     = req.notes || ''
-  const image     = req.imagePreview  || req.image_preview  || ''
+  const image     = getFileUrl(req.imagePreview  || req.image_preview  || null)
   const createdAt = req.createdAt     || req.created_at     || ''
   const isPending = req.status === 'pending'
 
@@ -470,7 +470,7 @@ export default function AdRequests() {
               const city      = r.city || ''
               const title     = r.adTitle || r.ad_title || ''
               const createdAt = r.createdAt || r.created_at || ''
-              const image     = r.imagePreview || r.image_preview || ''
+              const image     = getFileUrl(r.imagePreview || r.image_preview || null)
               return (
                 <div key={r.id} className="px-5 py-4 hover:bg-white/2 transition-colors">
                   <div className="flex items-start gap-3">

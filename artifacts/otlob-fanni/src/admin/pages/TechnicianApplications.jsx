@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Shield } from 'lucide-react'
-import api from '../../lib/api'
+import api, { getFileUrl } from '../../lib/api'
 import { sections as SECTIONS } from '../../data/services'
 
 const EXP_YEARS = {
@@ -165,7 +165,7 @@ export default function TechnicianApplications() {
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-white/8">
             {(row.profilePhoto || row.profile_photo)
-              ? <img src={row.profilePhoto || row.profile_photo} alt="" className="w-full h-full object-cover" />
+              ? <img src={getFileUrl(row.profilePhoto || row.profile_photo)} alt="" className="w-full h-full object-cover" />
               : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white text-xs font-bold">
                   {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
                 </div>
@@ -295,8 +295,8 @@ export default function TechnicianApplications() {
       >
         {viewItem && (() => {
           const name       = viewItem.fullName || viewItem.full_name || ''
-          const photo      = viewItem.profilePhoto || viewItem.profile_photo || null
-          const workImgs   = viewItem.workImages || viewItem.work_images || []
+          const photo      = getFileUrl(viewItem.profilePhoto || viewItem.profile_photo || null)
+          const workImgs   = (viewItem.workImages || viewItem.work_images || []).map(getFileUrl)
           const availNow   = viewItem.availableNow ?? viewItem.available_now ?? false
           const hoursFrom  = viewItem.hoursFrom  || viewItem.hours_from  || ''
           const hoursTo    = viewItem.hoursTo    || viewItem.hours_to    || ''
@@ -304,9 +304,9 @@ export default function TechnicianApplications() {
           const priceFrom  = viewItem.priceFrom  || viewItem.price_from  || ''
           const priceTo    = viewItem.priceTo    || viewItem.price_to    || ''
           const natId      = viewItem.nationalId || viewItem.national_id || ''
-          const idFront    = viewItem.idDocFront || viewItem.id_doc_front || null
-          const idBack     = viewItem.idDocBack  || viewItem.id_doc_back  || null
-          const workLic    = viewItem.workLicense|| viewItem.work_license || null
+          const idFront    = getFileUrl(viewItem.idDocFront || viewItem.id_doc_front || null)
+          const idBack     = getFileUrl(viewItem.idDocBack  || viewItem.id_doc_back  || null)
+          const workLic    = getFileUrl(viewItem.workLicense|| viewItem.work_license || null)
           const svcRadius  = viewItem.serviceRadius || viewItem.service_radius || ''
           const createdAt  = viewItem.createdAt  || viewItem.created_at  || ''
 

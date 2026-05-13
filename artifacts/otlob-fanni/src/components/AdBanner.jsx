@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { ExternalLink, X } from 'lucide-react'
-import api from '../lib/api'
+import api, { getFileUrl } from '../lib/api'
 
 // ── Single horizontal banner card ──────────────────────────────────────────
 function BannerCard({ ad, onDismiss, compact }) {
   const href = ad.link_url || ad.linkUrl || '#'
-  const image = ad.image_url || ad.imageUrl || ad.imagePreview || null
+  const image = getFileUrl(ad.image_url || ad.imageUrl || ad.imagePreview || null)
   const title = ad.title_ar || ad.titleAr || ad.adTitle || ''
   const desc  = ad.description_ar || ad.descriptionAr || ad.adDescription || ''
 
@@ -59,7 +59,7 @@ function BannerCard({ ad, onDismiss, compact }) {
 // ── Featured inline card (for technicians list) ─────────────────────────────
 function FeaturedCard({ ad }) {
   const href  = ad.link_url || ad.linkUrl || '#'
-  const image = ad.image_url || ad.imageUrl || ad.imagePreview || null
+  const image = getFileUrl(ad.image_url || ad.imageUrl || ad.imagePreview || null)
   const title = ad.title_ar || ad.titleAr || ad.adTitle || ''
   const desc  = ad.description_ar || ad.descriptionAr || ad.adDescription || ''
 

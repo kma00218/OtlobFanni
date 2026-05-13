@@ -5,7 +5,7 @@ import {
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
   Image, Shield, Zap, User, Settings2,
 } from 'lucide-react'
-import api from '../../lib/api'
+import api, { getFileUrl } from '../../lib/api'
 import { sections as SECTIONS } from '../../data/services'
 
 const PAGE_SIZE = 15
@@ -69,8 +69,8 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
   const exp         = tech.experienceYears ?? tech.experience_years ?? 0
   const descAr      = tech.descriptionAr || tech.description_ar || ''
   const descEn      = tech.descriptionEn || tech.description_en || ''
-  const photo       = tech.profilePhoto  || tech.profile_photo  || ''
-  const workImgs    = tech.workImages    || tech.work_images    || []
+  const photo       = getFileUrl(tech.profilePhoto  || tech.profile_photo  || null)
+  const workImgs    = (tech.workImages || tech.work_images || []).map(getFileUrl)
   const emergency   = tech.emergency     ?? false
   const availNow    = tech.availableNow  ?? tech.available_now ?? false
   const isFeatured  = tech.isFeatured    ?? tech.is_featured  ?? false
@@ -698,7 +698,7 @@ export default function Technicians() {
                 const active   = row.isActive   ?? row.is_active   ?? true
                 const approved = row.isApproved ?? row.is_approved ?? true
                 const featured = row.isFeatured ?? row.is_featured ?? false
-                const photo    = row.profilePhoto || row.profile_photo || ''
+                const photo    = getFileUrl(row.profilePhoto || row.profile_photo || null)
                 const initials = (row.nameAr || row.name_ar || '').split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2)
                 const pFrom    = row.priceFrom ?? row.price_from ?? 0
                 const pTo      = row.priceTo   ?? row.price_to   ?? 0

@@ -7,7 +7,7 @@ import {
   Clock, DollarSign, Image as ImageIcon, Building2,
   Facebook, Instagram, CheckCircle, XCircle,
 } from 'lucide-react'
-import api from '../lib/api'
+import api, { getFileUrl } from '../lib/api'
 import { categories } from '../data/services'
 
 const CAT_LABEL    = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
@@ -76,7 +76,7 @@ export default function CompanyDetails() {
   )
 
   const name      = company.company_name || company.companyName || ''
-  const logo      = company.company_logo || company.companyLogo || null
+  const logo      = getFileUrl(company.company_logo || company.companyLogo || null)
   const specialty = company.specialty || ''
   const city      = company.city || ''
   const area      = company.area || ''
@@ -94,7 +94,7 @@ export default function CompanyDetails() {
   const certifications = company.certifications || ''
   const facebook    = company.facebook    || ''
   const instagram   = company.instagram   || ''
-  const workImages  = company.work_images || company.workImages || []
+  const workImages  = (company.work_images || company.workImages || []).map(getFileUrl)
   const serviceRadius = company.service_radius || company.serviceRadius || ''
   const address       = company.address || ''
 

@@ -4,7 +4,7 @@ import {
   X, Image, Link2, MapPin, Calendar, Search, Megaphone,
   Monitor, LayoutGrid, Users, Sparkles,
 } from 'lucide-react'
-import api from '../../lib/api'
+import api, { getFileUrl } from '../../lib/api'
 
 const PLACEMENTS = [
   { value: 'home',        labelAr: 'الصفحة الرئيسية',  icon: Monitor,     color: 'text-blue-400',    bg: 'bg-blue-500/10' },
@@ -38,7 +38,7 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
   const titleAr  = ad.title_ar  || ad.titleAr  || '—'
   const titleEn  = ad.title_en  || ad.titleEn  || ''
   const descAr   = ad.description_ar || ad.descriptionAr || ''
-  const imageUrl = ad.image_url || ad.imageUrl || ''
+  const imageUrl = getFileUrl(ad.image_url || ad.imageUrl || null)
   const linkUrl  = ad.link_url  || ad.linkUrl  || ''
   const placement = ad.placement || ''
   const startDate = ad.start_date || ad.startDate || ''

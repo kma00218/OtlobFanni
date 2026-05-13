@@ -4,6 +4,7 @@ import BackHeader from '../components/BackHeader'
 import ServiceImageIcon from '../components/ServiceImageIcon'
 import { categories } from '../data/services'
 import { useRoute, useLocation } from 'wouter'
+import { getFileUrl } from '../lib/api'
 import {
   Star, MapPin, Phone, MessageSquare, Zap, Search,
   Users, Loader2, Building2, Heart,
@@ -43,7 +44,7 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav }) {
   const ar = lang === 'ar'
   const name = tech.nameAr || tech.name_ar || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
-  const photo = tech.profilePhoto || tech.profile_photo || null
+  const photo = getFileUrl(tech.profilePhoto || tech.profile_photo || null)
   const availableNow = tech.availableNow ?? tech.available_now ?? (tech.status === 'available')
   const emergency = tech.emergency || false
   const isFeatured = tech.isFeatured ?? tech.is_featured ?? false
@@ -146,7 +147,7 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav }) {
   const ar = lang === 'ar'
   const name = company.companyName || company.company_name || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
-  const logo = company.companyLogo || company.company_logo || null
+  const logo = getFileUrl(company.companyLogo || company.company_logo || null)
   const availableNow = company.availableNow ?? company.available_now ?? false
   const emergency = company.emergency || false
   const priceFrom = company.priceFrom || company.price_from || ''

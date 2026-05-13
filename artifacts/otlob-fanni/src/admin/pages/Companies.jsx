@@ -6,7 +6,7 @@ import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle
 } from 'lucide-react'
-import api from '../../lib/api'
+import api, { getFileUrl } from '../../lib/api'
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',
@@ -137,7 +137,7 @@ export default function Companies() {
     {
       key: 'companyName', label: 'الشركة / المؤسسة',
       render: (v, row) => {
-        const logo = row.companyLogo || null
+        const logo = getFileUrl(row.companyLogo || null)
         const contact = row.contactName || ''
         return (
           <div className="flex items-center gap-2.5">
@@ -243,8 +243,8 @@ export default function Companies() {
         {viewItem && (() => {
           const compName    = viewItem.companyName  || ''
           const contactName = viewItem.contactName  || ''
-          const logo        = viewItem.companyLogo  || null
-          const workImgs    = viewItem.workImages   || []
+          const logo        = getFileUrl(viewItem.companyLogo  || null)
+          const workImgs    = (viewItem.workImages || []).map(getFileUrl)
           const availNow    = viewItem.availableNow ?? false
           const hoursFrom   = viewItem.hoursFrom    || ''
           const hoursTo     = viewItem.hoursTo      || ''
@@ -253,8 +253,8 @@ export default function Companies() {
           const priceTo     = viewItem.priceTo      || ''
           const svcRadius   = viewItem.serviceRadius|| ''
           const commReg     = viewItem.commercialReg|| ''
-          const commDoc     = viewItem.commercialDoc|| null
-          const workLic     = viewItem.workLicense  || null
+          const commDoc     = getFileUrl(viewItem.commercialDoc|| null)
+          const workLic     = getFileUrl(viewItem.workLicense  || null)
           const yearsActive = viewItem.yearsActive  || ''
           const createdAt   = viewItem.createdAt    || ''
 

@@ -26,6 +26,28 @@ const post = (path, body)   => request('POST',   path, body)
 const patch = (path, body)  => request('PATCH',  path, body)
 const del  = (path)         => request('DELETE', path)
 
+export async function uploadFile(file) {
+  const { uploadURL, objectPath } = await request('POST', '/storage/uploads/request-url', {
+    name: file.name,
+    size: file.size,
+    contentType: file.type,
+  })
+  const putRes = await fetch(uploadURL, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type },
+    body: file,
+  })
+  if (!putRes.ok) throw new Error(`Upload failed: ${putRes.status}`)
+  return objectPath
+}
+
+export function getFileUrl(path) {
+  if (!path) return null
+  if (path.startsWith('data:')) return path
+  if (path.startsWith('/objects/')) return `${API_BASE}/storage${path}`
+  return path
+}
+
 // ── Public ───────────────────────────────────────────────────────────────────
 export const api = {
   cities:     () => get('/cities'),

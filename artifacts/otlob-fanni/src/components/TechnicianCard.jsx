@@ -1,6 +1,7 @@
 import { useLang } from '../context/LanguageContext';
 import { Link } from 'wouter';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getFileUrl } from '../lib/api';
 
 export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
@@ -19,7 +20,7 @@ export default function TechnicianCard({ technician }) {
         {/* Avatar — real photo or colored initials */}
         <div className="h-14 w-14 rounded-full flex-shrink-0 overflow-hidden border-2 border-gray-100">
           {technician.profilePhoto ? (
-            <img src={technician.profilePhoto} alt={name} className="w-full h-full object-cover" />
+            <img src={getFileUrl(technician.profilePhoto)} alt={name} className="w-full h-full object-cover" />
           ) : (
             <div
               className="w-full h-full flex items-center justify-center text-white font-bold text-lg"

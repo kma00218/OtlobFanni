@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { sections, categories } from '../data/services'
 import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook, Info } from 'lucide-react'
-import api from '../lib/api'
+import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const DAYS = {
   ar: ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],
@@ -44,32 +44,51 @@ function Field({ label, required, hint, children }) {
 }
 
 function DocUpload({ label, hint, value, onChange, ar }) {
+  const [preview, setPreview] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const prev = URL.createObjectURL(file)
+    setPreview(prev)
+    setBusy(true)
+    try {
+      const objectPath = await uploadFile(file)
+      onChange(objectPath)
+    } catch {
+      setPreview(null)
+    } finally {
+      setBusy(false)
+    }
+  }
+  const displaySrc = preview || getFileUrl(value)
   return (
     <div className="space-y-1.5">
       <label className="block text-sm font-medium text-gray-700">{label}</label>
-      {value ? (
+      {displaySrc ? (
         <div className="relative rounded-xl overflow-hidden border border-gray-200 h-28">
-          <img src={value} alt="" className="w-full h-full object-cover" />
-          <button type="button" onClick={() => onChange(null)}
-            className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center">
-            <X className="w-3.5 h-3.5 text-white" />
-          </button>
-          <div className="absolute bottom-0 left-0 right-0 bg-green-500/90 text-white text-xs text-center py-1 font-medium">
-            {ar ? '✓ تم الرفع' : '✓ Uploaded'}
-          </div>
+          <img src={displaySrc} alt="" className="w-full h-full object-cover" />
+          {busy ? (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <>
+              <button type="button" onClick={() => { onChange(null); setPreview(null) }}
+                className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center">
+                <X className="w-3.5 h-3.5 text-white" />
+              </button>
+              <div className="absolute bottom-0 left-0 right-0 bg-green-500/90 text-white text-xs text-center py-1 font-medium">
+                {ar ? '✓ تم الرفع' : '✓ Uploaded'}
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <label className="flex flex-col items-center justify-center h-28 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#FF7900]/50 hover:bg-[#FF7900]/5 transition-colors">
           <Upload className="w-5 h-5 text-gray-400 mb-1" />
           <span className="text-xs text-gray-500 text-center px-2">{ar ? 'انقر للرفع' : 'Click to upload'}</span>
-          <input type="file" accept="image/*,.pdf" className="hidden"
-            onChange={e => {
-              const file = e.target.files?.[0]
-              if (!file) return
-              const reader = new FileReader()
-              reader.onload = ev => onChange(ev.target.result)
-              reader.readAsDataURL(file)
-            }} />
+          <input type="file" accept="image/*,.pdf" className="hidden" onChange={handleFile} />
         </label>
       )}
       {hint && <p className="text-xs text-gray-400">{hint}</p>}
@@ -87,8 +106,11 @@ export default function JoinCompany() {
 
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(0)
   const [companyLogo, setCompanyLogo] = useState(null)
+  const [logoPreview, setLogoPreview] = useState(null)
   const [workImages, setWorkImages] = useState([])
+  const [workPreviews, setWorkPreviews] = useState([])
   const [days, setDays] = useState([])
 
   const [form, setForm] = useState({
@@ -121,20 +143,38 @@ export default function JoinCompany() {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const toggleDay = (d) => setDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])
 
-  const handleLogo = (e) => {
+  const handleLogo = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = ev => setCompanyLogo(ev.target.result)
-    reader.readAsDataURL(file)
+    const preview = URL.createObjectURL(file)
+    setLogoPreview(preview)
+    setUploading(n => n + 1)
+    try {
+      const objectPath = await uploadFile(file)
+      setCompanyLogo(objectPath)
+    } catch {
+      alert(ar ? 'فشل رفع الصورة، حاول مرة أخرى' : 'Logo upload failed, please try again')
+      setLogoPreview(null)
+    } finally {
+      setUploading(n => n - 1)
+    }
   }
 
-  const handleWorkImages = (e) => {
+  const handleWorkImages = async (e) => {
     const files = Array.from(e.target.files || [])
-    files.forEach(file => {
-      const reader = new FileReader()
-      reader.onload = ev => setWorkImages(p => p.length < 6 ? [...p, ev.target.result] : p)
-      reader.readAsDataURL(file)
+    files.forEach(async (file) => {
+      if (workImages.length >= 6) return
+      const preview = URL.createObjectURL(file)
+      setWorkPreviews(p => p.length < 6 ? [...p, preview] : p)
+      setUploading(n => n + 1)
+      try {
+        const objectPath = await uploadFile(file)
+        setWorkImages(p => p.length < 6 ? [...p, objectPath] : p)
+      } catch {
+        setWorkPreviews(p => p.filter(x => x !== preview))
+      } finally {
+        setUploading(n => n - 1)
+      }
     })
   }
 
@@ -167,7 +207,7 @@ export default function JoinCompany() {
         service_radius: form.service_radius,
         facebook:       form.facebook,
         instagram:      form.instagram,
-        company_logo:   companyLogo,
+        company_logo:   companyLogo || null,
         work_images:    workImages,
       })
       setSubmitted(true)
@@ -238,10 +278,10 @@ export default function JoinCompany() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="relative w-28 h-28 rounded-2xl border-4 border-[#FF7900]/20 flex items-center justify-center cursor-pointer overflow-hidden bg-gray-100"
-                onClick={() => logoInputRef.current?.click()}
+                onClick={() => !uploading && logoInputRef.current?.click()}
               >
-                {companyLogo ? (
-                  <img src={companyLogo} alt="logo" className="w-full h-full object-cover" />
+                {(logoPreview || companyLogo) ? (
+                  <img src={logoPreview || getFileUrl(companyLogo)} alt="logo" className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-16 h-16 rounded-xl bg-[#071B33] flex items-center justify-center text-white font-bold text-xl">
@@ -249,21 +289,28 @@ export default function JoinCompany() {
                     </div>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-2xl">
-                  <Camera className="w-6 h-6 text-white" />
-                </div>
+                {uploading > 0 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+                {!uploading && (
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-2xl">
+                    <Camera className="w-6 h-6 text-white" />
+                  </div>
+                )}
               </div>
               <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogo} />
               <div className="text-center">
                 <button type="button" onClick={() => logoInputRef.current?.click()}
-                  className="text-sm font-medium text-[#FF7900] hover:underline">
-                  {companyLogo ? (ar ? 'تغيير الشعار' : 'Change Logo') : (ar ? 'رفع شعار الشركة' : 'Upload Company Logo')}
+                  className="text-sm font-medium text-[#FF7900] hover:underline" disabled={uploading > 0}>
+                  {(logoPreview || companyLogo) ? (ar ? 'تغيير الشعار' : 'Change Logo') : (ar ? 'رفع شعار الشركة' : 'Upload Company Logo')}
                 </button>
                 <p className="text-xs text-gray-400 mt-0.5">
                   {ar ? 'سيظهر هذا الشعار في ملف الشركة على التطبيق' : 'This logo will appear on your company profile in the app'}
                 </p>
-                {companyLogo && (
-                  <button type="button" onClick={() => setCompanyLogo(null)}
+                {(logoPreview || companyLogo) && (
+                  <button type="button" onClick={() => { setCompanyLogo(null); setLogoPreview(null) }}
                     className="text-xs text-red-400 hover:underline mt-1 block">
                     {ar ? 'إزالة الشعار' : 'Remove logo'}
                   </button>
@@ -494,17 +541,24 @@ export default function JoinCompany() {
               {ar ? `${workImages.length}/6 صور` : `${workImages.length}/6 photos`}
             </p>
             <div className="grid grid-cols-3 gap-2">
-              {workImages.map((src, i) => (
+              {workPreviews.map((src, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-gray-200">
                   <img src={src} alt={`work ${i}`} className="w-full h-full object-cover" />
-                  <button type="button"
-                    onClick={() => setWorkImages(p => p.filter((_, idx) => idx !== i))}
-                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center">
-                    <X className="w-3 h-3 text-white" />
-                  </button>
+                  {workImages[i] ? (
+                    <button type="button" onClick={() => {
+                      setWorkImages(p => p.filter((_, idx) => idx !== i))
+                      setWorkPreviews(p => p.filter((_, idx) => idx !== i))
+                    }} className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center">
+                      <X className="w-3 h-3 text-white" />
+                    </button>
+                  ) : (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
                 </div>
               ))}
-              {workImages.length < 6 && (
+              {workPreviews.length < 6 && (
                 <label className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-[#FF7900]/50 hover:bg-[#FF7900]/5 transition-colors">
                   <Upload className="w-4 h-4 text-gray-400 mb-1" />
                   <span className="text-xs text-gray-400">{ar ? 'إضافة' : 'Add'}</span>
@@ -540,12 +594,10 @@ export default function JoinCompany() {
           </div>
 
           <button
-            type="submit" disabled={saving}
+            type="submit" disabled={saving || uploading > 0}
             className="w-full bg-[#FF7900] text-white font-bold py-4 rounded-2xl text-base hover:bg-[#e86d00] transition-colors active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-[#FF7900]/20"
           >
-            {saving
-              ? (ar ? 'جارٍ الإرسال...' : 'Submitting...')
-              : (ar ? 'إرسال طلب التسجيل' : 'Submit Registration')}
+            {uploading > 0 ? (ar ? 'جارٍ رفع الصور...' : 'Uploading images...') : saving ? (ar ? 'جارٍ الإرسال...' : 'Submitting...') : (ar ? 'إرسال طلب التسجيل' : 'Submit Registration')}
           </button>
 
         </form>
