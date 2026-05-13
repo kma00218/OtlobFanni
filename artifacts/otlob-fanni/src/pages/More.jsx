@@ -1,5 +1,5 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, UserPlus, Building2, Share2, Heart } from 'lucide-react';
+import { Info, FileText, Shield, Mail, Globe, Megaphone, HelpCircle, Share2, Heart, Smartphone, Download } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ITEMS = [
@@ -130,7 +130,85 @@ export default function More() {
         </div>
       </div>
 
-      <div className="mt-12 text-center">
+      {/* Install App Section */}
+      <div className="px-5 mt-8">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100" style={{ background: 'linear-gradient(135deg, #071B33 0%, #1a3a5c 100%)' }}>
+            <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Download className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-white font-extrabold text-base">{ar ? 'حمّل التطبيق على جهازك' : 'Install App on Your Device'}</p>
+              <p className="text-white/70 text-xs mt-0.5">{ar ? 'مجاناً – بدون متجر تطبيقات' : 'Free – No app store needed'}</p>
+            </div>
+          </div>
+
+          <div className="p-5 space-y-5">
+
+            {/* iOS */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-xl bg-black flex items-center justify-center flex-shrink-0">
+                  <Smartphone className="w-4 h-4 text-white" />
+                </div>
+                <p className="font-extrabold text-[#071B33] text-base">{ar ? 'آيفون (iPhone / iPad)' : 'iPhone / iPad (iOS)'}</p>
+              </div>
+              <div className="space-y-2.5">
+                {(ar ? [
+                  { n: '١', text: 'افتح التطبيق في متصفح Safari' },
+                  { n: '٢', text: 'اضغط على زر المشاركة في أسفل الشاشة (مربع مع سهم للأعلى ⬆)' },
+                  { n: '٣', text: 'اختر "إضافة إلى الشاشة الرئيسية"' },
+                  { n: '٤', text: 'اضغط "إضافة" — خلصت!' },
+                ] : [
+                  { n: '1', text: 'Open the app in Safari browser' },
+                  { n: '2', text: 'Tap the Share button at the bottom (box with arrow ⬆)' },
+                  { n: '3', text: 'Select "Add to Home Screen"' },
+                  { n: '4', text: 'Tap "Add" — done!' },
+                ]).map(step => (
+                  <div key={step.n} className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-black text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0 mt-0.5">{step.n}</span>
+                    <p className="text-gray-700 text-sm font-semibold leading-snug">{step.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100" />
+
+            {/* Android */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-xl bg-[#34A853] flex items-center justify-center flex-shrink-0">
+                  <Smartphone className="w-4 h-4 text-white" />
+                </div>
+                <p className="font-extrabold text-[#071B33] text-base">{ar ? 'أندرويد (Android)' : 'Android'}</p>
+              </div>
+              <div className="space-y-2.5">
+                {(ar ? [
+                  { n: '١', text: 'افتح التطبيق في متصفح Chrome' },
+                  { n: '٢', text: 'اضغط على النقاط الثلاث ⋮ في أعلى الشاشة' },
+                  { n: '٣', text: 'اختر "إضافة إلى الشاشة الرئيسية" أو "تثبيت التطبيق"' },
+                  { n: '٤', text: 'اضغط "تثبيت" — خلصت!' },
+                ] : [
+                  { n: '1', text: 'Open the app in Chrome browser' },
+                  { n: '2', text: 'Tap the three dots ⋮ at the top of the screen' },
+                  { n: '3', text: 'Select "Add to Home Screen" or "Install App"' },
+                  { n: '4', text: 'Tap "Install" — done!' },
+                ]).map(step => (
+                  <div key={step.n} className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-[#34A853] text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0 mt-0.5">{step.n}</span>
+                    <p className="text-gray-700 text-sm font-semibold leading-snug">{step.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 text-center">
         <p className="text-gray-400 text-xs">Otlob Fanni v1.0.0</p>
       </div>
     </div>
