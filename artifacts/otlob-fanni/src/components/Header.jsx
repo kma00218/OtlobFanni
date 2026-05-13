@@ -109,9 +109,13 @@ export default function Header() {
           </div>
           <span className="text-[9px] font-semibold text-gray-500 leading-none">share</span>
         </button>
-        <Button variant="ghost" size="icon" onClick={toggleLang} className="font-bold text-foreground text-sm">
+        <button
+          onClick={toggleLang}
+          className="flex items-center justify-center px-3 h-9 rounded-xl font-extrabold text-sm text-white active:scale-90 transition-transform"
+          style={{ background: '#FF7900', minWidth: 44 }}
+        >
           {lang === 'ar' ? 'EN' : 'AR'}
-        </Button>
+        </button>
         <Button variant="ghost" size="icon">
           <Bell className="h-5 w-5 text-foreground" />
         </Button>
