@@ -27,11 +27,11 @@ export default function AllSpecialties() {
           return (
             <div key={section.id}>
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-1.5 h-5 bg-[#FF7900] rounded-full inline-block flex-shrink-0" />
-                <h3 className="text-sm font-bold text-[#071B33]">
+                <span className="w-2 h-6 bg-[#FF7900] rounded-full inline-block flex-shrink-0" />
+                <h3 className="text-lg font-extrabold text-[#071B33]">
                   {ar ? section.nameAr : section.nameEn}
                 </h3>
-                <span className="text-gray-400 font-normal text-xs">({sectionCats.length})</span>
+                <span className="text-gray-400 font-semibold text-sm">({sectionCats.length})</span>
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {sectionCats.map(category => (
