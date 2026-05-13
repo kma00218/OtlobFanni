@@ -54,12 +54,32 @@ function InstallFAB() {
   const [location, navigate] = useLocation();
   const { lang } = useLang();
   const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(() => {
+    // Check if already running as installed PWA
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+  });
 
   useEffect(() => {
     const handler = (e: any) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+
+    // Listen for app being installed
+    window.addEventListener('appinstalled', () => setIsInstalled(true));
+
+    // Also watch display-mode changes
+    const mq = window.matchMedia('(display-mode: standalone)');
+    const mqHandler = (e: MediaQueryListEvent) => { if (e.matches) setIsInstalled(true); };
+    mq.addEventListener('change', mqHandler);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      mq.removeEventListener('change', mqHandler);
+    };
   }, []);
+
+  // Hide if app is already installed
+  if (isInstalled) return null;
 
   // Hide on /more page (install section is already visible there)
   if (location === '/more') return null;
