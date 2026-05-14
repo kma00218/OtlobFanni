@@ -101,7 +101,7 @@ function CompanyRow({ company, ar, onRemove }) {
 
   return (
     <div
-      className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      className="bg-[#EBF5FF] rounded-2xl border border-blue-300 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
       onClick={() => navigate(`/company/${company.id}`)}
     >
       <div className="flex gap-3 p-3">
@@ -251,9 +251,12 @@ export default function Favorites() {
             {/* فنيون */}
             {techs.length > 0 && (
               <div className="space-y-3">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                  👷 {ar ? `فنيون (${techs.length})` : `Technicians (${techs.length})`}
-                </p>
+                <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-100 rounded-xl">
+                  <span className="text-base leading-none">👷</span>
+                  <p className="text-sm font-bold text-[#FF7900]">
+                    {ar ? `فنيون (${techs.length})` : `Technicians (${techs.length})`}
+                  </p>
+                </div>
                 {techs.map(tech => (
                   <TechRow key={tech.id} tech={tech} ar={ar} onRemove={removeTech} />
                 ))}
@@ -263,9 +266,12 @@ export default function Favorites() {
             {/* شركات */}
             {companies.length > 0 && (
               <div className="space-y-3">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                  🏢 {ar ? `شركات (${companies.length})` : `Companies (${companies.length})`}
-                </p>
+                <div className="flex items-center gap-2 px-3 py-2 bg-blue-600 rounded-xl">
+                  <span className="text-base leading-none">🏢</span>
+                  <p className="text-sm font-bold text-white">
+                    {ar ? `شركات ومؤسسات (${companies.length})` : `Companies (${companies.length})`}
+                  </p>
+                </div>
                 {companies.map(company => (
                   <CompanyRow key={company.id} company={company} ar={ar} onRemove={removeCompany} />
                 ))}

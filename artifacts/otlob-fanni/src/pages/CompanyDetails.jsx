@@ -32,7 +32,7 @@ const EXP_EN = {
 function InfoRow({ label, value, dir }) {
   if (!value) return null
   return (
-    <div className="bg-gray-50 rounded-xl p-3">
+    <div className="bg-white/60 rounded-xl p-3 border border-blue-100">
       <p className="text-xs text-gray-400 mb-0.5">{label}</p>
       <p className="font-medium text-gray-800 text-sm" dir={dir}>{value}</p>
     </div>
@@ -57,7 +57,7 @@ export default function CompanyDetails() {
   }, [id])
 
   if (notFound) return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16" dir={dir}>
+    <div className="bg-[#EEF4FF] min-h-screen pt-16" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
       <div className="flex flex-col items-center justify-center py-20 text-center px-6 gap-4">
         <p className="text-gray-700 font-bold text-lg">{ar ? 'الشركة غير موجودة' : 'Company not found'}</p>
@@ -67,7 +67,7 @@ export default function CompanyDetails() {
   )
 
   if (!company) return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16" dir={dir}>
+    <div className="bg-[#EEF4FF] min-h-screen pt-16" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
       <div className="flex items-center justify-center py-20">
         <div className="w-8 h-8 border-4 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
@@ -103,7 +103,7 @@ export default function CompanyDetails() {
   const expLabel   = ar ? (EXP_AR[yearsActive] || yearsActive) : (EXP_EN[yearsActive] || yearsActive)
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-28" dir={dir}>
+    <div className="bg-[#EEF4FF] min-h-screen pt-16 pb-28" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
 
       {lightbox && (
@@ -115,10 +115,11 @@ export default function CompanyDetails() {
       <main className="px-4 pt-4 space-y-4">
 
         {/* بطاقة الشركة الرئيسية */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 pt-4 pb-4">
+        <div className="bg-[#EBF5FF] rounded-2xl border border-blue-300 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-[#0e3460] to-[#1a56db] px-4 pt-4 pb-6" />
+          <div className="px-4 pt-0 pb-4 -mt-5">
             <div className="flex items-end gap-3 mb-3">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#071B33] flex items-center justify-center">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#0e3460] flex items-center justify-center">
                 {logo
                   ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
                   : <span className="text-white text-2xl font-bold">{initials}</span>
@@ -180,7 +181,7 @@ export default function CompanyDetails() {
 
         {/* السعر */}
         {priceFrom && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
             <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5" /> {ar ? 'نطاق السعر' : 'Price Range'}
             </p>
@@ -204,7 +205,7 @@ export default function CompanyDetails() {
 
         {/* وصف الشركة */}
         {description && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
             <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">
               {ar ? 'عن الشركة' : 'About'}
             </p>
@@ -213,8 +214,8 @@ export default function CompanyDetails() {
         )}
 
         {/* معلومات إضافية */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-2">
-          <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3">
+        <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4 space-y-2">
+          <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-3">
             {ar ? 'معلومات الشركة' : 'Company Info'}
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -241,7 +242,7 @@ export default function CompanyDetails() {
 
         {/* أوقات العمل */}
         {(workingDays.length > 0 || hoursFrom) && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
             <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" /> {ar ? 'أوقات العمل' : 'Working Hours'}
             </p>
@@ -267,7 +268,7 @@ export default function CompanyDetails() {
 
         {/* معرض الأعمال */}
         {workImages.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
             <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <ImageIcon className="w-3.5 h-3.5" />
               {ar ? `معرض الأعمال (${workImages.length})` : `Work Portfolio (${workImages.length})`}
@@ -288,7 +289,7 @@ export default function CompanyDetails() {
 
         {/* التواصل الاجتماعي */}
         {(facebook || instagram) && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
+          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4 space-y-3">
             <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">
               {ar ? 'التواصل الاجتماعي' : 'Social Media'}
             </p>

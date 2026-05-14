@@ -163,14 +163,14 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }
 
   return (
     <div
-      className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      className="bg-[#EBF5FF] rounded-2xl border border-blue-300 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
       onClick={() => onOpen(company.id)}
     >
       <div className="relative">
         {logo ? (
           <img src={logo} alt={name} className="w-full h-36 object-cover" />
         ) : (
-          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#0e3460] flex items-center justify-center">
+          <div className="w-full h-36 bg-gradient-to-br from-[#0e3460] to-[#1a56db] flex items-center justify-center">
             <Building2 className="w-10 h-10 text-white/40 absolute" />
             <span className="text-white text-3xl font-bold relative">{initials}</span>
           </div>
@@ -521,10 +521,12 @@ export default function CategoryTechnicians() {
             {filteredTechs.length > 0 && (
               <div>
                 {filteredCompanies.length > 0 && (
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5" />
-                    {ar ? `فنيون (${filteredTechs.length})` : `Technicians (${filteredTechs.length})`}
-                  </p>
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-orange-50 border border-orange-100 rounded-xl">
+                    <Users className="w-4 h-4 text-[#FF7900]" />
+                    <p className="text-sm font-bold text-[#FF7900]">
+                      {ar ? `فنيون (${filteredTechs.length})` : `Technicians (${filteredTechs.length})`}
+                    </p>
+                  </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   {filteredTechs.map(tech => (
@@ -546,10 +548,12 @@ export default function CategoryTechnicians() {
             {filteredCompanies.length > 0 && (
               <div>
                 {filteredTechs.length > 0 && (
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5" />
-                    {ar ? `شركات ومؤسسات (${filteredCompanies.length})` : `Companies (${filteredCompanies.length})`}
-                  </p>
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-blue-600 rounded-xl">
+                    <Building2 className="w-4 h-4 text-white" />
+                    <p className="text-sm font-bold text-white">
+                      {ar ? `شركات ومؤسسات (${filteredCompanies.length})` : `Companies (${filteredCompanies.length})`}
+                    </p>
+                  </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   {filteredCompanies.map(company => (
