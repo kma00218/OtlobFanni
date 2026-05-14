@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import TechnicianCard from '../components/TechnicianCard'
-import { MapPin, Search, Building2, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
+import { MapPin, Globe, Search, Building2, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 
 function CompanyRow({ company, ar, onOpen }) {
@@ -45,7 +45,13 @@ export default function CityTechnicians() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
+  const isLibya = id === 'libya'
+
   useEffect(() => {
+    if (isLibya) {
+      setCity({ nameAr: 'كل ليبيا', nameEn: 'All Libya', id: 'libya' })
+      return
+    }
     api.cities().then(cities => {
       setCity(cities.find(c => c.id === id) || null)
     }).catch(() => {})
@@ -81,8 +87,10 @@ export default function CityTechnicians() {
 
         {/* City header */}
         <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-100 p-3.5 shadow-sm">
-          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <MapPin className="w-6 h-6 text-blue-600" />
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isLibya ? 'bg-green-100' : 'bg-blue-100'}`}>
+            {isLibya
+              ? <Globe className="w-6 h-6 text-green-600" />
+              : <MapPin className="w-6 h-6 text-blue-600" />}
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-[#071B33] text-base">{cityName}</p>

@@ -27,6 +27,9 @@ router.get("/categories", async (_req, res): Promise<void> => {
 router.get("/technicians", async (req, res): Promise<void> => {
   const { category, city_id } = req.query as Record<string, string>;
 
+  // Libya = all cities, skip city filter
+  const allLibya = city_id === 'libya';
+
   const conditions = [
     eq(techniciansTable.isApproved, true),
     eq(techniciansTable.isActive, true),
@@ -35,7 +38,7 @@ router.get("/technicians", async (req, res): Promise<void> => {
   if (category) {
     conditions.push(eq(techniciansTable.categoryId, category));
   }
-  if (city_id) {
+  if (city_id && !allLibya) {
     conditions.push(eq(techniciansTable.cityId, city_id));
   }
 
@@ -87,7 +90,7 @@ router.get("/companies", async (req, res): Promise<void> => {
 
   if (specialty) companies = companies.filter(c => c.specialty === specialty);
 
-  if (city) {
+  if (city && city !== 'libya') {
     // city param may be a city ID (e.g. "c2") or a plain name — resolve to both Arabic + English names
     const [cityRow] = await db.select().from(citiesTable).where(eq(citiesTable.id, city));
     if (cityRow) {
@@ -125,10 +128,27 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
   });
 });
 
+// ── Libya keyword detection ───────────────────────────────────────────────────
+const LIBYA_KEYWORDS = ['libya', 'lybia', 'libia', 'liby', 'lby', 'ليبيا', 'ليبا', 'ليب', 'كل ليبيا'];
+function isLibyaQuery(q: string): boolean {
+  const lower = q.toLowerCase().trim();
+  return LIBYA_KEYWORDS.some(kw => kw.startsWith(lower) || lower.startsWith(kw));
+}
+
 // ── Global search: technicians + companies + cities ───────────────────────────
 router.get("/search", async (req, res): Promise<void> => {
   const q = String(req.query.q ?? "").trim();
   if (!q) { res.json({ technicians: [], companies: [], cities: [] }); return; }
+
+  // Libya shortcut — return synthetic Libya entry + skip normal city/tech search
+  if (isLibyaQuery(q)) {
+    res.json({
+      technicians: [],
+      companies: [],
+      cities: [{ id: 'libya', nameAr: 'كل ليبيا', nameEn: 'All Libya' }],
+    });
+    return;
+  }
 
   const [techRows, companyRows, cityRows] = await Promise.all([
     db.select({
