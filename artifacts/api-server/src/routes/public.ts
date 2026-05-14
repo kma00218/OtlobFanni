@@ -5,7 +5,7 @@ import {
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable,
 } from "@workspace/db/schema";
-import { eq, and, or, desc, inArray } from "drizzle-orm";
+import { eq, and, or, desc, inArray, ilike } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -126,6 +126,44 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
 });
 
 // ── Single Technician ─────────────────────────────────────────────────────────
+// ── Technician name search ────────────────────────────────────────────────────
+router.get("/technicians/search", async (req, res): Promise<void> => {
+  const q = String(req.query.q ?? "").trim();
+  if (!q) { res.json([]); return; }
+
+  const rows = await db
+    .select({
+      tech: techniciansTable,
+      cityNameAr: citiesTable.nameAr,
+      cityNameEn: citiesTable.nameEn,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
+    })
+    .from(techniciansTable)
+    .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+    .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
+    .where(and(
+      eq(techniciansTable.isApproved, true),
+      eq(techniciansTable.isActive, true),
+      ilike(techniciansTable.name, `%${q}%`),
+    ))
+    .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
+    .limit(5);
+
+  const results = rows.map(r => ({
+    id: r.tech.id,
+    name: r.tech.name,
+    specialty: r.tech.specialty,
+    photoUrl: r.tech.photoUrl,
+    categoryAr: r.categoryAr ?? '',
+    categoryEn: r.categoryEn ?? '',
+    cityNameAr: r.cityNameAr ?? '',
+    cityNameEn: r.cityNameEn ?? '',
+  }));
+
+  res.json(results);
+});
+
 router.get("/technicians/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const [row] = await db
