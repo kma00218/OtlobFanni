@@ -122,7 +122,7 @@ function SearchFAB() {
   const [open, setOpen] = useState(false);
 
   // Hide on home (already has search bar) and on join form pages
-  const hidden = location === '/' || location.startsWith('/join') || location.startsWith('/admin');
+  const hidden = location === '/' || location === '/join' || location === '/join-company' || location.startsWith('/admin');
   if (hidden) return null;
 
   const ar = lang === 'ar';
