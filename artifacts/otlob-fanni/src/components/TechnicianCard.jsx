@@ -5,13 +5,13 @@ import { getFileUrl } from '../lib/api';
 
 export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
-  const name      = lang === 'ar' ? technician.nameAr     : technician.nameEn;
+  const name      = (lang === 'ar' ? technician.nameAr : technician.nameEn) || technician.nameAr || technician.nameEn || '';
   const specialty = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
   const city      = lang === 'ar'
     ? (technician.cityAr || technician.city_name_ar || technician.city || '')
     : (technician.cityEn || technician.city_name_en || technician.city_name_ar || technician.city || '');
   const status    = lang === 'ar' ? technician.statusAr   : technician.statusEn;
-  const initials  = name.split(' ').map(n => n[0]).join('').substring(0, 2);
+  const initials  = name ? name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2) : '؟';
 
   return (
     <Link href={`/technician/${technician.id}`} className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 active:scale-[0.98] transition-all">
