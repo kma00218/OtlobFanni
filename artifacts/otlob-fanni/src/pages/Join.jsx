@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
+import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { sections, categories } from '../data/services'
 import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
@@ -323,14 +324,10 @@ export default function Join() {
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label={ar ? 'رقم الهاتف' : 'Phone'} required>
-                  <input className={inp} type="tel" required value={form.phone}
-                    onChange={e => set('phone', e.target.value)}
-                    placeholder="+218910000000" dir="ltr" />
+                  <LibyaPhoneInput required value={form.phone} onChange={v => set('phone', v)} />
                 </Field>
                 <Field label={ar ? 'واتساب' : 'WhatsApp'} required>
-                  <input className={inp} type="tel" required value={form.whatsapp}
-                    onChange={e => set('whatsapp', e.target.value)}
-                    placeholder="+218910000000" dir="ltr" />
+                  <LibyaPhoneInput required value={form.whatsapp} onChange={v => set('whatsapp', v)} />
                 </Field>
               </div>
 
