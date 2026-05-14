@@ -113,6 +113,7 @@ export default function TechnicianApplications() {
               c.nameAr === appCity || c.nameEn === appCity || c.id === appCity
             )
             const effectiveCatId = resolvedCatId || (specialtyAction === 'link' ? linkCatId : null) || (app.customSpecialty ? 'more_services' : app.specialty) || null
+            const appExtraSpecialties = app.extraSpecialties || app.extra_specialties || []
             await api.admin.technicians.create({
               id:               'tech_' + app.id,
               name_ar:          name,
@@ -121,6 +122,7 @@ export default function TechnicianApplications() {
               city_id:          cityRow?.id || null,
               area:             app.area || '',
               category_id:      effectiveCatId,
+              extra_specialties: appExtraSpecialties,
               experience_years: EXP_YEARS[app.experience] ?? 0,
               price_from:       parseFloat(app.priceFrom || app.price_from) || 0,
               price_to:         parseFloat(app.priceTo   || app.price_to)   || 0,
@@ -195,18 +197,23 @@ export default function TechnicianApplications() {
     { key: 'area', label: 'المنطقة', render: (v) => v || '—' },
     {
       key: 'specialty', label: 'القسم / التخصص',
-      render: (v, row) => row.customSpecialty
-        ? (
+      render: (v, row) => {
+        const extras = row.extraSpecialties || row.extra_specialties || []
+        if (row.customSpecialty) return (
           <div>
             <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v) || 'تخصص مخصص'}</p>
             <p className="text-sm text-amber-400 font-medium">{row.customSpecialty}</p>
+            {extras.length > 0 && extras.map(id => <p key={id} className="text-xs text-[#8888A8] mt-0.5">{catLabel(id)}</p>)}
           </div>
-        ) : (
+        )
+        return (
           <div>
             {sectionLabel(v) && <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v)}</p>}
             <p className="text-sm text-[#C0C0D8]">{catLabel(v)}</p>
+            {extras.map(id => <p key={id} className="text-xs text-[#8888A8] mt-0.5">+ {catLabel(id)}</p>)}
           </div>
-        ),
+        )
+      },
     },
     {
       key: 'experience', label: 'الخبرة',

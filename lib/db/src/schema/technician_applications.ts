@@ -12,6 +12,7 @@ export const technicianApplicationsTable = pgTable("technician_applications", {
   area:             text("area"),
   address:          text("address"),
   specialty:        text("specialty").notNull(),
+  extraSpecialties: text("extra_specialties").array().default([]),
   customSpecialty:  text("custom_specialty"),
   experience:       text("experience"),
   type:             text("type").default("individual"),

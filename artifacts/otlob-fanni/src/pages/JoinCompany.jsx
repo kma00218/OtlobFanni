@@ -124,7 +124,6 @@ export default function JoinCompany() {
     area: '',
     address: '',
     section: '',
-    category: '',
     customSpecialty: '',
     years_active: '',
     description: '',
@@ -140,8 +139,13 @@ export default function JoinCompany() {
     instagram: '', tiktok: '',
     terms: false,
   })
+  const [selectedCategories, setSelectedCategories] = useState([])
+  const [otherChecked, setOtherChecked] = useState(false)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  const toggleCategory = (id) => setSelectedCategories(p =>
+    p.includes(id) ? p.filter(x => x !== id) : [...p, id]
+  )
   const toggleDay = (d) => setDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])
 
   const handleLogo = async (e) => {
@@ -183,18 +187,26 @@ export default function JoinCompany() {
     e.preventDefault()
     setSaving(true)
     try {
+      const primarySpecialty = form.section === 'more_services'
+        ? 'more_services'
+        : (selectedCategories[0] || 'more_services')
+      const extraSpecialties = form.section === 'more_services'
+        ? []
+        : selectedCategories.slice(1)
+
       await api.submitCompanyApplication({
-        id:             'cr' + Date.now(),
-        company_name:   form.company_name,
-        contact_name:   form.contact_name,
-        phone:          form.phone,
-        whatsapp:       form.whatsapp,
-        commercial_reg: form.commercial_reg,
-        city:           form.city,
-        area:           form.area,
-        address:        form.address,
-        specialty:      form.section === 'more_services' ? 'more_services' : (form.category || form.section || 'other'),
-        custom_specialty: form.section === 'more_services' ? form.customSpecialty : undefined,
+        id:               'cr' + Date.now(),
+        company_name:     form.company_name,
+        contact_name:     form.contact_name,
+        phone:            form.phone,
+        whatsapp:         form.whatsapp,
+        commercial_reg:   form.commercial_reg,
+        city:             form.city,
+        area:             form.area,
+        address:          form.address,
+        specialty:        primarySpecialty,
+        extra_specialties: extraSpecialties,
+        custom_specialty: (form.section === 'more_services' || otherChecked) ? form.customSpecialty : undefined,
         years_active:   form.years_active,
         description:    form.description,
         certifications: form.certifications,
@@ -262,13 +274,13 @@ export default function JoinCompany() {
           <p className="text-gray-500 text-sm">{ar ? 'أكمل جميع البيانات المطلوبة للانضمام إلى المنصة كشركة' : 'Complete all required fields to join the platform as a company'}</p>
         </div>
 
-        {/* Multi-specialty note */}
+        {/* Multi-specialty tip */}
         <div className="mb-5 flex items-start gap-2.5 rounded-2xl px-4 py-3.5 border-2 border-[#FF7900]/50" style={{ background: '#FFF4E8' }}>
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
           <p className="text-xs font-bold text-[#3d2200] leading-relaxed">
             {ar
-              ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
-              : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
+              ? 'يمكنك اختيار أكثر من تخصص ضمن نفس القسم في طلب واحد.'
+              : 'You can select multiple specialties within the same section in a single application.'}
           </p>
         </div>
 
@@ -377,7 +389,12 @@ export default function JoinCompany() {
             <SectionTitle icon={Briefcase} step={3}>{ar ? 'معلومات الخدمة' : 'Service Information'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'القسم الرئيسي' : 'Main Section'} required>
-                <select className={sel} required value={form.section} onChange={e => { set('section', e.target.value); set('category', ''); set('customSpecialty', '') }}>
+                <select className={sel} required value={form.section} onChange={e => {
+                  set('section', e.target.value)
+                  set('customSpecialty', '')
+                  setSelectedCategories([])
+                  setOtherChecked(false)
+                }}>
                   <option value="">{ar ? 'اختر القسم...' : 'Select section...'}</option>
                   {sections.map(s => (
                     <option key={s.id} value={s.id}>{ar ? s.nameAr : s.nameEn}</option>
@@ -395,17 +412,50 @@ export default function JoinCompany() {
                     placeholder={ar ? 'مثال: صيانة معدات ثقيلة' : 'e.g., Heavy equipment maintenance'}
                   />
                 </Field>
-              ) : (
-                <Field label={ar ? 'تخصص الخدمة' : 'Service Category'} required>
-                  <select className={sel} required value={form.category} onChange={e => set('category', e.target.value)} disabled={!form.section}>
-                    <option value="">{!form.section ? (ar ? 'اختر القسم أولاً...' : 'Select section first...') : (ar ? 'اختر التخصص...' : 'Select category...')}</option>
-                    {categories.filter(c => c.sectionId === form.section && c.id !== 'more').map(c => (
-                      <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>
-                    ))}
-                    <option value="__other__">{ar ? '✏️ تخصص آخر' : '✏️ Other Specialty'}</option>
-                  </select>
+              ) : form.section ? (
+                <Field
+                  label={ar ? 'التخصصات' : 'Specialties'}
+                  required
+                  hint={ar ? 'اختر تخصصاً واحداً أو أكثر' : 'Select one or more specialties'}
+                >
+                  <div className="rounded-xl border-2 border-gray-800 bg-blue-50 divide-y divide-gray-200 overflow-hidden">
+                    {categories
+                      .filter(c => c.sectionId === form.section && c.id !== 'more')
+                      .map(c => (
+                        <label key={c.id} className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
+                            checked={selectedCategories.includes(c.id)}
+                            onChange={() => toggleCategory(c.id)}
+                          />
+                          <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
+                        </label>
+                      ))}
+                    <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
+                        checked={otherChecked}
+                        onChange={() => { setOtherChecked(v => !v); if (otherChecked) set('customSpecialty', '') }}
+                      />
+                      <span className="text-sm text-[#071B33] font-medium">{ar ? '✏️ تخصص آخر' : '✏️ Other Specialty'}</span>
+                    </label>
+                  </div>
+                  {otherChecked && (
+                    <input
+                      className={inp + ' mt-2'}
+                      required={otherChecked && selectedCategories.length === 0}
+                      value={form.customSpecialty}
+                      onChange={e => set('customSpecialty', e.target.value)}
+                      placeholder={ar ? 'مثال: صيانة معدات ثقيلة' : 'e.g., Heavy equipment maintenance'}
+                    />
+                  )}
+                  {form.section && selectedCategories.length === 0 && !otherChecked && (
+                    <input type="text" className="sr-only" required tabIndex={-1} readOnly value="" aria-hidden />
+                  )}
                 </Field>
-              )}
+              ) : null}
 
               <Field label={ar ? 'سنوات النشاط' : 'Years Active'} required>
                 <select className={sel} required value={form.years_active} onChange={e => set('years_active', e.target.value)}>

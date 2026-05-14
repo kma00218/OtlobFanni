@@ -150,7 +150,8 @@ router.patch("/companies/:id", async (req, res): Promise<void> => {
   if (b.city          !== undefined) updates.city          = b.city;
   if (b.area          !== undefined) updates.area          = b.area;
   if (b.address       !== undefined) updates.address       = b.address;
-  if (b.specialty     !== undefined) updates.specialty     = b.specialty;
+  if (b.specialty          !== undefined) updates.specialty         = b.specialty;
+  if (b.extra_specialties  !== undefined) updates.extraSpecialties  = b.extra_specialties;
   if (b.years_active  !== undefined) updates.yearsActive   = b.years_active;
   if (b.description   !== undefined) updates.description   = b.description;
   if (b.certifications!== undefined) updates.certifications= b.certifications;
@@ -240,6 +241,7 @@ router.post("/technicians", async (req, res): Promise<void> => {
     id: body.id, nameAr: body.name_ar, nameEn: body.name_en,
     phone: body.phone, whatsapp: body.whatsapp || body.phone,
     cityId: body.city_id, area: body.area, categoryId: body.category_id,
+    extraSpecialties: body.extra_specialties || [],
     experienceYears: body.experience_years || 0,
     priceFrom: body.price_from || 0, priceTo: body.price_to || 0,
     descriptionAr: body.description_ar, descriptionEn: body.description_en,
@@ -265,6 +267,7 @@ router.patch("/technicians/:id", async (req, res): Promise<void> => {
   if (body.city_id !== undefined)         updates.cityId = body.city_id;
   if (body.area !== undefined)            updates.area = body.area;
   if (body.category_id !== undefined)     updates.categoryId = body.category_id;
+  if (body.extra_specialties !== undefined) updates.extraSpecialties = body.extra_specialties;
   if (body.experience_years !== undefined) updates.experienceYears = body.experience_years;
   if (body.price_from !== undefined)      updates.priceFrom = body.price_from;
   if (body.price_to !== undefined)        updates.priceTo = body.price_to;

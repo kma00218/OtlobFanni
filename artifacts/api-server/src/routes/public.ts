@@ -5,7 +5,7 @@ import {
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable,
 } from "@workspace/db/schema";
-import { eq, and, or, desc, inArray, ilike } from "drizzle-orm";
+import { eq, and, or, desc, inArray, ilike, sql } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -36,7 +36,12 @@ router.get("/technicians", async (req, res): Promise<void> => {
   ];
 
   if (category) {
-    conditions.push(eq(techniciansTable.categoryId, category));
+    conditions.push(
+      or(
+        eq(techniciansTable.categoryId, category),
+        sql`${category} = ANY(${techniciansTable.extraSpecialties})`
+      )!
+    );
   }
   if (city_id && !allLibya) {
     conditions.push(eq(techniciansTable.cityId, city_id));
@@ -88,7 +93,11 @@ router.get("/companies", async (req, res): Promise<void> => {
     categoryEn: r.categoryEn ?? r.company.specialty ?? '',
   }));
 
-  if (specialty) companies = companies.filter(c => c.specialty === specialty);
+  if (specialty) companies = companies.filter(c =>
+    c.specialty === specialty ||
+    (Array.isArray(c.extra_specialties) && c.extra_specialties.includes(specialty)) ||
+    (Array.isArray((c as any).extraSpecialties) && (c as any).extraSpecialties.includes(specialty))
+  );
 
   if (city && city !== 'libya') {
     // city param may be a city ID (e.g. "c2") or a plain name — resolve to both Arabic + English names
@@ -347,7 +356,8 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
       city:           body.city,
       area:           body.area,
       address:        body.address,
-      specialty:      body.specialty || body.category,
+      specialty:       body.specialty || body.category,
+      extraSpecialties: body.extra_specialties || [],
       customSpecialty: body.custom_specialty || null,
       experience:     body.experience,
       type:           body.type,
@@ -395,8 +405,9 @@ router.post("/company-applications", async (req, res): Promise<void> => {
       city:           body.city,
       area:           body.area,
       address:        body.address,
-      specialty:       body.specialty || 'more_services',
-      customSpecialty: body.custom_specialty || null,
+      specialty:        body.specialty || 'more_services',
+      extraSpecialties: body.extra_specialties || [],
+      customSpecialty:  body.custom_specialty || null,
       yearsActive:     body.years_active,
       description:    body.description,
       certifications: body.certifications,

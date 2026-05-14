@@ -120,7 +120,7 @@ export default function Join() {
   const [form, setForm] = useState({
     full_name: '', phone: '', whatsapp: '', national_id: '',
     city: '', area: '', address: '',
-    section: '', category: '', customSpecialty: '', experience: '', type: 'individual',
+    section: '', customSpecialty: '', experience: '', type: 'individual',
     description: '', certifications: '',
     price_from: '', price_to: '',
     available_now: 'yes', emergency: 'no',
@@ -129,9 +129,18 @@ export default function Join() {
     facebook: '', instagram: '', tiktok: '',
     terms: false,
   })
+  const [selectedCategories, setSelectedCategories] = useState([])
+  const [otherChecked, setOtherChecked] = useState(false)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-  const setSection = (v) => setForm(f => ({ ...f, section: v, category: '', customSpecialty: '' }))
+  const setSection = (v) => {
+    setForm(f => ({ ...f, section: v, customSpecialty: '' }))
+    setSelectedCategories([])
+    setOtherChecked(false)
+  }
+  const toggleCategory = (id) => setSelectedCategories(p =>
+    p.includes(id) ? p.filter(x => x !== id) : [...p, id]
+  )
   const toggleDay = (d) => setDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])
 
   const handleProfilePhoto = async (e) => {
@@ -173,22 +182,28 @@ export default function Join() {
     e.preventDefault()
     setSaving(true)
     try {
+      const primarySpecialty = form.section === 'more_services'
+        ? 'more_services'
+        : (selectedCategories[0] || 'more_services')
+      const extraSpecialties = form.section === 'more_services'
+        ? []
+        : selectedCategories.slice(1)
+
       await api.submitTechnicianApplication({
-        id:              'jr' + Date.now(),
-        full_name:       form.full_name,
-        phone:           form.phone,
-        whatsapp:        form.whatsapp,
-        national_id:     form.national_id,
-        city:            form.city,
-        area:            form.area,
-        address:         form.address,
-        specialty:        form.section === 'more_services'
-          ? 'more_services'
-          : (form.category === '__other__' ? (form.customSpecialty || 'other') : form.category),
-        custom_specialty: (form.section === 'more_services' || form.category === '__other__')
+        id:               'jr' + Date.now(),
+        full_name:        form.full_name,
+        phone:            form.phone,
+        whatsapp:         form.whatsapp,
+        national_id:      form.national_id,
+        city:             form.city,
+        area:             form.area,
+        address:          form.address,
+        specialty:        primarySpecialty,
+        extra_specialties: extraSpecialties,
+        custom_specialty: (form.section === 'more_services' || otherChecked)
           ? form.customSpecialty
           : undefined,
-        experience:      form.experience,
+        experience:       form.experience,
         type:            form.type,
         description:     form.description,
         certifications:  form.certifications,
@@ -253,13 +268,13 @@ export default function Join() {
           <p className="text-gray-500 text-sm">{ar ? 'أكمل جميع البيانات المطلوبة للانضمام إلى المنصة' : 'Complete all required fields to join the platform'}</p>
         </div>
 
-        {/* Multi-specialty note */}
+        {/* Multi-specialty tip */}
         <div className="mb-5 flex items-start gap-2.5 rounded-2xl px-4 py-3.5 border-2 border-[#FF7900]/50" style={{ background: '#FFF4E8' }}>
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
           <p className="text-xs font-bold text-[#3d2200] leading-relaxed">
             {ar
-              ? 'إذا كنت تقدم أكثر من خدمة أو تعمل في أكثر من تخصص، يمكنك إرسال طلب منفصل لكل تخصص.'
-              : 'If you provide more than one service or work in multiple specialties, you can submit a separate application for each specialty.'}
+              ? 'يمكنك اختيار أكثر من تخصص ضمن نفس القسم في طلب واحد.'
+              : 'You can select multiple specialties within the same section in a single application.'}
           </p>
         </div>
 
@@ -380,43 +395,50 @@ export default function Join() {
                     placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'}
                   />
                 </Field>
-              ) : (
-                <>
-                  <Field label={ar ? 'التخصص' : 'Specialty'} required>
-                    <select
-                      className={sel}
-                      required
-                      value={form.category}
-                      onChange={e => set('category', e.target.value)}
-                      disabled={!form.section}
-                    >
-                      <option value="">
-                        {!form.section
-                          ? (ar ? 'اختر القسم أولاً...' : 'Select section first...')
-                          : (ar ? 'اختر التخصص...' : 'Select specialty...')}
-                      </option>
-                      {categories
-                        .filter(c => c.sectionId === form.section && c.id !== 'more')
-                        .map(c => (
-                          <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>
-                        ))}
-                      <option value="__other__">{ar ? '✏️ تخصص آخر' : '✏️ Other Specialty'}</option>
-                    </select>
-                  </Field>
-
-                  {form.category === '__other__' && (
-                    <Field label={ar ? 'اكتب تخصصك' : 'Write your specialty'} required>
+              ) : form.section ? (
+                <Field
+                  label={ar ? 'التخصصات' : 'Specialties'}
+                  required
+                  hint={ar ? 'اختر تخصصاً واحداً أو أكثر' : 'Select one or more specialties'}
+                >
+                  <div className="rounded-xl border-2 border-gray-800 bg-blue-50 divide-y divide-gray-200 overflow-hidden">
+                    {categories
+                      .filter(c => c.sectionId === form.section && c.id !== 'more')
+                      .map(c => (
+                        <label key={c.id} className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
+                            checked={selectedCategories.includes(c.id)}
+                            onChange={() => toggleCategory(c.id)}
+                          />
+                          <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
+                        </label>
+                      ))}
+                    <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
                       <input
-                        className={inp}
-                        required
-                        value={form.customSpecialty}
-                        onChange={e => set('customSpecialty', e.target.value)}
-                        placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'}
+                        type="checkbox"
+                        className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
+                        checked={otherChecked}
+                        onChange={() => { setOtherChecked(v => !v); if (otherChecked) set('customSpecialty', '') }}
                       />
-                    </Field>
+                      <span className="text-sm text-[#071B33] font-medium">{ar ? '✏️ تخصص آخر' : '✏️ Other Specialty'}</span>
+                    </label>
+                  </div>
+                  {otherChecked && (
+                    <input
+                      className={inp + ' mt-2'}
+                      required={otherChecked && selectedCategories.length === 0}
+                      value={form.customSpecialty}
+                      onChange={e => set('customSpecialty', e.target.value)}
+                      placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'}
+                    />
                   )}
-                </>
-              )}
+                  {form.section && selectedCategories.length === 0 && !otherChecked && (
+                    <input type="text" className="sr-only" required tabIndex={-1} readOnly value="" aria-hidden />
+                  )}
+                </Field>
+              ) : null}
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label={ar ? 'سنوات الخبرة' : 'Experience'} required>

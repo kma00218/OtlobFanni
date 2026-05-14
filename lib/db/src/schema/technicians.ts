@@ -11,6 +11,7 @@ export const techniciansTable = pgTable("technicians", {
   cityId:          text("city_id"),
   area:            text("area"),
   categoryId:      text("category_id"),
+  extraSpecialties: text("extra_specialties").array().default([]),
   experienceYears: integer("experience_years").default(0),
   priceFrom:       integer("price_from").default(0),
   priceTo:         integer("price_to").default(0),

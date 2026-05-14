@@ -151,18 +151,23 @@ export default function CompanyApplications() {
     { key: 'city', label: 'المدينة' },
     {
       key: 'specialty', label: 'القسم / التخصص',
-      render: (v, row) => row.customSpecialty
-        ? (
+      render: (v, row) => {
+        const extras = row.extraSpecialties || row.extra_specialties || []
+        if (row.customSpecialty) return (
           <div>
             <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v) || 'تخصص مخصص'}</p>
             <p className="text-sm text-amber-400 font-medium">{row.customSpecialty}</p>
+            {extras.length > 0 && extras.map(id => <p key={id} className="text-xs text-[#8888A8] mt-0.5">{catLabel(id)}</p>)}
           </div>
-        ) : (
+        )
+        return (
           <div>
             {sectionLabel(v) && <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v)}</p>}
             <p className="text-sm text-[#C0C0D8]">{catLabel(v)}</p>
+            {extras.map(id => <p key={id} className="text-xs text-[#8888A8] mt-0.5">+ {catLabel(id)}</p>)}
           </div>
-        ),
+        )
+      },
     },
     {
       key: 'yearsActive', label: 'سنوات النشاط',
