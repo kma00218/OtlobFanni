@@ -464,7 +464,7 @@ export default function JoinCompany() {
 
           {/* ── 5. Social Media ─────────────────────────────────────── */}
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-            <SectionTitle icon={Facebook} step={5}>{ar ? 'التواصل الاجتماعي' : 'Social Media'}</SectionTitle>
+            <SectionTitle icon={Facebook} step={5}>{ar ? 'التواصل الاجتماعي (اختياري)' : 'Social Media (Optional)'}</SectionTitle>
             <div className="space-y-4">
               <Field label={ar ? 'رابط فيسبوك' : 'Facebook Link'}
                 hint={ar ? 'اختياري' : 'Optional'}>
