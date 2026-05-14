@@ -150,7 +150,7 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
   )
 }
 
-function CompanyCard({ company, lang, onOpen, isFav, onToggleFav }) {
+function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }) {
   const ar = lang === 'ar'
   const name = company.companyName || company.company_name || ''
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
@@ -204,6 +204,13 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav }) {
 
       <div className="p-3.5">
         <p className="font-bold text-gray-900 text-sm mb-1 leading-tight">{name}</p>
+
+        {categoryName && (
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-1 h-4 rounded-full bg-[#FF7900] flex-shrink-0" />
+            <span className="text-sm font-extrabold text-[#FF7900] truncate">{categoryName}</span>
+          </div>
+        )}
 
         <div className="flex items-center gap-1 mb-2">
           <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
@@ -553,6 +560,7 @@ export default function CategoryTechnicians() {
                       onOpen={(id) => navigate(`/company/${id}`)}
                       isFav={isCompanyFav(company.id)}
                       onToggleFav={toggleCompanyFav}
+                      categoryName={categoryName}
                     />
                   ))}
                 </div>
