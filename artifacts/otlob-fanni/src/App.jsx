@@ -217,6 +217,14 @@ function AppContent() {
 }
 
 function App() {
+  useEffect(() => {
+    const splash = document.getElementById('splash');
+    if (splash) {
+      splash.classList.add('hide');
+      setTimeout(() => splash.remove(), 450);
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>

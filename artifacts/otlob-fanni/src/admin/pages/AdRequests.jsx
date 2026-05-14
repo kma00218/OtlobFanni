@@ -234,6 +234,21 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
   const image     = getFileUrl(req.imagePreview  || req.image_preview  || null)
   const createdAt = req.createdAt     || req.created_at     || ''
   const isPending = req.status === 'pending'
+  const requestedPlacement = req.requestedPlacement || req.requested_placement || ''
+  const PLACEMENT_LABELS = {
+    home: 'بانر رئيسي — الصفحة الرئيسية',
+    vertical: 'إعلان رأسي',
+    featured: 'إعلان مميز',
+    banner: 'بانر عام',
+    sidebar: 'إعلان جانبي',
+    global: 'كل الصفحات',
+    home_after_all_specialties: 'الصفحة الرئيسية — تحت كل التخصصات',
+    section_page: 'صفحة قسم معين',
+    category_page: 'صفحة تخصص معين',
+    all_specialties_page: 'صفحة كل التخصصات',
+    trusted_companies: 'صفحة الشركات المعتمدة',
+  }
+  const placementLabel = PLACEMENT_LABELS[requestedPlacement] || requestedPlacement
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
@@ -266,6 +281,13 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900]">محتوى الإعلان</p>
               {title && <p className="font-bold text-white text-sm">{title}</p>}
               {desc && <p className="text-[#8888A8] text-sm leading-relaxed">{desc}</p>}
+            </div>
+          )}
+
+          {placementLabel && (
+            <div className="bg-[#FF7900]/10 border border-[#FF7900]/20 rounded-xl px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900] mb-1">نوع الإعلان المطلوب</p>
+              <p className="text-white font-semibold text-sm">{placementLabel}</p>
             </div>
           )}
 
