@@ -5,7 +5,7 @@ import { useLocation } from 'wouter'
 import { searchIndex, normalizeAr } from '../data/searchIndex'
 import { sections } from '../data/services'
 
-export default function SearchBar() {
+export default function SearchBar({ onResultSelect } = {}) {
   const { t, dir, lang } = useLang()
   const [, navigate] = useLocation()
   const [query, setQuery] = useState('')
@@ -21,10 +21,10 @@ export default function SearchBar() {
   const handleSelect = (entry) => {
     setQuery('')
     setOpen(false)
+    onResultSelect?.()
     if (entry.type === 'section') {
       navigate(`/section/${entry.id}`)
     } else {
-      // 'more' category links to /category/more_services
       const href = entry.id === 'more' ? '/category/more_services' : `/category/${entry.id}`
       navigate(href)
     }
