@@ -429,13 +429,6 @@ export default function JoinCompany() {
                   placeholder={ar ? 'اكتب نبذة عن خدمات الشركة وخبراتها...' : 'Describe the company services and expertise...'} />
               </Field>
 
-              <Field label={ar ? 'الشهادات والتراخيص المهنية' : 'Certifications & Licenses'}
-                hint={ar ? 'اذكر أي اعتمادات أو شراكات مهنية' : 'Mention any professional accreditations or partnerships'}>
-                <textarea
-                  className={inp + ' min-h-[70px] resize-none'} value={form.certifications}
-                  onChange={e => set('certifications', e.target.value)}
-                  placeholder={ar ? 'مثال: معتمدة من وزارة الاقتصاد، شريك رسمي لـ...' : 'e.g., Ministry-approved, Official partner of...'} />
-              </Field>
             </div>
           </div>
 
