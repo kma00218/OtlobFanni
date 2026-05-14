@@ -44,6 +44,7 @@ export default function Companies() {
   const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')
   const [filterCity, setFilterCity] = useState('')
+  const [filterCat, setFilterCat]   = useState('')
   const [viewItem, setViewItem]     = useState(null)
   const [editItem, setEditItem]     = useState(null)
   const [form, setForm]             = useState(emptyForm)
@@ -135,12 +136,19 @@ export default function Companies() {
 
   const cities = [...new Set(data.map(r => r.city).filter(Boolean))].sort()
 
+  const sectionLabel = (specialtyId) => {
+    if (!specialtyId || specialtyId === 'more_services') return ''
+    const cat = SERVICES_CATS.find(c => c.id === specialtyId)
+    return SECTIONS.find(s => s.id === cat?.sectionId)?.nameAr || ''
+  }
+
   const filtered = data.filter(r => {
     const name    = r.companyName  || ''
     const contact = r.contactName  || ''
     const s = !search || name.includes(search) || contact.includes(search) || r.phone?.includes(search) || r.city?.includes(search)
     const c = !filterCity || r.city === filterCity
-    return s && c
+    const t = !filterCat  || r.specialty === filterCat
+    return s && c && t
   })
 
   const columns = [
@@ -173,8 +181,13 @@ export default function Companies() {
     },
     { key: 'city', label: 'المدينة', render: v => v || '—' },
     {
-      key: 'specialty', label: 'التخصص',
-      render: (v) => catLabel(v) || v || '—',
+      key: 'specialty', label: 'القسم / التخصص',
+      render: (v) => (
+        <div>
+          {sectionLabel(v) && <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v)}</p>}
+          <p className="text-sm text-[#C0C0D8]">{catLabel(v)}</p>
+        </div>
+      ),
     },
     {
       key: 'yearsActive', label: 'سنوات النشاط',
@@ -232,11 +245,27 @@ export default function Companies() {
         onSearchChange={setSearch}
         searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة..."
         actions={
-          <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
-            className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
-            <option value="">كل المدن</option>
-            {cities.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <div className="flex gap-2">
+            <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
+              className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
+              <option value="">كل المدن</option>
+              {cities.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
+              className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
+              <option value="">كل التخصصات</option>
+              {catsBySection.map(sec => {
+                const cats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
+                if (!cats.length) return null
+                return (
+                  <optgroup key={sec.id} label={sec.nameAr}>
+                    {cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+                  </optgroup>
+                )
+              })}
+              <option value="more_services">✏️ تخصص آخر (مخصص)</option>
+            </select>
+          </div>
         }
         emptyMessage="لا توجد شركات مقبولة بعد — قم بالموافقة على الطلبات من صفحة طلبات الشركات"
       />
