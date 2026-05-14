@@ -37,6 +37,10 @@ export default function Section() {
       <main className="px-4 py-6 space-y-4">
         <AdBanner placement="section_page" sectionId={id} dismissible />
 
+        <h1 className="text-[#071B33] text-xl font-black" dir={ar ? 'rtl' : 'ltr'}>
+          {title}
+        </h1>
+
         {sectionCats.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-sm">
