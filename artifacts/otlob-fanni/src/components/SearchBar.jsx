@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { Search, X } from 'lucide-react'
+import { Search, X, ChevronLeft } from 'lucide-react'
 import { useLocation } from 'wouter'
-import { categories } from '../data/services'
+import { searchIndex, normalizeAr } from '../data/searchIndex'
+import { sections } from '../data/services'
 
 export default function SearchBar() {
   const { t, dir, lang } = useLang()
@@ -15,18 +16,18 @@ export default function SearchBar() {
 
   const ar = lang === 'ar'
 
-  const results = query.trim().length === 0 ? [] : categories.filter(c => {
-    const q = query.trim().toLowerCase()
-    return (
-      (c.nameAr || '').includes(q) ||
-      (c.nameEn || '').toLowerCase().includes(q)
-    )
-  }).slice(0, 8)
+  const results = query.trim().length >= 1 ? searchIndex(query, 8) : []
 
-  const handleSelect = (category) => {
+  const handleSelect = (entry) => {
     setQuery('')
     setOpen(false)
-    navigate(`/category/${category.id}`)
+    if (entry.type === 'section') {
+      navigate(`/section/${entry.id}`)
+    } else {
+      // 'more' category links to /category/more_services
+      const href = entry.id === 'more' ? '/category/more_services' : `/category/${entry.id}`
+      navigate(href)
+    }
   }
 
   const handleClear = () => {
@@ -50,6 +51,13 @@ export default function SearchBar() {
     }
   }, [])
 
+  // Get parent section name for a category entry
+  const getSectionName = (entry) => {
+    if (entry.type === 'section' || !entry.sectionId) return null
+    const sec = sections.find(s => s.id === entry.sectionId)
+    return sec ? (ar ? sec.nameAr : sec.nameEn) : null
+  }
+
   return (
     <div ref={containerRef} className="relative w-full" dir={dir}>
       {/* Search input row */}
@@ -58,7 +66,7 @@ export default function SearchBar() {
           ? 'border-2 border-[#FF7900] shadow-[0_0_0_4px_rgba(255,121,0,0.15)]'
           : 'border-2 border-[#FF7900]/60 shadow-[0_4px_16px_rgba(255,121,0,0.12)]'
       }`}>
-        {/* Search icon button */}
+        {/* Search icon */}
         <button
           onClick={() => inputRef.current?.focus()}
           className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-[#FF7900] rounded-xl m-1 transition-transform active:scale-95"
@@ -95,31 +103,57 @@ export default function SearchBar() {
       {/* Dropdown results */}
       {open && results.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
-          {results.map((cat, i) => (
-            <button
-              key={cat.id}
-              onMouseDown={e => { e.preventDefault(); handleSelect(cat) }}
-              onTouchEnd={() => handleSelect(cat)}
-              className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-[#FF7900]/5 active:bg-[#FF7900]/10 transition-colors text-start ${i > 0 ? 'border-t border-gray-50' : ''}`}
-            >
-              <div className="w-9 h-9 rounded-xl bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                <img
-                  src={`/icons/services/${cat.iconName || cat.id}.svg`}
-                  alt=""
-                  className="w-6 h-6 object-contain"
-                  onError={e => { e.currentTarget.style.display = 'none' }}
-                />
-              </div>
-              <span className="text-[#071B33] font-bold text-sm">
-                {ar ? cat.nameAr : cat.nameEn}
-              </span>
-            </button>
-          ))}
+          {results.map((entry, i) => {
+            const name = ar ? entry.nameAr : entry.nameEn
+            const sectionName = getSectionName(entry)
+            const isSection = entry.type === 'section'
+
+            return (
+              <button
+                key={`${entry.type}-${entry.id}`}
+                onMouseDown={e => { e.preventDefault(); handleSelect(entry) }}
+                onTouchEnd={() => handleSelect(entry)}
+                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-[#FF7900]/5 active:bg-[#FF7900]/10 transition-colors text-start ${i > 0 ? 'border-t border-gray-50' : ''}`}
+              >
+                {/* Icon */}
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                  isSection ? 'bg-[#071B33]/10' : 'bg-[#FF7900]/10'
+                }`}>
+                  <img
+                    src={`/icons/services/${entry.iconName || entry.id}.svg`}
+                    alt=""
+                    className="w-6 h-6 object-contain"
+                    onError={e => { e.currentTarget.style.display = 'none' }}
+                  />
+                </div>
+
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <span className="text-[#071B33] font-bold text-sm block leading-tight">
+                    {name}
+                  </span>
+                  {sectionName && (
+                    <span className="text-[#FF7900] text-xs font-semibold leading-tight">
+                      {sectionName}
+                    </span>
+                  )}
+                  {isSection && (
+                    <span className="text-gray-400 text-xs leading-tight">
+                      {ar ? 'قسم' : 'Department'}
+                    </span>
+                  )}
+                </div>
+
+                {/* Arrow */}
+                <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
+              </button>
+            )
+          })}
         </div>
       )}
 
       {/* No results */}
-      {open && query.trim().length > 0 && results.length === 0 && (
+      {open && query.trim().length >= 2 && results.length === 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 px-4 py-5 z-50 text-center">
           <p className="text-gray-400 text-sm">
             {ar ? 'لا توجد نتائج لـ' : 'No results for'}{' '}
