@@ -16,7 +16,7 @@ export default function Categories() {
         <AdBanner placement="all_specialties_page" dismissible />
 
         {sections.filter(s => s.isActive).map(section => {
-          const sectionCats = categories.filter(c => c.sectionId === section.id && c.id !== 'more')
+          const sectionCats = categories.filter(c => c.sectionId === section.id)
           if (sectionCats.length === 0) return null
           return (
             <div key={section.id}>

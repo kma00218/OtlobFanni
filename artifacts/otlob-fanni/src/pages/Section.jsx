@@ -18,7 +18,7 @@ export default function Section() {
     return null
   }
 
-  const sectionCats = categories.filter(c => c.sectionId === id && c.id !== 'more')
+  const sectionCats = categories.filter(c => c.sectionId === id)
   const title = ar ? section.nameAr : section.nameEn
 
   return (

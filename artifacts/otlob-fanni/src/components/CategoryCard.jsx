@@ -137,7 +137,7 @@ function getColors(category) {
 export default function CategoryCard({ category }) {
   const { lang } = useLang()
   const name   = lang === 'ar' ? category.nameAr : category.nameEn
-  const href   = category.id === 'more' ? '/categories' : `/category/${category.id}`
+  const href   = category.id === 'more' ? '/category/more_services' : `/category/${category.id}`
   const [c1, c2] = getColors(category)
   const iconSrc  = iconMap[category.iconName] || iconMap[category.id] || iconMap.maintenance
 
