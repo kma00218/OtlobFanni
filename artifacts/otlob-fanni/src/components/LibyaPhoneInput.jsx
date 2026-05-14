@@ -22,8 +22,8 @@ export default function LibyaPhoneInput({ value, onChange, required, className }
   }
 
   const hint = ar
-    ? 'اكتب الرقم المحلي فقط (مثال: 91 أو 92...) بدون صفر في البداية'
-    : 'Local number only (e.g. 91... or 92...) — no leading zero'
+    ? 'اكتب الرقم المحلي فقط (مثال: 91، 92، 94...) بدون صفر في البداية'
+    : 'Local number only (e.g. 91…, 92…, 94…) — no leading zero'
 
   return (
     <div>
