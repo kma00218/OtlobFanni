@@ -215,8 +215,8 @@ export default function More() {
     <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
       {/* Hero icon */}
-      <div className="bg-white flex justify-center items-center py-5 border-b border-gray-100 shadow-sm mb-1">
-        <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 drop-shadow-sm" />
+      <div className="bg-white flex justify-center items-center pt-3 pb-5">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 drop-shadow-sm" />
       </div>
 
       {/* Header */}

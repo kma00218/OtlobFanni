@@ -21,11 +21,10 @@ export default function JoinUs() {
   }
 
   return (
-    <div className="min-h-screen pb-28 pt-14" style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d4f 50%, #1a3f6b 100%)' }} dir={ar ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
-      {/* Language toggle + Share */}
-      <div className={`fixed top-0 left-0 right-0 z-50 flex items-end justify-between px-4 pt-2 max-w-[480px] mx-auto`}>
-        <div />
+      {/* Fixed white top bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b border-gray-100 flex items-center justify-end px-4 max-w-[480px] mx-auto">
         <div className="flex items-end gap-3">
           <button
             onClick={handleShare}
@@ -34,7 +33,7 @@ export default function JoinUs() {
             <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
               <Share2 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-[10px] font-semibold text-white/60 leading-none">{ar ? 'مشاركة' : 'share'}</span>
+            <span className="text-[10px] font-semibold text-gray-500 leading-none">{ar ? 'مشاركة' : 'share'}</span>
           </button>
           <button
             onClick={toggleLang}
@@ -43,20 +42,21 @@ export default function JoinUs() {
             <div className="w-10 h-10 rounded-[12px] flex items-center justify-center font-extrabold text-base text-white" style={{ background: '#FF7900' }}>
               {lang === 'ar' ? 'EN' : 'AR'}
             </div>
-            <span className="text-[10px] font-semibold text-white/60 leading-none">{lang === 'ar' ? 'English' : 'عربي'}</span>
+            <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'English' : 'عربي'}</span>
           </button>
         </div>
       </div>
 
-      {/* Hero icon */}
-      <div className="flex justify-center items-center pt-6 pb-2">
-        <div className="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/20">
-          <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 drop-shadow-sm" />
-        </div>
+      {/* White hero section with icon */}
+      <div className="bg-white pt-16 pb-5 flex justify-center items-center">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 drop-shadow-sm" />
       </div>
 
+      {/* Dark gradient content section */}
+      <div style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d4f 50%, #1a3f6b 100%)' }}>
+
       {/* Header */}
-      <div className="px-6 pt-4 pb-6 text-center">
+      <div className="px-6 pt-6 pb-6 text-center">
         <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-4">
           <Star className="w-3.5 h-3.5 text-[#FF7900]" fill="#FF7900" />
           <span className="text-white/80 text-xs font-medium">{ar ? 'انضم إلى شبكتنا' : 'Join Our Network'}</span>
@@ -200,6 +200,8 @@ export default function JoinUs() {
 
 
       </div>
+
+      </div>{/* end dark gradient section */}
     </div>
   )
 }

@@ -50,8 +50,8 @@ export default function BackHeader({ title }) {
         </div>
       </header>
       {/* Page hero icon — appears in-flow below the fixed bar */}
-      <div className="bg-white flex justify-center items-center py-5 border-b border-gray-100 shadow-sm">
-        <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 drop-shadow-sm" />
+      <div className="bg-white flex justify-center items-center pt-3 pb-5">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 drop-shadow-sm" />
       </div>
     </>
   );
