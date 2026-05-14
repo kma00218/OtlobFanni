@@ -42,9 +42,12 @@ router.get("/technicians", async (req, res): Promise<void> => {
       tech: techniciansTable,
       cityNameAr: citiesTable.nameAr,
       cityNameEn: citiesTable.nameEn,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
     })
     .from(techniciansTable)
     .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+    .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
     .where(and(...conditions))
     .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating));
 
@@ -52,6 +55,8 @@ router.get("/technicians", async (req, res): Promise<void> => {
     ...r.tech,
     city_name_ar: r.cityNameAr ?? '',
     city_name_en: r.cityNameEn ?? '',
+    categoryAr: r.categoryAr ?? '',
+    categoryEn: r.categoryEn ?? '',
   }));
 
   res.json(techs);
@@ -61,11 +66,22 @@ router.get("/technicians", async (req, res): Promise<void> => {
 router.get("/companies", async (req, res): Promise<void> => {
   const { specialty, city } = req.query as Record<string, string>;
 
-  let companies = await db
-    .select()
+  const companyRows = await db
+    .select({
+      company: companyApplicationsTable,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
+    })
     .from(companyApplicationsTable)
+    .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
     .where(eq(companyApplicationsTable.status, "approved"))
     .orderBy(desc(companyApplicationsTable.createdAt));
+
+  let companies = companyRows.map(r => ({
+    ...r.company,
+    categoryAr: r.categoryAr ?? r.company.specialty ?? '',
+    categoryEn: r.categoryEn ?? r.company.specialty ?? '',
+  }));
 
   if (specialty) companies = companies.filter(c => c.specialty === specialty);
 
@@ -90,12 +106,21 @@ router.get("/companies", async (req, res): Promise<void> => {
 // ── Single Company ────────────────────────────────────────────────────────────
 router.get("/companies/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const [company] = await db
-    .select()
+  const [row] = await db
+    .select({
+      company: companyApplicationsTable,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
+    })
     .from(companyApplicationsTable)
+    .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
     .where(and(eq(companyApplicationsTable.id, raw), eq(companyApplicationsTable.status, "approved")));
-  if (!company) { res.status(404).json({ error: "Not found" }); return; }
-  res.json(company);
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json({
+    ...row.company,
+    categoryAr: row.categoryAr ?? row.company.specialty ?? '',
+    categoryEn: row.categoryEn ?? row.company.specialty ?? '',
+  });
 });
 
 // ── Single Technician ─────────────────────────────────────────────────────────
@@ -106,12 +131,21 @@ router.get("/technicians/:id", async (req, res): Promise<void> => {
       tech: techniciansTable,
       cityNameAr: citiesTable.nameAr,
       cityNameEn: citiesTable.nameEn,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
     })
     .from(techniciansTable)
     .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+    .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
     .where(eq(techniciansTable.id, raw));
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
-  res.json({ ...row.tech, city_name_ar: row.cityNameAr ?? '', city_name_en: row.cityNameEn ?? '' });
+  res.json({
+    ...row.tech,
+    city_name_ar: row.cityNameAr ?? '',
+    city_name_en: row.cityNameEn ?? '',
+    categoryAr: row.categoryAr ?? '',
+    categoryEn: row.categoryEn ?? '',
+  });
 });
 
 // ── Service Requests by IDs (public — user tracks own requests) ───────────────
