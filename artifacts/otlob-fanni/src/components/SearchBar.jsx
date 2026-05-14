@@ -92,7 +92,8 @@ export default function SearchBar() {
         {/* Clear button */}
         {query.length > 0 && (
           <button
-            onMouseDown={e => { e.preventDefault(); handleClear() }}
+            onMouseDown={e => e.preventDefault()}
+            onClick={handleClear}
             className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors me-2"
           >
             <X className="w-4 h-4 text-gray-500" />
