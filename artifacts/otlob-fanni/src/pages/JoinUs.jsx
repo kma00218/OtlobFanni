@@ -65,10 +65,10 @@ export default function JoinUs() {
 
         {/* Multi-specialty note */}
         <div className="rounded-2xl border-2 border-[#FF7900]/60 overflow-hidden" style={{ background: '#FFF4E8' }}>
-          <div className="flex items-center gap-2 px-4 py-2 border-b border-[#FF7900]/30" style={{ background: '#FFE8CC' }}>
-            <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
-            <span className="text-xs font-extrabold text-[#c45e00] uppercase tracking-wide">
-              {ar ? 'ملاحظة مهمة' : 'Important Note'}
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-red-200 bg-white">
+            <Info className="w-4 h-4 text-red-600 flex-shrink-0" />
+            <span className="text-sm font-extrabold text-red-600 tracking-wide">
+              {ar ? '⚠ ملاحظة مهمة' : '⚠ Important Note'}
             </span>
           </div>
           <p className="px-4 py-3 text-base font-extrabold text-[#3d2200] leading-relaxed">
