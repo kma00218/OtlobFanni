@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, Star, CheckCircle2, Info, Share2 } from 'lucide-react'
+import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Info, Share2 } from 'lucide-react'
 
 export default function JoinUs() {
   const { lang, toggleLang } = useLang()
@@ -21,7 +21,7 @@ export default function JoinUs() {
   }
 
   return (
-    <div className="min-h-screen pb-28" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen pb-28 bg-white" dir={ar ? 'rtl' : 'ltr'}>
 
       {/* Fixed white top bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b border-gray-100 flex items-center justify-end px-4 max-w-[480px] mx-auto">
@@ -47,37 +47,26 @@ export default function JoinUs() {
         </div>
       </div>
 
-      {/* White hero section with icon */}
-      <div className="bg-white pt-16 pb-5 flex justify-center items-center">
-        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 drop-shadow-sm" />
-      </div>
-
-      {/* Dark gradient content section */}
-      <div style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d4f 50%, #1a3f6b 100%)' }}>
-
-      {/* Header */}
-      <div className="px-6 pt-6 pb-6 text-center">
-        <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-4">
-          <Star className="w-3.5 h-3.5 text-[#FF7900]" fill="#FF7900" />
-          <span className="text-white/80 text-xs font-medium">{ar ? 'انضم إلى شبكتنا' : 'Join Our Network'}</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-white leading-tight mb-2">
+      {/* Icon + Title hero */}
+      <div className="pt-16 pb-4 flex flex-col items-center text-center px-6">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 drop-shadow-sm mb-3" />
+        <h1 className="text-4xl font-extrabold text-[#071B33] leading-tight mb-1">
           {ar ? 'انضم إلينا' : 'Join Us'}
         </h1>
-        <p className="text-white/60 text-sm leading-relaxed max-w-[260px] mx-auto">
+        <p className="text-sm text-gray-400 max-w-[240px]">
           {ar
             ? 'اختر طريقة انضمامك وابدأ رحلتك مع اطلب فني'
-            : 'Choose how to join and start your journey with Otlob Fanni'}
+            : 'Choose how to join and start your journey'}
         </p>
       </div>
 
       {/* Cards */}
-      <div className="px-5 space-y-5 mt-2">
+      <div className="px-5 space-y-4">
 
         {/* Multi-specialty note */}
         <div className="flex items-start gap-2.5 rounded-2xl px-4 py-3.5 border-2 border-[#FF7900]/50" style={{ background: '#FFF4E8' }}>
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
-          <p className="text-base font-bold text-[#3d2200] leading-relaxed">
+          <p className="text-sm font-bold text-[#3d2200] leading-relaxed">
             {ar
               ? 'تعمل في أكثر من تخصص؟ أرسل طلبًا منفصلًا لكل تخصص.'
               : 'Work in multiple specialties? Submit a separate application for each.'}
@@ -89,17 +78,14 @@ export default function JoinUs() {
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
             style={{ background: 'linear-gradient(135deg, #1e8c3a 0%, #0f5c24 100%)' }}>
 
-            {/* Background decoration */}
             <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 -left-6 w-32 h-32 rounded-full bg-black/10" />
 
             <div className="relative p-6 flex items-center gap-5">
-              {/* Big icon */}
               <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-green-900/30 border border-white/20">
                 <UserPlus className="w-12 h-12 text-white" strokeWidth={1.5} />
               </div>
 
-              {/* Text */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -123,7 +109,6 @@ export default function JoinUs() {
                 </div>
               </div>
 
-              {/* Arrow */}
               <div className="flex-shrink-0">
                 {ar
                   ? <ChevronLeft className="w-6 h-6 text-white/60" />
@@ -131,7 +116,6 @@ export default function JoinUs() {
               </div>
             </div>
 
-            {/* Bottom strip */}
             <div className="bg-black/15 px-6 py-2.5 flex items-center gap-2">
               <Wrench className="w-3.5 h-3.5 text-white/70" />
               <span className="text-white/70 text-xs">
@@ -146,17 +130,14 @@ export default function JoinUs() {
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
             style={{ background: 'linear-gradient(135deg, #c45e00 0%, #8a3f00 100%)' }}>
 
-            {/* Background decoration */}
             <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 -right-6 w-32 h-32 rounded-full bg-black/10" />
 
             <div className="relative p-6 flex items-center gap-5">
-              {/* Big icon */}
               <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-orange-900/30 border border-white/20">
                 <Building2 className="w-12 h-12 text-white" strokeWidth={1.5} />
               </div>
 
-              {/* Text */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -180,7 +161,6 @@ export default function JoinUs() {
                 </div>
               </div>
 
-              {/* Arrow */}
               <div className="flex-shrink-0">
                 {ar
                   ? <ChevronLeft className="w-6 h-6 text-white/60" />
@@ -188,7 +168,6 @@ export default function JoinUs() {
               </div>
             </div>
 
-            {/* Bottom strip */}
             <div className="bg-black/15 px-6 py-2.5 flex items-center gap-2">
               <Building2 className="w-3.5 h-3.5 text-white/70" />
               <span className="text-white/70 text-xs">
@@ -198,10 +177,7 @@ export default function JoinUs() {
           </div>
         </Link>
 
-
       </div>
-
-      </div>{/* end dark gradient section */}
     </div>
   )
 }
