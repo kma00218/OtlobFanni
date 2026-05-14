@@ -29,15 +29,15 @@ export default function AdminTopbar({ onMenuClick }) {
     <header
       className="h-16 flex items-center px-4 lg:px-6 gap-4 sticky top-0 z-20 flex-shrink-0"
       style={{
-        background: 'rgba(7,7,15,0.9)',
+        background: 'rgba(15,23,42,0.97)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
       }}
     >
       {/* Mobile menu button */}
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-2 rounded-xl text-[#5050A0] hover:text-white hover:bg-white/5 transition-colors"
+        className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -46,8 +46,8 @@ export default function AdminTopbar({ onMenuClick }) {
       <div className="flex items-center gap-2 flex-1">
         {crumbs.length > 1 && (
           <>
-            <span className="text-[#4040A0] text-sm">{crumbs[0]}</span>
-            <span className="text-[#2A2A50] text-sm">/</span>
+            <span className="text-slate-400 text-sm">{crumbs[0]}</span>
+            <span className="text-slate-500 text-sm">/</span>
           </>
         )}
         <h1 className="text-white font-bold text-base">{pageTitle}</h1>
@@ -60,21 +60,21 @@ export default function AdminTopbar({ onMenuClick }) {
           href="/"
           target="_blank"
           rel="noreferrer"
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#5050A0] hover:text-white hover:bg-white/5 transition-all"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-all"
         >
           <ExternalLink className="w-3.5 h-3.5" />
           عرض التطبيق
         </a>
 
         {/* Notifications (placeholder) */}
-        <button className="relative p-2 rounded-xl text-[#5050A0] hover:text-white hover:bg-white/5 transition-colors">
+        <button className="relative p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
           <Bell className="w-4.5 h-4.5" style={{ width: 18, height: 18 }} />
         </button>
 
         {/* User menu */}
         <div
           className="flex items-center gap-2.5 px-3 py-2 rounded-2xl cursor-default"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
         >
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-white text-xs font-black"
@@ -83,8 +83,8 @@ export default function AdminTopbar({ onMenuClick }) {
             {(profile?.full_name || 'A').charAt(0).toUpperCase()}
           </div>
           <div className="hidden sm:block">
-            <p className="text-xs font-bold text-[#E0E0FF] leading-none">{profile?.full_name || 'Admin'}</p>
-            <p className="text-[10px] text-[#5050A0] mt-0.5">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
+            <p className="text-xs font-bold text-white leading-none">{profile?.full_name || 'Admin'}</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
           </div>
         </div>
       </div>

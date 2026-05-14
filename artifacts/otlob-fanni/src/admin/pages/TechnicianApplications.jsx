@@ -22,9 +22,9 @@ const EXP_LABEL = {
 }
 
 const STATUS = {
-  pending:  { label: 'قيد المراجعة', cls: 'bg-amber-500/10 text-amber-400'   },
-  approved: { label: 'مقبول',        cls: 'bg-emerald-500/10 text-emerald-400' },
-  rejected: { label: 'مرفوض',        cls: 'bg-red-500/10 text-red-400'        },
+  pending:  { label: 'قيد المراجعة', cls: 'bg-amber-400/25 text-amber-300 border border-amber-400/40'   },
+  approved: { label: 'مقبول',        cls: 'bg-emerald-400/25 text-emerald-300 border border-emerald-400/40' },
+  rejected: { label: 'مرفوض',        cls: 'bg-red-400/25 text-red-300 border border-red-400/40'        },
 }
 
 const DAY_AR = {
