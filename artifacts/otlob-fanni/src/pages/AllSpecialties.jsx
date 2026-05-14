@@ -10,7 +10,7 @@ export default function AllSpecialties() {
   return (
     <div className="bg-background min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
       <div className="bg-white flex justify-center items-center pt-3 pb-5">
-        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 drop-shadow-sm" />
+        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32" />
       </div>
       <div className="px-5 pt-5 pb-3">
         <h1 className="text-2xl font-bold text-[#071B33]">
