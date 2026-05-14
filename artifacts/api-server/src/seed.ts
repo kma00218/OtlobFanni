@@ -62,21 +62,25 @@ const CITIES = [
 ];
 
 const CATEGORIES = [
-  { id: 'k1',  nameAr: 'كهرباء',           nameEn: 'Electricity',    iconName: 'Zap',         sortOrder: 1,  isActive: true },
-  { id: 'k2',  nameAr: 'سباكة',             nameEn: 'Plumbing',       iconName: 'Droplets',    sortOrder: 2,  isActive: true },
-  { id: 'k3',  nameAr: 'تكييف وتبريد',      nameEn: 'AC & Cooling',   iconName: 'Wind',        sortOrder: 3,  isActive: true },
-  { id: 'k4',  nameAr: 'دهان وديكور',       nameEn: 'Painting',       iconName: 'Paintbrush',  sortOrder: 4,  isActive: true },
-  { id: 'k5',  nameAr: 'نجارة',             nameEn: 'Carpentry',      iconName: 'Hammer',      sortOrder: 5,  isActive: true },
-  { id: 'k6',  nameAr: 'تنظيف',             nameEn: 'Cleaning',       iconName: 'Sparkles',    sortOrder: 6,  isActive: true },
-  { id: 'k7',  nameAr: 'نقل عفش',          nameEn: 'Moving',         iconName: 'Truck',       sortOrder: 7,  isActive: true },
-  { id: 'k8',  nameAr: 'صيانة أجهزة',       nameEn: 'Appliances',     iconName: 'Wrench',      sortOrder: 8,  isActive: true },
-  { id: 'k9',  nameAr: 'إنترنت وشبكات',     nameEn: 'Networks',       iconName: 'Wifi',        sortOrder: 9,  isActive: true },
-  { id: 'k10', nameAr: 'صيانة تلفزيون',     nameEn: 'TV Repair',      iconName: 'Tv',          sortOrder: 10, isActive: true },
-  { id: 'k11', nameAr: 'تدفئة',             nameEn: 'Heating',        iconName: 'Flame',       sortOrder: 11, isActive: true },
-  { id: 'k12', nameAr: 'بلاط وسيراميك',     nameEn: 'Tiling',         iconName: 'Grid3X3',     sortOrder: 12, isActive: true },
-  { id: 'k13', nameAr: 'أعمال حدادة',       nameEn: 'Ironwork',       iconName: 'Settings',    sortOrder: 13, isActive: true },
-  { id: 'k14', nameAr: 'أعمال بناء',        nameEn: 'Construction',   iconName: 'Building2',   sortOrder: 14, isActive: true },
-  { id: 'k15', nameAr: 'أمن وأقفال',        nameEn: 'Security',       iconName: 'Lock',        sortOrder: 15, isActive: true },
+  { id: 'electricity',         nameAr: 'كهرباء',                                    nameEn: 'Electricity',                              iconName: 'zap',                  sortOrder: 1,  isActive: true },
+  { id: 'plumbing',            nameAr: 'سباكة',                                     nameEn: 'Plumbing',                                 iconName: 'droplets',             sortOrder: 2,  isActive: true },
+  { id: 'ac',                  nameAr: 'تكييف',                                     nameEn: 'AC & HVAC',                                iconName: 'wind',                 sortOrder: 3,  isActive: true },
+  { id: 'painting',            nameAr: 'دهانات',                                    nameEn: 'Painting',                                 iconName: 'paintbrush',           sortOrder: 4,  isActive: true },
+  { id: 'carpentry',           nameAr: 'نجارة',                                     nameEn: 'Carpentry',                                iconName: 'hammer',               sortOrder: 5,  isActive: true },
+  { id: 'cleaning',            nameAr: 'تنظيف',                                     nameEn: 'Cleaning',                                 iconName: 'sparkles',             sortOrder: 6,  isActive: true },
+  { id: 'moving',              nameAr: 'نقل عفش',                                   nameEn: 'Moving',                                   iconName: 'truck',                sortOrder: 7,  isActive: true },
+  { id: 'cctv',                nameAr: 'كاميرات مراقبة',                            nameEn: 'CCTV',                                     iconName: 'camera',               sortOrder: 8,  isActive: true },
+  { id: 'networks',            nameAr: 'شبكات',                                     nameEn: 'Networks & IT',                            iconName: 'wifi',                 sortOrder: 9,  isActive: true },
+  { id: 'maintenance',         nameAr: 'صيانة عامة',                                nameEn: 'General Maintenance',                      iconName: 'wrench',               sortOrder: 10, isActive: true },
+  { id: 'appliances',          nameAr: 'أجهزة منزلية',                              nameEn: 'Appliances',                               iconName: 'monitor',              sortOrder: 11, isActive: true },
+  { id: 'welding',             nameAr: 'لحام',                                      nameEn: 'Welding',                                  iconName: 'flame',                sortOrder: 12, isActive: true },
+  { id: 'coffee_machine',      nameAr: 'فني ماكينة قهوة',                           nameEn: 'Coffee Machine Technician',                iconName: 'coffee_machine',       sortOrder: 60, isActive: true },
+  { id: 'restaurant_equipment',nameAr: 'فني معدات مطاعم ومقاهي',                   nameEn: 'Restaurant & Cafe Equipment Technician',   iconName: 'restaurant_equipment', sortOrder: 61, isActive: true },
+  { id: 'shawarma',            nameAr: 'أسطى شاورما',                               nameEn: 'Shawarma Worker',                          iconName: 'shawarma',             sortOrder: 62, isActive: true },
+  { id: 'grill',               nameAr: 'أسطى مشاوي',                               nameEn: 'Grill Worker',                             iconName: 'grill',                sortOrder: 63, isActive: true },
+  { id: 'pastry',              nameAr: 'أسطى معجنات وبريوش وكريب',                 nameEn: 'Pastry, Brioche & Crepe Worker',           iconName: 'pastry',               sortOrder: 64, isActive: true },
+  { id: 'restaurant_staff',    nameAr: 'عمالة مطاعم ومقاهي',                       nameEn: 'Restaurant & Cafe Staff',                  iconName: 'restaurant_staff',     sortOrder: 65, isActive: true },
+  { id: 'plastering',          nameAr: 'عامل لياسة ومحارة',                        nameEn: 'Plastering Worker',                        iconName: 'plastering',           sortOrder: 66, isActive: true },
 ];
 
 export async function seedDatabase(): Promise<void> {
@@ -90,14 +94,17 @@ export async function seedDatabase(): Promise<void> {
       console.log(`[seed] Inserted ${CITIES.length} cities`);
     }
 
-    const [{ count: catCount }] = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(categoriesTable);
-
-    if (catCount === 0) {
-      await db.insert(categoriesTable).values(CATEGORIES).onConflictDoNothing();
-      console.log(`[seed] Inserted ${CATEGORIES.length} categories`);
-    }
+    await db.insert(categoriesTable).values(CATEGORIES).onConflictDoUpdate({
+      target: categoriesTable.id,
+      set: {
+        nameAr: sql`excluded.name_ar`,
+        nameEn: sql`excluded.name_en`,
+        iconName: sql`excluded.icon_name`,
+        sortOrder: sql`excluded.sort_order`,
+        isActive: sql`excluded.is_active`,
+      },
+    });
+    console.log(`[seed] Upserted ${CATEGORIES.length} categories`);
 
     const [{ count: adminCount }] = await db
       .select({ count: sql<number>`count(*)::int` })
