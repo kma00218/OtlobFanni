@@ -3,7 +3,7 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Building2, Shield } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
-import { sections as SECTIONS } from '../../data/services'
+import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',
@@ -39,16 +39,19 @@ export default function CompanyApplications() {
   }
 
   const catLabel = (id) => {
-    const cat = categories.find(c => c.id === id)
-    return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
+    if (!id) return '—'
+    if (id === 'more_services') return 'تخصص آخر (مخصص)'
+    const cat = SERVICES_CATS.find(c => c.id === id)
+    if (cat) return cat.nameAr
+    const dbCat = categories.find(c => c.id === id)
+    return dbCat ? (dbCat.nameAr || dbCat.name_ar) : id
   }
 
   const sectionLabel = (categoryId) => {
-    const cat = categories.find(c => c.id === categoryId)
-    const sectionId = cat?.sectionId || cat?.section_id
-    if (!sectionId) return '—'
-    const sec = SECTIONS.find(s => s.id === sectionId)
-    return sec ? sec.nameAr : sectionId
+    if (!categoryId || categoryId === 'more_services') return ''
+    const cat = SERVICES_CATS.find(c => c.id === categoryId)
+    const sec = SECTIONS.find(s => s.id === cat?.sectionId)
+    return sec ? sec.nameAr : ''
   }
 
   const reload = () => {
@@ -141,10 +144,19 @@ export default function CompanyApplications() {
     },
     { key: 'city', label: 'المدينة' },
     {
-      key: 'specialty', label: 'التخصص',
+      key: 'specialty', label: 'القسم / التخصص',
       render: (v, row) => row.customSpecialty
-        ? <span className="text-amber-400 text-xs font-medium">{row.customSpecialty}</span>
-        : (catLabel(v) || v || '—'),
+        ? (
+          <div>
+            <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v) || 'تخصص مخصص'}</p>
+            <p className="text-sm text-amber-400 font-medium">{row.customSpecialty}</p>
+          </div>
+        ) : (
+          <div>
+            {sectionLabel(v) && <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v)}</p>}
+            <p className="text-sm text-[#C0C0D8]">{catLabel(v)}</p>
+          </div>
+        ),
     },
     {
       key: 'yearsActive', label: 'سنوات النشاط',
