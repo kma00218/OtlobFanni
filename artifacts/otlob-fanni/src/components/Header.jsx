@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { MapPin, Bell, Loader2, Share2 } from 'lucide-react'
+import { MapPin, Bell, Loader2, Share2, Megaphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useLocation } from 'wouter'
 
 async function reverseGeocode(lat, lon, lang) {
   try {
@@ -28,6 +29,7 @@ async function reverseGeocode(lat, lon, lang) {
 
 export default function Header() {
   const { dir, t, toggleLang, lang } = useLang()
+  const [, navigate] = useLocation()
   const [locationLabel, setLocationLabel] = useState(null)
   const [locState, setLocState] = useState('idle') // idle | loading | granted | denied
 
@@ -88,6 +90,15 @@ export default function Header() {
       </button>
 
       <div className="flex items-end gap-3">
+        <button
+          onClick={() => navigate('/advertise')}
+          className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
+        >
+          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#FF7900' }}>
+            <Megaphone className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'أعلن معنا' : 'Advertise'}</span>
+        </button>
         <button
           onClick={() => {
             if (navigator.share) {
