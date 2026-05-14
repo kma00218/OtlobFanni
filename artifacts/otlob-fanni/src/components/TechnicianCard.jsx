@@ -42,7 +42,7 @@ export default function TechnicianCard({ technician }) {
 
           {/* Specialty badge */}
           {specialty && (
-            <span className="inline-flex items-center gap-1 bg-[#FF7900]/10 text-[#FF7900] text-[11px] font-bold px-2 py-0.5 rounded-full mb-1.5">
+            <span className="inline-flex items-center gap-1 bg-[#FF7900] text-white text-xs font-extrabold px-3 py-1 rounded-lg mb-2" style={{ letterSpacing: '0.01em' }}>
               {specialty}
             </span>
           )}
