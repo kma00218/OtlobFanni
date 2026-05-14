@@ -59,7 +59,7 @@ export default function SearchOverlay({ open, onClose }) {
             <X className="w-5 h-5 text-[#071B33]" />
           </button>
           <span className="flex-1 text-[#071B33] font-black text-base" dir={dir}>
-            {lang === 'ar' ? 'ابحث عن خدمة' : 'Search a service'}
+            {lang === 'ar' ? 'ابحث عن فني' : 'Find a Technician'}
           </span>
         </div>
 
