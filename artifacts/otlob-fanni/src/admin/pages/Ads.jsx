@@ -11,6 +11,10 @@ const PLACEMENTS = [
   { value: 'categories',  labelAr: 'صفحة التخصصات',   icon: LayoutGrid,  color: 'text-purple-400',  bg: 'bg-purple-500/10' },
   { value: 'technicians', labelAr: 'قائمة الفنيين',    icon: Users,       color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
   { value: 'banner',      labelAr: 'بانر عام',          icon: Sparkles,    color: 'text-amber-400',   bg: 'bg-amber-500/10' },
+  { value: 'vertical',    labelAr: 'إعلان رأسي',        icon: Monitor,     color: 'text-pink-400',    bg: 'bg-pink-500/10' },
+  { value: 'sidebar',     labelAr: 'جانبي',             icon: LayoutGrid,  color: 'text-cyan-400',    bg: 'bg-cyan-500/10' },
+  { value: 'featured',    labelAr: 'مميز',              icon: Sparkles,    color: 'text-yellow-400',  bg: 'bg-yellow-500/10' },
+  { value: 'global',      labelAr: 'كل الصفحات',        icon: Monitor,     color: 'text-gray-400',    bg: 'bg-gray-500/10' },
 ]
 
 const emptyForm = {
