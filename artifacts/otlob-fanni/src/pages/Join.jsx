@@ -442,13 +442,6 @@ export default function Join() {
                   placeholder={ar ? 'اكتب نبذة مختصرة عن خبرتك وخدماتك...' : 'Briefly describe your experience and services...'} />
               </Field>
 
-              <Field label={ar ? 'الشهادات والمؤهلات' : 'Certifications & Qualifications'}
-                hint={ar ? 'اذكر أي شهادات مهنية أو تدريبات متخصصة' : 'Mention any professional certificates or specialized training'}>
-                <textarea
-                  className={inp + ' min-h-[70px] resize-none'} value={form.certifications}
-                  onChange={e => set('certifications', e.target.value)}
-                  placeholder={ar ? 'مثال: شهادة كهرباء معتمدة، دورة صيانة...' : 'e.g., Certified electrician, maintenance course...'} />
-              </Field>
             </div>
           </div>
 
