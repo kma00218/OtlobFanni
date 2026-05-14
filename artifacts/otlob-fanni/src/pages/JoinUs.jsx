@@ -49,7 +49,7 @@ export default function JoinUs() {
 
       {/* Icon + Title hero */}
       <div className="pt-16 pb-4 flex flex-col items-center text-center px-6">
-        <img src="/icon-192.png" alt="اطلب فني" className="w-32 h-32 mb-3" />
+        <img src="/icon-192.png" alt="اطلب فني" className="w-20 h-20 mb-2" />
         <h1 className="text-4xl font-extrabold text-[#071B33] leading-tight mb-1">
           {ar ? 'انضم إلينا' : 'Join Us'}
         </h1>
