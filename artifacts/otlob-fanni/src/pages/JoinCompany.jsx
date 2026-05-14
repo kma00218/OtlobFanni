@@ -409,36 +409,18 @@ export default function JoinCompany() {
                 </Field>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={ar ? 'سنوات النشاط' : 'Years Active'} required>
-                  <select className={sel} required value={form.years_active} onChange={e => set('years_active', e.target.value)}>
-                    <option value="">{ar ? 'اختر...' : 'Select...'}</option>
-                    {[
-                      { v: 'less1', ar: 'أقل من سنة',  en: 'Less than 1 yr' },
-                      { v: '1-2',   ar: '1-2 سنوات',   en: '1-2 years'      },
-                      { v: '3-5',   ar: '3-5 سنوات',   en: '3-5 years'      },
-                      { v: '6-10',  ar: '6-10 سنوات',  en: '6-10 years'     },
-                      { v: '10+',   ar: 'أكثر من 10',  en: 'More than 10'   },
-                    ].map(o => <option key={o.v} value={o.v}>{ar ? o.ar : o.en}</option>)}
-                  </select>
-                </Field>
-                <Field label={ar ? 'نطاق الخدمة (كم)' : 'Service Radius (km)'}
-                  hint="">
-                  <input className={inp} type="number" min="0" max="500" value={form.service_radius}
-                    onChange={e => set('service_radius', e.target.value)} placeholder={ar ? 'مثال: 50' : 'e.g. 50'} />
-                </Field>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={ar ? 'السعر الأدنى (د.ل)' : 'Min Price (LYD)'} required>
-                  <input className={inp} type="number" min="0" required value={form.price_from}
-                    onChange={e => set('price_from', e.target.value)} placeholder="50" />
-                </Field>
-                <Field label={ar ? 'السعر الأقصى (د.ل)' : 'Max Price (LYD)'}>
-                  <input className={inp} type="number" min="0" value={form.price_to}
-                    onChange={e => set('price_to', e.target.value)} placeholder="2000" />
-                </Field>
-              </div>
+              <Field label={ar ? 'سنوات النشاط' : 'Years Active'} required>
+                <select className={sel} required value={form.years_active} onChange={e => set('years_active', e.target.value)}>
+                  <option value="">{ar ? 'اختر...' : 'Select...'}</option>
+                  {[
+                    { v: 'less1', ar: 'أقل من سنة',  en: 'Less than 1 yr' },
+                    { v: '1-2',   ar: '1-2 سنوات',   en: '1-2 years'      },
+                    { v: '3-5',   ar: '3-5 سنوات',   en: '3-5 years'      },
+                    { v: '6-10',  ar: '6-10 سنوات',  en: '6-10 years'     },
+                    { v: '10+',   ar: 'أكثر من 10',  en: 'More than 10'   },
+                  ].map(o => <option key={o.v} value={o.v}>{ar ? o.ar : o.en}</option>)}
+                </select>
+              </Field>
 
               <Field label={ar ? 'وصف الخدمات المقدمة' : 'Services Description'} required>
                 <textarea
@@ -472,30 +454,6 @@ export default function JoinCompany() {
                   ))}
                 </div>
               </Field>
-
-              <Field label={ar ? 'أيام العمل' : 'Working Days'}>
-                <div className="flex flex-wrap gap-2">
-                  {DAYS[ar ? 'ar' : 'en'].map((day, i) => (
-                    <button key={day} type="button" onClick={() => toggleDay(DAYS.en[i])}
-                      className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${days.includes(DAYS.en[i]) ? 'bg-[#071B33] border-[#071B33] text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'}`}>
-                      {day}
-                    </button>
-                  ))}
-                </div>
-              </Field>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={ar ? 'بداية الدوام' : 'Opening Time'}>
-                  <select className={sel} value={form.hours_from} onChange={e => set('hours_from', e.target.value)}>
-                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                </Field>
-                <Field label={ar ? 'نهاية الدوام' : 'Closing Time'}>
-                  <select className={sel} value={form.hours_to} onChange={e => set('hours_to', e.target.value)}>
-                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                </Field>
-              </div>
 
               <Field label={ar ? 'خدمة طوارئ؟ (24/7)' : 'Emergency Service? (24/7)'}>
                 <div className="grid grid-cols-2 gap-2">

@@ -435,17 +435,6 @@ export default function Join() {
                 </Field>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={ar ? 'السعر الأدنى (د.ل)' : 'Min Price (LYD)'} required>
-                  <input className={inp} type="number" min="0" required value={form.price_from}
-                    onChange={e => set('price_from', e.target.value)} placeholder="50" />
-                </Field>
-                <Field label={ar ? 'السعر الأقصى (د.ل)' : 'Max Price (LYD)'}>
-                  <input className={inp} type="number" min="0" value={form.price_to}
-                    onChange={e => set('price_to', e.target.value)} placeholder="500" />
-                </Field>
-              </div>
-
               <Field label={ar ? 'وصف قصير عن خدمتك' : 'Service Description'} required>
                 <textarea
                   className={inp + ' min-h-[90px] resize-none'} required value={form.description}
@@ -479,30 +468,6 @@ export default function Join() {
                 </div>
               </Field>
 
-              <Field label={ar ? 'أيام العمل' : 'Working Days'}>
-                <div className="flex flex-wrap gap-2">
-                  {DAYS[ar ? 'ar' : 'en'].map((day, i) => (
-                    <button key={day} type="button" onClick={() => toggleDay(DAYS.en[i])}
-                      className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${days.includes(DAYS.en[i]) ? 'bg-[#071B33] border-[#071B33] text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'}`}>
-                      {day}
-                    </button>
-                  ))}
-                </div>
-              </Field>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={ar ? 'وقت بداية العمل' : 'Work Start Time'}>
-                  <select className={sel} value={form.hours_from} onChange={e => set('hours_from', e.target.value)}>
-                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                </Field>
-                <Field label={ar ? 'وقت انتهاء العمل' : 'Work End Time'}>
-                  <select className={sel} value={form.hours_to} onChange={e => set('hours_to', e.target.value)}>
-                    {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-                  </select>
-                </Field>
-              </div>
-
               <Field label={ar ? 'خدمة الطوارئ؟ (24/7)' : 'Emergency Service? (24/7)'}>
                 <div className="grid grid-cols-2 gap-2">
                   {[{ v: 'yes', ar: 'نعم ✓', en: 'Yes ✓' }, { v: 'no', ar: 'لا', en: 'No' }].map(opt => (
@@ -514,11 +479,6 @@ export default function Join() {
                 </div>
               </Field>
 
-              <Field label={ar ? 'نطاق الخدمة (بالكيلومتر)' : 'Service Radius (km)'}
-                hint={ar ? 'أقصى مسافة تنتقل إليها للعمل' : 'Maximum distance you travel for work'}>
-                <input className={inp} type="number" min="0" max="500" value={form.service_radius}
-                  onChange={e => set('service_radius', e.target.value)} placeholder={ar ? 'مثال: 30' : 'e.g. 30'} />
-              </Field>
             </div>
           </div>
 
