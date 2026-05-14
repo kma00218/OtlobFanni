@@ -125,6 +125,76 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
   });
 });
 
+// ── Global search: technicians + companies + cities ───────────────────────────
+router.get("/search", async (req, res): Promise<void> => {
+  const q = String(req.query.q ?? "").trim();
+  if (!q) { res.json({ technicians: [], companies: [], cities: [] }); return; }
+
+  const [techRows, companyRows, cityRows] = await Promise.all([
+    db.select({
+        tech: techniciansTable,
+        cityNameAr: citiesTable.nameAr,
+        cityNameEn: citiesTable.nameEn,
+        categoryAr: categoriesTable.nameAr,
+        categoryEn: categoriesTable.nameEn,
+      })
+      .from(techniciansTable)
+      .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+      .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
+      .where(and(
+        eq(techniciansTable.isApproved, true),
+        eq(techniciansTable.isActive, true),
+        or(ilike(techniciansTable.nameAr, `%${q}%`), ilike(techniciansTable.nameEn, `%${q}%`)),
+      ))
+      .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
+      .limit(4),
+
+    db.select({
+        company: companyApplicationsTable,
+        categoryAr: categoriesTable.nameAr,
+        categoryEn: categoriesTable.nameEn,
+      })
+      .from(companyApplicationsTable)
+      .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
+      .where(and(
+        eq(companyApplicationsTable.status, "approved"),
+        or(ilike(companyApplicationsTable.companyName, `%${q}%`), ilike(companyApplicationsTable.contactName, `%${q}%`)),
+      ))
+      .limit(4),
+
+    db.select().from(citiesTable)
+      .where(or(ilike(citiesTable.nameAr, `%${q}%`), ilike(citiesTable.nameEn, `%${q}%`)))
+      .orderBy(citiesTable.sortOrder)
+      .limit(5),
+  ]);
+
+  res.json({
+    technicians: techRows.map(r => ({
+      id: r.tech.id,
+      nameAr: r.tech.nameAr,
+      nameEn: r.tech.nameEn,
+      profilePhoto: r.tech.profilePhoto,
+      categoryAr: r.categoryAr ?? '',
+      categoryEn: r.categoryEn ?? '',
+      cityNameAr: r.cityNameAr ?? '',
+      cityNameEn: r.cityNameEn ?? '',
+    })),
+    companies: companyRows.map(r => ({
+      id: r.company.id,
+      companyName: r.company.companyName,
+      city: r.company.city,
+      categoryAr: r.categoryAr ?? '',
+      categoryEn: r.categoryEn ?? '',
+      companyLogo: r.company.companyLogo,
+    })),
+    cities: cityRows.map(c => ({
+      id: c.id,
+      nameAr: c.nameAr,
+      nameEn: c.nameEn,
+    })),
+  });
+});
+
 // ── Single Technician ─────────────────────────────────────────────────────────
 // ── Technician name search ────────────────────────────────────────────────────
 router.get("/technicians/search", async (req, res): Promise<void> => {

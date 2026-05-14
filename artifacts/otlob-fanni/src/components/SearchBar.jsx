@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { Search, X, ChevronLeft, User } from 'lucide-react'
+import { Search, X, ChevronLeft, User, Building2, MapPin } from 'lucide-react'
 import { useLocation } from 'wouter'
 import { searchIndex } from '../data/searchIndex'
 import { sections } from '../data/services'
@@ -22,28 +22,39 @@ export default function SearchBar({ onResultSelect } = {}) {
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const [techResults, setTechResults] = useState([])
+  const [companyResults, setCompanyResults] = useState([])
+  const [cityResults, setCityResults] = useState([])
   const inputRef = useRef(null)
   const containerRef = useRef(null)
 
   const ar = lang === 'ar'
   const debouncedQuery = useDebounce(query, 280)
 
-  // Local keyword results (specialties / sections)
   const specialtyResults = debouncedQuery.trim().length >= 1
     ? searchIndex(debouncedQuery, 5)
     : []
 
-  // Fetch technician name results from API
   useEffect(() => {
-    if (debouncedQuery.trim().length < 2) { setTechResults([]); return }
+    if (debouncedQuery.trim().length < 2) {
+      setTechResults([]); setCompanyResults([]); setCityResults([])
+      return
+    }
     let cancelled = false
-    api.searchTechnicians(debouncedQuery.trim())
-      .then(data => { if (!cancelled) setTechResults(data || []) })
-      .catch(() => { if (!cancelled) setTechResults([]) })
+    api.search(debouncedQuery.trim())
+      .then(data => {
+        if (!cancelled) {
+          setTechResults(data?.technicians || [])
+          setCompanyResults(data?.companies || [])
+          setCityResults(data?.cities || [])
+        }
+      })
+      .catch(() => {
+        if (!cancelled) { setTechResults([]); setCompanyResults([]); setCityResults([]) }
+      })
     return () => { cancelled = true }
   }, [debouncedQuery])
 
-  const hasResults = specialtyResults.length > 0 || techResults.length > 0
+  const hasResults = specialtyResults.length > 0 || techResults.length > 0 || companyResults.length > 0 || cityResults.length > 0
 
   const handleSelectSpecialty = (entry) => {
     setQuery(''); setOpen(false); onResultSelect?.()
@@ -59,8 +70,19 @@ export default function SearchBar({ onResultSelect } = {}) {
     navigate(`/technician/${tech.id}`)
   }
 
+  const handleSelectCompany = (company) => {
+    setQuery(''); setOpen(false); onResultSelect?.()
+    navigate(`/company/${company.id}`)
+  }
+
+  const handleSelectCity = (city) => {
+    setQuery(''); setOpen(false); onResultSelect?.()
+    navigate(`/city/${city.id}`)
+  }
+
   const handleClear = () => {
-    setQuery(''); setOpen(false); setTechResults([])
+    setQuery(''); setOpen(false)
+    setTechResults([]); setCompanyResults([]); setCityResults([])
     inputRef.current?.focus()
   }
 
@@ -84,9 +106,14 @@ export default function SearchBar({ onResultSelect } = {}) {
     return sec ? (ar ? sec.nameAr : sec.nameEn) : null
   }
 
+  const SectionHeader = ({ label, hasBorder }) => (
+    <div className={`px-4 pb-1 ${hasBorder ? 'pt-3 border-t border-gray-100 mt-1' : 'pt-3'}`}>
+      <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">{label}</span>
+    </div>
+  )
+
   return (
     <div ref={containerRef} className="relative w-full" dir={dir}>
-      {/* Search input row */}
       <div className={`flex items-center gap-2 rounded-2xl transition-all duration-200 bg-white ${
         focused
           ? 'border-2 border-[#FF7900] shadow-[0_0_0_4px_rgba(255,121,0,0.15)]'
@@ -122,22 +149,17 @@ export default function SearchBar({ onResultSelect } = {}) {
         )}
       </div>
 
-      {/* Dropdown results */}
       {open && hasResults && (
         <div
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto z-50"
           style={{ maxHeight: '65vh', overscrollBehavior: 'contain' }}
           onTouchStart={e => e.stopPropagation()}
         >
-          {/* ── Section 1: Specialties ── */}
+          {/* ── Specialties ── */}
           {specialtyResults.length > 0 && (
             <>
-              <div className="px-4 pt-3 pb-1">
-                <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">
-                  {ar ? 'التخصصات والأقسام' : 'Specialties & Departments'}
-                </span>
-              </div>
-              {specialtyResults.map((entry, i) => {
+              <SectionHeader label={ar ? 'التخصصات والأقسام' : 'Specialties & Departments'} hasBorder={false} />
+              {specialtyResults.map((entry) => {
                 const name = ar ? entry.nameAr : entry.nameEn
                 const sectionName = getSectionName(entry)
                 const isSection = entry.type === 'section'
@@ -147,15 +169,10 @@ export default function SearchBar({ onResultSelect } = {}) {
                     key={`spec-${entry.type}-${entry.id}`}
                     onMouseDown={e => { e.preventDefault(); handleSelectSpecialty(entry) }}
                     onTouchStart={e => { touchStartY = e.touches[0].clientY }}
-                    onTouchEnd={e => {
-                      const delta = Math.abs(e.changedTouches[0].clientY - touchStartY)
-                      if (delta < 10) handleSelectSpecialty(entry)
-                    }}
+                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectSpecialty(entry) }}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#FF7900]/5 active:bg-[#FF7900]/10 transition-colors text-start border-t border-gray-50"
                   >
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${
-                      isSection ? 'bg-[#071B33]/10' : 'bg-[#FF7900]/10'
-                    }`}>
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${isSection ? 'bg-[#071B33]/10' : 'bg-[#FF7900]/10'}`}>
                       <img
                         src={`/icons/services/${entry.iconName || entry.id}.svg`}
                         alt=""
@@ -165,12 +182,8 @@ export default function SearchBar({ onResultSelect } = {}) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-[#071B33] font-bold text-sm block leading-tight">{name}</span>
-                      {sectionName && (
-                        <span className="text-[#FF7900] text-xs font-semibold leading-tight">{sectionName}</span>
-                      )}
-                      {isSection && (
-                        <span className="text-gray-400 text-xs leading-tight">{ar ? 'قسم' : 'Department'}</span>
-                      )}
+                      {sectionName && <span className="text-[#FF7900] text-xs font-semibold leading-tight">{sectionName}</span>}
+                      {isSection && <span className="text-gray-400 text-xs leading-tight">{ar ? 'قسم' : 'Department'}</span>}
                     </div>
                     <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
                   </button>
@@ -179,46 +192,98 @@ export default function SearchBar({ onResultSelect } = {}) {
             </>
           )}
 
-          {/* ── Section 2: Technicians ── */}
+          {/* ── Technicians ── */}
           {techResults.length > 0 && (
             <>
-              <div className={`px-4 pb-1 ${specialtyResults.length > 0 ? 'pt-3 border-t border-gray-100 mt-1' : 'pt-3'}`}>
-                <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">
-                  {ar ? 'الفنيون' : 'Technicians'}
-                </span>
-              </div>
+              <SectionHeader label={ar ? 'الفنيون' : 'Technicians'} hasBorder={specialtyResults.length > 0} />
               {techResults.map((tech) => {
                 let touchStartY = 0
-                const photoUrl = getFileUrl(tech.photoUrl)
-                const categoryName = ar ? tech.categoryAr : tech.categoryEn
-                const cityName = ar ? tech.cityNameAr : tech.cityNameEn
                 return (
                   <button
                     key={`tech-${tech.id}`}
                     onMouseDown={e => { e.preventDefault(); handleSelectTech(tech) }}
                     onTouchStart={e => { touchStartY = e.touches[0].clientY }}
-                    onTouchEnd={e => {
-                      const delta = Math.abs(e.changedTouches[0].clientY - touchStartY)
-                      if (delta < 10) handleSelectTech(tech)
-                    }}
+                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectTech(tech) }}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#071B33]/5 active:bg-[#071B33]/10 transition-colors text-start border-t border-gray-50"
                   >
-                    {/* Avatar */}
                     <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden bg-[#071B33]/10 flex items-center justify-center">
                       {tech.profilePhoto ? (
-                        <img src={getFileUrl(tech.profilePhoto)} alt={ar ? tech.nameAr : tech.nameEn} className="w-full h-full object-cover" />
+                        <img src={getFileUrl(tech.profilePhoto)} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <User className="w-5 h-5 text-[#071B33]/40" />
                       )}
                     </div>
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <span className="text-[#071B33] font-bold text-sm block leading-tight">
                         {ar ? tech.nameAr : (tech.nameEn || tech.nameAr)}
                       </span>
                       <span className="text-gray-400 text-xs leading-tight">
-                        {[categoryName, cityName].filter(Boolean).join(' · ')}
+                        {[ar ? tech.categoryAr : tech.categoryEn, ar ? tech.cityNameAr : tech.cityNameEn].filter(Boolean).join(' · ')}
                       </span>
+                    </div>
+                    <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
+                  </button>
+                )
+              })}
+            </>
+          )}
+
+          {/* ── Companies ── */}
+          {companyResults.length > 0 && (
+            <>
+              <SectionHeader label={ar ? 'الشركات' : 'Companies'} hasBorder={specialtyResults.length > 0 || techResults.length > 0} />
+              {companyResults.map((company) => {
+                let touchStartY = 0
+                return (
+                  <button
+                    key={`company-${company.id}`}
+                    onMouseDown={e => { e.preventDefault(); handleSelectCompany(company) }}
+                    onTouchStart={e => { touchStartY = e.touches[0].clientY }}
+                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectCompany(company) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 active:bg-blue-100 transition-colors text-start border-t border-gray-50"
+                  >
+                    <div className="w-9 h-9 rounded-xl flex-shrink-0 overflow-hidden bg-blue-100 flex items-center justify-center">
+                      {company.companyLogo ? (
+                        <img src={getFileUrl(company.companyLogo)} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <Building2 className="w-5 h-5 text-blue-400" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[#071B33] font-bold text-sm block leading-tight">{company.companyName}</span>
+                      <span className="text-gray-400 text-xs leading-tight">
+                        {[ar ? company.categoryAr : company.categoryEn, company.city].filter(Boolean).join(' · ')}
+                      </span>
+                    </div>
+                    <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
+                  </button>
+                )
+              })}
+            </>
+          )}
+
+          {/* ── Cities ── */}
+          {cityResults.length > 0 && (
+            <>
+              <SectionHeader label={ar ? 'المدن' : 'Cities'} hasBorder={specialtyResults.length > 0 || techResults.length > 0 || companyResults.length > 0} />
+              {cityResults.map((city) => {
+                let touchStartY = 0
+                return (
+                  <button
+                    key={`city-${city.id}`}
+                    onMouseDown={e => { e.preventDefault(); handleSelectCity(city) }}
+                    onTouchStart={e => { touchStartY = e.touches[0].clientY }}
+                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectCity(city) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 active:bg-green-100 transition-colors text-start border-t border-gray-50"
+                  >
+                    <div className="w-9 h-9 rounded-xl flex-shrink-0 bg-green-100 flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-green-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[#071B33] font-bold text-sm block leading-tight">
+                        {ar ? city.nameAr : city.nameEn}
+                      </span>
+                      <span className="text-gray-400 text-xs">{ar ? 'عرض فنيي المدينة' : 'Show city technicians'}</span>
                     </div>
                     <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
                   </button>
@@ -229,7 +294,6 @@ export default function SearchBar({ onResultSelect } = {}) {
         </div>
       )}
 
-      {/* No results */}
       {open && debouncedQuery.trim().length >= 2 && !hasResults && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 px-4 py-5 z-50 text-center">
           <p className="text-gray-400 text-sm">

@@ -62,6 +62,7 @@ export const api = {
 
   technician: (id) => get(`/technicians/${id}`),
   searchTechnicians: (q) => get(`/technicians/search?q=${encodeURIComponent(q)}`),
+  search: (q) => get(`/search?q=${encodeURIComponent(q)}`),
 
   serviceRequestsByIds: (ids) => ids.length
     ? get(`/service-requests/by-ids?ids=${ids.join(',')}`)
