@@ -276,16 +276,10 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
         {/* All cities button */}
         <button
           onClick={() => onSelect('')}
-          className="w-full flex items-center gap-3 bg-blue-50 border-2 border-blue-200 rounded-2xl px-4 py-5 mb-5 active:scale-[0.98] transition-transform shadow-sm"
+          className="w-full flex flex-col items-center justify-center bg-blue-600 rounded-2xl px-4 py-5 mb-5 active:scale-[0.98] transition-transform shadow-lg shadow-blue-200"
         >
-          <div className="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <MapPin className="w-5 h-5 text-blue-600" />
-          </div>
-          <div className={`flex-1 ${ar ? 'text-right' : 'text-left'}`}>
-            <p className="font-extrabold text-blue-800 text-lg leading-tight">{ar ? 'كل ليبيا' : 'All Libya'}</p>
-            <p className="text-xs text-blue-400 mt-0.5">{ar ? 'عرض جميع الفنيين' : 'Show all providers'}</p>
-          </div>
-          <span className="text-blue-400 text-lg">{ar ? '←' : '→'}</span>
+          <p className="font-extrabold text-white text-2xl tracking-wide">{ar ? '🇱🇾 كل ليبيا' : '🇱🇾 All Libya'}</p>
+          <p className="text-sm text-blue-100 mt-1">{ar ? 'عرض جميع الفنيين في البلاد' : 'Show all providers across the country'}</p>
         </button>
 
         {/* Section label */}
