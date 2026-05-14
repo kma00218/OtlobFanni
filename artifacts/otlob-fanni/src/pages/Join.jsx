@@ -333,12 +333,7 @@ export default function Join() {
                 </Field>
               </div>
 
-              <Field label={ar ? 'الرقم الوطني / رقم الهوية' : 'National ID Number'}
-                hint={ar ? 'سيُستخدم للتحقق من الهوية داخلياً' : 'Used for internal identity verification'}>
-                <input className={inp} value={form.national_id}
-                  onChange={e => set('national_id', e.target.value)}
-                  placeholder={ar ? '1-2345-678901-2' : '1-2345-678901-2'} dir="ltr" />
-              </Field>
+              {/* حقل الرقم الوطني مخفي مؤقتاً في مرحلة الإطلاق */}
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label={ar ? 'المدينة' : 'City'} required>

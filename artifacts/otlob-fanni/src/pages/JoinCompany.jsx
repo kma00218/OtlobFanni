@@ -348,12 +348,7 @@ export default function JoinCompany() {
                 </Field>
               </div>
 
-              <Field label={ar ? 'رقم السجل التجاري / الترخيص' : 'Commercial Registration Number'}
-                hint={ar ? 'سيُستخدم للتحقق من هوية الشركة داخلياً' : 'Used for internal company verification'}>
-                <input className={inp} value={form.commercial_reg}
-                  onChange={e => set('commercial_reg', e.target.value)}
-                  placeholder={ar ? 'LY-2024-00001' : 'LY-2024-00001'} dir="ltr" />
-              </Field>
+              {/* حقل السجل التجاري مخفي مؤقتاً في مرحلة الإطلاق */}
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label={ar ? 'المدينة' : 'City'} required>
