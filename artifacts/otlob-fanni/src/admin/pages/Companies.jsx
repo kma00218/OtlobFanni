@@ -7,6 +7,7 @@ import {
   Facebook, Image, FileText, Lock, Shield, Info, XCircle
 } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
+import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',
@@ -56,9 +57,18 @@ export default function Companies() {
   }
 
   const catLabel = (id) => {
-    const cat = categories.find(c => c.id === id)
-    return cat ? (cat.nameAr || cat.name_ar) : (id || '—')
+    if (!id) return '—'
+    if (id === 'more_services') return 'تخصص آخر (مخصص)'
+    const cat = SERVICES_CATS.find(c => c.id === id)
+    if (cat) return cat.nameAr
+    const dbCat = categories.find(c => c.id === id)
+    return dbCat ? (dbCat.nameAr || dbCat.name_ar) : id
   }
+
+  const catsBySection = SECTIONS.map(sec => ({
+    ...sec,
+    cats: SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more'),
+  })).filter(s => s.cats.length > 0)
 
   const reload = () => {
     setLoading(true)
@@ -471,8 +481,16 @@ export default function Companies() {
                 onChange={e => setForm(f => ({ ...f, specialty: e.target.value }))}
                 className="form-input">
                 <option value="">اختر التخصص</option>
-                {categories.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+                {catsBySection.map(sec => (
+                  <optgroup key={sec.id} label={sec.nameAr}>
+                    {sec.cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+                  </optgroup>
+                ))}
+                <option value="more_services">✏️ تخصص آخر (مخصص)</option>
               </select>
+              {form.specialty === 'more_services' && (
+                <p className="text-xs text-amber-400/80 mt-1.5">تخصص مخصص — لم تختر الشركة من القائمة الرئيسية</p>
+              )}
             </div>
             <div>
               <label className="form-label">المدينة</label>

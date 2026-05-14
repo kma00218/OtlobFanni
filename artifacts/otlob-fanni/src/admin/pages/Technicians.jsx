@@ -6,7 +6,7 @@ import {
   Image, Shield, Zap, User, Settings2,
 } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
-import { sections as SECTIONS } from '../../data/services'
+import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const PAGE_SIZE = 15
 
@@ -247,12 +247,12 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
   const inp = "form-input"
   const lbl = "form-label"
 
-  const selectedCat = categories.find(c => c.id === form.category_id)
-  const selectedSectionId = selectedCat?.sectionId || selectedCat?.section_id || ''
+  const selectedCat = SERVICES_CATS.find(c => c.id === form.category_id)
+  const selectedSectionId = selectedCat?.sectionId || ''
 
   const catsBySection = SECTIONS.map(sec => ({
     ...sec,
-    cats: categories.filter(c => (c.sectionId || c.section_id) === sec.id),
+    cats: SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more'),
   })).filter(s => s.cats.length > 0)
 
   return (
@@ -336,15 +336,19 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                   {catsBySection.map(sec => (
                     <optgroup key={sec.id} label={sec.nameAr}>
                       {sec.cats.map(c => (
-                        <option key={c.id} value={c.id}>{c.nameAr || c.name_ar}</option>
+                        <option key={c.id} value={c.id}>{c.nameAr}</option>
                       ))}
                     </optgroup>
                   ))}
+                  <option value="more_services">✏️ تخصص آخر (مخصص)</option>
                 </select>
                 {selectedSectionId && (
                   <p className="text-xs text-[#FF7900]/70 mt-1.5">
                     القسم الرئيسي: {SECTIONS.find(s => s.id === selectedSectionId)?.nameAr || selectedSectionId}
                   </p>
+                )}
+                {form.category_id === 'more_services' && (
+                  <p className="text-xs text-amber-400/80 mt-1.5">تخصص مخصص — لم يختر الفني من القائمة الرئيسية</p>
                 )}
               </div>
             </div>
@@ -509,13 +513,19 @@ export default function Technicians() {
       ...r,
       _cityName: cities.find(c => c.id === (r.cityId || r.city_id))?.nameAr || '',
       _catName:  (() => {
-        const cat = categories.find(c => c.id === (r.categoryId || r.category_id))
-        return cat?.nameAr || cat?.name_ar || ''
+        const catId = r.categoryId || r.category_id
+        if (!catId) return ''
+        if (catId === 'more_services') return 'تخصص آخر'
+        const cat = SERVICES_CATS.find(c => c.id === catId)
+        if (cat) return cat.nameAr
+        const dbCat = categories.find(c => c.id === catId)
+        return dbCat?.nameAr || dbCat?.name_ar || catId
       })(),
       _sectionName: (() => {
-        const cat = categories.find(c => c.id === (r.categoryId || r.category_id))
-        const sid = cat?.sectionId || cat?.section_id
-        return SECTIONS.find(s => s.id === sid)?.nameAr || ''
+        const catId = r.categoryId || r.category_id
+        if (!catId || catId === 'more_services') return ''
+        const cat = SERVICES_CATS.find(c => c.id === catId)
+        return SECTIONS.find(s => s.id === cat?.sectionId)?.nameAr || ''
       })(),
     })))
   }, [allTechs, search, filterCity, filterCat, filterStatus, page, isSuperAdmin, cityId, cities, categories])
@@ -659,7 +669,16 @@ export default function Technicians() {
           )}
           <select value={filterCat} onChange={e => { setFilterCat(e.target.value); setPage(1) }} className="select-field">
             <option value="">كل التخصصات</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.nameAr || c.name_ar}</option>)}
+            {SECTIONS.map(sec => {
+              const cats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
+              if (!cats.length) return null
+              return (
+                <optgroup key={sec.id} label={sec.nameAr}>
+                  {cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+                </optgroup>
+              )
+            })}
+            <option value="more_services">✏️ تخصص آخر (مخصص)</option>
           </select>
           <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1) }} className="select-field">
             <option value="">كل الحالات</option>
