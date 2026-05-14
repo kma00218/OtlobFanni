@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { Heart, MapPin, Phone, MessageSquare, Star, Zap, Building2 } from 'lucide-react'
-import { Link } from 'wouter'
+import { Link, useLocation } from 'wouter'
 import api, { getFileUrl } from '../lib/api'
 
 function Stars({ rating }) {
@@ -17,6 +17,7 @@ function Stars({ rating }) {
 }
 
 function TechRow({ tech, ar, onRemove }) {
+  const [, navigate] = useLocation()
   const name     = tech.nameAr || tech.name_ar || ''
   const photo    = getFileUrl(tech.profilePhoto || tech.profile_photo || null)
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0,2) || '?'
@@ -28,7 +29,10 @@ function TechRow({ tech, ar, onRemove }) {
   const city     = tech.city_name || tech.city || ''
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div
+      className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      onClick={() => navigate(`/technician/${tech.id}`)}
+    >
       <div className="flex gap-3 p-3">
         <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
           {photo
@@ -41,7 +45,7 @@ function TechRow({ tech, ar, onRemove }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-1">
             <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
-            <button onClick={() => onRemove(tech.id)}
+            <button onClick={e => { e.stopPropagation(); onRemove(tech.id) }}
               className="p-1 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
               <Heart className="w-4 h-4 text-rose-500" fill="currentColor" />
             </button>
@@ -69,10 +73,12 @@ function TechRow({ tech, ar, onRemove }) {
           {price > 0 && <p className="text-xs font-bold text-[#FF7900] mb-2">{ar ? `من ${price} د.ل` : `From ${price} LYD`}</p>}
           <div className="flex gap-2">
             <a href={`https://wa.me/${tech.whatsapp || tech.phone}`} target="_blank" rel="noreferrer"
+              onClick={e => e.stopPropagation()}
               className="flex-1 bg-green-500 text-white text-xs font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
               <MessageSquare className="w-3 h-3" />{ar ? 'واتساب' : 'WhatsApp'}
             </a>
             <a href={`tel:${tech.phone}`}
+              onClick={e => e.stopPropagation()}
               className="flex-1 bg-[#071B33] text-white text-xs font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
               <Phone className="w-3 h-3" />{ar ? 'اتصال' : 'Call'}
             </a>
@@ -84,6 +90,7 @@ function TechRow({ tech, ar, onRemove }) {
 }
 
 function CompanyRow({ company, ar, onRemove }) {
+  const [, navigate] = useLocation()
   const name     = company.companyName || company.company_name || ''
   const logo     = getFileUrl(company.companyLogo || company.company_logo || null)
   const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0,2) || '؟'
@@ -93,7 +100,10 @@ function CompanyRow({ company, ar, onRemove }) {
   const city     = company.city || ''
 
   return (
-    <div className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
+    <div
+      className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      onClick={() => navigate(`/company/${company.id}`)}
+    >
       <div className="flex gap-3 p-3">
         <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
           {logo
@@ -120,7 +130,7 @@ function CompanyRow({ company, ar, onRemove }) {
                 {ar ? 'شركة / مؤسسة' : 'Business'}
               </span>
             </div>
-            <button onClick={() => onRemove(company.id)}
+            <button onClick={e => { e.stopPropagation(); onRemove(company.id) }}
               className="p-1 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
               <Heart className="w-4 h-4 text-rose-500" fill="currentColor" />
             </button>
@@ -138,10 +148,12 @@ function CompanyRow({ company, ar, onRemove }) {
           </div>
           <div className="flex gap-2">
             <a href={`https://wa.me/${company.whatsapp || company.phone}`} target="_blank" rel="noreferrer"
+              onClick={e => e.stopPropagation()}
               className="flex-1 bg-green-500 text-white text-xs font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
               <MessageSquare className="w-3 h-3" />{ar ? 'واتساب' : 'WhatsApp'}
             </a>
             <a href={`tel:${company.phone}`}
+              onClick={e => e.stopPropagation()}
               className="flex-1 bg-[#071B33] text-white text-xs font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
               <Phone className="w-3 h-3" />{ar ? 'اتصال' : 'Call'}
             </a>
