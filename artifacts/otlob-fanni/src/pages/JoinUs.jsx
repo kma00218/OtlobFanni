@@ -48,8 +48,15 @@ export default function JoinUs() {
         </div>
       </div>
 
+      {/* Hero icon */}
+      <div className="flex justify-center items-center pt-6 pb-2">
+        <div className="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/20">
+          <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 drop-shadow-sm" />
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="px-6 pt-8 pb-6 text-center">
+      <div className="px-6 pt-4 pb-6 text-center">
         <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-4">
           <Star className="w-3.5 h-3.5 text-[#FF7900]" fill="#FF7900" />
           <span className="text-white/80 text-xs font-medium">{ar ? 'انضم إلى شبكتنا' : 'Join Our Network'}</span>

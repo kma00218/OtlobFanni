@@ -9,6 +9,9 @@ export default function AllSpecialties() {
 
   return (
     <div className="bg-background min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="bg-white flex justify-center items-center py-5 border-b border-gray-100 shadow-sm mb-1">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 drop-shadow-sm" />
+      </div>
       <div className="px-5 pt-5 pb-3">
         <h1 className="text-2xl font-bold text-[#071B33]">
           {ar ? 'كل التخصصات' : 'All Specialties'}

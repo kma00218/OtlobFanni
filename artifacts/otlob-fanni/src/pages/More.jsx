@@ -214,6 +214,11 @@ export default function More() {
   return (
     <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
+      {/* Hero icon */}
+      <div className="bg-white flex justify-center items-center py-5 border-b border-gray-100 shadow-sm mb-1">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 drop-shadow-sm" />
+      </div>
+
       {/* Header */}
       <div className="px-5 pt-5 pb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#071B33]">{ar ? 'المزيد' : 'More'}</h1>
