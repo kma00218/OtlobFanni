@@ -46,6 +46,14 @@ function TechRow({ tech, ar, onRemove }) {
               <Heart className="w-4 h-4 text-rose-500" fill="currentColor" />
             </button>
           </div>
+          {(tech.categoryAr || tech.categoryEn) && (
+            <div className="flex items-center gap-1.5 mt-0.5 mb-1">
+              <div className="w-1 h-4 rounded-full bg-[#FF7900] flex-shrink-0" />
+              <span className="text-sm font-extrabold text-[#FF7900] truncate">
+                {ar ? (tech.categoryAr || tech.categoryEn) : (tech.categoryEn || tech.categoryAr)}
+              </span>
+            </div>
+          )}
           {city && (
             <div className="flex items-center gap-1 mt-0.5 mb-1">
               <MapPin className="w-3 h-3 text-gray-400" />
@@ -100,6 +108,14 @@ function CompanyRow({ company, ar, onRemove }) {
           <div className="flex items-start justify-between gap-1">
             <div>
               <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
+              {(company.categoryAr || company.categoryEn) && (
+                <div className="flex items-center gap-1.5 mt-0.5 mb-0.5">
+                  <div className="w-1 h-4 rounded-full bg-[#FF7900] flex-shrink-0" />
+                  <span className="text-sm font-extrabold text-[#FF7900] truncate">
+                    {ar ? (company.categoryAr || company.categoryEn) : (company.categoryEn || company.categoryAr)}
+                  </span>
+                </div>
+              )}
               <span className="text-[10px] text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full font-medium inline-block mt-0.5">
                 {ar ? 'شركة / مؤسسة' : 'Business'}
               </span>
