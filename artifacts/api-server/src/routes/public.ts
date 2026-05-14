@@ -145,16 +145,19 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
     .where(and(
       eq(techniciansTable.isApproved, true),
       eq(techniciansTable.isActive, true),
-      ilike(techniciansTable.name, `%${q}%`),
+      or(
+        ilike(techniciansTable.nameAr, `%${q}%`),
+        ilike(techniciansTable.nameEn, `%${q}%`),
+      ),
     ))
     .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
     .limit(5);
 
   const results = rows.map(r => ({
     id: r.tech.id,
-    name: r.tech.name,
-    specialty: r.tech.specialty,
-    photoUrl: r.tech.photoUrl,
+    nameAr: r.tech.nameAr,
+    nameEn: r.tech.nameEn,
+    profilePhoto: r.tech.profilePhoto,
     categoryAr: r.categoryAr ?? '',
     categoryEn: r.categoryEn ?? '',
     cityNameAr: r.cityNameAr ?? '',

@@ -205,15 +205,17 @@ export default function SearchBar({ onResultSelect } = {}) {
                   >
                     {/* Avatar */}
                     <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden bg-[#071B33]/10 flex items-center justify-center">
-                      {photoUrl ? (
-                        <img src={photoUrl} alt={tech.name} className="w-full h-full object-cover" />
+                      {tech.profilePhoto ? (
+                        <img src={getFileUrl(tech.profilePhoto)} alt={ar ? tech.nameAr : tech.nameEn} className="w-full h-full object-cover" />
                       ) : (
                         <User className="w-5 h-5 text-[#071B33]/40" />
                       )}
                     </div>
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <span className="text-[#071B33] font-bold text-sm block leading-tight">{tech.name}</span>
+                      <span className="text-[#071B33] font-bold text-sm block leading-tight">
+                        {ar ? tech.nameAr : (tech.nameEn || tech.nameAr)}
+                      </span>
                       <span className="text-gray-400 text-xs leading-tight">
                         {[categoryName, cityName].filter(Boolean).join(' · ')}
                       </span>
