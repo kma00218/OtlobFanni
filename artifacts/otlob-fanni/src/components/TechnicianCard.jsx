@@ -32,29 +32,30 @@ export default function TechnicianCard({ technician }) {
         </div>
 
         <div className="flex-1 min-w-0">
-          {/* Name + status */}
-          <div className="flex justify-between items-start gap-2 mb-1">
-            <h3 className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</h3>
-            <div className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold whitespace-nowrap ${technician.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+          {/* Status badge top-right */}
+          <div className="flex justify-between items-center gap-2 mb-1">
+            <h3 className="font-extrabold text-[#071B33] text-base leading-tight truncate">{name}</h3>
+            <div className={`flex-shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${technician.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
               {status}
             </div>
           </div>
 
-          {/* Specialty badge */}
+          {/* Specialty — large prominent line */}
           {specialty && (
-            <span className="inline-flex items-center gap-1 bg-[#FF7900] text-white text-xs font-extrabold px-3 py-1 rounded-lg mb-2" style={{ letterSpacing: '0.01em' }}>
-              {specialty}
-            </span>
+            <div className="flex items-center gap-1.5 mb-2">
+              <div className="w-1 h-5 rounded-full bg-[#FF7900] flex-shrink-0" />
+              <span className="text-base font-extrabold text-[#FF7900] truncate">{specialty}</span>
+            </div>
           )}
 
           {/* City + emergency */}
-          <div className="flex items-center gap-1 mb-1.5">
-            <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+          <div className="flex items-center gap-1 mb-2">
+            <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
             <span className="text-xs text-gray-500 truncate">
               {city}{technician.area ? ` · ${technician.area}` : ''}
             </span>
             {technician.emergency && (
-              <span className="flex items-center gap-0.5 bg-red-50 text-red-500 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-1">
+              <span className="flex items-center gap-0.5 bg-red-50 text-red-500 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ms-1">
                 <Zap className="w-2.5 h-2.5" />
                 {lang === 'ar' ? 'طوارئ' : 'Emergency'}
               </span>
@@ -68,7 +69,7 @@ export default function TechnicianCard({ technician }) {
               <span className="text-xs font-semibold text-gray-800">{technician.rating}</span>
               <span className="text-[11px] text-gray-400">({technician.reviews})</span>
             </div>
-            <span className="text-xs font-bold text-[#FF7900]">
+            <span className="text-xs font-bold text-[#071B33]">
               {technician.priceTo > 0
                 ? `${technician.priceFrom}–${technician.priceTo} ${t('lyd')}`
                 : `${t('priceFrom')} ${technician.priceFrom} ${t('lyd')}`}
