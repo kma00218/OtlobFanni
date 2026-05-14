@@ -103,17 +103,26 @@ export default function SearchBar() {
 
       {/* Dropdown results */}
       {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+        <div
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto z-50"
+          style={{ maxHeight: '60vh', overscrollBehavior: 'contain' }}
+          onTouchStart={e => e.stopPropagation()}
+        >
           {results.map((entry, i) => {
             const name = ar ? entry.nameAr : entry.nameEn
             const sectionName = getSectionName(entry)
             const isSection = entry.type === 'section'
+            let touchStartY = 0
 
             return (
               <button
                 key={`${entry.type}-${entry.id}`}
                 onMouseDown={e => { e.preventDefault(); handleSelect(entry) }}
-                onTouchEnd={() => handleSelect(entry)}
+                onTouchStart={e => { touchStartY = e.touches[0].clientY }}
+                onTouchEnd={e => {
+                  const delta = Math.abs(e.changedTouches[0].clientY - touchStartY)
+                  if (delta < 10) handleSelect(entry)
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-[#FF7900]/5 active:bg-[#FF7900]/10 transition-colors text-start ${i > 0 ? 'border-t border-gray-50' : ''}`}
               >
                 {/* Icon */}
