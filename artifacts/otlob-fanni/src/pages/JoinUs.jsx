@@ -64,9 +64,14 @@ export default function JoinUs() {
       <div className="px-5 space-y-4">
 
         {/* Multi-specialty note */}
-        <div className="flex items-start gap-2.5 rounded-2xl px-4 py-3.5 border-2 border-[#FF7900]/50" style={{ background: '#FFF4E8' }}>
-          <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
-          <p className="text-sm font-bold text-[#3d2200] leading-relaxed">
+        <div className="rounded-2xl border-2 border-[#FF7900]/60 overflow-hidden" style={{ background: '#FFF4E8' }}>
+          <div className="flex items-center gap-2 px-4 py-2 border-b border-[#FF7900]/30" style={{ background: '#FFE8CC' }}>
+            <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
+            <span className="text-xs font-extrabold text-[#c45e00] uppercase tracking-wide">
+              {ar ? 'ملاحظة مهمة' : 'Important Note'}
+            </span>
+          </div>
+          <p className="px-4 py-3 text-base font-extrabold text-[#3d2200] leading-relaxed">
             {ar
               ? 'تعمل في أكثر من تخصص؟ أرسل طلبًا منفصلًا لكل تخصص.'
               : 'Work in multiple specialties? Submit a separate application for each.'}
