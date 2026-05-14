@@ -6,10 +6,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
-import { Download } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import NotificationPrompt from "./components/NotificationPrompt";
 import LocationPrompt from "./components/LocationPrompt";
 import BottomNav from "./components/BottomNav";
+import SearchOverlay from "./components/SearchOverlay";
 
 // Public Pages — lazy loaded
 const Home = lazy(() => import("./pages/Home"));
@@ -115,6 +116,43 @@ function InstallFAB() {
   );
 }
 
+function SearchFAB() {
+  const [location] = useLocation();
+  const { lang } = useLang();
+  const [open, setOpen] = useState(false);
+
+  // Hide on home (already has search bar) and on join form pages
+  const hidden = location === '/' || location.startsWith('/join') || location.startsWith('/admin');
+  if (hidden) return null;
+
+  const ar = lang === 'ar';
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="fixed z-40 active:scale-90 transition-transform duration-150"
+        style={{
+          bottom: '96px',
+          [ar ? 'right' : 'left']: '16px',
+          width: '52px',
+          height: '52px',
+          borderRadius: '16px',
+          background: 'linear-gradient(135deg, #FF7900 0%, #d96400 100%)',
+          boxShadow: '0 4px 20px rgba(255,121,0,0.45)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        aria-label={ar ? 'بحث' : 'Search'}
+      >
+        <Search className="w-6 h-6 text-white" />
+      </button>
+      <SearchOverlay open={open} onClose={() => setOpen(false)} />
+    </>
+  );
+}
+
 function AppContent() {
   const [location] = useLocation();
   const isAdminPath = location.startsWith("/admin");
@@ -165,6 +203,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           <BottomNav />
+          <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />
           <LocationPrompt />
