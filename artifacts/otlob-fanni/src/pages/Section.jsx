@@ -1,5 +1,6 @@
 import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
+import { useEffect } from 'react'
 import BackHeader from '../components/BackHeader'
 import CategoryCard from '../components/CategoryCard'
 import { sections, categories } from '../data/services'
@@ -12,13 +13,21 @@ export default function Section() {
   const [, navigate] = useLocation()
 
   const section = sections.find(s => s.id === id)
-
-  if (!section) {
-    navigate('/categories')
-    return null
-  }
-
   const sectionCats = categories.filter(c => c.sectionId === id)
+
+  // If section not found, or only one category — redirect immediately
+  const redirectTo = !section
+    ? '/categories'
+    : sectionCats.length === 1
+      ? (sectionCats[0].id === 'more' ? '/category/more_services' : `/category/${sectionCats[0].id}`)
+      : null
+
+  useEffect(() => {
+    if (redirectTo) navigate(redirectTo, { replace: true })
+  }, [redirectTo])
+
+  if (redirectTo) return null
+
   const title = ar ? section.nameAr : section.nameEn
 
   return (
