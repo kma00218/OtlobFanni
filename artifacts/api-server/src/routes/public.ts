@@ -173,7 +173,12 @@ router.get("/search", async (req, res): Promise<void> => {
       .where(and(
         eq(techniciansTable.isApproved, true),
         eq(techniciansTable.isActive, true),
-        or(ilike(techniciansTable.nameAr, `%${q}%`), ilike(techniciansTable.nameEn, `%${q}%`)),
+        or(
+          ilike(techniciansTable.nameAr, `%${q}%`),
+          ilike(techniciansTable.nameEn, `%${q}%`),
+          ilike(techniciansTable.descriptionAr, `%${q}%`),
+          ilike(techniciansTable.descriptionEn, `%${q}%`),
+        ),
       ))
       .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
       .limit(4),
@@ -187,7 +192,11 @@ router.get("/search", async (req, res): Promise<void> => {
       .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
       .where(and(
         eq(companyApplicationsTable.status, "approved"),
-        or(ilike(companyApplicationsTable.companyName, `%${q}%`), ilike(companyApplicationsTable.contactName, `%${q}%`)),
+        or(
+          ilike(companyApplicationsTable.companyName, `%${q}%`),
+          ilike(companyApplicationsTable.contactName, `%${q}%`),
+          ilike(companyApplicationsTable.description, `%${q}%`),
+        ),
       ))
       .limit(4),
 
@@ -247,6 +256,8 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
       or(
         ilike(techniciansTable.nameAr, `%${q}%`),
         ilike(techniciansTable.nameEn, `%${q}%`),
+        ilike(techniciansTable.descriptionAr, `%${q}%`),
+        ilike(techniciansTable.descriptionEn, `%${q}%`),
       ),
     ))
     .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
