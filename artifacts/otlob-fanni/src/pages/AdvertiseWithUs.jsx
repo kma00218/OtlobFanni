@@ -160,13 +160,15 @@ export default function AdvertiseWithUs() {
   }
 
   const inputCls = (field) =>
-    `w-full border-2 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition bg-white ${
-      errors[field] ? 'border-red-400' : 'border-gray-200'
+    `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 focus:border-[#FF7900] transition text-white placeholder-white/40 ${
+      errors[field]
+        ? 'border-red-400 bg-red-500/10'
+        : 'border-white/15 bg-white/10'
     }`
 
   const Label = ({ children, required }) => (
-    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-      {children}{required && <span className="text-red-400 mr-1">*</span>}
+    <label className="block text-sm font-semibold text-white/80 mb-1.5">
+      {children}{required && <span className="text-[#FF7900] mr-1">*</span>}
     </label>
   )
 
@@ -223,8 +225,8 @@ export default function AdvertiseWithUs() {
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* ── 1. بيانات المعلن ── */}
-          <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 space-y-4 [border-top:3px_solid_#FF7900]">
-            <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
+          <div className="rounded-2xl border border-white/10 shadow-lg p-5 space-y-4" style={{ background: 'rgba(255,255,255,0.07)', borderTop: '3px solid #FF7900' }}>
+            <p className="font-bold text-white text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#FF7900] text-white text-xs flex items-center justify-center font-black">١</span>
               {ar ? 'بيانات المعلِن' : 'Advertiser Details'}
             </p>
@@ -276,11 +278,11 @@ export default function AdvertiseWithUs() {
           </div>
 
           {/* ── 2. نوع الإعلان ── */}
-          <div className={`bg-white rounded-2xl border-2 shadow-sm p-5 space-y-3 [border-top:3px_solid_#071B33] ${errors.adType ? 'border-red-300' : 'border-gray-100'}`}>
-            <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-[#071B33] text-white text-xs flex items-center justify-center font-black">٢</span>
+          <div className={`rounded-2xl border shadow-lg p-5 space-y-3 ${errors.adType ? 'border-red-400' : 'border-white/10'}`} style={{ background: 'rgba(255,255,255,0.07)', borderTop: '3px solid #FF7900' }}>
+            <p className="font-bold text-white text-sm flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-[#FF7900] text-white text-xs flex items-center justify-center font-black">٢</span>
               {ar ? 'نوع الإعلان' : 'Ad Type'}
-              <span className="text-red-400 font-black">*</span>
+              <span className="text-[#FF7900] font-black">*</span>
             </p>
             {errors.adType && (
               <p className="text-red-400 text-xs">{ar ? 'يرجى اختيار نوع الإعلان' : 'Please select an ad type'}</p>
@@ -297,17 +299,17 @@ export default function AdvertiseWithUs() {
                     className={`flex flex-col items-start gap-1.5 p-3.5 rounded-xl border-2 text-start transition-all ${
                       selected
                         ? `${type.bg} ${type.border} shadow-sm`
-                        : 'bg-blue-50 border-blue-100 hover:border-blue-200'
+                        : 'bg-white/5 border-white/10 hover:border-white/25 hover:bg-white/10'
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selected ? type.bg : 'bg-white'}`}>
-                      <Icon className={`w-4 h-4 ${selected ? type.color : 'text-gray-400'}`} />
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selected ? type.bg : 'bg-white/10'}`}>
+                      <Icon className={`w-4 h-4 ${selected ? type.color : 'text-white/60'}`} />
                     </div>
                     <div>
-                      <p className={`text-xs font-bold leading-tight ${selected ? type.color : 'text-gray-700'}`}>
+                      <p className={`text-xs font-bold leading-tight ${selected ? type.color : 'text-white/80'}`}>
                         {ar ? type.labelAr : type.labelEn}
                       </p>
-                      <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{type.descAr}</p>
+                      <p className="text-[10px] text-white/40 mt-0.5 leading-tight">{type.descAr}</p>
                     </div>
                     {selected && (
                       <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${type.bg} ${type.color} border ${type.border}`}>
@@ -321,8 +323,8 @@ export default function AdvertiseWithUs() {
           </div>
 
           {/* ── 3. تفاصيل الإعلان ── */}
-          <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 space-y-4 [border-top:3px_solid_#FF7900]">
-            <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
+          <div className="rounded-2xl border border-white/10 shadow-lg p-5 space-y-4" style={{ background: 'rgba(255,255,255,0.07)', borderTop: '3px solid #FF7900' }}>
+            <p className="font-bold text-white text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#FF7900] text-white text-xs flex items-center justify-center font-black">٣</span>
               {ar ? 'تفاصيل الإعلان' : 'Ad Details'}
             </p>
