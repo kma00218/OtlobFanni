@@ -12,12 +12,14 @@ const router: IRouter = Router();
 // ── Cities ──────────────────────────────────────────────────────────────────
 router.get("/cities", async (_req, res): Promise<void> => {
   const cities = await db.select().from(citiesTable).orderBy(citiesTable.sortOrder);
+  res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
   res.json(cities);
 });
 
 // ── Categories ───────────────────────────────────────────────────────────────
 router.get("/categories", async (_req, res): Promise<void> => {
   const categories = await db.select().from(categoriesTable).orderBy(categoriesTable.sortOrder);
+  res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
   res.json(categories);
 });
 
