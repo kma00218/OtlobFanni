@@ -136,7 +136,7 @@ export default function JoinCompany() {
     hours_to: '18:00',
     service_radius: '',
     facebook: '',
-    instagram: '',
+    instagram: '', tiktok: '',
     terms: false,
   })
 
@@ -207,6 +207,7 @@ export default function JoinCompany() {
         service_radius: form.service_radius,
         facebook:       form.facebook,
         instagram:      form.instagram,
+        tiktok:         form.tiktok,
         company_logo:   companyLogo || null,
         work_images:    workImages,
       })
@@ -476,6 +477,12 @@ export default function JoinCompany() {
                 <input className={inp} type="url" value={form.instagram}
                   onChange={e => set('instagram', e.target.value)}
                   placeholder="https://instagram.com/company" dir="ltr" />
+              </Field>
+              <Field label={ar ? 'حساب تيك توك' : 'TikTok Account'}
+                hint={ar ? 'اختياري' : 'Optional'}>
+                <input className={inp} type="url" value={form.tiktok}
+                  onChange={e => set('tiktok', e.target.value)}
+                  placeholder="https://tiktok.com/@company" dir="ltr" />
               </Field>
             </div>
           </div>

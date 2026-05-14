@@ -125,7 +125,7 @@ export default function Join() {
     available_now: 'yes', emergency: 'no',
     hours_from: '08:00', hours_to: '18:00',
     service_radius: '',
-    facebook: '', instagram: '',
+    facebook: '', instagram: '', tiktok: '',
     terms: false,
   })
 
@@ -201,6 +201,7 @@ export default function Join() {
         service_radius:  form.service_radius,
         facebook:        form.facebook,
         instagram:       form.instagram,
+        tiktok:          form.tiktok,
         profile_photo:   profilePhoto || null,
         work_images:     workImages,
       })
@@ -522,6 +523,11 @@ export default function Join() {
                 <input className={inp} type="url" value={form.instagram}
                   onChange={e => set('instagram', e.target.value)}
                   placeholder="https://instagram.com/youraccount" dir="ltr" />
+              </Field>
+              <Field label={ar ? 'حساب تيك توك' : 'TikTok Account'}>
+                <input className={inp} type="url" value={form.tiktok}
+                  onChange={e => set('tiktok', e.target.value)}
+                  placeholder="https://tiktok.com/@youraccount" dir="ltr" />
               </Field>
             </div>
           </div>
