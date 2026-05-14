@@ -5,10 +5,24 @@ import { useRoute } from 'wouter'
 import {
   MapPin, Phone, MessageSquare, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, Building2,
-  Facebook, Instagram, CheckCircle, XCircle,
+  Facebook, Instagram, CheckCircle, XCircle, Heart,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { categories } from '../data/services'
+
+function useFavorites(storageKey) {
+  const [favs, setFavs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch { return [] }
+  })
+  const toggle = (id) => {
+    setFavs(prev => {
+      const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+      localStorage.setItem(storageKey, JSON.stringify(next))
+      return next
+    })
+  }
+  return { favs, toggle, isFav: (id) => favs.includes(id) }
+}
 
 const CAT_LABEL    = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 const CAT_LABEL_EN = Object.fromEntries(categories.map(c => [c.id, c.nameEn || c.nameAr]))
@@ -48,6 +62,7 @@ export default function CompanyDetails() {
   const [company,  setCompany]  = useState(null)
   const [lightbox, setLightbox] = useState(null)
   const [notFound, setNotFound] = useState(false)
+  const { isFav, toggle: toggleFav } = useFavorites('fav_companies')
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }
@@ -116,7 +131,20 @@ export default function CompanyDetails() {
 
         {/* بطاقة الشركة الرئيسية */}
         <div className="bg-[#EBF5FF] rounded-2xl border border-blue-300 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-[#0e3460] to-[#1a56db] px-4 pt-4 pb-6" />
+          <div className="bg-gradient-to-r from-[#0e3460] to-[#1a56db] px-4 pt-4 pb-6 flex items-start justify-end">
+            <button
+              onClick={() => toggleFav(id)}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
+              style={{ background: 'rgba(255,255,255,0.15)' }}
+              aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
+            >
+              <Heart
+                className="w-4 h-4 transition-colors"
+                fill={isFav(id) ? '#f43f5e' : 'none'}
+                stroke={isFav(id) ? '#f43f5e' : 'white'}
+              />
+            </button>
+          </div>
           <div className="px-4 pt-0 pb-4 -mt-5">
             <div className="flex items-end gap-3 mb-3">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#0e3460] flex items-center justify-center">

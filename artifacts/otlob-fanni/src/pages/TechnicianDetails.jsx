@@ -5,9 +5,23 @@ import { useRoute } from 'wouter'
 import {
   MapPin, Phone, MessageSquare, Star, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, CheckCircle,
-  Facebook, Instagram, Wrench,
+  Facebook, Instagram, Wrench, Heart,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
+
+function useFavorites(storageKey) {
+  const [favs, setFavs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch { return [] }
+  })
+  const toggle = (id) => {
+    setFavs(prev => {
+      const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+      localStorage.setItem(storageKey, JSON.stringify(next))
+      return next
+    })
+  }
+  return { favs, toggle, isFav: (id) => favs.includes(id) }
+}
 
 const DAY_AR = {
   Saturday: 'السبت', Sunday: 'الأحد', Monday: 'الاثنين',
@@ -86,6 +100,7 @@ export default function TechnicianDetails() {
   const [tech,     setTech]     = useState(null)
   const [lightbox, setLightbox] = useState(null)
   const [notFound, setNotFound] = useState(false)
+  const { isFav, toggle: toggleFav } = useFavorites('fav_technicians')
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }
@@ -140,15 +155,25 @@ export default function TechnicianDetails() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
           {/* Colored header strip */}
-          <div className="h-16 w-full" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
-            {tech.isFeatured && (
-              <div className="flex justify-end p-2">
-                <span className="bg-[#FF7900] text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Star className="w-2.5 h-2.5" fill="currentColor" />
-                  {ar ? 'مميز' : 'Featured'}
-                </span>
-              </div>
-            )}
+          <div className="h-16 w-full flex items-start justify-between p-2" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
+            {tech.isFeatured ? (
+              <span className="bg-[#FF7900] text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                <Star className="w-2.5 h-2.5" fill="currentColor" />
+                {ar ? 'مميز' : 'Featured'}
+              </span>
+            ) : <span />}
+            <button
+              onClick={() => toggleFav(tech.id)}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
+              style={{ background: 'rgba(255,255,255,0.15)' }}
+              aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
+            >
+              <Heart
+                className="w-4 h-4 transition-colors"
+                fill={isFav(tech.id) ? '#f43f5e' : 'none'}
+                stroke={isFav(tech.id) ? '#f43f5e' : 'white'}
+              />
+            </button>
           </div>
 
           <div className="px-4 pb-4">
