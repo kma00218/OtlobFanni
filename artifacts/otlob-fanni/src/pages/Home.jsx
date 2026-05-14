@@ -42,7 +42,8 @@ export default function Home() {
 
         <SearchBar />
 
-        <AdBanner placement="home" dismissible />
+        {/* إعلان أعلى الصفحة — تحت شريط البحث مباشرة */}
+        <AdBanner placement="home_top" dismissible />
 
         <div>
           <div className="flex justify-between items-center mb-3">
@@ -76,13 +77,11 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* إعلان بعد زر كل التخصصات */}
+          {/* إعلان أسفل الصفحة — بعد زر كل التخصصات */}
           <div className="mt-4">
-            <AdBanner placement="home_after_all_specialties" compact />
+            <AdBanner placement="home_bottom" compact />
           </div>
         </div>
-
-        <AdBanner placement="banner" compact />
       </main>
     </div>
   )

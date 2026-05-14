@@ -10,12 +10,13 @@ const STATUS_MAP = {
 }
 
 const PLACEMENTS = [
-  { value: 'home_after_all_specialties', label: 'الصفحة الرئيسية — تحت زر كل التخصصات' },
-  { value: 'section_page',               label: 'صفحة قسم معين' },
-  { value: 'category_page',              label: 'صفحة تخصص معين' },
-  { value: 'all_specialties_page',       label: 'صفحة كل التخصصات' },
-  { value: 'trusted_companies',          label: 'صفحة الشركات المعتمدة' },
-  { value: 'global',                     label: 'كل الصفحات' },
+  { value: 'home_top',           label: 'الصفحة الرئيسية — أعلى (تحت شريط البحث)' },
+  { value: 'home_bottom',        label: 'الصفحة الرئيسية — أسفل (بعد زر كل التخصصات)' },
+  { value: 'section_page',       label: 'صفحة قسم معين' },
+  { value: 'category_page',      label: 'صفحة تخصص معين' },
+  { value: 'all_specialties_page', label: 'صفحة كل التخصصات' },
+  { value: 'trusted_companies',  label: 'صفحة الشركات المعتمدة' },
+  { value: 'global',             label: 'كل الصفحات' },
 ]
 
 function StatusBadge({ status }) {
@@ -41,7 +42,10 @@ const WaIcon = () => (
 
 // ── Placement selection modal ─────────────────────────────────────────────────
 function PlacementModal({ req, onClose, onConfirm }) {
-  const [placement, setPlacement] = useState('home_after_all_specialties')
+  const requestedPlacement = req.requestedPlacement || req.requested_placement || ''
+  const validRequested = PLACEMENTS.find(p => p.value === requestedPlacement)
+
+  const [placement, setPlacement] = useState(validRequested ? requestedPlacement : 'home_top')
   const [sectionId, setSectionId] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [sortOrder, setSortOrder] = useState(0)
@@ -81,7 +85,7 @@ function PlacementModal({ req, onClose, onConfirm }) {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10 rounded-t-3xl sm:rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-white text-base">اختر مكان النشر</h2>
+            <h2 className="font-bold text-white text-base">تأكيد مكان النشر</h2>
             <p className="text-xs text-[#666680] mt-0.5">{req.companyName || req.company_name}</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#8888A8]">
@@ -90,9 +94,27 @@ function PlacementModal({ req, onClose, onConfirm }) {
         </div>
 
         <div className="p-5 space-y-4">
+
+          {/* الموضع الذي طلبه المُعلن */}
+          {validRequested && (
+            <div className="bg-[#FF7900]/10 border border-[#FF7900]/25 rounded-xl px-4 py-3 space-y-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900]">الموضع الذي طلبه المُعلن</p>
+              <p className="text-white font-semibold text-sm">{validRequested.label}</p>
+              <button
+                type="button"
+                onClick={() => { setPlacement(requestedPlacement); setSectionId(''); setCategoryId('') }}
+                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-colors ${placement === requestedPlacement ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-[#8888A8] hover:bg-white/10 border border-white/10'}`}
+              >
+                {placement === requestedPlacement ? '✓ تم الاختيار' : 'استخدام هذا الموضع'}
+              </button>
+            </div>
+          )}
+
           {/* Placement */}
           <div>
-            <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">مكان ظهور الإعلان</label>
+            <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">
+              {validRequested ? 'أو اختر موضعاً مختلفاً' : 'مكان ظهور الإعلان'}
+            </label>
             <div className="relative">
               <select
                 value={placement}
@@ -242,17 +264,16 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
   const isPending = req.status === 'pending'
   const requestedPlacement = req.requestedPlacement || req.requested_placement || ''
   const PLACEMENT_LABELS = {
-    home: 'بانر رئيسي — الصفحة الرئيسية',
-    vertical: 'إعلان رأسي',
-    featured: 'إعلان مميز',
-    banner: 'بانر عام',
-    sidebar: 'إعلان جانبي',
-    global: 'كل الصفحات',
-    home_after_all_specialties: 'الصفحة الرئيسية — تحت كل التخصصات',
-    section_page: 'صفحة قسم معين',
-    category_page: 'صفحة تخصص معين',
-    all_specialties_page: 'صفحة كل التخصصات',
-    trusted_companies: 'صفحة الشركات المعتمدة',
+    home_top:            'الصفحة الرئيسية — أعلى (تحت شريط البحث)',
+    home_bottom:         'الصفحة الرئيسية — أسفل (بعد زر كل التخصصات)',
+    section_page:        'صفحة قسم معين',
+    category_page:       'صفحة تخصص معين',
+    all_specialties_page:'صفحة كل التخصصات',
+    trusted_companies:   'صفحة الشركات المعتمدة',
+    global:              'كل الصفحات',
+    // legacy keys (backward compat)
+    home:                'الصفحة الرئيسية — أعلى',
+    home_after_all_specialties: 'الصفحة الرئيسية — أسفل',
   }
   const placementLabel = PLACEMENT_LABELS[requestedPlacement] || requestedPlacement
 

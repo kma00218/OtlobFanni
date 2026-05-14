@@ -2,56 +2,66 @@ import { useState } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
-import { Megaphone, CheckCircle, Monitor, Sparkles, LayoutGrid, Globe } from 'lucide-react'
+import { Megaphone, CheckCircle, Monitor, Star, LayoutGrid, Globe, Layers, Building2 } from 'lucide-react'
 import api, { uploadFile } from '../lib/api'
 
-const AD_TYPES = [
+const AD_PLACEMENTS = [
   {
-    value: 'home',
-    labelAr: 'بانر رئيسي',
-    descAr: 'يظهر في أعلى الصفحة الرئيسية',
-    labelEn: 'Home Banner',
+    value: 'home_top',
+    labelAr: 'أعلى الصفحة الرئيسية',
+    descAr: 'يظهر مباشرةً تحت شريط البحث، قبل الأقسام',
+    labelEn: 'Home Page — Top',
     icon: Monitor,
     color: 'text-blue-600',
     bg: 'bg-blue-50',
     border: 'border-blue-300',
   },
   {
-    value: 'vertical',
-    labelAr: 'إعلان رأسي',
-    descAr: 'إعلان بصورة عمودية طويلة',
-    labelEn: 'Vertical Ad',
+    value: 'home_bottom',
+    labelAr: 'أسفل الصفحة الرئيسية',
+    descAr: 'يظهر بعد زر "كل التخصصات" في الصفحة الرئيسية',
+    labelEn: 'Home Page — Bottom',
+    icon: Layers,
+    color: 'text-indigo-600',
+    bg: 'bg-indigo-50',
+    border: 'border-indigo-300',
+  },
+  {
+    value: 'section_page',
+    labelAr: 'صفحة قسم معين',
+    descAr: 'يظهر داخل صفحة قسم محدد (كهرباء، سباكة...)',
+    labelEn: 'Section Page',
     icon: LayoutGrid,
     color: 'text-pink-600',
     bg: 'bg-pink-50',
     border: 'border-pink-300',
   },
   {
-    value: 'featured',
-    labelAr: 'إعلان مميز',
-    descAr: 'يظهر بشكل بارز داخل القوائم',
-    labelEn: 'Featured Ad',
-    icon: Sparkles,
+    value: 'category_page',
+    labelAr: 'صفحة تخصص معين',
+    descAr: 'يظهر داخل صفحة تخصص محدد (كهربائي، نجار...)',
+    labelEn: 'Category Page',
+    icon: Star,
     color: 'text-amber-600',
     bg: 'bg-amber-50',
     border: 'border-amber-300',
   },
   {
-    value: 'banner',
-    labelAr: 'بانر عام',
-    descAr: 'بانر أفقي في صفحات التخصصات',
-    labelEn: 'General Banner',
-    icon: Megaphone,
+    value: 'all_specialties_page',
+    labelAr: 'صفحة كل التخصصات',
+    descAr: 'يظهر في صفحة عرض جميع التخصصات',
+    labelEn: 'All Specialties Page',
+    icon: LayoutGrid,
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
     border: 'border-emerald-300',
   },
   {
-    value: 'sidebar',
-    labelAr: 'إعلان جانبي',
-    descAr: 'يظهر في الجانب بين النتائج',
-    labelEn: 'Sidebar Ad',
-    icon: LayoutGrid,
+    value: 'trusted_companies',
+    labelAr: 'صفحة الشركات المعتمدة',
+    descAr: 'يظهر في صفحة قائمة الشركات المعتمدة',
+    labelEn: 'Trusted Companies Page',
+    icon: Building2,
     color: 'text-cyan-600',
     bg: 'bg-cyan-50',
     border: 'border-cyan-300',
@@ -275,18 +285,21 @@ export default function AdvertiseWithUs() {
             </div>
           </div>
 
-          {/* ── 2. نوع الإعلان ── */}
+          {/* ── 2. موضع الإعلان ── */}
           <div className={`bg-white rounded-2xl border-2 shadow-sm p-5 space-y-3 [border-top:3px_solid_#071B33] ${errors.adType ? 'border-red-300' : 'border-gray-100'}`}>
             <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#071B33] text-white text-xs flex items-center justify-center font-black">٢</span>
-              {ar ? 'نوع الإعلان' : 'Ad Type'}
+              {ar ? 'موضع الإعلان' : 'Ad Placement'}
               <span className="text-red-400 font-black">*</span>
             </p>
+            <p className="text-xs text-gray-400">
+              {ar ? 'اختر أين تريد أن يظهر إعلانك في التطبيق' : 'Choose where your ad will appear in the app'}
+            </p>
             {errors.adType && (
-              <p className="text-red-400 text-xs">{ar ? 'يرجى اختيار نوع الإعلان' : 'Please select an ad type'}</p>
+              <p className="text-red-400 text-xs">{ar ? 'يرجى اختيار موضع الإعلان' : 'Please select an ad placement'}</p>
             )}
-            <div className="grid grid-cols-2 gap-2.5">
-              {AD_TYPES.map(type => {
+            <div className="space-y-2">
+              {AD_PLACEMENTS.map(type => {
                 const Icon = type.icon
                 const selected = form.adType === type.value
                 return (
@@ -294,25 +307,25 @@ export default function AdvertiseWithUs() {
                     key={type.value}
                     type="button"
                     onClick={() => set('adType', type.value)}
-                    className={`flex flex-col items-start gap-1.5 p-3.5 rounded-xl border-2 text-start transition-all ${
+                    className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 text-start transition-all ${
                       selected
                         ? `${type.bg} ${type.border} shadow-sm`
-                        : 'bg-green-50 border-green-100 hover:border-green-200'
+                        : 'bg-gray-50 border-gray-100 hover:border-gray-200'
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selected ? type.bg : 'bg-white'}`}>
-                      <Icon className={`w-4 h-4 ${selected ? type.color : 'text-green-500'}`} />
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${selected ? type.bg : 'bg-white'} border ${selected ? type.border : 'border-gray-200'}`}>
+                      <Icon className={`w-4 h-4 ${selected ? type.color : 'text-gray-400'}`} />
                     </div>
-                    <div>
-                      <p className={`text-xs font-bold leading-tight ${selected ? type.color : 'text-gray-700'}`}>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-bold leading-tight ${selected ? type.color : 'text-gray-700'}`}>
                         {ar ? type.labelAr : type.labelEn}
                       </p>
-                      <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{type.descAr}</p>
+                      <p className="text-[11px] text-gray-400 mt-0.5 leading-tight">{type.descAr}</p>
                     </div>
                     {selected && (
-                      <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${type.bg} ${type.color} border ${type.border}`}>
-                        ✓ {ar ? 'محدد' : 'Selected'}
-                      </span>
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${type.bg} border ${type.border}`}>
+                        <span className={`text-[10px] font-black ${type.color}`}>✓</span>
+                      </div>
                     )}
                   </button>
                 )
@@ -348,26 +361,42 @@ export default function AdvertiseWithUs() {
               />
             </div>
 
+            {/* صورة الإعلان */}
             <div>
               <Label>{ar ? 'صورة الإعلان' : 'Ad Image'}</Label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImage}
-                className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#FF7900]/10 file:text-[#FF7900] hover:file:bg-[#FF7900]/20 cursor-pointer"
-              />
-              {imagePreview && (
-                <div className="mt-2 relative inline-block">
-                  <img src={imagePreview} alt="preview" className="h-28 w-auto rounded-xl border border-gray-200 object-cover" />
+              <p className="text-[11px] text-gray-400 mb-2">
+                {ar ? 'يُفضّل صورة أفقية واضحة (JPG, PNG). الحجم الموصى به: 1200×400 بكسل' : 'Preferred: clear horizontal image (JPG, PNG). Recommended: 1200×400 px'}
+              </p>
+              {!imagePreview ? (
+                <label className="flex flex-col items-center justify-center gap-2 w-full h-28 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer bg-gray-50 hover:bg-orange-50 hover:border-[#FF7900]/40 transition-all">
+                  <div className="w-10 h-10 rounded-full bg-[#FF7900]/10 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#FF7900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-500 font-medium">{ar ? 'اضغط لاختيار صورة' : 'Tap to choose an image'}</p>
+                  <input type="file" accept="image/*" onChange={handleImage} className="hidden" />
+                </label>
+              ) : (
+                <div className="relative">
+                  <img src={imagePreview} alt="preview" className="w-full h-36 rounded-xl border border-gray-200 object-cover" />
                   {imageUploading ? (
-                    <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span className="text-white text-xs font-medium">{ar ? 'جارٍ الرفع...' : 'Uploading...'}</span>
                     </div>
                   ) : (
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => { setImagePreview(null); setImagePath(null) }}
-                      className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center leading-none"
+                      className="absolute top-2 left-2 w-7 h-7 bg-red-500 text-white rounded-full text-sm flex items-center justify-center leading-none shadow-md"
                     >×</button>
+                  )}
+                  {!imageUploading && (
+                    <div className="absolute bottom-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      {ar ? 'تم الرفع' : 'Uploaded'}
+                    </div>
                   )}
                 </div>
               )}
