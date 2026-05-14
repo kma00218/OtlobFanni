@@ -433,12 +433,6 @@ export default function Join() {
                     ].map(o => <option key={o.v} value={o.v}>{ar ? o.ar : o.en}</option>)}
                   </select>
                 </Field>
-                <Field label={ar ? 'نوع العمل' : 'Work Type'} required>
-                  <select className={sel} value={form.type} onChange={e => set('type', e.target.value)}>
-                    <option value="individual">{ar ? 'فردي' : 'Individual'}</option>
-                    <option value="company">{ar ? 'شركة / مؤسسة' : 'Company / Business'}</option>
-                  </select>
-                </Field>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
