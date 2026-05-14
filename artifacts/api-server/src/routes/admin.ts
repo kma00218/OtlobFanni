@@ -187,26 +187,26 @@ router.patch("/company-applications/:id", async (req, res): Promise<void> => {
   const updates: Record<string, unknown> = { status };
 
   if (status === "approved") {
-    if (createCategory === true) {
-      const [existingApp] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
-      if (existingApp?.customSpecialty) {
-        const customName = existingApp.customSpecialty.trim();
-        const allCats = await db.select().from(categoriesTable);
-        const existingCat = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
-        if (!existingCat) {
-          const catId = "custom_" + Date.now();
-          await db.insert(categoriesTable).values({
-            id: catId, nameAr: customName, nameEn: customName,
-            iconName: "more", sectionId: "more_services", sortOrder: 99, isActive: true,
-          }).onConflictDoNothing();
-          resolvedCategoryId = catId;
-        } else {
-          resolvedCategoryId = existingCat.id;
-        }
+    const [existingApp] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
+    if (createCategory === true && existingApp?.customSpecialty) {
+      const customName = existingApp.customSpecialty.trim();
+      const allCats = await db.select().from(categoriesTable);
+      const existingCat = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
+      if (!existingCat) {
+        const catId = "custom_" + Date.now();
+        await db.insert(categoriesTable).values({
+          id: catId, nameAr: customName, nameEn: customName,
+          iconName: "more", sectionId: "more_services", sortOrder: 99, isActive: true,
+        }).onConflictDoNothing();
+        resolvedCategoryId = catId;
+      } else {
+        resolvedCategoryId = existingCat.id;
       }
     }
     if (resolvedCategoryId) {
       updates.specialty = resolvedCategoryId;
+    } else if (existingApp?.customSpecialty) {
+      updates.specialty = "more_services";
     }
   }
 

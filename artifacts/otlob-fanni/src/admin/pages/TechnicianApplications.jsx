@@ -106,7 +106,7 @@ export default function TechnicianApplications() {
             const cityRow = cities.find(c =>
               c.nameAr === appCity || c.nameEn === appCity || c.id === appCity
             )
-            const effectiveCatId = resolvedCatId || (specialtyAction === 'link' ? linkCatId : null) || app.specialty || null
+            const effectiveCatId = resolvedCatId || (specialtyAction === 'link' ? linkCatId : null) || (app.customSpecialty ? 'more_services' : app.specialty) || null
             await api.admin.technicians.create({
               id:               'tech_' + app.id,
               name_ar:          name,
