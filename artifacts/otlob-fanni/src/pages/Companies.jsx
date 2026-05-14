@@ -131,7 +131,7 @@ export default function Companies() {
   })
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-28" dir={dir}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-28" dir={dir}>
       <BackHeader title={ar ? 'الشركات' : 'Companies'} />
 
       <main className="px-4 pt-4 space-y-4">

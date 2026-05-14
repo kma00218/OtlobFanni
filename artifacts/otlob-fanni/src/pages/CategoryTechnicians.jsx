@@ -256,7 +256,7 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }
 // ─── City Picker Step ────────────────────────────────────────────────────────
 function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={categoryName} />
 
       <main className="px-4 pt-5">
@@ -433,7 +433,7 @@ export default function CategoryTechnicians() {
   const totalCount = filteredTechs.length + filteredCompanies.length
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={categoryName || (ar ? 'مقدمو الخدمة' : 'Service Providers')} />
 
       <main className="px-4 pt-4 space-y-4">

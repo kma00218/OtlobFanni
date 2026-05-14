@@ -101,7 +101,7 @@ export default function TechnicianDetails() {
 
   if (notFound) {
     return (
-      <div className="bg-[#F7F8FA] min-h-screen pt-16" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="bg-[#F7F8FA] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
         <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
         <div className="flex flex-col items-center justify-center py-20 text-center px-6 gap-4">
           <p className="text-gray-700 font-bold text-lg">{ar ? 'الفني غير موجود' : 'Technician not found'}</p>
@@ -112,7 +112,7 @@ export default function TechnicianDetails() {
   }
 
   if (!tech) return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
       <div className="flex items-center justify-center py-20">
         <div className="w-8 h-8 border-4 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
@@ -125,7 +125,7 @@ export default function TechnicianDetails() {
   const initials = tech.name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
 
       {lightbox && (

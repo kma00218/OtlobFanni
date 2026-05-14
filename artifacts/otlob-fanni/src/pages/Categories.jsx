@@ -9,7 +9,7 @@ export default function Categories() {
   const ar = lang === 'ar'
 
   return (
-    <div className="bg-background min-h-screen pt-16 pb-6">
+    <div className="bg-background min-h-screen pt-20 pb-6">
       <BackHeader title={ar ? 'كل التخصصات' : 'All Specialties'} />
 
       <main className="px-4 py-6 space-y-6">

@@ -93,7 +93,7 @@ export default function Privacy() {
   const sections = ar ? SECTIONS_AR : SECTIONS_EN
 
   return (
-    <div className="bg-background min-h-screen pt-16 pb-10" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-background min-h-screen pt-20 pb-10" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'سياسة الخصوصية' : 'Privacy Policy'} />
       <main className="px-4 py-6 space-y-3">
         <div className="bg-white rounded-2xl shadow-sm border p-5">

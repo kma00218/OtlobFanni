@@ -22,7 +22,7 @@ export default function Section() {
   const title = ar ? section.nameAr : section.nameEn
 
   return (
-    <div className="bg-background min-h-screen pt-16 pb-6">
+    <div className="bg-background min-h-screen pt-20 pb-6">
       <BackHeader title={title} />
 
       <main className="px-4 py-6 space-y-4">

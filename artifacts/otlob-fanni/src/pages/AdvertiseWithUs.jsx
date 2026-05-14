@@ -105,7 +105,7 @@ export default function AdvertiseWithUs() {
 
   if (submitted) {
     return (
-      <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
         <BackHeader title={ar ? 'أعلن معنا' : 'Advertise With Us'} />
         <div className="flex flex-col items-center justify-center px-6 py-20 text-center gap-5">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
@@ -133,7 +133,7 @@ export default function AdvertiseWithUs() {
   }
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'أعلن معنا' : 'Advertise With Us'} />
 
       <main className="px-4 pt-4 space-y-4">

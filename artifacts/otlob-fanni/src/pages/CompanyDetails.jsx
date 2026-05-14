@@ -57,7 +57,7 @@ export default function CompanyDetails() {
   }, [id])
 
   if (notFound) return (
-    <div className="bg-[#EEF4FF] min-h-screen pt-16" dir={dir}>
+    <div className="bg-[#EEF4FF] min-h-screen pt-20" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
       <div className="flex flex-col items-center justify-center py-20 text-center px-6 gap-4">
         <p className="text-gray-700 font-bold text-lg">{ar ? 'الشركة غير موجودة' : 'Company not found'}</p>
@@ -67,7 +67,7 @@ export default function CompanyDetails() {
   )
 
   if (!company) return (
-    <div className="bg-[#EEF4FF] min-h-screen pt-16" dir={dir}>
+    <div className="bg-[#EEF4FF] min-h-screen pt-20" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
       <div className="flex items-center justify-center py-20">
         <div className="w-8 h-8 border-4 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
@@ -103,7 +103,7 @@ export default function CompanyDetails() {
   const expLabel   = ar ? (EXP_AR[yearsActive] || yearsActive) : (EXP_EN[yearsActive] || yearsActive)
 
   return (
-    <div className="bg-[#EEF4FF] min-h-screen pt-16 pb-28" dir={dir}>
+    <div className="bg-[#EEF4FF] min-h-screen pt-20 pb-28" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
 
       {lightbox && (

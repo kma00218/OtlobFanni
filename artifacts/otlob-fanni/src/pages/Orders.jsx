@@ -219,7 +219,7 @@ export default function Orders() {
 
   if (loaded && requests.length === 0) {
     return (
-      <div className="bg-background min-h-screen pt-16 pb-20" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="bg-background min-h-screen pt-20 pb-20" dir={ar ? 'rtl' : 'ltr'}>
         <BackHeader title={ar ? 'طلباتي' : 'My Orders'} />
         <main className="px-4 py-6 flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
           <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
@@ -250,7 +250,7 @@ export default function Orders() {
   }
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'طلباتي' : 'My Orders'} />
 
       <main className="px-4 pt-4 space-y-4">

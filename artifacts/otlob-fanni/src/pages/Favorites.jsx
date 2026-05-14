@@ -215,7 +215,7 @@ export default function Favorites() {
   const totalCount = techs.length + companies.length
 
   return (
-    <div className="bg-[#F2F2F7] min-h-screen pt-16 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F2F2F7] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'المفضلة' : 'Favorites'} />
 
       <main className="px-4 py-5">

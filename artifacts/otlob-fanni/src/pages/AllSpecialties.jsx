@@ -2,17 +2,49 @@ import { useLang } from '../context/LanguageContext'
 import CategoryCard from '../components/CategoryCard'
 import { sections, categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
+import { Share2 } from 'lucide-react'
 
 export default function AllSpecialties() {
-  const { lang } = useLang()
+  const { lang, toggleLang } = useLang()
   const ar = lang === 'ar'
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'اطلب فني – Otlob Fanni',
+        text: lang === 'ar'
+          ? 'دليل الفنيين والحرفيين في ليبيا – اطلب فني'
+          : "Libya's technician & craftsman directory – Otlob Fanni",
+        url: 'https://otlobfanni.ly',
+      })
+    } else {
+      navigator.clipboard?.writeText('https://otlobfanni.ly')
+    }
+  }
+
   return (
-    <div className="bg-background min-h-screen pt-16 pb-28" dir={ar ? 'rtl' : 'ltr'}>
-      <div className="bg-white flex justify-center items-center pt-3 pb-5">
-        <img src="/icon-192.png" alt="اطلب فني" className="w-20 h-20" />
-      </div>
-      <div className="px-5 pt-5 pb-3">
+    <div className="bg-background min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
+
+      {/* Fixed header — Share | Icon | Lang */}
+      <header className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-gray-100 z-50 flex items-center px-3 max-w-[480px] mx-auto">
+        <button onClick={handleShare} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0">
+          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
+            <Share2 className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-[10px] font-semibold text-gray-500 leading-none">{ar ? 'مشاركة' : 'share'}</span>
+        </button>
+        <div className="flex-1 flex justify-center items-center">
+          <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14" />
+        </div>
+        <button onClick={toggleLang} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0">
+          <div className="w-10 h-10 rounded-[12px] flex items-center justify-center font-extrabold text-base text-white" style={{ background: '#FF7900' }}>
+            {lang === 'ar' ? 'EN' : 'AR'}
+          </div>
+          <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'English' : 'عربي'}</span>
+        </button>
+      </header>
+
+      <div className="px-5 pt-4 pb-3">
         <h1 className="text-2xl font-bold text-[#071B33]">
           {ar ? 'كل التخصصات' : 'All Specialties'}
         </h1>

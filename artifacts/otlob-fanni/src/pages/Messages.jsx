@@ -73,7 +73,7 @@ export default function Messages() {
   const isAr = lang === 'ar';
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-16 pb-24" dir={isAr ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={isAr ? 'rtl' : 'ltr'}>
       <BackHeader title={t('messagesTitle')} />
 
       <main className="px-4 py-6 space-y-5">
