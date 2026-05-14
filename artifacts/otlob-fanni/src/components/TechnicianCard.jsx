@@ -1,24 +1,24 @@
 import { useLang } from '../context/LanguageContext';
 import { Link } from 'wouter';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, MapPin, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { getFileUrl } from '../lib/api';
 
 export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
-  const name     = lang === 'ar' ? technician.nameAr     : technician.nameEn;
+  const name      = lang === 'ar' ? technician.nameAr     : technician.nameEn;
   const specialty = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
-  const city     = lang === 'ar'
+  const city      = lang === 'ar'
     ? (technician.cityAr || technician.city_name_ar || technician.city || '')
     : (technician.cityEn || technician.city_name_en || technician.city_name_ar || technician.city || '');
-  const status   = lang === 'ar' ? technician.statusAr   : technician.statusEn;
-  const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2);
+  const status    = lang === 'ar' ? technician.statusAr   : technician.statusEn;
+  const initials  = name.split(' ').map(n => n[0]).join('').substring(0, 2);
 
   return (
-    <Link href={`/technician/${technician.id}`} className="block bg-white rounded-xl shadow-sm border p-4 mb-3 hover-elevate active:scale-[0.98] transition-all">
-      <div className="flex items-center gap-3">
+    <Link href={`/technician/${technician.id}`} className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 active:scale-[0.98] transition-all">
+      <div className="flex items-start gap-3">
 
-        {/* Avatar — real photo or colored initials */}
-        <div className="h-14 w-14 rounded-full flex-shrink-0 overflow-hidden border-2 border-gray-100">
+        {/* Avatar */}
+        <div className="h-14 w-14 rounded-xl flex-shrink-0 overflow-hidden border-2 border-gray-100 shadow-sm">
           {technician.profilePhoto ? (
             <img src={getFileUrl(technician.profilePhoto)} alt={name} className="w-full h-full object-cover" />
           ) : (
@@ -32,22 +32,43 @@ export default function TechnicianCard({ technician }) {
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start mb-1">
-            <h3 className="font-bold text-foreground truncate">{name}</h3>
-            <div className={`px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap ${technician.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {/* Name + status */}
+          <div className="flex justify-between items-start gap-2 mb-1">
+            <h3 className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</h3>
+            <div className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold whitespace-nowrap ${technician.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
               {status}
             </div>
           </div>
-          <p className="text-sm text-muted-foreground truncate mb-0.5">
-            {specialty} • {city}{technician.area ? ` • ${technician.area}` : ''}
-          </p>
+
+          {/* Specialty badge */}
+          {specialty && (
+            <span className="inline-flex items-center gap-1 bg-[#FF7900]/10 text-[#FF7900] text-[11px] font-bold px-2 py-0.5 rounded-full mb-1.5">
+              {specialty}
+            </span>
+          )}
+
+          {/* City + emergency */}
+          <div className="flex items-center gap-1 mb-1.5">
+            <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+            <span className="text-xs text-gray-500 truncate">
+              {city}{technician.area ? ` · ${technician.area}` : ''}
+            </span>
+            {technician.emergency && (
+              <span className="flex items-center gap-0.5 bg-red-50 text-red-500 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-1">
+                <Zap className="w-2.5 h-2.5" />
+                {lang === 'ar' ? 'طوارئ' : 'Emergency'}
+              </span>
+            )}
+          </div>
+
+          {/* Rating + price */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium text-foreground">{technician.rating}</span>
-              <span className="text-xs text-muted-foreground">({technician.reviews})</span>
+              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+              <span className="text-xs font-semibold text-gray-800">{technician.rating}</span>
+              <span className="text-[11px] text-gray-400">({technician.reviews})</span>
             </div>
-            <span className="text-sm font-bold text-primary">
+            <span className="text-xs font-bold text-[#FF7900]">
               {technician.priceTo > 0
                 ? `${technician.priceFrom}–${technician.priceTo} ${t('lyd')}`
                 : `${t('priceFrom')} ${technician.priceFrom} ${t('lyd')}`}
@@ -55,8 +76,8 @@ export default function TechnicianCard({ technician }) {
           </div>
         </div>
 
-        <div className="flex-shrink-0 text-muted-foreground">
-          {dir === 'rtl' ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+        <div className="flex-shrink-0 text-gray-300 self-center">
+          {dir === 'rtl' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </div>
       </div>
     </Link>
