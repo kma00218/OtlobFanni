@@ -515,10 +515,12 @@ export default function Technicians() {
       rows = rows.filter(r => r.status === filterStatus)
     if (search) {
       const s = search.toLowerCase()
+      const digits = search.replace(/\D/g, '').slice(-6)
       rows = rows.filter(r =>
         (r.nameAr || r.name_ar || '').toLowerCase().includes(s) ||
         (r.phone || '').toLowerCase().includes(s) ||
-        (r.area || '').toLowerCase().includes(s)
+        (r.area || '').toLowerCase().includes(s) ||
+        (digits.length >= 4 && String(r.id).replace(/\D/g, '').slice(-6) === digits)
       )
     }
     rows.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at))
@@ -673,7 +675,7 @@ export default function Technicians() {
           <input
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
-            placeholder="بحث بالاسم أو الهاتف..."
+            placeholder="بحث بالاسم أو الهاتف أو رقم التعريف..."
             className="col-span-2 sm:col-span-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#FF7900]/40 transition"
           />
           {isSuperAdmin && (

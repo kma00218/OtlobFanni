@@ -151,7 +151,9 @@ export default function Companies() {
   const filtered = data.filter(r => {
     const name    = r.companyName  || ''
     const contact = r.contactName  || ''
-    const s = !search || name.includes(search) || contact.includes(search) || r.phone?.includes(search) || r.city?.includes(search)
+    const digits  = search.replace(/\D/g, '').slice(-6)
+    const byId    = digits.length >= 4 && String(r.id).replace(/\D/g, '').slice(-6) === digits
+    const s = !search || name.includes(search) || contact.includes(search) || r.phone?.includes(search) || r.city?.includes(search) || byId
     const c = !filterCity || r.city === filterCity
     const t = !filterCat  || r.specialty === filterCat
     return s && c && t
@@ -249,7 +251,7 @@ export default function Companies() {
         loading={loading}
         searchValue={search}
         onSearchChange={setSearch}
-        searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة..."
+        searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة أو رقم التعريف..."
         actions={
           <div className="flex gap-2">
             <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
