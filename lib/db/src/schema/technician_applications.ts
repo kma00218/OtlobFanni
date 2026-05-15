@@ -34,6 +34,7 @@ export const technicianApplicationsTable = pgTable("technician_applications", {
   idDocBack:        text("id_doc_back"),
   workLicense:      text("work_license"),
   status:           text("status").notNull().default("pending"),
+  requestNumber:    text("request_number"),
   createdAt:        timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

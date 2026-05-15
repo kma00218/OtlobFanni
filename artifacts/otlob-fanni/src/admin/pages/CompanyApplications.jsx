@@ -17,9 +17,10 @@ const WaIcon = () => (
 )
 
 const STATUS = {
-  pending:  { label: 'قيد المراجعة', cls: 'bg-amber-400/25 text-amber-300 border border-amber-400/40'   },
-  approved: { label: 'مقبول',        cls: 'bg-emerald-400/25 text-emerald-300 border border-emerald-400/40' },
-  rejected: { label: 'مرفوض',        cls: 'bg-red-400/25 text-red-300 border border-red-400/40'        },
+  pending:   { label: 'قيد المراجعة', cls: 'bg-amber-400/25 text-amber-300 border border-amber-400/40'   },
+  approved:  { label: 'مقبول',        cls: 'bg-emerald-400/25 text-emerald-300 border border-emerald-400/40' },
+  published: { label: 'منشور',        cls: 'bg-orange-400/25 text-orange-300 border border-orange-400/40' },
+  rejected:  { label: 'مرفوض',        cls: 'bg-red-400/25 text-red-300 border border-red-400/40'        },
 }
 
 const DAY_AR = {
@@ -63,7 +64,7 @@ export default function CompanyApplications() {
   const reload = () => {
     setLoading(true)
     api.admin.companyApplications.list()
-      .then(rows => { setData(rows.filter(r => r.status !== 'approved')); setLoading(false) })
+      .then(rows => { setData(rows.filter(r => r.status !== 'published')); setLoading(false) })
       .catch(() => setLoading(false))
   }
 
@@ -97,6 +98,15 @@ export default function CompanyApplications() {
         if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
         showToast('تم رفض الطلب')
       }
+    } catch { showToast('حدث خطأ', 'error') }
+  }
+
+  const handlePublish = async (id) => {
+    try {
+      await api.admin.companyApplications.publish(id)
+      setData(prev => prev.filter(r => r.id !== id))
+      if (viewItem?.id === id) setViewItem(null)
+      showToast('✓ تم نشر الشركة على المنصة')
     } catch { showToast('حدث خطأ', 'error') }
   }
 
@@ -185,6 +195,12 @@ export default function CompanyApplications() {
       render: (v) => v ? new Date(v).toLocaleDateString('en-GB') : '—',
     },
     {
+      key: 'requestNumber', label: 'رقم الطلب',
+      render: (v) => v
+        ? <span className="text-xs font-mono text-slate-400 tracking-wider">{v}</span>
+        : <span className="text-xs text-slate-600">—</span>,
+    },
+    {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
         <div className="flex gap-1 flex-wrap">
@@ -203,6 +219,12 @@ export default function CompanyApplications() {
                 رفض
               </button>
             </>
+          )}
+          {row.status === 'approved' && (
+            <button onClick={() => handlePublish(row.id)}
+              className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 rounded-lg font-medium transition-colors">
+              نشر
+            </button>
           )}
           <button onClick={() => handleDelete(row.id)}
             className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="حذف">

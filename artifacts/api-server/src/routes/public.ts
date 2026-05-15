@@ -402,6 +402,7 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
       idDocBack:      body.id_doc_back,
       workLicense:    body.work_license,
       status:         "pending",
+      requestNumber:  "OF-T-" + String(Date.now()).slice(-6),
     })
     .returning();
 
@@ -449,10 +450,50 @@ router.post("/company-applications", async (req, res): Promise<void> => {
       commercialDoc:  body.commercial_doc,
       workLicense:    body.work_license,
       status:         "pending",
+      requestNumber:  "OF-C-" + String(Date.now()).slice(-6),
     })
     .returning();
 
   res.status(201).json(app);
+});
+
+// ── Application Status (public tracking) ─────────────────────────────────────
+router.get("/status/:requestNumber", async (req, res): Promise<void> => {
+  const reqNum = Array.isArray(req.params.requestNumber) ? req.params.requestNumber[0] : req.params.requestNumber;
+
+  const [techApp] = await db
+    .select({
+      id: technicianApplicationsTable.id,
+      status: technicianApplicationsTable.status,
+      fullName: technicianApplicationsTable.fullName,
+      createdAt: technicianApplicationsTable.createdAt,
+      requestNumber: technicianApplicationsTable.requestNumber,
+    })
+    .from(technicianApplicationsTable)
+    .where(eq(technicianApplicationsTable.requestNumber, reqNum));
+
+  if (techApp) {
+    res.json({ type: "technician", ...techApp });
+    return;
+  }
+
+  const [compApp] = await db
+    .select({
+      id: companyApplicationsTable.id,
+      status: companyApplicationsTable.status,
+      companyName: companyApplicationsTable.companyName,
+      createdAt: companyApplicationsTable.createdAt,
+      requestNumber: companyApplicationsTable.requestNumber,
+    })
+    .from(companyApplicationsTable)
+    .where(eq(companyApplicationsTable.requestNumber, reqNum));
+
+  if (compApp) {
+    res.json({ type: "company", fullName: compApp.companyName, ...compApp });
+    return;
+  }
+
+  res.status(404).json({ error: "Request not found" });
 });
 
 // ── Ad Request (submit) ───────────────────────────────────────────────────────

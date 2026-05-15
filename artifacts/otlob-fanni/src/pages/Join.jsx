@@ -109,6 +109,7 @@ export default function Join() {
   useEffect(() => { api.cities().then(setCities).catch(() => {}) }, [])
 
   const [submitted, setSubmitted] = useState(false)
+  const [requestNumber, setRequestNumber] = useState(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(0)
   const [profilePhoto, setProfilePhoto] = useState(null)
@@ -189,7 +190,7 @@ export default function Join() {
         ? []
         : selectedCategories.slice(1)
 
-      await api.submitTechnicianApplication({
+      const result = await api.submitTechnicianApplication({
         id:               'jr' + Date.now(),
         full_name:        form.full_name,
         phone:            form.phone,
@@ -221,6 +222,7 @@ export default function Join() {
         profile_photo:   profilePhoto || null,
         work_images:     workImages,
       })
+      if (result?.requestNumber) setRequestNumber(result.requestNumber)
       setSubmitted(true)
     } catch (err) {
       alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.')
@@ -240,15 +242,30 @@ export default function Join() {
           <h2 className="text-xl font-bold text-[#071B33] mb-3">
             {ar ? 'تم الإرسال بنجاح!' : 'Request Submitted!'}
           </h2>
-          <p className="text-gray-500 text-sm leading-relaxed mb-8">
+          <p className="text-gray-500 text-sm leading-relaxed mb-4">
             {ar
               ? 'تم إرسال طلبك بنجاح. سيتم مراجعة بياناتك من الإدارة، وبعد الموافقة سيظهر ملفك في التطبيق.'
-              : 'Your application has been submitted successfully. The admin will review it, and after approval your profile will appear in the app.'}
+              : 'Your application has been submitted. The admin will review it and your profile will appear after approval.'}
           </p>
-          <button onClick={() => window.history.back()}
-            className="w-full bg-[#FF7900] text-white font-bold py-4 rounded-2xl text-base hover:bg-[#e86d00] transition-colors active:scale-95">
-            {ar ? 'العودة للرئيسية' : 'Back to Home'}
-          </button>
+          {requestNumber && (
+            <div className="bg-white rounded-2xl p-4 mb-6 border border-gray-200 shadow-sm">
+              <p className="text-xs text-gray-400 mb-1">{ar ? 'رقم تتبع طلبك' : 'Your tracking number'}</p>
+              <p className="text-lg font-bold text-[#071B33] font-mono tracking-widest">{requestNumber}</p>
+              <p className="text-xs text-gray-400 mt-2">{ar ? 'احتفظ بهذا الرقم لمتابعة حالة طلبك' : 'Save this number to track your request status'}</p>
+            </div>
+          )}
+          <div className="space-y-3">
+            {requestNumber && (
+              <a href={`/status/${requestNumber}`}
+                className="block w-full border-2 border-[#FF7900] text-[#FF7900] font-bold py-3.5 rounded-2xl text-sm hover:bg-[#FF7900]/5 transition-colors active:scale-95">
+                {ar ? 'تتبع حالة طلبك' : 'Track Request Status'}
+              </a>
+            )}
+            <button onClick={() => window.history.back()}
+              className="w-full bg-[#FF7900] text-white font-bold py-3.5 rounded-2xl text-sm hover:bg-[#e86d00] transition-colors active:scale-95">
+              {ar ? 'العودة للرئيسية' : 'Back to Home'}
+            </button>
+          </div>
         </div>
       </div>
     )

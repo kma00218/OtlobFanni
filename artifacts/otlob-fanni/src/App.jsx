@@ -36,6 +36,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const AllSpecialties = lazy(() => import("./pages/AllSpecialties"));
 const CityTechnicians = lazy(() => import("./pages/CityTechnicians"));
+const StatusTracking = lazy(() => import("./pages/StatusTracking"));
 const NotFound = lazy(() => import("./pages/not-found"));
 
 // Admin — lazy loaded as a separate chunk
@@ -203,6 +204,8 @@ function AppContent() {
               <Route path="/advertise" component={AdvertiseWithUs} />
               <Route path="/all-specialties" component={AllSpecialties} />
               <Route path="/city/:id" component={CityTechnicians} />
+              <Route path="/status/:id" component={StatusTracking} />
+              <Route path="/status" component={StatusTracking} />
               <Route path="/about" component={About} />
               <Route path="/terms" component={Terms} />
               <Route path="/privacy" component={Privacy} />

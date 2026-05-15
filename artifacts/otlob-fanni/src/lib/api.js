@@ -72,6 +72,7 @@ export const api = {
 
   submitTechnicianApplication: (data) => post('/technician-applications', data),
   submitCompanyApplication:    (data) => post('/company-applications',    data),
+  trackRequest:                (reqNum) => get(`/status/${encodeURIComponent(reqNum)}`),
 
   companies: (params = {}) => {
     const qs = new URLSearchParams(Object.fromEntries(
@@ -89,15 +90,17 @@ export const api = {
     stats: () => get('/admin/stats'),
 
     technicianApplications: {
-      list:   ()                      => get('/admin/technician-applications'),
-      update: (id, status, opts = {}) => patch(`/admin/technician-applications/${id}`, { status, ...opts }),
-      delete: (id)                    => del(`/admin/technician-applications/${id}`),
+      list:    ()                      => get('/admin/technician-applications'),
+      update:  (id, status, opts = {}) => patch(`/admin/technician-applications/${id}`, { status, ...opts }),
+      publish: (id)                    => patch(`/admin/technician-applications/${id}`, { status: 'published' }),
+      delete:  (id)                    => del(`/admin/technician-applications/${id}`),
     },
 
     companyApplications: {
-      list:   ()                      => get('/admin/company-applications'),
-      update: (id, status, opts = {}) => patch(`/admin/company-applications/${id}`, { status, ...opts }),
-      delete: (id)                    => del(`/admin/company-applications/${id}`),
+      list:    ()                      => get('/admin/company-applications'),
+      update:  (id, status, opts = {}) => patch(`/admin/company-applications/${id}`, { status, ...opts }),
+      publish: (id)                    => patch(`/admin/company-applications/${id}`, { status: 'published' }),
+      delete:  (id)                    => del(`/admin/company-applications/${id}`),
     },
 
     technicians: {

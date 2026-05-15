@@ -5,7 +5,7 @@ import {
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable,
 } from "@workspace/db/schema";
-import { eq, desc, count, and } from "drizzle-orm";
+import { eq, desc, count, and, or } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
 
 const router: IRouter = Router();
@@ -122,12 +122,12 @@ router.delete("/technician-applications/:id", async (req, res): Promise<void> =>
   res.sendStatus(204);
 });
 
-// ── Companies (approved only) ─────────────────────────────────────────────────
+// ── Companies (approved or published) ────────────────────────────────────────
 router.get("/companies", async (_req, res): Promise<void> => {
   const companies = await db
     .select()
     .from(companyApplicationsTable)
-    .where(eq(companyApplicationsTable.status, "approved"))
+    .where(or(eq(companyApplicationsTable.status, "approved"), eq(companyApplicationsTable.status, "published")))
     .orderBy(desc(companyApplicationsTable.createdAt));
   res.json(companies);
 });
