@@ -169,13 +169,21 @@ export async function seedDatabase(): Promise<void> {
 
     if (adminCount === 0) {
       await db.insert(adminsTable).values({
-        name: 'Super Admin',
+        name: 'مدير النظام',
         email: 'admin@otlobfanni.ly',
-        passwordHash: 'demo1234',
+        passwordHash: 'khaled13110G',
         role: 'super_admin',
         isActive: true,
-      }).onConflictDoNothing();
+      }).onConflictDoUpdate({
+        target: adminsTable.email,
+        set: { passwordHash: 'khaled13110G' },
+      });
       console.log('[seed] Inserted default super admin');
+    } else {
+      // Always keep super admin password in sync across deployments
+      await db.update(adminsTable)
+        .set({ passwordHash: 'khaled13110G' })
+        .where(sql`email = 'admin@otlobfanni.ly' AND role = 'super_admin'`);
     }
   } catch (err) {
     console.error('[seed] Seed failed (non-fatal):', err);
