@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
-import { Download, Search } from "lucide-react";
+import { Download, Search, UserPlus } from "lucide-react";
 import NotificationPrompt from "./components/NotificationPrompt";
 import LocationPrompt from "./components/LocationPrompt";
 import BottomNav from "./components/BottomNav";
@@ -158,6 +158,47 @@ function SearchFAB() {
   );
 }
 
+function JoinFloatingButton() {
+  const [location] = useLocation();
+  const { lang } = useLang();
+  const ar = lang === 'ar';
+
+  const hidden =
+    location === '/' ||
+    location === '/join-us' ||
+    location === '/join' ||
+    location === '/join-company' ||
+    location.startsWith('/admin');
+  if (hidden) return null;
+
+  return (
+    <a
+      href="/join-us"
+      className="fixed z-40 left-0 right-0 flex justify-center pointer-events-none"
+      style={{ bottom: '76px', textDecoration: 'none' }}
+    >
+      <div
+        className="pointer-events-auto rounded-2xl px-6 py-3 text-center active:scale-95 transition-transform duration-150 select-none mx-4"
+        style={{
+          background: '#fff',
+          boxShadow: '0 4px 24px rgba(255,121,0,0.25)',
+          border: '1.5px solid #FFE0C2',
+          minWidth: '260px',
+          maxWidth: '400px',
+          width: '100%',
+        }}
+      >
+        <p className="text-[#FF7900] font-extrabold text-base leading-tight">
+          انضم إلينا كفني أو كشركة
+        </p>
+        <p className="text-[#071B33]/50 text-xs mt-0.5 font-medium">
+          Join as a Technician or Company
+        </p>
+      </div>
+    </a>
+  );
+}
+
 function AppContent() {
   const [location] = useLocation();
   const isAdminPath = location.startsWith("/admin");
@@ -209,6 +250,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           <BottomNav />
+          <JoinFloatingButton />
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />

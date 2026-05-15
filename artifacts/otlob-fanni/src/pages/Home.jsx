@@ -40,6 +40,21 @@ export default function Home() {
           <Logo />
         </div>
 
+        {/* زر الانضمام — ثابت تحت الشعار */}
+        <a href="/join-us" style={{ textDecoration: 'none' }}>
+          <div
+            className="rounded-2xl px-5 py-3 text-center active:scale-95 transition-transform duration-150 select-none"
+            style={{ background: '#fff', boxShadow: '0 4px 20px rgba(255,121,0,0.18)', border: '1.5px solid #FFE0C2' }}
+          >
+            <p className="text-[#FF7900] font-extrabold text-base leading-tight">
+              انضم إلينا كفني أو كشركة
+            </p>
+            <p className="text-[#071B33]/50 text-xs mt-0.5 font-medium">
+              Join as a Technician or Company
+            </p>
+          </div>
+        </a>
+
         <SearchBar />
 
         {/* إعلان أعلى الصفحة — تحت شريط البحث مباشرة */}
