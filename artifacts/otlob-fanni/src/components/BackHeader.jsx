@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { useLang } from '../context/LanguageContext';
-import { ChevronRight, ChevronLeft, Share2, Search } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Share2, Search, UserPlus } from 'lucide-react';
 import SearchOverlay from './SearchOverlay'
+import { Link, useLocation } from 'wouter'
 
 export default function BackHeader({ title }) {
   const { dir, lang, toggleLang } = useLang();
   const [searchOpen, setSearchOpen] = useState(false)
+  const [location] = useLocation()
+  const hideJoin = location === '/join-us' || location === '/join' || location === '/join-company'
 
   const handleShare = () => {
     if (navigator.share) {
@@ -39,6 +42,15 @@ export default function BackHeader({ title }) {
 
         {/* Search + Share + Lang */}
         <div className="flex items-end gap-2 flex-shrink-0">
+          {/* Join button */}
+          {!hideJoin && (
+            <Link href="/join-us" style={{ textDecoration: 'none' }} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150">
+              <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #34C759 0%, #248a3d 100%)' }}>
+                <UserPlus className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'انضم إلينا' : 'Join us'}</span>
+            </Link>
+          )}
           {/* Search button */}
           <button
             onClick={() => setSearchOpen(true)}
