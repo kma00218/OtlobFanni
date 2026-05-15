@@ -40,6 +40,7 @@ export default function Dashboard() {
   const [analytics, setAnalytics] = useState(null)
   const [recentRequests, setRecentRequests] = useState([])
   const [recentTechs, setRecentTechs] = useState([])
+  const [recentCompanies, setRecentCompanies] = useState([])
   const [requestsByStatus, setRequestsByStatus] = useState([])
   const [storageUsage, setStorageUsage] = useState(null)
   const [lastRefresh, setLastRefresh] = useState(new Date())
@@ -55,6 +56,7 @@ export default function Dashboard() {
       setAnalytics(anl)
       setRecentRequests(s.recentRequests || [])
       setRecentTechs(s.recentTechs || [])
+      setRecentCompanies(s.recentCompanies || [])
       const statusCounts = {}
       ;(s.recentRequests || []).forEach(r => { statusCounts[r.status] = (statusCounts[r.status] || 0) + 1 })
       const pieData = Object.entries(STATUS_LABELS).map(([key, name]) => ({
@@ -414,17 +416,68 @@ export default function Dashboard() {
               <tbody>
                 {recentTechs.map((t, i) => (
                   <tr key={t.id || i} className="border-b border-slate-50 hover:bg-orange-50/30 transition-colors">
-                    <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{t.name_ar || t.name || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.category_id || t.category || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.city_id || t.city || '—'}</td>
+                    <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{t.nameAr || t.nameEn || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.categoryId || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.cityId || '—'}</td>
                     <td className="px-5 py-3.5">
-                      {(t.is_active ?? t.isActive ?? true) && (t.is_approved ?? t.isApproved ?? true)
+                      {t.isActive && t.isApproved
                         ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● نشط</span>
-                        : <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-400 ring-1 ring-slate-200">● غير نشط</span>
+                        : <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-400 ring-1 ring-slate-200">● معلّق</span>
                       }
                     </td>
                     <td className="px-5 py-3.5 text-slate-400 text-xs whitespace-nowrap">
-                      {t.created_at || t.approvedAt ? new Date(t.created_at || t.approvedAt).toLocaleDateString('en-GB') : '—'}
+                      {t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-GB') : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* ── RECENT COMPANIES ─────────────────────────────── */}
+      <SectionLabel icon={Building2} label="آخر الشركات المضافة" color="text-blue-600" />
+      <div className="bg-white rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100">
+            <Building2 className="w-4 h-4 text-blue-600" />
+          </div>
+          <h3 className="font-bold text-[#071B33] text-sm flex-1">آخر الشركات المضافة</h3>
+          {!loading && <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{recentCompanies.length} شركة</span>}
+        </div>
+        {loading ? (
+          <div className="p-4 space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-11 bg-slate-100 rounded-xl animate-pulse" />)}
+          </div>
+        ) : recentCompanies.length === 0 ? (
+          <EmptyState label="لا يوجد شركات بعد" />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-100">
+                  {['الاسم', 'التخصص', 'المدينة', 'الحالة', 'تاريخ الإضافة'].map(h => (
+                    <th key={h} className="text-right px-5 py-3 text-xs font-black text-[#071B33] uppercase tracking-wider whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentCompanies.map((c, i) => (
+                  <tr key={c.id || i} className="border-b border-slate-50 hover:bg-blue-50/30 transition-colors">
+                    <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{c.nameAr || c.nameEn || c.name || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.categoryId || c.category || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.cityId || c.city || '—'}</td>
+                    <td className="px-5 py-3.5">
+                      {c.status === 'approved'
+                        ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● مقبول</span>
+                        : c.status === 'rejected'
+                        ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-red-50 text-red-500 ring-1 ring-red-200">● مرفوض</span>
+                        : <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-50 text-amber-600 ring-1 ring-amber-200">● معلّق</span>
+                      }
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-400 text-xs whitespace-nowrap">
+                      {c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB') : '—'}
                     </td>
                   </tr>
                 ))}

@@ -29,7 +29,8 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [completedReqs]      = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "completed"));
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
-  const recentTechs    = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
+  const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
+  const recentCompanies  = await db.select().from(companyApplicationsTable).orderBy(desc(companyApplicationsTable.createdAt)).limit(5);
 
   res.json({
     totalTechs:          Number(techCount.count),
@@ -49,6 +50,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     completedRequests:   Number(completedReqs.count),
     recentRequests,
     recentTechs,
+    recentCompanies,
   });
 });
 
