@@ -203,7 +203,7 @@ export default function TechnicianDetails() {
             <h1 className="font-extrabold text-[#071B33] text-xl leading-tight mb-1">{tech.name}</h1>
             {/* Reference ID */}
             <span className="inline-flex items-center gap-1 bg-[#071B33]/8 border border-[#071B33]/15 text-[#071B33] text-[11px] font-black px-2.5 py-0.5 rounded-full mb-2 tracking-wide">
-              # TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{tech.id}
+              {ar ? 'رقم التعريف' : 'ID'}: TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{tech.id}
             </span>
 
             {/* Specialty badge */}
