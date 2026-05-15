@@ -21,7 +21,7 @@ const NAV_GROUPS = [
     items: [
       { path: '/admin/technicians',  label: 'الفنيون',    icon: Wrench,    statsKey: 'totalTechs' },
       { path: '/admin/companies',    label: 'الشركات',    icon: Building2, statsKey: 'totalCompanies' },
-      { path: '/admin/categories',   label: 'التخصصات',  icon: Tag,       superOnly: true },
+      { path: '/admin/categories',   label: 'التخصصات',  icon: Tag,       superOnly: true, statsKey: 'totalCats' },
       { path: '/admin/cities',       label: 'المدن',      icon: MapPin,    superOnly: true },
     ]
   },
