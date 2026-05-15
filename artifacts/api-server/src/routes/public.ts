@@ -6,6 +6,7 @@ import {
   adRequestsTable, serviceRequestsTable,
 } from "@workspace/db/schema";
 import { eq, and, or, desc, inArray, ilike, sql } from "drizzle-orm";
+import { expandSearchTerms } from "../lib/synonyms";
 
 const router: IRouter = Router();
 
@@ -159,6 +160,23 @@ router.get("/search", async (req, res): Promise<void> => {
     return;
   }
 
+  const terms = expandSearchTerms(q);
+  const techWhere = terms.flatMap(t => [
+    ilike(techniciansTable.nameAr, `%${t}%`),
+    ilike(techniciansTable.nameEn, `%${t}%`),
+    ilike(techniciansTable.descriptionAr, `%${t}%`),
+    ilike(techniciansTable.descriptionEn, `%${t}%`),
+  ]);
+  const companyWhere = terms.flatMap(t => [
+    ilike(companyApplicationsTable.companyName, `%${t}%`),
+    ilike(companyApplicationsTable.contactName, `%${t}%`),
+    ilike(companyApplicationsTable.description, `%${t}%`),
+  ]);
+  const cityWhere = terms.flatMap(t => [
+    ilike(citiesTable.nameAr, `%${t}%`),
+    ilike(citiesTable.nameEn, `%${t}%`),
+  ]);
+
   const [techRows, companyRows, cityRows] = await Promise.all([
     db.select({
         tech: techniciansTable,
@@ -173,12 +191,7 @@ router.get("/search", async (req, res): Promise<void> => {
       .where(and(
         eq(techniciansTable.isApproved, true),
         eq(techniciansTable.isActive, true),
-        or(
-          ilike(techniciansTable.nameAr, `%${q}%`),
-          ilike(techniciansTable.nameEn, `%${q}%`),
-          ilike(techniciansTable.descriptionAr, `%${q}%`),
-          ilike(techniciansTable.descriptionEn, `%${q}%`),
-        ),
+        or(...techWhere),
       ))
       .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
       .limit(4),
@@ -192,16 +205,12 @@ router.get("/search", async (req, res): Promise<void> => {
       .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
       .where(and(
         eq(companyApplicationsTable.status, "approved"),
-        or(
-          ilike(companyApplicationsTable.companyName, `%${q}%`),
-          ilike(companyApplicationsTable.contactName, `%${q}%`),
-          ilike(companyApplicationsTable.description, `%${q}%`),
-        ),
+        or(...companyWhere),
       ))
       .limit(4),
 
     db.select().from(citiesTable)
-      .where(or(ilike(citiesTable.nameAr, `%${q}%`), ilike(citiesTable.nameEn, `%${q}%`)))
+      .where(or(...cityWhere))
       .orderBy(citiesTable.sortOrder)
       .limit(5),
   ]);
@@ -239,6 +248,14 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
   const q = String(req.query.q ?? "").trim();
   if (!q) { res.json([]); return; }
 
+  const terms = expandSearchTerms(q);
+  const techWhere = terms.flatMap(t => [
+    ilike(techniciansTable.nameAr, `%${t}%`),
+    ilike(techniciansTable.nameEn, `%${t}%`),
+    ilike(techniciansTable.descriptionAr, `%${t}%`),
+    ilike(techniciansTable.descriptionEn, `%${t}%`),
+  ]);
+
   const rows = await db
     .select({
       tech: techniciansTable,
@@ -253,12 +270,7 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
     .where(and(
       eq(techniciansTable.isApproved, true),
       eq(techniciansTable.isActive, true),
-      or(
-        ilike(techniciansTable.nameAr, `%${q}%`),
-        ilike(techniciansTable.nameEn, `%${q}%`),
-        ilike(techniciansTable.descriptionAr, `%${q}%`),
-        ilike(techniciansTable.descriptionEn, `%${q}%`),
-      ),
+      or(...techWhere),
     ))
     .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
     .limit(5);
