@@ -144,7 +144,9 @@ export async function seedDatabase(): Promise<void> {
       console.log(`[seed] Inserted ${CITIES.length} cities`);
     }
 
-    // Upsert the 19 base categories (names/icons may evolve over time)
+    // Upsert the 19 base categories (names/icons may evolve over time).
+    // sectionId is intentionally excluded from the update set so existing
+    // admin-assigned section mappings are never overwritten on restart.
     await db.insert(categoriesTable).values(BASE_CATEGORIES).onConflictDoUpdate({
       target: categoriesTable.id,
       set: {
@@ -153,7 +155,6 @@ export async function seedDatabase(): Promise<void> {
         iconName:  sql`excluded.icon_name`,
         sortOrder: sql`excluded.sort_order`,
         isActive:  sql`excluded.is_active`,
-        sectionId: sql`excluded.section_id`,
       },
     });
     console.log(`[seed] Upserted ${BASE_CATEGORIES.length} base categories`);
