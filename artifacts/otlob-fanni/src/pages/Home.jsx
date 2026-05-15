@@ -64,6 +64,35 @@ export default function Home() {
             ))}
           </div>
 
+          {/* بطاقة الانطلاق — دعوة للفنيين والشركات */}
+          <div
+            className="mt-4 rounded-2xl p-6 flex flex-col items-center gap-4 text-center select-none"
+            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #071B33 100%)' }}
+          >
+            <span className="text-5xl">🚀</span>
+            <div className="flex flex-col gap-2">
+              <p className="text-white font-extrabold text-xl leading-tight">
+                اطلب فني ينطلق!
+              </p>
+              <p className="text-white font-medium text-sm leading-relaxed" dir="rtl">
+                التطبيق جديد وقاعدة الفنيين والشركات تنمو كل يوم.
+              </p>
+              <p className="text-white/80 text-sm leading-relaxed" dir="ltr">
+                Otlob Fanni is just getting started —<br />our network grows every day.
+              </p>
+            </div>
+            <Link href="/join-us">
+              <div className="bg-white rounded-xl px-6 py-3 active:scale-95 transition-transform duration-150 shadow-lg">
+                <p className="text-[#FF7900] font-extrabold text-base leading-tight">
+                  انضم إلينا كفني أو كشركة
+                </p>
+                <p className="text-[#071B33]/60 text-xs mt-1 font-medium">
+                  Join as a Technician or Company
+                </p>
+              </div>
+            </Link>
+          </div>
+
           {/* كل التخصصات — زر بارز */}
           <Link href="/categories">
             <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl py-4 bg-[#FF7900] active:bg-[#e06a00] transition-colors cursor-pointer select-none shadow-md shadow-[#FF7900]/30">
@@ -76,35 +105,6 @@ export default function Home() {
                 : <ArrowRight className="w-4 h-4 text-white" />}
             </div>
           </Link>
-
-          {/* بطاقة الانطلاق — دعوة للفنيين والشركات */}
-          <div
-            className="mt-4 rounded-2xl p-5 flex flex-col items-center gap-3 text-center select-none"
-            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #071B33 100%)' }}
-          >
-            <span className="text-4xl">🚀</span>
-            <div className="flex flex-col gap-1">
-              <p className="text-white font-extrabold text-base leading-snug">
-                اطلب فني ينطلق!
-              </p>
-              <p className="text-white/80 text-sm leading-relaxed" dir="rtl">
-                التطبيق جديد وقاعدة الفنيين تنمو كل يوم.
-              </p>
-              <p className="text-white/60 text-xs mt-0.5 leading-relaxed" dir="ltr">
-                Otlob Fanni is just getting started — our network grows every day.
-              </p>
-            </div>
-            <Link href="/join">
-              <div className="mt-1 bg-white rounded-xl px-5 py-2.5 active:scale-95 transition-transform duration-150 shadow-lg">
-                <p className="text-[#FF7900] font-extrabold text-sm leading-tight">
-                  {ar ? 'انضم إلينا كفني أو كشركة' : 'Join us as a Technician or Company'}
-                </p>
-                <p className="text-[#071B33]/50 text-xs mt-0.5">
-                  {ar ? 'Join as a Technician or Company' : 'انضم كفني أو كشركة'}
-                </p>
-              </div>
-            </Link>
-          </div>
 
           {/* إعلان أسفل الصفحة — بعد زر كل التخصصات */}
           <div className="mt-4">
