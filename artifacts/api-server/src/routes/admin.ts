@@ -21,6 +21,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [totalTechApps]      = await db.select({ count: count() }).from(technicianApplicationsTable);
   const [pendingCompApps]    = await db.select({ count: count() }).from(companyApplicationsTable).where(eq(companyApplicationsTable.status, "pending"));
   const [totalCompApps]      = await db.select({ count: count() }).from(companyApplicationsTable);
+  const [approvedCompanies]  = await db.select({ count: count() }).from(companyApplicationsTable).where(eq(companyApplicationsTable.status, "approved"));
   const [pendingAdReqs]      = await db.select({ count: count() }).from(adRequestsTable).where(eq(adRequestsTable.status, "pending"));
   const [approvedAdReqs]     = await db.select({ count: count() }).from(adRequestsTable).where(eq(adRequestsTable.status, "approved"));
   const [newReqs]            = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "new"));
@@ -37,6 +38,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     activeAds:           Number(activeAdsCount.count),
     pendingTechApps:     Number(pendingTechApps.count),
     totalTechApps:       Number(totalTechApps.count),
+    totalCompanies:      Number(approvedCompanies.count),
     pendingCompanyApps:  Number(pendingCompApps.count),
     totalCompanyApps:    Number(totalCompApps.count),
     pendingAdRequests:   Number(pendingAdReqs.count),
