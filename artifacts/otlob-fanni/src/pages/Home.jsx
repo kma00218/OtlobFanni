@@ -45,8 +45,8 @@ export default function Home() {
           <div
             className="rounded-2xl px-5 py-3.5 text-center active:scale-95 transition-transform duration-150 select-none"
             style={{
-              background: 'linear-gradient(90deg, #FF7900 0%, #e06a00 100%)',
-              boxShadow: '0 4px 20px rgba(255,121,0,0.35)',
+              background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
+              boxShadow: '0 4px 20px rgba(52,199,89,0.35)',
             }}
           >
             <p className="text-white font-extrabold text-base leading-tight">

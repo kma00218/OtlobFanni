@@ -174,31 +174,40 @@ function JoinFAB() {
   return (
     <a
       href="/join-us"
-      className="fixed z-40 flex flex-col items-center gap-0.5 active:scale-90 transition-transform duration-150"
+      className="fixed z-40 flex flex-col items-center active:scale-90 transition-transform duration-150"
       style={{
-        bottom: '96px',
-        left: '50%',
-        transform: 'translateX(-50%)',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        [ar ? 'right' : 'left']: '0',
         textDecoration: 'none',
       }}
     >
       <div
         style={{
-          width: '52px',
-          height: '52px',
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #FF7900 0%, #e06a00 100%)',
-          boxShadow: '0 4px 20px rgba(255,121,0,0.45)',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          gap: '4px',
+          background: 'linear-gradient(180deg, #34C759 0%, #248a3d 100%)',
+          boxShadow: '0 4px 16px rgba(52,199,89,0.45)',
+          borderRadius: ar ? '14px 0 0 14px' : '0 14px 14px 0',
+          padding: '10px 8px',
         }}
       >
-        <UserPlus className="w-6 h-6 text-white" />
+        <UserPlus className="w-5 h-5 text-white" />
+        <span style={{
+          fontSize: '9px',
+          fontWeight: 800,
+          color: '#fff',
+          writingMode: 'vertical-rl',
+          textOrientation: 'mixed',
+          transform: ar ? 'rotate(180deg)' : 'none',
+          whiteSpace: 'nowrap',
+          letterSpacing: '0.5px',
+        }}>
+          {ar ? 'انضم إلينا' : 'Join us'}
+        </span>
       </div>
-      <span style={{ fontSize: '10px', fontWeight: 800, color: '#FF7900', whiteSpace: 'nowrap' }}>
-        {ar ? 'انضم إلينا' : 'Join us'}
-      </span>
     </a>
   );
 }
