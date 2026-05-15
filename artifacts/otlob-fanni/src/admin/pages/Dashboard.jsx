@@ -465,9 +465,9 @@ export default function Dashboard() {
               <tbody>
                 {recentCompanies.map((c, i) => (
                   <tr key={c.id || i} className="border-b border-slate-50 hover:bg-blue-50/30 transition-colors">
-                    <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{c.nameAr || c.nameEn || c.name || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.categoryId || c.category || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.cityId || c.city || '—'}</td>
+                    <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{c.companyName || c.nameAr || c.name || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.specialty || c.categoryId || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.city || c.cityId || '—'}</td>
                     <td className="px-5 py-3.5">
                       {c.status === 'approved'
                         ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● مقبول</span>
