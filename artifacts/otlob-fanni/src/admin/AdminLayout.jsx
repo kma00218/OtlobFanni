@@ -23,14 +23,11 @@ function AccessDenied() {
   return (
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="text-center max-w-sm">
-        <div
-          className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5"
-          style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.2)' }}
-        >
+        <div className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-red-50 border border-red-100">
           <Shield className="w-9 h-9 text-red-400" />
         </div>
-        <h2 className="text-xl font-black text-white mb-2">غير مصرح</h2>
-        <p className="text-[#6060A0] text-sm">ليس لديك صلاحية للوصول إلى هذه الصفحة</p>
+        <h2 className="text-xl font-black text-slate-800 mb-2">غير مصرح</h2>
+        <p className="text-slate-500 text-sm">ليس لديك صلاحية للوصول إلى هذه الصفحة</p>
       </div>
     </div>
   )
@@ -69,7 +66,7 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   return (
     <ProtectedAdminRoute>
-      <div className="flex h-screen bg-[#0f172a] overflow-hidden" dir="rtl">
+      <div className="flex h-screen overflow-hidden" style={{ background: '#F0F4F8' }} dir="rtl">
         <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <AdminTopbar onMenuClick={() => setSidebarOpen(true)} />

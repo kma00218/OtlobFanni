@@ -6,9 +6,9 @@ function Section({ icon: Icon, title, description, children }) {
   return (
     <div
       className="rounded-2xl overflow-hidden"
-      style={{ background: '#0D0D1C', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: '#ffffff', border: '1px solid #E8EDF2', boxShadow: '0 1px 4px rgba(7,27,51,0.06)' }}
     >
-      <div className="px-6 py-5 flex items-center gap-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="px-6 py-5 flex items-center gap-4" style={{ borderBottom: '1px solid #E8EDF2' }}>
         <div
           className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
           style={{ background: 'rgba(255,121,0,0.12)', border: '1px solid rgba(255,121,0,0.2)' }}
@@ -16,8 +16,8 @@ function Section({ icon: Icon, title, description, children }) {
           <Icon className="w-5 h-5 text-[#FF7900]" />
         </div>
         <div>
-          <h3 className="font-black text-white text-sm">{title}</h3>
-          {description && <p className="text-[#5050A0] text-xs mt-0.5">{description}</p>}
+          <h3 className="font-black text-[#071B33] text-sm">{title}</h3>
+          {description && <p className="text-slate-500 text-xs mt-0.5">{description}</p>}
         </div>
       </div>
       <div className="p-6">{children}</div>
@@ -27,16 +27,16 @@ function Section({ icon: Icon, title, description, children }) {
 
 function ToggleRow({ label, description, enabled, onChange }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+    <div className="flex items-center justify-between gap-4 py-3.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
       <div>
-        <p className="text-sm font-semibold text-[#D0D0F0]">{label}</p>
-        {description && <p className="text-xs text-[#5050A0] mt-0.5">{description}</p>}
+        <p className="text-sm font-semibold text-[#071B33]">{label}</p>
+        {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
       </div>
       <button
         onClick={() => onChange(!enabled)}
         className={`relative w-11 h-6 rounded-full transition-all flex-shrink-0`}
         style={{
-          background: enabled ? 'linear-gradient(135deg, #FF7900, #FF9500)' : 'rgba(255,255,255,0.1)',
+          background: enabled ? 'linear-gradient(135deg, #FF7900, #FF9500)' : '#E2E8F0',
           boxShadow: enabled ? '0 2px 12px rgba(255,121,0,0.4)' : 'none',
         }}
       >
@@ -83,8 +83,8 @@ export default function Settings() {
           >
             <Lock className="w-7 h-7 text-red-400" />
           </div>
-          <h2 className="text-lg font-black text-white mb-1">غير مصرح</h2>
-          <p className="text-[#5050A0] text-sm">الإعدادات متاحة للمدير العام فقط</p>
+          <h2 className="text-lg font-black text-[#071B33] mb-1">غير مصرح</h2>
+          <p className="text-slate-500 text-sm">الإعدادات متاحة للمدير العام فقط</p>
         </div>
       </div>
     )
@@ -110,9 +110,9 @@ export default function Settings() {
             ['الاسم الكامل', profile?.full_name || '—'],
             ['الدور', 'Super Admin'],
           ].map(([k, v]) => (
-            <div key={k} className="rounded-xl p-3.5" style={{ background: 'rgba(255,255,255,0.04)' }}>
-              <p className="text-[#4040A0] text-[11px] font-bold uppercase tracking-wider mb-1">{k}</p>
-              <p className="text-white text-sm font-bold">{v}</p>
+            <div key={k} className="rounded-xl p-3.5" style={{ background: '#F8FAFC' }}>
+              <p className="text-slate-500 text-[11px] font-bold uppercase tracking-wider mb-1">{k}</p>
+              <p className="text-[#071B33] text-sm font-bold">{v}</p>
             </div>
           ))}
         </div>
@@ -210,9 +210,9 @@ export default function Settings() {
             ['التخزين',         'Replit Object Storage'],
             ['واجهة برمجية',    '/api (Express.js)'],
           ].map(([k, v]) => (
-            <div key={k} className="flex items-center justify-between py-2.5 px-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
-              <span className="text-[#5050A0] text-xs font-bold uppercase tracking-wider">{k}</span>
-              <span className="text-[#C0C0E0] text-xs font-mono">{v}</span>
+            <div key={k} className="flex items-center justify-between py-2.5 px-4 rounded-xl" style={{ background: '#F8FAFC' }}>
+              <span className="text-slate-500 text-xs font-bold uppercase tracking-wider">{k}</span>
+              <span className="text-slate-600 text-xs font-mono">{v}</span>
             </div>
           ))}
         </div>

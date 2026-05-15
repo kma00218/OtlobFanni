@@ -107,15 +107,15 @@ export default function AdminUsers() {
       key: 'name', label: 'المستخدم',
       render: (v, row) => (
         <div>
-          <p className="font-medium text-white">{v || '—'}</p>
-          <p className="text-xs text-[#555570]" dir="ltr">{row.email}</p>
+          <p className="font-medium text-[#071B33]">{v || '—'}</p>
+          <p className="text-xs text-slate-500" dir="ltr">{row.email}</p>
         </div>
       )
     },
     {
       key: 'role', label: 'الدور',
       render: (v) => (
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${v === 'super_admin' ? 'bg-white/10 text-white' : 'bg-[#FF7900]/10 text-[#FF7900]'}`}>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${v === 'super_admin' ? 'bg-slate-100 text-slate-700' : 'bg-[#FF7900]/10 text-[#FF7900]'}`}>
           {v === 'super_admin' ? 'Super Admin' : 'Sub Admin'}
         </span>
       )
@@ -124,7 +124,7 @@ export default function AdminUsers() {
       key: 'isActive', label: 'الحالة',
       render: (v, row) => (
         row.role !== 'super_admin' ? (
-          <button onClick={() => toggleActive(row)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-emerald-400' : 'text-[#444460]'}`}>
+          <button onClick={() => toggleActive(row)} className={`flex items-center gap-1 text-xs font-medium ${v ? 'text-emerald-400' : 'text-slate-400'}`}>
             {v ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
             {v ? 'نشط' : 'معطل'}
           </button>
@@ -148,7 +148,7 @@ export default function AdminUsers() {
             <Trash2 className="w-3 h-3" /> حذف
           </button>
         </div>
-      ) : <span className="text-xs text-[#333350]">—</span>
+      ) : <span className="text-xs text-slate-300">—</span>
     },
   ]
 
@@ -203,7 +203,7 @@ export default function AdminUsers() {
           <div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={editForm.is_active} onChange={e => setEditForm(f => ({ ...f, is_active: e.target.checked }))} className="w-4 h-4 accent-[#FF7900]" />
-              <span className="text-sm text-[#C0C0D8]">حساب نشط</span>
+              <span className="text-sm text-slate-600">حساب نشط</span>
             </label>
           </div>
         </div>
@@ -211,25 +211,25 @@ export default function AdminUsers() {
 
       {successInfo && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" dir="rtl">
-          <div className="bg-[#0E0E17] border border-white/8 rounded-2xl shadow-2xl w-full max-w-sm p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-sm p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-emerald-500/15 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-bold text-white">تم إنشاء الحساب بنجاح</h3>
-                <p className="text-xs text-[#555570]">احفظ بيانات الدخول</p>
+                <h3 className="font-bold text-[#071B33]">تم إنشاء الحساب بنجاح</h3>
+                <p className="text-xs text-slate-500">احفظ بيانات الدخول</p>
               </div>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 space-y-3 mb-4">
+            <div className="bg-slate-50 rounded-xl p-4 space-y-3 mb-4">
               <div>
-                <p className="text-xs text-[#555570] mb-0.5">البريد الإلكتروني</p>
-                <p className="font-mono text-sm text-white" dir="ltr">{successInfo.email}</p>
+                <p className="text-xs text-slate-500 mb-0.5">البريد الإلكتروني</p>
+                <p className="font-mono text-sm text-[#071B33]" dir="ltr">{successInfo.email}</p>
               </div>
               <div>
-                <p className="text-xs text-[#555570] mb-0.5">كلمة المرور</p>
+                <p className="text-xs text-slate-500 mb-0.5">كلمة المرور</p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-mono text-sm text-white" dir="ltr">{successInfo.password}</p>
+                  <p className="font-mono text-sm text-[#071B33]" dir="ltr">{successInfo.password}</p>
                   <button onClick={() => copyToClipboard(`${successInfo.email}\n${successInfo.password}`)} className="text-[#FF7900] hover:text-[#e86d00]">
                     {copied ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>

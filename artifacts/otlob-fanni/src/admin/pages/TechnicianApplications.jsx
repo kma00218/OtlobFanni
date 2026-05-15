@@ -174,24 +174,24 @@ export default function TechnicianApplications() {
       key: 'fullName', label: 'مقدم الطلب',
       render: (v, row) => (
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-white/8">
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-slate-200">
             {(row.profilePhoto || row.profile_photo)
               ? <img src={getFileUrl(row.profilePhoto || row.profile_photo)} alt="" className="w-full h-full object-cover" />
-              : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white text-xs font-bold">
+              : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-bold">
                   {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
                 </div>
             }
           </div>
           <div>
-            <p className="font-medium text-white text-sm">{v}</p>
-            <p className="text-xs text-[#555570]" dir="ltr">{row.phone}</p>
+            <p className="font-medium text-[#071B33] text-sm">{v}</p>
+            <p className="text-xs text-slate-500" dir="ltr">{row.phone}</p>
           </div>
         </div>
       ),
     },
     {
       key: 'whatsapp', label: 'واتساب',
-      render: (v) => <span className="text-xs text-[#8888A8]" dir="ltr">{v || '—'}</span>,
+      render: (v) => <span className="text-xs text-slate-400" dir="ltr">{v || '—'}</span>,
     },
     { key: 'city', label: 'المدينة' },
     { key: 'area', label: 'المنطقة', render: (v) => v || '—' },
@@ -203,14 +203,14 @@ export default function TechnicianApplications() {
           <div>
             <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v) || 'تخصص مخصص'}</p>
             <p className="text-sm text-amber-400 font-medium">{row.customSpecialty}</p>
-            {extras.length > 0 && extras.map(id => <p key={id} className="text-xs text-[#8888A8] mt-0.5">{catLabel(id)}</p>)}
+            {extras.length > 0 && extras.map(id => <p key={id} className="text-xs text-slate-400 mt-0.5">{catLabel(id)}</p>)}
           </div>
         )
         return (
           <div>
             {sectionLabel(v) && <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v)}</p>}
-            <p className="text-sm text-[#C0C0D8]">{catLabel(v)}</p>
-            {extras.map(id => <p key={id} className="text-xs text-[#8888A8] mt-0.5">+ {catLabel(id)}</p>)}
+            <p className="text-sm text-slate-600">{catLabel(v)}</p>
+            {extras.map(id => <p key={id} className="text-xs text-slate-400 mt-0.5">+ {catLabel(id)}</p>)}
           </div>
         )
       },
@@ -297,7 +297,7 @@ export default function TechnicianApplications() {
         searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة..."
         actions={
           <select value={filter} onChange={e => setFilter(e.target.value)}
-            className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
+            className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
             <option value="rejected">مرفوض</option>
@@ -339,25 +339,25 @@ export default function TechnicianApplications() {
             <div className="space-y-5">
 
               {/* Profile header */}
-              <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4">
-                <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-white/10 shadow">
+              <div className="flex items-center gap-4 bg-slate-50 rounded-2xl p-4">
+                <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-slate-200 shadow">
                   {photo
                     ? <img src={photo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(photo)} />
-                    : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white font-bold text-2xl">
+                    : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-2xl">
                         {name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                   }
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-white text-lg leading-tight">{name}</h3>
-                  <p className="text-sm text-[#8888A8] mt-0.5">
+                  <p className="text-sm text-slate-400 mt-0.5">
                     {catLabel(viewItem.specialty) || viewItem.specialty} • {viewItem.city}
                   </p>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS[viewItem.status]?.cls}`}>
                       {STATUS[viewItem.status]?.label}
                     </span>
-                    <span className="text-xs text-[#555570]">
+                    <span className="text-xs text-slate-500">
                       {createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : ''}
                     </span>
                   </div>
@@ -371,12 +371,12 @@ export default function TechnicianApplications() {
                     <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
                     <p className="text-amber-400 text-xs font-bold tracking-wide">تخصص مكتوب يدوياً — المزيد من الخدمات</p>
                   </div>
-                  <div className="bg-white/8 rounded-xl px-3 py-2.5">
+                  <div className="bg-slate-100 rounded-xl px-3 py-2.5">
                     <p className="text-white font-semibold text-sm">"{viewItem.customSpecialty}"</p>
                   </div>
                   {viewItem.status === 'pending' && (
                     <div className="space-y-2.5">
-                      <p className="text-xs text-[#8888A8] font-medium">إجراء التخصص عند القبول:</p>
+                      <p className="text-xs text-slate-400 font-medium">إجراء التخصص عند القبول:</p>
                       <div className="space-y-2">
                         {[
                           { v: 'none',   label: 'قبول بدون إنشاء تخصص جديد' },
@@ -388,7 +388,7 @@ export default function TechnicianApplications() {
                               checked={specialtyAction === opt.v}
                               onChange={() => setSpecialtyAction(opt.v)}
                               className="accent-[#FF7900]" />
-                            <span className="text-xs text-[#C0C0E0] group-hover:text-white transition-colors">{opt.label}</span>
+                            <span className="text-xs text-slate-600 group-hover:text-white transition-colors">{opt.label}</span>
                           </label>
                         ))}
                       </div>
@@ -396,7 +396,7 @@ export default function TechnicianApplications() {
                         <select
                           value={linkCatId}
                           onChange={e => setLinkCatId(e.target.value)}
-                          className="w-full bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                          className="w-full bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
                         >
                           <option value="">اختر التخصص الموجود...</option>
                           {allCats.filter(c => c.id !== 'more').map(c => (
@@ -414,8 +414,8 @@ export default function TechnicianApplications() {
                 <G2>
                   <IC label="الاسم الكامل"   value={name} />
                   <IC label="رقم الهاتف"     value={viewItem.phone}     dir="ltr" />
-                  <div className="bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-0.5">واتساب</p>
+                  <div className="bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-0.5">واتساب</p>
                     <p className="font-medium text-white text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
                     {viewItem.whatsapp && (
                       <a href={`https://wa.me/${viewItem.whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
@@ -429,9 +429,9 @@ export default function TechnicianApplications() {
                   <IC label="المنطقة / الحي" value={viewItem.area || '—'} />
                 </G2>
                 {viewItem.address && (
-                  <div className="mt-2 bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-0.5">العنوان التفصيلي</p>
-                    <p className="text-sm text-[#C0C0D8]">{viewItem.address}</p>
+                  <div className="mt-2 bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-0.5">العنوان التفصيلي</p>
+                    <p className="text-sm text-slate-600">{viewItem.address}</p>
                   </div>
                 )}
               </Sec>
@@ -448,9 +448,9 @@ export default function TechnicianApplications() {
                   <IC label="السعر الأقصى"   value={priceTo   ? `${priceTo} د.ل`   : '—'} />
                 </G2>
                 {viewItem.description && (
-                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-1">وصف الخدمة</p>
-                    <p className="text-sm text-[#C0C0D8] leading-relaxed">{viewItem.description}</p>
+                  <div className="mt-2.5 bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-1">وصف الخدمة</p>
+                    <p className="text-sm text-slate-600 leading-relaxed">{viewItem.description}</p>
                   </div>
                 )}
                 {viewItem.certifications && (
@@ -468,19 +468,19 @@ export default function TechnicianApplications() {
                 <G2>
                   <IC label="متاح الآن"
                     value={availNow ? '✓ نعم' : '✗ لا'}
-                    valueClass={availNow ? 'text-emerald-400 font-semibold' : 'text-[#555570]'} />
+                    valueClass={availNow ? 'text-emerald-400 font-semibold' : 'text-slate-500'} />
                   <IC label="خدمة الطوارئ 24/7"
                     value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
-                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-[#555570]'} />
+                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-slate-500'} />
                   {hoursFrom && <IC label="بداية العمل" value={hoursFrom} dir="ltr" />}
                   {hoursTo   && <IC label="نهاية العمل" value={hoursTo}   dir="ltr" />}
                 </G2>
                 {workDays.length > 0 && (
-                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-2">أيام العمل</p>
+                  <div className="mt-2.5 bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-2">أيام العمل</p>
                     <div className="flex flex-wrap gap-1.5">
                       {workDays.map(d => (
-                        <span key={d} className="bg-white/10 text-[#C0C0D8] text-xs px-2.5 py-1 rounded-lg">
+                        <span key={d} className="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-lg">
                           {DAY_AR[d] || d}
                         </span>
                       ))}
@@ -493,8 +493,8 @@ export default function TechnicianApplications() {
               {(viewItem.facebook || viewItem.instagram) && (
                 <Sec icon={Facebook} title="التواصل الاجتماعي">
                   {viewItem.facebook && (
-                    <div className="bg-white/5 rounded-xl p-3 mb-2">
-                      <p className="text-xs text-[#555570] mb-0.5">فيسبوك</p>
+                    <div className="bg-slate-50 rounded-xl p-3 mb-2">
+                      <p className="text-xs text-slate-500 mb-0.5">فيسبوك</p>
                       <a href={viewItem.facebook} target="_blank" rel="noreferrer"
                         className="text-sm text-blue-400 hover:underline break-all" dir="ltr">
                         {viewItem.facebook}
@@ -502,8 +502,8 @@ export default function TechnicianApplications() {
                     </div>
                   )}
                   {viewItem.instagram && (
-                    <div className="bg-white/5 rounded-xl p-3">
-                      <p className="text-xs text-[#555570] mb-0.5">إنستغرام</p>
+                    <div className="bg-slate-50 rounded-xl p-3">
+                      <p className="text-xs text-slate-500 mb-0.5">إنستغرام</p>
                       <a href={viewItem.instagram} target="_blank" rel="noreferrer"
                         className="text-sm text-pink-400 hover:underline break-all" dir="ltr">
                         {viewItem.instagram}
@@ -519,13 +519,13 @@ export default function TechnicianApplications() {
                   <div className="grid grid-cols-3 gap-2">
                     {workImgs.map((src, i) => (
                       <img key={i} src={src} alt={`صورة ${i + 1}`}
-                        className="w-full aspect-square object-cover rounded-xl border border-white/8 cursor-zoom-in hover:opacity-90"
+                        className="w-full aspect-square object-cover rounded-xl border border-slate-200 cursor-zoom-in hover:opacity-90"
                         onClick={() => setLightbox(src)} />
                     ))}
                   </div>
                 </Sec>
               ) : (
-                <div className="bg-white/5 rounded-xl p-3 flex items-center gap-2 text-[#555570]">
+                <div className="bg-slate-50 rounded-xl p-3 flex items-center gap-2 text-slate-500">
                   <Image className="w-4 h-4 flex-shrink-0" />
                   <p className="text-xs">لم يتم رفع صور من الأعمال</p>
                 </div>
@@ -541,21 +541,21 @@ export default function TechnicianApplications() {
                   <div className="space-y-3">
                     {(idFront || idBack) && (
                       <div>
-                        <p className="text-xs text-[#666680] font-medium mb-2">بطاقة الهوية</p>
+                        <p className="text-xs text-slate-500 font-medium mb-2">بطاقة الهوية</p>
                         <div className="grid grid-cols-2 gap-2">
                           {idFront && (
                             <div>
-                              <p className="text-xs text-[#555570] mb-1">الوجه الأمامي</p>
+                              <p className="text-xs text-slate-500 mb-1">الوجه الأمامي</p>
                               <img src={idFront} alt="front"
-                                className="w-full rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
+                                className="w-full rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
                                 onClick={() => setLightbox(idFront)} />
                             </div>
                           )}
                           {idBack && (
                             <div>
-                              <p className="text-xs text-[#555570] mb-1">الوجه الخلفي</p>
+                              <p className="text-xs text-slate-500 mb-1">الوجه الخلفي</p>
                               <img src={idBack} alt="back"
-                                className="w-full rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
+                                className="w-full rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
                                 onClick={() => setLightbox(idBack)} />
                             </div>
                           )}
@@ -564,15 +564,15 @@ export default function TechnicianApplications() {
                     )}
                     {workLic && (
                       <div>
-                        <p className="text-xs text-[#666680] font-medium mb-1">رخصة العمل / الشهادة المهنية</p>
+                        <p className="text-xs text-slate-500 font-medium mb-1">رخصة العمل / الشهادة المهنية</p>
                         <img src={workLic} alt="license"
-                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(workLic)} />
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="bg-white/5 rounded-xl p-3 flex items-center gap-2 text-[#555570]">
+                  <div className="bg-slate-50 rounded-xl p-3 flex items-center gap-2 text-slate-500">
                     <FileText className="w-4 h-4 flex-shrink-0" />
                     <p className="text-xs">لم يتم رفع وثائق رسمية</p>
                   </div>
@@ -598,7 +598,7 @@ export default function TechnicianApplications() {
 function Sec({ icon: Icon, title, titleClass, children }) {
   return (
     <div>
-      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-[#555570]'}`}>
+      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-slate-500'}`}>
         <Icon className="w-3.5 h-3.5" /> {title}
       </p>
       {children}
@@ -610,8 +610,8 @@ function G2({ children }) {
 }
 function IC({ label, value, dir, valueClass }) {
   return (
-    <div className="bg-white/5 rounded-xl p-3">
-      <p className="text-xs text-[#555570] mb-0.5">{label}</p>
+    <div className="bg-slate-50 rounded-xl p-3">
+      <p className="text-xs text-slate-500 mb-0.5">{label}</p>
       <p className={`font-medium text-white text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )

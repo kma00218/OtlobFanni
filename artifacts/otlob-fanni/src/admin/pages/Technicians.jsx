@@ -42,7 +42,7 @@ const emptyForm = {
 function FieldGroup({ title, icon: Icon, children }) {
   return (
     <div>
-      <p className="text-[10px] font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 text-[#555570]">
+      <p className="text-[10px] font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 text-slate-500">
         <Icon className="w-3.5 h-3.5" /> {title}
       </p>
       {children}
@@ -51,9 +51,9 @@ function FieldGroup({ title, icon: Icon, children }) {
 }
 function InfoCell({ label, value, dir, valueClass }) {
   return (
-    <div className="bg-white/5 rounded-xl p-3">
-      <p className="text-xs text-[#555570] mb-0.5">{label}</p>
-      <p className={`font-medium text-white text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+    <div className="bg-slate-50 rounded-xl p-3">
+      <p className="text-xs text-slate-500 mb-0.5">{label}</p>
+      <p className={`font-medium text-[#071B33] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }
@@ -97,7 +97,7 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
   const statusMap = {
     available: { label: 'متاح',    cls: 'bg-emerald-500/15 text-emerald-400' },
     busy:      { label: 'مشغول',   cls: 'bg-amber-500/15 text-amber-400' },
-    inactive:  { label: 'غير نشط', cls: 'bg-white/5 text-[#666680]' },
+    inactive:  { label: 'غير نشط', cls: 'bg-slate-100 text-slate-500' },
   }
   const statusInfo = statusMap[tech.status] || statusMap.inactive
 
@@ -111,19 +111,19 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
         </div>
       )}
       <div
-        className="bg-[#0E0E17] border border-white/8 rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl"
+        className="bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10 rounded-t-3xl sm:rounded-t-2xl">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10 rounded-t-3xl sm:rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-white text-base">تفاصيل الفني</h2>
-            <p className="text-xs text-[#666680] mt-0.5">{nameAr}</p>
+            <h2 className="font-bold text-[#071B33] text-base">تفاصيل الفني</h2>
+            <p className="text-xs text-slate-500 mt-0.5">{nameAr}</p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => { onClose(); onEdit(tech) }} className="flex items-center gap-1.5 bg-[#FF7900]/15 text-[#FF7900] text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-[#FF7900]/25 transition-colors">
               <Pencil className="w-3.5 h-3.5" /> تعديل
             </button>
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#8888A8]">
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -131,8 +131,8 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
 
         <div className="p-5 space-y-5">
           {/* Header card */}
-          <div className="flex items-center gap-4 bg-white/4 rounded-2xl p-4 border border-white/5">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 border-white/10 shadow">
+          <div className="flex items-center gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-100">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 border-slate-200 shadow">
               {photo
                 ? <img src={photo} alt={nameAr} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(photo)} />
                 : <div className="w-full h-full bg-gradient-to-br from-[#FF7900]/30 to-[#071B33] flex items-center justify-center text-white font-bold text-2xl">
@@ -141,8 +141,8 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
               }
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-white text-lg leading-tight">{nameAr}</h3>
-              {nameEn && <p className="text-sm text-[#8888A8]" dir="ltr">{nameEn}</p>}
+              <h3 className="font-bold text-[#071B33] text-lg leading-tight">{nameAr}</h3>
+              {nameEn && <p className="text-sm text-slate-400" dir="ltr">{nameEn}</p>}
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${statusInfo.cls}`}>{statusInfo.label}</span>
                 {isFeatured && <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-[#FF7900]/15 text-[#FF7900]">⭐ مميز</span>}
@@ -152,9 +152,9 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
               {rating > 0 && (
                 <div className="flex items-center gap-1 mt-1.5">
                   {[1,2,3,4,5].map(i => (
-                    <Star key={i} className={`w-3 h-3 ${i <= Math.round(rating) ? 'text-amber-400' : 'text-white/10'}`} fill={i <= Math.round(rating) ? 'currentColor' : 'none'} />
+                    <Star key={i} className={`w-3 h-3 ${i <= Math.round(rating) ? 'text-amber-400' : 'text-slate-200'}`} fill={i <= Math.round(rating) ? 'currentColor' : 'none'} />
                   ))}
-                  <span className="text-xs text-[#666680] mr-1">{rating.toFixed(1)} ({reviews} تقييم)</span>
+                  <span className="text-xs text-slate-500 mr-1">{rating.toFixed(1)} ({reviews} تقييم)</span>
                 </div>
               )}
             </div>
@@ -163,9 +163,9 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
           <FieldGroup title="معلومات الاتصال" icon={Phone}>
             <Grid2>
               <InfoCell label="رقم الهاتف"  value={phone}    dir="ltr" />
-              <div className="bg-white/5 rounded-xl p-3">
-                <p className="text-xs text-[#555570] mb-0.5">واتساب</p>
-                <p className="font-medium text-white text-sm" dir="ltr">{whatsapp || '—'}</p>
+              <div className="bg-slate-50 rounded-xl p-3">
+                <p className="text-xs text-slate-500 mb-0.5">واتساب</p>
+                <p className="font-medium text-[#071B33] text-sm" dir="ltr">{whatsapp || '—'}</p>
                 {whatsapp && (
                   <a href={`https://wa.me/${whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
                      className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-green-400 hover:text-green-300 transition-colors">
@@ -193,19 +193,19 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
               <InfoCell
                 label="الطوارئ"
                 value={emergency ? '✓ متاح للطوارئ' : '✗ لا'}
-                valueClass={emergency ? 'text-[#FF7900]' : 'text-[#555570]'}
+                valueClass={emergency ? 'text-[#FF7900]' : 'text-slate-500'}
               />
             </Grid2>
             {descAr && (
-              <div className="mt-2 bg-white/5 rounded-xl p-3">
-                <p className="text-xs text-[#555570] mb-1">الوصف بالعربي</p>
-                <p className="text-sm text-[#C0C0D8] leading-relaxed">{descAr}</p>
+              <div className="mt-2 bg-slate-50 rounded-xl p-3">
+                <p className="text-xs text-slate-500 mb-1">الوصف بالعربي</p>
+                <p className="text-sm text-slate-600 leading-relaxed">{descAr}</p>
               </div>
             )}
             {descEn && (
-              <div className="mt-2 bg-white/5 rounded-xl p-3">
-                <p className="text-xs text-[#555570] mb-1">الوصف بالإنجليزي</p>
-                <p className="text-sm text-[#C0C0D8] leading-relaxed" dir="ltr">{descEn}</p>
+              <div className="mt-2 bg-slate-50 rounded-xl p-3">
+                <p className="text-xs text-slate-500 mb-1">الوصف بالإنجليزي</p>
+                <p className="text-sm text-slate-600 leading-relaxed" dir="ltr">{descEn}</p>
               </div>
             )}
           </FieldGroup>
@@ -215,7 +215,7 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
               <InfoCell
                 label="متاح الآن"
                 value={availNow ? '✓ متاح' : '✗ غير متاح'}
-                valueClass={availNow ? 'text-emerald-400' : 'text-[#555570]'}
+                valueClass={availNow ? 'text-emerald-400' : 'text-slate-500'}
               />
               <InfoCell label="تاريخ الانضمام" value={createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : '—'} />
             </Grid2>
@@ -224,14 +224,14 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
           {(fb || ig) && (
             <FieldGroup title="التواصل الاجتماعي" icon={Facebook}>
               {fb && (
-                <div className="bg-white/5 rounded-xl p-3 mb-2">
-                  <p className="text-xs text-[#555570] mb-0.5">فيسبوك</p>
+                <div className="bg-slate-50 rounded-xl p-3 mb-2">
+                  <p className="text-xs text-slate-500 mb-0.5">فيسبوك</p>
                   <a href={fb} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline break-all" dir="ltr">{fb}</a>
                 </div>
               )}
               {ig && (
-                <div className="bg-white/5 rounded-xl p-3">
-                  <p className="text-xs text-[#555570] mb-0.5">إنستغرام</p>
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <p className="text-xs text-slate-500 mb-0.5">إنستغرام</p>
                   <a href={ig} target="_blank" rel="noreferrer" className="text-sm text-pink-400 hover:underline break-all" dir="ltr">{ig}</a>
                 </div>
               )}
@@ -243,7 +243,7 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
               <div className="grid grid-cols-3 gap-2">
                 {workImgs.map((src, i) => (
                   <img key={i} src={src} alt={`صورة ${i+1}`}
-                    className="w-full aspect-square object-cover rounded-xl border border-white/8 cursor-zoom-in hover:opacity-90"
+                    className="w-full aspect-square object-cover rounded-xl border border-slate-200 cursor-zoom-in hover:opacity-90"
                     onClick={() => setLightbox(src)}
                   />
                 ))}
@@ -273,12 +273,12 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div
-        className="bg-[#0E0E17] border border-white/8 rounded-t-3xl sm:rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl"
+        className="bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10 rounded-t-3xl sm:rounded-t-2xl">
-          <h2 className="font-bold text-white text-base">{title}</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#8888A8]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white z-10 rounded-t-3xl sm:rounded-t-2xl">
+          <h2 className="font-bold text-[#071B33] text-base">{title}</h2>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -300,7 +300,7 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                 <label className={lbl}>رابط صورة البروفايل</label>
                 <input value={form.profile_photo} onChange={e => setForm(f => ({...f, profile_photo: e.target.value}))} className={inp} placeholder="https://..." dir="ltr" />
                 {form.profile_photo && (
-                  <img src={form.profile_photo} alt="" className="mt-2 w-16 h-16 rounded-xl object-cover border border-white/10" onError={e => e.target.style.display='none'} />
+                  <img src={form.profile_photo} alt="" className="mt-2 w-16 h-16 rounded-xl object-cover border border-slate-200" onError={e => e.target.style.display='none'} />
                 )}
               </div>
             </div>
@@ -425,9 +425,9 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                 { field: 'emergency',    label: '⚡ طوارئ 24/7',    color: 'text-red-400'    },
                 { field: 'available_now',label: '🟢 متاح الآن',     color: 'text-emerald-400'},
               ].map(({ field, label, color }) => (
-                <label key={field} className={`flex items-center gap-2 cursor-pointer p-2.5 rounded-xl border transition-all ${form[field] ? 'border-white/20 bg-white/5' : 'border-white/5 bg-transparent'}`}>
+                <label key={field} className={`flex items-center gap-2 cursor-pointer p-2.5 rounded-xl border transition-all ${form[field] ? 'border-[#FF7900]/30 bg-[#FF7900]/5' : 'border-slate-200 bg-transparent'}`}>
                   <input type="checkbox" checked={!!form[field]} onChange={e => setForm(f => ({...f, [field]: e.target.checked}))} className="w-4 h-4 accent-[#FF7900] flex-shrink-0" />
-                  <span className={`text-xs font-semibold ${form[field] ? color : 'text-[#666680]'}`}>{label}</span>
+                  <span className={`text-xs font-semibold ${form[field] ? color : 'text-slate-500'}`}>{label}</span>
                 </label>
               ))}
             </div>
@@ -440,7 +440,7 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                 : title.includes('تعديل') ? 'حفظ التغييرات' : 'إضافة الفني'
               }
             </button>
-            <button type="button" onClick={onClose} className="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/8 text-[#8888A8] text-sm transition-colors">إلغاء</button>
+            <button type="button" onClick={onClose} className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm transition-colors">إلغاء</button>
           </div>
         </form>
       </div>
@@ -454,7 +454,7 @@ function Section({ label, icon: Icon, children }) {
       <div className="flex items-center gap-2 mb-3">
         <Icon className="w-4 h-4 text-[#FF7900]" />
         <p className="text-xs font-bold text-[#FF7900] uppercase tracking-wider">{label}</p>
-        <div className="flex-1 h-px bg-white/5" />
+        <div className="flex-1 h-px bg-slate-200" />
       </div>
       {children}
     </div>
@@ -659,8 +659,8 @@ export default function Technicians() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">الفنيون</h1>
-          <p className="text-sm text-[#666680] mt-0.5">إدارة جميع الفنيين في الدليل ({total} فني)</p>
+          <h1 className="text-xl font-bold text-[#071B33]">الفنيون</h1>
+          <p className="text-sm text-slate-500 mt-0.5">إدارة جميع الفنيين في الدليل ({total} فني)</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">
           <Plus className="w-4 h-4" /> إضافة فني
@@ -668,13 +668,13 @@ export default function Technicians() {
       </div>
 
       {/* Filters */}
-      <div className="bg-[#12121E] rounded-2xl border border-white/5 p-4">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <input
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="بحث بالاسم أو الهاتف..."
-            className="col-span-2 sm:col-span-1 bg-[#0A0A14] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-[#444460] focus:outline-none focus:border-[#FF7900]/40 transition"
+            className="col-span-2 sm:col-span-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#FF7900]/40 transition"
           />
           {isSuperAdmin && (
             <select value={filterCity} onChange={e => { setFilterCity(e.target.value); setPage(1) }} className="select-field">
@@ -705,11 +705,11 @@ export default function Technicians() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#12121E] rounded-2xl border border-white/5 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5 text-[#555570] text-xs">
+              <tr className="border-b border-slate-100 text-slate-500 text-xs">
                 <th className="text-right px-4 py-3 font-semibold whitespace-nowrap">الفني</th>
                 <th className="text-right px-4 py-3 font-semibold whitespace-nowrap">القسم / التخصص</th>
                 <th className="text-right px-4 py-3 font-semibold whitespace-nowrap">المدينة</th>
@@ -724,10 +724,10 @@ export default function Technicians() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={9} className="text-center py-16">
-                  <div className="w-8 h-8 border-2 border-white/10 border-t-[#FF7900] rounded-full animate-spin mx-auto" />
+                  <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF7900] rounded-full animate-spin mx-auto" />
                 </td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={9} className="text-center py-16 text-[#444460]">لا يوجد فنيون</td></tr>
+                <tr><td colSpan={9} className="text-center py-16 text-slate-400">لا يوجد فنيون</td></tr>
               ) : data.map(row => {
                 const active   = row.isActive   ?? row.is_active   ?? true
                 const approved = row.isApproved ?? row.is_approved ?? true
@@ -737,48 +737,48 @@ export default function Technicians() {
                 const pFrom    = row.priceFrom ?? row.price_from ?? 0
                 const pTo      = row.priceTo   ?? row.price_to   ?? 0
                 return (
-                  <tr key={row.id} className="border-b border-white/3 hover:bg-white/2 transition-colors">
+                  <tr key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-white/8">
+                        <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
                           {photo
                             ? <img src={photo} alt="" className="w-full h-full object-cover" />
                             : <div className="w-full h-full bg-gradient-to-br from-[#FF7900]/20 to-[#071B33] flex items-center justify-center text-white text-xs font-bold">{initials}</div>
                           }
                         </div>
                         <div>
-                          <p className="font-medium text-white text-sm">{row.nameAr || row.name_ar || '—'}</p>
-                          <p className="text-xs text-[#555570]" dir="ltr">{row.phone}</p>
+                          <p className="font-medium text-[#071B33] text-sm">{row.nameAr || row.name_ar || '—'}</p>
+                          <p className="text-xs text-slate-500" dir="ltr">{row.phone}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {row._sectionName && <p className="text-xs text-[#FF7900]/70 font-medium">{row._sectionName}</p>}
-                      <p className="text-sm text-[#C0C0D8]">{row._catName || '—'}</p>
+                      <p className="text-sm text-slate-600">{row._catName || '—'}</p>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#8888A8]">
+                    <td className="px-4 py-3 text-sm text-slate-400">
                       <p>{row._cityName || '—'}</p>
-                      {row.area && <p className="text-xs text-[#555570]">{row.area}</p>}
+                      {row.area && <p className="text-xs text-slate-500">{row.area}</p>}
                     </td>
                     <td className="px-4 py-3">
                       {(() => {
                         const map = {
                           available: ['متاح',    'text-emerald-400 bg-emerald-500/10'],
                           busy:      ['مشغول',   'text-amber-400 bg-amber-500/10'],
-                          inactive:  ['غير نشط', 'text-[#666680] bg-white/5'],
+                          inactive:  ['غير نشط', 'text-slate-500 bg-slate-100'],
                         }
                         const [l, c] = map[row.status] || map.inactive
                         return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c}`}>{l}</span>
                       })()}
                     </td>
-                    <td className="px-4 py-3 text-xs text-[#666680]">
+                    <td className="px-4 py-3 text-xs text-slate-500">
                       {pFrom > 0 || pTo > 0
                         ? <>{pFrom > 0 ? pFrom : '—'}{pTo > 0 ? ` - ${pTo}` : ''} <span className="text-[10px]">د.ل</span></>
                         : '—'
                       }
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => toggleActive(row)} className={`text-xs flex items-center gap-1 ${active ? 'text-emerald-400' : 'text-[#444460]'}`}>
+                      <button onClick={() => toggleActive(row)} className={`text-xs flex items-center gap-1 ${active ? 'text-emerald-400' : 'text-slate-400'}`}>
                         {active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
                       </button>
                     </td>
@@ -788,7 +788,7 @@ export default function Technicians() {
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => toggleField(row, 'is_featured', ['تم تمييز الفني', 'تم إلغاء التمييز'])} className={featured ? 'text-[#FF7900]' : 'text-[#333350]'}>
+                      <button onClick={() => toggleField(row, 'is_featured', ['تم تمييز الفني', 'تم إلغاء التمييز'])} className={featured ? 'text-[#FF7900]' : 'text-slate-300'}>
                         <Star className="w-4 h-4" fill={featured ? 'currentColor' : 'none'} />
                       </button>
                     </td>
@@ -815,13 +815,13 @@ export default function Technicians() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-white/5">
-            <p className="text-xs text-[#555570]">صفحة {page} من {totalPages} — {total} فني</p>
+          <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100">
+            <p className="text-xs text-slate-500">صفحة {page} من {totalPages} — {total} فني</p>
             <div className="flex items-center gap-1">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 rounded-lg bg-white/5 text-[#8888A8] text-xs disabled:opacity-30 hover:bg-white/10 transition-colors">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs disabled:opacity-30 hover:bg-slate-200 transition-colors">
                 السابق
               </button>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 rounded-lg bg-white/5 text-[#8888A8] text-xs disabled:opacity-30 hover:bg-white/10 transition-colors">
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs disabled:opacity-30 hover:bg-slate-200 transition-colors">
                 التالي
               </button>
             </div>

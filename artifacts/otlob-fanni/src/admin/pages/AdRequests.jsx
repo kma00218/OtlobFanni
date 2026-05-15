@@ -20,7 +20,7 @@ const PLACEMENTS = [
 ]
 
 function StatusBadge({ status }) {
-  const s = STATUS_MAP[status] || { label: '—', cls: 'bg-white/5 text-[#666680]' }
+  const s = STATUS_MAP[status] || { label: '—', cls: 'bg-slate-100 text-slate-500' }
   return <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${s.cls}`}>{s.label}</span>
 }
 
@@ -28,8 +28,8 @@ function DetailRow({ label, value, dir }) {
   if (!value) return null
   return (
     <div className="space-y-0.5">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-[#555570]">{label}</p>
-      <p className={`text-sm text-white break-all leading-snug ${dir === 'ltr' ? 'font-mono text-xs' : ''}`} dir={dir}>{value}</p>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
+      <p className={`text-sm text-[#071B33] break-all leading-snug ${dir === 'ltr' ? 'font-mono text-xs' : ''}`} dir={dir}>{value}</p>
     </div>
   )
 }
@@ -80,15 +80,15 @@ function PlacementModal({ req, onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div
-        className="bg-[#0E0E17] border border-white/8 rounded-t-3xl sm:rounded-2xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl"
+        className="bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10 rounded-t-3xl sm:rounded-t-2xl">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10 rounded-t-3xl sm:rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-white text-base">تأكيد مكان النشر</h2>
-            <p className="text-xs text-[#666680] mt-0.5">{req.companyName || req.company_name}</p>
+            <h2 className="font-bold text-[#071B33] text-base">تأكيد مكان النشر</h2>
+            <p className="text-xs text-slate-500 mt-0.5">{req.companyName || req.company_name}</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#8888A8]">
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -99,11 +99,11 @@ function PlacementModal({ req, onClose, onConfirm }) {
           {validRequested && (
             <div className="bg-[#FF7900]/10 border border-[#FF7900]/25 rounded-xl px-4 py-3 space-y-1.5">
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900]">الموضع الذي طلبه المُعلن</p>
-              <p className="text-white font-semibold text-sm">{validRequested.label}</p>
+              <p className="text-[#071B33] font-semibold text-sm">{validRequested.label}</p>
               <button
                 type="button"
                 onClick={() => { setPlacement(requestedPlacement); setSectionId(''); setCategoryId('') }}
-                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-colors ${placement === requestedPlacement ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-[#8888A8] hover:bg-white/10 border border-white/10'}`}
+                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-colors ${placement === requestedPlacement ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 border border-slate-200'}`}
               >
                 {placement === requestedPlacement ? '✓ تم الاختيار' : 'استخدام هذا الموضع'}
               </button>
@@ -112,39 +112,39 @@ function PlacementModal({ req, onClose, onConfirm }) {
 
           {/* Placement */}
           <div>
-            <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
               {validRequested ? 'أو اختر موضعاً مختلفاً' : 'مكان ظهور الإعلان'}
             </label>
             <div className="relative">
               <select
                 value={placement}
                 onChange={e => { setPlacement(e.target.value); setSectionId(''); setCategoryId('') }}
-                className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
+                className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
               >
                 {PLACEMENTS.map(p => (
                   <option key={p.value} value={p.value}>{p.label}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666680] pointer-events-none" />
+              <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
             </div>
           </div>
 
           {/* Section picker */}
           {needsSection && (
             <div>
-              <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">اختر القسم</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">اختر القسم</label>
               <div className="relative">
                 <select
                   value={sectionId}
                   onChange={e => { setSectionId(e.target.value); setCategoryId('') }}
-                  className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
                 >
                   <option value="">-- اختر قسمًا --</option>
                   {sections.filter(s => s.isActive).map(s => (
                     <option key={s.id} value={s.id}>{s.nameAr}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666680] pointer-events-none" />
+                <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               </div>
             </div>
           )}
@@ -152,33 +152,33 @@ function PlacementModal({ req, onClose, onConfirm }) {
           {/* Category picker */}
           {needsCategory && (
             <div>
-              <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">اختر التخصص</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">اختر التخصص</label>
               <div className="space-y-2">
                 <div className="relative">
                   <select
                     value={sectionId}
                     onChange={e => { setSectionId(e.target.value); setCategoryId('') }}
-                    className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
                   >
                     <option value="">-- تصفية بالقسم (اختياري) --</option>
                     {sections.filter(s => s.isActive).map(s => (
                       <option key={s.id} value={s.id}>{s.nameAr}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666680] pointer-events-none" />
+                  <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                 </div>
                 <div className="relative">
                   <select
                     value={categoryId}
                     onChange={e => setCategoryId(e.target.value)}
-                    className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
                   >
                     <option value="">-- اختر التخصص --</option>
                     {filteredCats.map(c => (
                       <option key={c.id} value={c.id}>{c.nameAr}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666680] pointer-events-none" />
+                  <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                 </div>
               </div>
             </div>
@@ -186,13 +186,13 @@ function PlacementModal({ req, onClose, onConfirm }) {
 
           {/* Sort order */}
           <div>
-            <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">ترتيب الإعلان</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">ترتيب الإعلان</label>
             <input
               type="number"
               value={sortOrder}
               onChange={e => setSortOrder(e.target.value)}
               min={0}
-              className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+              className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
               placeholder="0"
             />
           </div>
@@ -200,32 +200,32 @@ function PlacementModal({ req, onClose, onConfirm }) {
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">تاريخ البداية</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">تاريخ البداية</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+                className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-1.5 block">تاريخ الانتهاء</label>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">تاريخ الانتهاء</label>
               <input
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="w-full bg-[#1A1A28] border border-white/10 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+                className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
               />
             </div>
           </div>
 
           {/* Active toggle */}
           <div
-            className="flex items-center justify-between bg-[#1A1A28] rounded-xl px-4 py-3 border border-white/8 cursor-pointer"
+            className="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3 border border-slate-200 cursor-pointer"
             onClick={() => setIsActive(v => !v)}
           >
-            <span className="text-sm text-white font-medium">نشر الإعلان فور الموافقة</span>
-            <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${isActive ? 'bg-emerald-500' : 'bg-white/15'}`}>
+            <span className="text-sm text-[#071B33] font-medium">نشر الإعلان فور الموافقة</span>
+            <div className={`w-10 h-6 rounded-full transition-colors flex items-center ${isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}>
               <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform mx-1 ${isActive ? 'translate-x-4' : 'translate-x-0'}`} />
             </div>
           </div>
@@ -280,17 +280,17 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div
-        className="bg-[#0E0E17] border border-white/8 rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl"
+        className="bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10 rounded-t-3xl sm:rounded-t-2xl">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10 rounded-t-3xl sm:rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-white text-base">طلب إعلان</h2>
-            <p className="text-xs text-[#666680] mt-0.5">{business}</p>
+            <h2 className="font-bold text-[#071B33] text-base">طلب إعلان</h2>
+            <p className="text-xs text-slate-500 mt-0.5">{business}</p>
           </div>
           <div className="flex items-center gap-2">
             <StatusBadge status={req.status} />
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#8888A8]">
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -298,39 +298,39 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
 
         <div className="p-5 space-y-5">
           {image && (
-            <div className="rounded-xl overflow-hidden border border-white/8">
+            <div className="rounded-xl overflow-hidden border border-slate-200">
               <img src={image} alt="ad" className="w-full max-h-44 object-cover" />
             </div>
           )}
 
           {(title || desc) && (
-            <div className="bg-white/3 rounded-xl p-4 space-y-2 border border-white/5">
+            <div className="bg-slate-50 rounded-xl p-4 space-y-2 border border-slate-100">
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900]">محتوى الإعلان</p>
-              {title && <p className="font-bold text-white text-sm">{title}</p>}
-              {desc && <p className="text-[#8888A8] text-sm leading-relaxed">{desc}</p>}
+              {title && <p className="font-bold text-[#071B33] text-sm">{title}</p>}
+              {desc && <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>}
             </div>
           )}
 
           {placementLabel && (
             <div className="bg-[#FF7900]/10 border border-[#FF7900]/20 rounded-xl px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900] mb-1">نوع الإعلان المطلوب</p>
-              <p className="text-white font-semibold text-sm">{placementLabel}</p>
+              <p className="text-[#071B33] font-semibold text-sm">{placementLabel}</p>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <DetailRow label="رقم الهاتف"   value={phone}    dir="ltr" />
             <div className="space-y-0.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#555570]">واتساب</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">واتساب</p>
               {whatsapp ? (
                 <>
-                  <p className="text-xs text-white font-mono break-all">{whatsapp}</p>
+                  <p className="text-xs text-[#071B33] font-mono break-all">{whatsapp}</p>
                   <a href={`https://wa.me/${whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
                      className="inline-flex items-center gap-1 text-[11px] font-bold text-green-400 hover:text-green-300 transition-colors mt-0.5">
                     <WaIcon /> فتح واتساب
                   </a>
                 </>
-              ) : <p className="text-xs text-[#555570]">—</p>}
+              ) : <p className="text-xs text-slate-500">—</p>}
             </div>
             <DetailRow label="المدينة"       value={city}     />
             <DetailRow label="اسم المسؤول"  value={contact}  />
@@ -338,7 +338,7 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
 
           {link && (
             <div className="space-y-0.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#555570]">الرابط</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">الرابط</p>
               <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline flex items-center gap-1 break-all">
                 {link} <ExternalLink className="w-3 h-3 flex-shrink-0" />
               </a>
@@ -479,8 +479,8 @@ export default function AdRequests() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">طلبات الإعلانات</h1>
-          <p className="text-sm text-[#666680] mt-0.5">إدارة طلبات الإعلان من الأنشطة التجارية</p>
+          <h1 className="text-xl font-bold text-[#071B33]">طلبات الإعلانات</h1>
+          <p className="text-sm text-slate-500 mt-0.5">إدارة طلبات الإعلان من الأنشطة التجارية</p>
         </div>
       </div>
 
@@ -493,17 +493,17 @@ export default function AdRequests() {
           <button
             key={s.key}
             onClick={() => setFilter(filter === s.key ? '' : s.key)}
-            className={`rounded-2xl border p-4 text-center transition-all ${filter === s.key ? 'border-[#FF7900] bg-[#FF7900]/8' : `border-white/5 ${s.bg} hover:border-white/10`}`}
+            className={`rounded-2xl border p-4 text-center transition-all ${filter === s.key ? 'border-[#FF7900] bg-[#FF7900]/8' : `border-slate-200 ${s.bg} hover:border-slate-200`}`}
           >
             <p className={`text-3xl font-black ${s.colorCls}`}>{s.count}</p>
-            <p className="text-xs text-[#666680] mt-1 font-medium">{s.label}</p>
+            <p className="text-xs text-slate-500 mt-1 font-medium">{s.label}</p>
           </button>
         ))}
       </div>
 
-      <div className="bg-[#12121E] rounded-2xl border border-white/5 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
-          <h2 className="font-bold text-white text-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="font-bold text-[#071B33] text-sm">
             {filter ? `${STATUS_MAP[filter]?.label} (${filtered.length})` : `جميع الطلبات (${requests.length})`}
           </h2>
           {filter && (
@@ -515,15 +515,15 @@ export default function AdRequests() {
 
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-white/10 border-t-[#FF7900] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF7900] rounded-full animate-spin mx-auto" />
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <Megaphone className="w-10 h-10 text-[#333350] mx-auto mb-3" />
-            <p className="text-[#555570] text-sm">لا توجد طلبات</p>
+            <Megaphone className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500 text-sm">لا توجد طلبات</p>
           </div>
         ) : (
-          <div className="divide-y divide-white/4">
+          <div className="divide-y divide-slate-100">
             {filtered.map(r => {
               const business  = r.companyName  || r.company_name  || '—'
               const phone     = r.phone || '—'
@@ -532,10 +532,10 @@ export default function AdRequests() {
               const createdAt = r.createdAt || r.created_at || ''
               const image     = getFileUrl(r.imagePreview || r.image_preview || null)
               return (
-                <div key={r.id} className="px-5 py-4 hover:bg-white/2 transition-colors">
+                <div key={r.id} className="px-5 py-4 hover:bg-slate-50 transition-colors">
                   <div className="flex items-start gap-3">
                     {image ? (
-                      <img src={image} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-white/8" />
+                      <img src={image} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-slate-200" />
                     ) : (
                       <div className="w-12 h-12 rounded-xl bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0">
                         <Building2 className="w-5 h-5 text-[#FF7900]/60" />
@@ -544,29 +544,29 @@ export default function AdRequests() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="font-bold text-white text-sm leading-tight">{business}</p>
-                          {title && <p className="text-xs text-[#8888A8] mt-0.5 line-clamp-1">{title}</p>}
+                          <p className="font-bold text-[#071B33] text-sm leading-tight">{business}</p>
+                          {title && <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{title}</p>}
                         </div>
                         <StatusBadge status={r.status} />
                       </div>
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                        <span className="text-xs text-[#666680] flex items-center gap-1">
+                        <span className="text-xs text-slate-500 flex items-center gap-1">
                           <Phone className="w-3 h-3" />{phone}
                         </span>
                         {city && (
-                          <span className="text-xs text-[#666680] flex items-center gap-1">
+                          <span className="text-xs text-slate-500 flex items-center gap-1">
                             <MapPin className="w-3 h-3" />{city}
                           </span>
                         )}
                       </div>
                       {createdAt && (
-                        <p className="text-[10px] text-[#444460] mt-1.5">
+                        <p className="text-[10px] text-slate-400 mt-1.5">
                           {new Date(createdAt).toLocaleDateString('en-GB')}
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/4">
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
                     <button
                       onClick={() => setViewItem(r)}
                       className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/8 hover:bg-blue-500/15 px-3 py-1.5 rounded-lg transition-colors"

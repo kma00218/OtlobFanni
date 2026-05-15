@@ -14,30 +14,23 @@ export default function FormModal({ open, onClose, title, children, onSubmit, lo
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)' }}
+      style={{ background: 'rgba(7,27,51,0.55)', backdropFilter: 'blur(10px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       dir="rtl"
     >
       <div
-        className={`w-full ${sizeClass} max-h-[90vh] flex flex-col rounded-3xl shadow-2xl`}
-        style={{
-          background: 'linear-gradient(145deg, #0F0F1D, #0A0A15)',
-          border: '1px solid rgba(255,255,255,0.09)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)',
-        }}
+        className={`w-full ${sizeClass} max-h-[90vh] flex flex-col rounded-3xl shadow-2xl bg-white`}
+        style={{ border: '1px solid #E0E8F0', boxShadow: '0 24px 60px rgba(7,27,51,0.18)' }}
       >
         {/* Header */}
-        <div
-          className="flex items-center justify-between px-6 py-5 flex-shrink-0"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <h3 className="text-base font-black text-white tracking-tight">{title}</h3>
+        <div className="flex items-center justify-between px-6 py-5 flex-shrink-0 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-6 rounded-full bg-[#FF7900]" />
+            <h3 className="text-base font-black text-[#071B33] tracking-tight">{title}</h3>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl transition-all text-[#4040A0] hover:text-white"
-            style={{ border: '1px solid rgba(255,255,255,0.07)' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            className="p-2 rounded-xl transition-all text-slate-400 hover:text-slate-700 hover:bg-slate-100 border border-slate-200"
           >
             <X className="w-4 h-4" />
           </button>
@@ -52,18 +45,15 @@ export default function FormModal({ open, onClose, title, children, onSubmit, lo
 
         {/* Footer */}
         {!hideFooter && (
-          <div
-            className="flex gap-3 px-6 py-4 flex-shrink-0"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-          >
+          <div className="flex gap-3 px-6 py-4 flex-shrink-0 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl">
             <button
               type="submit"
               form="modal-form"
               disabled={loading}
-              className="flex items-center gap-2 font-bold text-white text-sm px-6 py-2.5 rounded-2xl transition-all active:scale-[0.97] disabled:opacity-50"
+              className="flex items-center gap-2 font-bold text-white text-sm px-6 py-2.5 rounded-2xl transition-all active:scale-[0.97] disabled:opacity-50 hover:opacity-90"
               style={{
                 background: 'linear-gradient(135deg, #FF7900, #FF9500)',
-                boxShadow: '0 4px 20px rgba(255,121,0,0.3)',
+                boxShadow: '0 4px 16px rgba(255,121,0,0.35)',
               }}
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -73,8 +63,7 @@ export default function FormModal({ open, onClose, title, children, onSubmit, lo
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="font-medium text-[#8080B0] hover:text-white text-sm px-6 py-2.5 rounded-2xl transition-all"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="font-medium text-slate-500 hover:text-slate-700 text-sm px-6 py-2.5 rounded-2xl transition-all bg-white border border-slate-200 hover:bg-slate-50"
             >
               إلغاء
             </button>

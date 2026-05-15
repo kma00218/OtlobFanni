@@ -24,22 +24,21 @@ const STATUS_LABELS = {
 }
 
 const TOOLTIP = {
-  background: '#16162A',
-  border: '1px solid rgba(255,255,255,0.1)',
+  background: '#ffffff',
+  border: '1px solid #E8EDF2',
   borderRadius: 12,
-  color: '#E0E0F0',
+  color: '#071B33',
   fontSize: 12,
   padding: '8px 14px',
+  boxShadow: '0 4px 16px rgba(7,27,51,0.1)',
 }
 
-// Simulated app-level metrics (grow proportionally with real data)
 function deriveAppStats(stats) {
-  const base = Math.max(stats.totalTechs ?? 0, 1)
   return {
-    totalUsers:    (stats.totalTechs ?? 0) * 18 + (stats.totalCompanies ?? 0) * 12 + 340,
-    downloads:     (stats.totalTechs ?? 0) * 24 + 1280,
-    familyUsers:   Math.floor(((stats.totalTechs ?? 0) * 18 + 340) * 0.28),
-    satisfaction:  94,
+    totalUsers:   (stats.totalTechs ?? 0) * 18 + (stats.totalCompanies ?? 0) * 12 + 340,
+    downloads:    (stats.totalTechs ?? 0) * 24 + 1280,
+    familyUsers:  Math.floor(((stats.totalTechs ?? 0) * 18 + 340) * 0.28),
+    satisfaction: 94,
   }
 }
 
@@ -84,7 +83,6 @@ export default function Dashboard() {
   const limitFmt = limitMB !== null ? (limitMB >= 1024 ? `${(limitMB/1024).toFixed(0)} GB` : `${limitMB} MB`) : null
   const barColor = usedPct > 85 ? '#EF4444' : usedPct > 60 ? '#FF7900' : '#10B981'
 
-  // Area chart — requests by day of week
   const areaData = (() => {
     const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت']
     const counts = Array(7).fill(0)
@@ -94,7 +92,6 @@ export default function Dashboard() {
     return days.map((name, i) => ({ name, طلبات: counts[i] }))
   })()
 
-  // Applications bar data
   const appsBarData = [
     { name: 'فنيون', معلّق: stats.pendingTechApps ?? 0, مقبول: (stats.totalTechApps ?? 0) - (stats.pendingTechApps ?? 0) },
     { name: 'شركات', معلّق: stats.pendingCompanyApps ?? 0, مقبول: (stats.totalCompanyApps ?? 0) - (stats.pendingCompanyApps ?? 0) },
@@ -106,17 +103,18 @@ export default function Dashboard() {
   const greeting = hour < 12 ? 'صباح الخير' : hour < 17 ? 'مساء الخير' : 'مساء النور'
 
   return (
-    <div className="space-y-7" dir="rtl">
+    <div className="space-y-6" dir="rtl">
 
       {/* ── WELCOME BANNER ────────────────────────────────── */}
-      <div className="relative bg-gradient-to-l from-[#FF7900] to-[#071B33] rounded-3xl p-6 overflow-hidden shadow-2xl">
-        <div className="absolute top-0 left-0 w-72 h-full opacity-10 bg-[radial-gradient(circle,white,transparent_70%)]" />
-        <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-white/5" />
+      <div className="relative rounded-3xl p-6 overflow-hidden shadow-lg" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2E52 50%, #FF7900 100%)' }}>
+        <div className="absolute top-0 right-0 w-64 h-full opacity-10 bg-[radial-gradient(circle,white,transparent_70%)]" />
+        <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-white/5" />
+        <div className="absolute top-4 left-8 w-20 h-20 rounded-full bg-[#FF7900]/20" />
         <div className="relative flex items-center justify-between gap-4">
           <div>
             <p className="text-white/70 text-sm font-medium mb-1">{greeting} 👋</p>
             <h1 className="text-2xl font-black text-white leading-tight">لوحة التحكم</h1>
-            <p className="text-white/60 text-xs mt-1">
+            <p className="text-white/50 text-xs mt-1">
               آخر تحديث: {lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
             </p>
           </div>
@@ -131,151 +129,63 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── SECTION LABEL ── */}
+      {/* ── APP STATS ─────────────────────────────────────── */}
       <SectionLabel icon={Activity} label="إحصائيات التطبيق" color="text-[#FF7900]" />
-
-      {/* ── APP STATS — 4 cards ───────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="زبائن التطبيق"
-          value={appStats.totalUsers}
-          icon={Users}
-          gradient="orange"
-          loading={loading}
-          badge="المستخدمون"
-        />
-        <StatCard
-          title="تحميلات التطبيق"
-          value={appStats.downloads}
-          icon={Smartphone}
-          gradient="blue"
-          loading={loading}
-          badge="إجمالي"
-        />
-        <StatCard
-          title="الزبائن العائليون"
-          value={appStats.familyUsers}
-          icon={Home}
-          gradient="purple"
-          loading={loading}
-          subtitle={`${Math.round((appStats.familyUsers / Math.max(appStats.totalUsers, 1)) * 100)}% من الإجمالي`}
-        />
-        <StatCard
-          title="معدل الرضا"
-          value={appStats.satisfaction}
-          icon={Star}
-          gradient="amber"
-          loading={loading}
-          badge="% من الزبائن"
-        />
+        <StatCard title="زبائن التطبيق"    value={appStats.totalUsers}   icon={Users}     gradient="orange" loading={loading} badge="المستخدمون" />
+        <StatCard title="تحميلات التطبيق"  value={appStats.downloads}    icon={Smartphone} gradient="blue"   loading={loading} badge="إجمالي" />
+        <StatCard title="الزبائن العائليون" value={appStats.familyUsers}  icon={Home}      gradient="purple" loading={loading} subtitle={`${Math.round((appStats.familyUsers / Math.max(appStats.totalUsers, 1)) * 100)}% من الإجمالي`} />
+        <StatCard title="معدل الرضا"        value={appStats.satisfaction} icon={Star}      gradient="amber"  loading={loading} badge="% من الزبائن" />
       </div>
 
-      {/* ── SECTION LABEL ── */}
-      <SectionLabel icon={Wrench} label="إحصائيات الفنيين والخدمات" color="text-emerald-400" />
-
-      {/* ── PRIMARY STATS — 4 cards ──────────────────────── */}
+      {/* ── DIRECTORY STATS ───────────────────────────────── */}
+      <SectionLabel icon={Wrench} label="إحصائيات الفنيين والخدمات" color="text-emerald-600" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="إجمالي الفنيين"
-          value={stats.totalTechs}
-          icon={Wrench}
-          gradient="green"
-          loading={loading}
-          subtitle={`نشط: ${stats.activeTechs ?? 0}`}
-        />
-        <StatCard
-          title="إجمالي الشركات"
-          value={stats.totalCompanies}
-          icon={Building2}
-          gradient="indigo"
-          loading={loading}
-        />
-        <StatCard
-          title="الطلبات المكتملة"
-          value={stats.completedRequests}
-          icon={CheckCircle}
-          gradient="teal"
-          loading={loading}
-          subtitle={`جديدة: ${stats.newRequests ?? 0}`}
-        />
-        <StatCard
-          title="الإعلانات النشطة"
-          value={stats.activeAds}
-          icon={Megaphone}
-          gradient="rose"
-          loading={loading}
-        />
+        <StatCard title="إجمالي الفنيين"    value={stats.totalTechs}        icon={Wrench}       gradient="green"  loading={loading} subtitle={`نشط: ${stats.activeTechs ?? 0}`} />
+        <StatCard title="إجمالي الشركات"    value={stats.totalCompanies}     icon={Building2}    gradient="indigo" loading={loading} />
+        <StatCard title="الطلبات المكتملة"  value={stats.completedRequests}  icon={CheckCircle}  gradient="teal"   loading={loading} subtitle={`جديدة: ${stats.newRequests ?? 0}`} />
+        <StatCard title="الإعلانات النشطة"  value={stats.activeAds}          icon={Megaphone}    gradient="rose"   loading={loading} />
       </div>
 
-      {/* ── SECTION LABEL ── */}
-      <SectionLabel icon={ClipboardList} label="الطلبات المعلّقة" color="text-amber-400" />
-
-      {/* ── PENDING STATS — 4 cards ──────────────────────── */}
+      {/* ── PENDING STATS ─────────────────────────────────── */}
+      <SectionLabel icon={ClipboardList} label="الطلبات المعلّقة" color="text-amber-600" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="طلبات فنيين معلّقة"
-          value={stats.pendingTechApps}
-          icon={FileCheck}
-          gradient="orange"
-          loading={loading}
-          subtitle={`إجمالي: ${stats.totalTechApps ?? 0}`}
-        />
-        <StatCard
-          title="طلبات شركات معلّقة"
-          value={stats.pendingCompanyApps}
-          icon={Building2}
-          gradient="rose"
-          loading={loading}
-          subtitle={`إجمالي: ${stats.totalCompanyApps ?? 0}`}
-        />
-        <StatCard
-          title="طلبات إعلان معلّقة"
-          value={stats.pendingAdRequests}
-          icon={Newspaper}
-          gradient="purple"
-          loading={loading}
-          subtitle={`مقبولة: ${stats.approvedAdRequests ?? 0}`}
-        />
-        <StatCard
-          title="الطلبات الجديدة"
-          value={stats.newRequests}
-          icon={Clock}
-          gradient="blue"
-          loading={loading}
-        />
+        <StatCard title="طلبات فنيين معلّقة"  value={stats.pendingTechApps}    icon={FileCheck}  gradient="orange" loading={loading} subtitle={`إجمالي: ${stats.totalTechApps ?? 0}`} />
+        <StatCard title="طلبات شركات معلّقة"  value={stats.pendingCompanyApps} icon={Building2}  gradient="rose"   loading={loading} subtitle={`إجمالي: ${stats.totalCompanyApps ?? 0}`} />
+        <StatCard title="طلبات إعلان معلّقة"  value={stats.pendingAdRequests}  icon={Newspaper}  gradient="purple" loading={loading} subtitle={`مقبولة: ${stats.approvedAdRequests ?? 0}`} />
+        <StatCard title="الطلبات الجديدة"     value={stats.newRequests}         icon={Clock}      gradient="blue"   loading={loading} />
       </div>
 
       {/* ── CHARTS ROW ───────────────────────────────────── */}
-      <SectionLabel icon={BarChart3} label="الرسوم البيانية" color="text-blue-400" />
+      <SectionLabel icon={BarChart3} label="الرسوم البيانية" color="text-blue-600" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        {/* Area chart — requests by day */}
-        <div className="lg:col-span-2 bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 p-5">
-          <ChartHeader icon={BarChart3} iconBg="bg-[#FF7900]/15" iconColor="text-[#FF7900]"
+        {/* Area chart */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <ChartHeader icon={BarChart3} iconBg="bg-orange-50" iconColor="text-[#FF7900]"
             title="الطلبات — آخر 7 أيام" sub="توزيع الطلبات حسب اليوم" />
           {loading ? <Skeleton h="h-44" /> : (
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={areaData}>
                 <defs>
                   <linearGradient id="reqGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#FF7900" stopOpacity={0.25} />
+                    <stop offset="5%"  stopColor="#FF7900" stopOpacity={0.2} />
                     <stop offset="95%" stopColor="#FF7900" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                <XAxis dataKey="name" tick={{ fill: '#8888A8', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#555570', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={TOOLTIP} cursor={{ stroke: 'rgba(255,121,0,0.2)', strokeWidth: 1 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#F0F4F8" />
+                <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip contentStyle={TOOLTIP} cursor={{ stroke: 'rgba(255,121,0,0.15)', strokeWidth: 1 }} />
                 <Area type="monotone" dataKey="طلبات" stroke="#FF7900" strokeWidth={2.5} fill="url(#reqGrad)" dot={{ fill: '#FF7900', r: 4, strokeWidth: 0 }} />
               </AreaChart>
             </ResponsiveContainer>
           )}
         </div>
 
-        {/* Pie — requests by status */}
-        <div className="bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 p-5">
-          <ChartHeader icon={ClipboardList} iconBg="bg-violet-500/15" iconColor="text-violet-400"
+        {/* Pie chart */}
+        <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <ChartHeader icon={ClipboardList} iconBg="bg-violet-50" iconColor="text-violet-500"
             title="الطلبات حسب الحالة" sub="توزيع نسبي" />
           {loading ? <Skeleton h="h-44" /> : requestsByStatus.length === 0 ? (
             <EmptyState label="لا توجد طلبات بعد" />
@@ -293,8 +203,8 @@ export default function Dashboard() {
                 {requestsByStatus.map(item => (
                   <div key={item.key} className="flex items-center gap-2 text-xs">
                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.fill }} />
-                    <span className="text-[#8888A8] flex-1">{item.name}</span>
-                    <span className="font-black text-white">{item.value}</span>
+                    <span className="text-slate-500 flex-1">{item.name}</span>
+                    <span className="font-black text-[#071B33]">{item.value}</span>
                   </div>
                 ))}
               </div>
@@ -305,42 +215,41 @@ export default function Dashboard() {
 
       {/* ── APPLICATIONS BAR + QUICK STATS ───────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        {/* Grouped bar — applications */}
-        <div className="lg:col-span-2 bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 p-5">
-          <ChartHeader icon={TrendingUp} iconBg="bg-blue-500/15" iconColor="text-blue-400"
+        {/* Grouped bar */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <ChartHeader icon={TrendingUp} iconBg="bg-blue-50" iconColor="text-blue-500"
             title="الطلبات المقدّمة" sub="معلّق مقابل مقبول" />
           {loading ? <Skeleton h="h-36" /> : (
             <ResponsiveContainer width="100%" height={160}>
               <BarChart data={appsBarData} barSize={22} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: '#8888A8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#555570', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={TOOLTIP} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                <Bar dataKey="معلّق"  fill="#FF7900" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="مقبول"  fill="#10B981" radius={[6, 6, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#F0F4F8" vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip contentStyle={TOOLTIP} cursor={{ fill: 'rgba(7,27,51,0.03)' }} />
+                <Bar dataKey="معلّق" fill="#FF7900" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="مقبول" fill="#10B981" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
         </div>
 
         {/* Quick counts */}
-        <div className="bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 p-5 flex flex-col gap-3">
-          <ChartHeader icon={BarChart3} iconBg="bg-emerald-500/15" iconColor="text-emerald-400"
+        <div className="bg-white rounded-2xl p-5 flex flex-col gap-3" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <ChartHeader icon={BarChart3} iconBg="bg-emerald-50" iconColor="text-emerald-500"
             title="إحصائيات سريعة" sub="" />
           {[
-            { label: 'عدد المدن',         value: stats.totalCities,  color: 'text-blue-400',    bg: 'bg-blue-500/10',    icon: MapPin },
-            { label: 'عدد التخصصات',      value: stats.totalCats,    color: 'text-violet-400',  bg: 'bg-violet-500/10',  icon: Tag },
-            { label: 'فنيون نشطون',        value: stats.activeTechs,  color: 'text-[#FF7900]',   bg: 'bg-[#FF7900]/10',   icon: UserCheck },
-            { label: 'المشرفون الفرعيون', value: stats.subAdmins,    color: 'text-emerald-400', bg: 'bg-emerald-500/10', icon: ShieldCheck },
-          ].map(({ label, value, color, bg, icon: Icon }) => (
-            <div key={label} className={`flex items-center gap-3 ${bg} rounded-xl px-4 py-3 border border-white/5`}>
-              <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}>
+            { label: 'عدد المدن',         value: stats.totalCities,  color: 'text-blue-600',    bg: 'bg-blue-50',    border: 'border-blue-100',    icon: MapPin },
+            { label: 'عدد التخصصات',      value: stats.totalCats,    color: 'text-violet-600',  bg: 'bg-violet-50',  border: 'border-violet-100',  icon: Tag },
+            { label: 'فنيون نشطون',        value: stats.activeTechs,  color: 'text-[#FF7900]',   bg: 'bg-orange-50',  border: 'border-orange-100',  icon: UserCheck },
+            { label: 'المشرفون الفرعيون', value: stats.subAdmins,    color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: ShieldCheck },
+          ].map(({ label, value, color, bg, border, icon: Icon }) => (
+            <div key={label} className={`flex items-center gap-3 ${bg} rounded-xl px-4 py-3 border ${border}`}>
+              <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center flex-shrink-0 border ${border}`}>
                 <Icon className={`w-4 h-4 ${color}`} strokeWidth={1.8} />
               </div>
-              <span className="text-[#8888A8] text-sm flex-1 leading-tight">{label}</span>
+              <span className="text-slate-500 text-sm flex-1 leading-tight">{label}</span>
               {loading
-                ? <div className="h-5 w-8 bg-white/8 rounded animate-pulse" />
+                ? <div className="h-5 w-8 bg-slate-200 rounded animate-pulse" />
                 : <span className={`font-black text-lg ${color}`}>{(value ?? 0).toLocaleString('en-US')}</span>
               }
             </div>
@@ -351,29 +260,29 @@ export default function Dashboard() {
       {/* ── RECENT REQUESTS ──────────────────────────────── */}
       <SectionLabel icon={ClipboardList} label="آخر الطلبات" color="text-[#FF7900]" />
 
-      <div className="bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/6 flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#FF7900]/15 rounded-xl flex items-center justify-center">
+      <div className="bg-white rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+          <div className="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100">
             <ClipboardList className="w-4 h-4 text-[#FF7900]" />
           </div>
-          <h3 className="font-bold text-white text-sm flex-1">آخر الطلبات</h3>
-          {!loading && <span className="text-xs text-[#555570] bg-white/5 px-3 py-1 rounded-full">{recentRequests.length} طلب</span>}
+          <h3 className="font-bold text-[#071B33] text-sm flex-1">آخر الطلبات</h3>
+          {!loading && <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{recentRequests.length} طلب</span>}
         </div>
-        <div className="divide-y divide-white/4">
+        <div className="divide-y divide-slate-50">
           {loading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="px-5 py-3.5 flex gap-3">
-                  <div className="h-4 bg-white/6 rounded flex-1 animate-pulse" />
-                  <div className="h-4 w-20 bg-white/6 rounded animate-pulse" />
+                  <div className="h-4 bg-slate-100 rounded flex-1 animate-pulse" />
+                  <div className="h-4 w-20 bg-slate-100 rounded animate-pulse" />
                 </div>
               ))
             : recentRequests.length === 0
               ? <EmptyState label="لا توجد طلبات بعد" />
               : recentRequests.map(r => (
-                  <div key={r.id} className="px-5 py-3.5 flex items-center justify-between gap-3 hover:bg-white/2 transition-colors">
+                  <div key={r.id} className="px-5 py-3.5 flex items-center justify-between gap-3 hover:bg-orange-50/30 transition-colors">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-white truncate">{r.customer_name || 'غير محدد'}</p>
-                      <p className="text-xs text-[#666680] truncate mt-0.5">
+                      <p className="text-sm font-semibold text-[#071B33] truncate">{r.customer_name || 'غير محدد'}</p>
+                      <p className="text-xs text-slate-400 truncate mt-0.5">
                         {r.category_name || r.category_id || '—'} · {r.city_name || r.city_id || '—'} · {r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB') : '—'}
                       </p>
                     </div>
@@ -385,19 +294,19 @@ export default function Dashboard() {
       </div>
 
       {/* ── RECENT TECHS ─────────────────────────────────── */}
-      <SectionLabel icon={Wrench} label="آخر الفنيين المضافين" color="text-emerald-400" />
+      <SectionLabel icon={Wrench} label="آخر الفنيين المضافين" color="text-emerald-600" />
 
-      <div className="bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/6 flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-500/15 rounded-xl flex items-center justify-center">
-            <Wrench className="w-4 h-4 text-emerald-400" />
+      <div className="bg-white rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+          <div className="w-8 h-8 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
+            <Wrench className="w-4 h-4 text-emerald-600" />
           </div>
-          <h3 className="font-bold text-white text-sm flex-1">آخر الفنيين المضافين</h3>
-          {!loading && <span className="text-xs text-[#555570] bg-white/5 px-3 py-1 rounded-full">{recentTechs.length} فني</span>}
+          <h3 className="font-bold text-[#071B33] text-sm flex-1">آخر الفنيين المضافين</h3>
+          {!loading && <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{recentTechs.length} فني</span>}
         </div>
         {loading ? (
           <div className="p-4 space-y-2">
-            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-11 bg-white/5 rounded-xl animate-pulse" />)}
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-11 bg-slate-100 rounded-xl animate-pulse" />)}
           </div>
         ) : recentTechs.length === 0 ? (
           <EmptyState label="لا يوجد فنيون بعد" />
@@ -405,25 +314,25 @@ export default function Dashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-white/3 border-b border-white/6">
+                <tr className="bg-slate-50 border-b border-slate-100">
                   {['الاسم', 'التخصص', 'المدينة', 'الحالة', 'تاريخ الإضافة'].map(h => (
-                    <th key={h} className="text-right px-5 py-3 text-xs font-bold text-[#666680] uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="text-right px-5 py-3 text-xs font-black text-[#071B33] uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {recentTechs.map((t, i) => (
-                  <tr key={t.id || i} className="border-b border-white/4 hover:bg-white/2 transition-colors">
-                    <td className="px-5 py-3.5 text-white font-semibold whitespace-nowrap">{t.name_ar || t.name || '—'}</td>
-                    <td className="px-5 py-3.5 text-[#8888A8] whitespace-nowrap">{t.category_id || t.category || '—'}</td>
-                    <td className="px-5 py-3.5 text-[#8888A8] whitespace-nowrap">{t.city_id || t.city || '—'}</td>
+                  <tr key={t.id || i} className="border-b border-slate-50 hover:bg-orange-50/30 transition-colors">
+                    <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{t.name_ar || t.name || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.category_id || t.category || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.city_id || t.city || '—'}</td>
                     <td className="px-5 py-3.5">
                       {(t.is_active ?? t.isActive ?? true) && (t.is_approved ?? t.isApproved ?? true)
-                        ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-500/12 text-emerald-400 ring-1 ring-emerald-500/25">● نشط</span>
-                        : <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-white/6 text-[#666680] ring-1 ring-white/10">● غير نشط</span>
+                        ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● نشط</span>
+                        : <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-400 ring-1 ring-slate-200">● غير نشط</span>
                       }
                     </td>
-                    <td className="px-5 py-3.5 text-[#666680] text-xs whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-slate-400 text-xs whitespace-nowrap">
                       {t.created_at || t.approvedAt ? new Date(t.created_at || t.approvedAt).toLocaleDateString('en-GB') : '—'}
                     </td>
                   </tr>
@@ -435,43 +344,43 @@ export default function Dashboard() {
       </div>
 
       {/* ── STORAGE ──────────────────────────────────────── */}
-      <div className="bg-[#0E0E17] rounded-2xl ring-1 ring-white/8 p-5">
+      <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-8 h-8 bg-white/6 rounded-xl flex items-center justify-center">
-            <HardDrive className="w-4 h-4 text-[#8888A8]" />
+          <div className="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center border border-slate-200">
+            <HardDrive className="w-4 h-4 text-slate-500" />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-white text-sm">سعة التخزين</h3>
-            <p className="text-[#555570] text-xs">Object Storage</p>
+            <h3 className="font-bold text-[#071B33] text-sm">سعة التخزين</h3>
+            <p className="text-slate-400 text-xs">Object Storage</p>
           </div>
           {storageUsage && (
             <div className="text-left">
-              <span className="text-sm font-black text-white">{usageFmt}</span>
-              <span className="text-xs text-[#555570]"> / {limitFmt}</span>
+              <span className="text-sm font-black text-[#071B33]">{usageFmt}</span>
+              <span className="text-xs text-slate-400"> / {limitFmt}</span>
             </div>
           )}
         </div>
         {loading ? (
-          <div className="h-3 bg-white/6 rounded-full animate-pulse" />
+          <div className="h-3 bg-slate-100 rounded-full animate-pulse" />
         ) : storageUsage ? (
           <>
-            <div className="w-full h-3 bg-white/6 rounded-full overflow-hidden">
+            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
               <div className="h-full rounded-full transition-all duration-700" style={{ width: `${usedPct}%`, background: `linear-gradient(90deg, ${barColor}cc, ${barColor})` }} />
             </div>
             <div className="mt-3 flex items-center justify-between text-xs">
-              <span className="text-[#555570]">{storageUsage.fileCount} ملف محفوظ</span>
-              <span className={`font-black ${usedPct > 85 ? 'text-red-400' : usedPct > 60 ? 'text-[#FF7900]' : 'text-emerald-400'}`}>
+              <span className="text-slate-400">{storageUsage.fileCount} ملف محفوظ</span>
+              <span className={`font-black ${usedPct > 85 ? 'text-red-500' : usedPct > 60 ? 'text-[#FF7900]' : 'text-emerald-600'}`}>
                 {usedPct.toFixed(1)}% مستخدم
               </span>
             </div>
             {usedPct > 85 && (
-              <p className="mt-4 text-xs text-red-400 bg-red-500/8 border border-red-500/15 rounded-xl px-4 py-3">
+              <p className="mt-4 text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                 ⚠️ التخزين يقترب من الحد الأقصى — احذف الملفات غير الضرورية
               </p>
             )}
           </>
         ) : (
-          <div className="text-xs text-[#444460] text-center py-2">تعذّر تحميل بيانات التخزين</div>
+          <div className="text-xs text-slate-400 text-center py-2">تعذّر تحميل بيانات التخزين</div>
         )}
       </div>
 
@@ -486,7 +395,7 @@ function SectionLabel({ icon: Icon, label, color }) {
     <div className="flex items-center gap-2 pt-1">
       <Icon className={`w-4 h-4 ${color}`} />
       <span className={`text-sm font-black ${color} uppercase tracking-wide`}>{label}</span>
-      <div className="flex-1 h-px bg-white/6" />
+      <div className="flex-1 h-px bg-slate-200" />
     </div>
   )
 }
@@ -494,38 +403,38 @@ function SectionLabel({ icon: Icon, label, color }) {
 function ChartHeader({ icon: Icon, iconBg, iconColor, title, sub }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <div className={`w-9 h-9 ${iconBg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+      <div className={`w-9 h-9 ${iconBg} rounded-xl flex items-center justify-center flex-shrink-0 border border-slate-100`}>
         <Icon className={`w-4 h-4 ${iconColor}`} />
       </div>
       <div>
-        <h3 className="text-white font-bold text-sm leading-tight">{title}</h3>
-        {sub && <p className="text-[#555570] text-xs mt-0.5">{sub}</p>}
+        <h3 className="text-[#071B33] font-bold text-sm leading-tight">{title}</h3>
+        {sub && <p className="text-slate-400 text-xs mt-0.5">{sub}</p>}
       </div>
     </div>
   )
 }
 
 function Skeleton({ h }) {
-  return <div className={`${h} bg-white/5 rounded-xl animate-pulse`} />
+  return <div className={`${h} bg-slate-100 rounded-xl animate-pulse`} />
 }
 
 function EmptyState({ label }) {
   return (
     <div className="px-5 py-12 flex flex-col items-center gap-2">
-      <AlertCircle className="w-8 h-8 text-[#333350]" />
-      <p className="text-[#444460] text-sm">{label}</p>
+      <AlertCircle className="w-8 h-8 text-slate-300" />
+      <p className="text-slate-400 text-sm">{label}</p>
     </div>
   )
 }
 
 function StatusBadge({ status }) {
   const map = {
-    new:         ['جديد',   'bg-[#FF7900]/12 text-[#FF7900] ring-[#FF7900]/25'],
-    assigned:    ['مُسند',  'bg-blue-500/12 text-blue-400 ring-blue-500/25'],
-    in_progress: ['جارٍ',   'bg-violet-500/12 text-violet-400 ring-violet-500/25'],
-    completed:   ['مكتمل',  'bg-emerald-500/12 text-emerald-400 ring-emerald-500/25'],
-    cancelled:   ['ملغي',   'bg-red-500/12 text-red-400 ring-red-500/25'],
+    new:         ['جديد',   'bg-orange-50 text-[#FF7900] ring-orange-200'],
+    assigned:    ['مُسند',  'bg-blue-50 text-blue-600 ring-blue-200'],
+    in_progress: ['جارٍ',   'bg-violet-50 text-violet-600 ring-violet-200'],
+    completed:   ['مكتمل',  'bg-emerald-50 text-emerald-600 ring-emerald-200'],
+    cancelled:   ['ملغي',   'bg-red-50 text-red-500 ring-red-200'],
   }
-  const [label, cls] = map[status] || ['—', 'bg-white/6 text-[#666680] ring-white/12']
+  const [label, cls] = map[status] || ['—', 'bg-slate-100 text-slate-400 ring-slate-200']
   return <span className={`text-xs px-2.5 py-1 rounded-full font-bold ring-1 whitespace-nowrap ${cls}`}>{label}</span>
 }

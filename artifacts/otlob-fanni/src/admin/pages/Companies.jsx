@@ -165,17 +165,17 @@ export default function Companies() {
         const contact = row.contactName || ''
         return (
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-white/8">
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
               {logo
                 ? <img src={logo} alt="" className="w-full h-full object-cover" />
-                : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white text-xs font-bold rounded-xl">
+                : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-bold rounded-xl">
                     {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
                   </div>
               }
             </div>
             <div>
-              <p className="font-semibold text-white text-sm">{v || '—'}</p>
-              <p className="text-xs text-[#555570]">{contact || '—'}</p>
+              <p className="font-semibold text-[#071B33] text-sm">{v || '—'}</p>
+              <p className="text-xs text-slate-500">{contact || '—'}</p>
             </div>
           </div>
         )
@@ -183,7 +183,7 @@ export default function Companies() {
     },
     {
       key: 'phone', label: 'الهاتف',
-      render: (v) => <span className="text-xs text-[#8888A8]" dir="ltr">{v || '—'}</span>,
+      render: (v) => <span className="text-xs text-slate-400" dir="ltr">{v || '—'}</span>,
     },
     { key: 'city', label: 'المدينة', render: v => v || '—' },
     {
@@ -191,7 +191,7 @@ export default function Companies() {
       render: (v) => (
         <div>
           {sectionLabel(v) && <p className="text-xs text-[#FF7900]/70 font-medium">{sectionLabel(v)}</p>}
-          <p className="text-sm text-[#C0C0D8]">{catLabel(v)}</p>
+          <p className="text-sm text-slate-600">{catLabel(v)}</p>
         </div>
       ),
     },
@@ -253,12 +253,12 @@ export default function Companies() {
         actions={
           <div className="flex gap-2">
             <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
-              className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
+              className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-slate-50">
               <option value="">كل المدن</option>
               {cities.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
-              className="border border-white/8 rounded-xl px-3 py-2 text-sm text-[#C0C0E0] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
+              className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-slate-50">
               <option value="">كل التخصصات</option>
               {catsBySection.map(sec => {
                 const cats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
@@ -305,11 +305,11 @@ export default function Companies() {
 
           return (
             <div className="space-y-5">
-              <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4">
-                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white/10 shadow">
+              <div className="flex items-center gap-4 bg-slate-50 rounded-2xl p-4">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-slate-200 shadow">
                   {logo
                     ? <img src={logo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
-                    : <div className="w-full h-full bg-[#1A1A30] flex items-center justify-center text-white font-bold text-2xl rounded-xl">
+                    : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-2xl rounded-xl">
                         {compName.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
                   }
@@ -317,15 +317,15 @@ export default function Companies() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
-                    <h3 className="font-bold text-white text-lg">{compName}</h3>
+                    <h3 className="font-bold text-[#071B33] text-lg">{compName}</h3>
                   </div>
-                  <p className="text-sm text-[#8888A8]">
+                  <p className="text-sm text-slate-400">
                     {catLabel(viewItem.specialty) || viewItem.specialty} • {viewItem.city}
                   </p>
-                  <p className="text-xs text-[#555570] mt-0.5">{contactName}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{contactName}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-500/10 text-emerald-400">شركة مقبولة ✓</span>
-                    <span className="text-xs text-[#555570]">{createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : ''}</span>
+                    <span className="text-xs text-slate-500">{createdAt ? new Date(createdAt).toLocaleDateString('en-GB') : ''}</span>
                   </div>
                 </div>
               </div>
@@ -335,9 +335,9 @@ export default function Companies() {
                   <IC label="اسم الشركة"      value={compName} />
                   <IC label="جهة التواصل"      value={contactName || '—'} />
                   <IC label="رقم الهاتف"        value={viewItem.phone}    dir="ltr" />
-                  <div className="bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-0.5">واتساب</p>
-                    <p className="font-medium text-white text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
+                  <div className="bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-0.5">واتساب</p>
+                    <p className="font-medium text-[#071B33] text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
                     {viewItem.whatsapp && (
                       <a href={`https://wa.me/${viewItem.whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
                          className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-green-400 hover:text-green-300 transition-colors">
@@ -351,9 +351,9 @@ export default function Companies() {
                   <IC label="نطاق الخدمة"      value={svcRadius ? `${svcRadius} كم` : '—'} />
                 </G2>
                 {viewItem.address && (
-                  <div className="mt-2 bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-0.5">العنوان التفصيلي</p>
-                    <p className="text-sm text-[#C0C0D8]">{viewItem.address}</p>
+                  <div className="mt-2 bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-0.5">العنوان التفصيلي</p>
+                    <p className="text-sm text-slate-600">{viewItem.address}</p>
                   </div>
                 )}
               </Sec>
@@ -366,9 +366,9 @@ export default function Companies() {
                   <IC label="السعر الأقصى"  value={priceTo   ? `${priceTo} د.ل`   : '—'} />
                 </G2>
                 {viewItem.description && (
-                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-1">وصف الخدمات</p>
-                    <p className="text-sm text-[#C0C0D8] leading-relaxed">{viewItem.description}</p>
+                  <div className="mt-2.5 bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-1">وصف الخدمات</p>
+                    <p className="text-sm text-slate-600 leading-relaxed">{viewItem.description}</p>
                   </div>
                 )}
                 {viewItem.certifications && (
@@ -385,19 +385,19 @@ export default function Companies() {
                 <G2>
                   <IC label="متاح الآن"
                     value={availNow ? '✓ نعم' : '✗ لا'}
-                    valueClass={availNow ? 'text-emerald-400 font-semibold' : 'text-[#555570]'} />
+                    valueClass={availNow ? 'text-emerald-400 font-semibold' : 'text-slate-500'} />
                   <IC label="خدمة الطوارئ 24/7"
                     value={viewItem.emergency ? '✓ نعم' : '✗ لا'}
-                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-[#555570]'} />
+                    valueClass={viewItem.emergency ? 'text-[#FF7900] font-semibold' : 'text-slate-500'} />
                   {hoursFrom && <IC label="بداية الدوام" value={hoursFrom} dir="ltr" />}
                   {hoursTo   && <IC label="نهاية الدوام" value={hoursTo}   dir="ltr" />}
                 </G2>
                 {workDays.length > 0 && (
-                  <div className="mt-2.5 bg-white/5 rounded-xl p-3">
-                    <p className="text-xs text-[#555570] mb-2">أيام العمل</p>
+                  <div className="mt-2.5 bg-slate-50 rounded-xl p-3">
+                    <p className="text-xs text-slate-500 mb-2">أيام العمل</p>
                     <div className="flex flex-wrap gap-1.5">
                       {workDays.map(d => (
-                        <span key={d} className="bg-white/10 text-[#C0C0D8] text-xs px-2.5 py-1 rounded-lg">{DAY_AR[d] || d}</span>
+                        <span key={d} className="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-lg">{DAY_AR[d] || d}</span>
                       ))}
                     </div>
                   </div>
@@ -407,15 +407,15 @@ export default function Companies() {
               {(viewItem.facebook || viewItem.instagram) && (
                 <Sec icon={Facebook} title="التواصل الاجتماعي">
                   {viewItem.facebook && (
-                    <div className="bg-white/5 rounded-xl p-3 mb-2">
-                      <p className="text-xs text-[#555570] mb-0.5">فيسبوك</p>
+                    <div className="bg-slate-50 rounded-xl p-3 mb-2">
+                      <p className="text-xs text-slate-500 mb-0.5">فيسبوك</p>
                       <a href={viewItem.facebook} target="_blank" rel="noreferrer"
                         className="text-sm text-blue-400 hover:underline break-all" dir="ltr">{viewItem.facebook}</a>
                     </div>
                   )}
                   {viewItem.instagram && (
-                    <div className="bg-white/5 rounded-xl p-3">
-                      <p className="text-xs text-[#555570] mb-0.5">إنستغرام</p>
+                    <div className="bg-slate-50 rounded-xl p-3">
+                      <p className="text-xs text-slate-500 mb-0.5">إنستغرام</p>
                       <a href={viewItem.instagram} target="_blank" rel="noreferrer"
                         className="text-sm text-pink-400 hover:underline break-all" dir="ltr">{viewItem.instagram}</a>
                     </div>
@@ -428,7 +428,7 @@ export default function Companies() {
                   <div className="grid grid-cols-3 gap-2">
                     {workImgs.map((src, i) => (
                       <img key={i} src={src} alt={`صورة ${i + 1}`}
-                        className="w-full aspect-square object-cover rounded-xl border border-white/8 cursor-zoom-in hover:opacity-90"
+                        className="w-full aspect-square object-cover rounded-xl border border-slate-200 cursor-zoom-in hover:opacity-90"
                         onClick={() => setLightbox(src)} />
                     ))}
                   </div>
@@ -444,23 +444,23 @@ export default function Companies() {
                   <div className="space-y-3">
                     {commDoc && (
                       <div>
-                        <p className="text-xs text-[#666680] font-medium mb-1">السجل التجاري / الترخيص</p>
+                        <p className="text-xs text-slate-500 font-medium mb-1">السجل التجاري / الترخيص</p>
                         <img src={commDoc} alt="commercial"
-                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(commDoc)} />
                       </div>
                     )}
                     {workLic && (
                       <div>
-                        <p className="text-xs text-[#666680] font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
+                        <p className="text-xs text-slate-500 font-medium mb-1">رخصة العمل / شهادة الاعتماد</p>
                         <img src={workLic} alt="license"
-                          className="w-full max-h-40 rounded-xl border border-white/8 object-cover cursor-zoom-in hover:opacity-90"
+                          className="w-full max-h-40 rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
                           onClick={() => setLightbox(workLic)} />
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="bg-white/5 rounded-xl p-3 flex items-center gap-2 text-[#555570]">
+                  <div className="bg-slate-50 rounded-xl p-3 flex items-center gap-2 text-slate-500">
                     <FileText className="w-4 h-4 flex-shrink-0" />
                     <p className="text-xs">لم يتم رفع وثائق رسمية</p>
                   </div>
@@ -636,7 +636,7 @@ export default function Companies() {
                       className={`text-xs px-3 py-1.5 rounded-xl border transition-all font-medium ${
                         selected
                           ? 'bg-[#FF7900]/15 border-[#FF7900]/40 text-[#FF7900]'
-                          : 'bg-white/3 border-white/10 text-[#666680] hover:border-white/20'
+                          : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'
                       }`}
                     >
                       {ar}
@@ -651,7 +651,7 @@ export default function Companies() {
                   <input type="checkbox" checked={form[field]}
                     onChange={e => setForm(f => ({ ...f, [field]: e.target.checked }))}
                     className="w-4 h-4 accent-[#FF7900]" />
-                  <span className="text-sm text-[#C0C0D8]">{label}</span>
+                  <span className="text-sm text-slate-600">{label}</span>
                 </label>
               ))}
             </div>
@@ -665,7 +665,7 @@ export default function Companies() {
 function Sec({ icon: Icon, title, titleClass, children }) {
   return (
     <div>
-      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-[#555570]'}`}>
+      <p className={`text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5 ${titleClass || 'text-slate-500'}`}>
         <Icon className="w-3.5 h-3.5" /> {title}
       </p>
       {children}
@@ -677,9 +677,9 @@ function G2({ children }) {
 }
 function IC({ label, value, dir, valueClass }) {
   return (
-    <div className="bg-white/5 rounded-xl p-3">
-      <p className="text-xs text-[#555570] mb-0.5">{label}</p>
-      <p className={`font-medium text-white text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+    <div className="bg-slate-50 rounded-xl p-3">
+      <p className="text-xs text-slate-500 mb-0.5">{label}</p>
+      <p className={`font-medium text-[#071B33] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }

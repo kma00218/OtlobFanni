@@ -27,7 +27,7 @@ const emptyForm = {
 
 function PlacementBadge({ placement }) {
   const p = PLACEMENTS.find(x => x.value === placement)
-  if (!p) return <span className="text-xs text-[#666680]">{placement || '—'}</span>
+  if (!p) return <span className="text-xs text-slate-500">{placement || '—'}</span>
   const Icon = p.icon
   return (
     <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${p.bg} ${p.color}`}>
@@ -49,9 +49,9 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
   const endDate   = ad.end_date   || ad.endDate   || ''
 
   return (
-    <div className={`bg-[#12121E] rounded-2xl border overflow-hidden transition-all ${isActive ? 'border-white/8' : 'border-white/4 opacity-60'}`}>
+    <div className={`bg-white rounded-2xl border overflow-hidden transition-all ${isActive ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}>
       {imageUrl ? (
-        <div className="relative h-36 bg-[#0A0A14]">
+        <div className="relative h-36 bg-slate-100">
           <img
             src={imageUrl}
             alt={titleAr}
@@ -59,7 +59,7 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
             onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
           />
           <div className="hidden w-full h-full items-center justify-center">
-            <Image className="w-8 h-8 text-[#333350]" />
+            <Image className="w-8 h-8 text-slate-300" />
           </div>
           <div className="absolute top-2 right-2">
             <PlacementBadge placement={placement} />
@@ -67,7 +67,7 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
           <div className="absolute top-2 left-2">
             <button
               onClick={() => onToggle(ad.id, isActive)}
-              className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shadow ${isActive ? 'bg-emerald-500 text-white' : 'bg-[#1a1a28] text-[#666680] border border-white/10'}`}
+              className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shadow ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}
             >
               {isActive ? <ToggleRight className="w-3.5 h-3.5" /> : <ToggleLeft className="w-3.5 h-3.5" />}
               {isActive ? 'نشط' : 'معطل'}
@@ -81,15 +81,15 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
           placement === 'technicians' ? 'bg-gradient-to-br from-emerald-900/40 to-[#0A0A14]' :
                                         'bg-gradient-to-br from-amber-900/40 to-[#0A0A14]'
         }`}>
-          <Megaphone className="w-8 h-8 text-white/20" />
-          <p className="text-white/40 text-xs">لا توجد صورة</p>
+          <Megaphone className="w-8 h-8 text-slate-300" />
+          <p className="text-slate-400 text-xs">لا توجد صورة</p>
           <div className="absolute top-2 right-2">
             <PlacementBadge placement={placement} />
           </div>
           <div className="absolute top-2 left-2">
             <button
               onClick={() => onToggle(ad.id, isActive)}
-              className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shadow ${isActive ? 'bg-emerald-500 text-white' : 'bg-[#1a1a28] text-[#666680] border border-white/10'}`}
+              className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shadow ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}
             >
               {isActive ? <ToggleRight className="w-3.5 h-3.5" /> : <ToggleLeft className="w-3.5 h-3.5" />}
               {isActive ? 'نشط' : 'معطل'}
@@ -100,10 +100,10 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
 
       <div className="p-4 space-y-2">
         <div>
-          <p className="font-bold text-white text-sm leading-tight">{titleAr}</p>
-          {titleEn && <p className="text-xs text-[#555570] mt-0.5" dir="ltr">{titleEn}</p>}
+          <p className="font-bold text-[#071B33] text-sm leading-tight">{titleAr}</p>
+          {titleEn && <p className="text-xs text-slate-500 mt-0.5" dir="ltr">{titleEn}</p>}
         </div>
-        {descAr && <p className="text-xs text-[#666680] line-clamp-2 leading-relaxed">{descAr}</p>}
+        {descAr && <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{descAr}</p>}
         <div className="flex flex-wrap gap-2 mt-2">
           {linkUrl && (
             <span className="flex items-center gap-1 text-[10px] text-blue-400/70 bg-blue-500/8 px-2 py-0.5 rounded-full">
@@ -112,7 +112,7 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
             </span>
           )}
           {(startDate || endDate) && (
-            <span className="flex items-center gap-1 text-[10px] text-[#555570] bg-white/4 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-50 px-2 py-0.5 rounded-full">
               <Calendar className="w-2.5 h-2.5" />
               {startDate ? new Date(startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—'}
               {endDate ? ` ← ${new Date(endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}` : ''}
@@ -121,17 +121,17 @@ function AdCard({ ad, onEdit, onDelete, onToggle }) {
         </div>
       </div>
 
-      <div className="flex border-t border-white/5">
+      <div className="flex border-t border-slate-100">
         <button
           onClick={() => onEdit(ad)}
-          className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-xs text-[#8888A8] hover:text-blue-400 hover:bg-blue-500/5 transition-colors"
+          className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-blue-400 hover:bg-blue-500/5 transition-colors"
         >
           <Pencil className="w-3.5 h-3.5" /> تعديل
         </button>
-        <div className="w-px bg-white/5" />
+        <div className="w-px bg-slate-100" />
         <button
           onClick={() => onDelete(ad.id)}
-          className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-xs text-[#8888A8] hover:text-red-400 hover:bg-red-500/5 transition-colors"
+          className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-colors"
         >
           <Trash2 className="w-3.5 h-3.5" /> حذف
         </button>
@@ -145,21 +145,21 @@ function AdFormModal({ open, onClose, title, form, setForm, onSubmit, saving }) 
 
   const F = ({ label, children }) => (
     <div>
-      <label className="block text-xs font-bold text-[#8888A8] mb-1.5 uppercase tracking-wider">{label}</label>
+      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">{label}</label>
       {children}
     </div>
   )
-  const inp = "w-full bg-[#0A0A14] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-[#444460] focus:outline-none focus:border-[#FF7900]/50 focus:ring-1 focus:ring-[#FF7900]/20 transition"
+  const inp = "w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#FF7900]/50 focus:ring-1 focus:ring-[#FF7900]/20 transition"
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div
-        className="bg-[#0E0E17] border border-white/8 rounded-t-3xl sm:rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl"
+        className="bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 sticky top-0 bg-[#0E0E17] z-10 rounded-t-3xl sm:rounded-t-2xl">
-          <h2 className="font-bold text-white text-base">{title}</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-[#8888A8]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white z-10 rounded-t-3xl sm:rounded-t-2xl">
+          <h2 className="font-bold text-[#071B33] text-base">{title}</h2>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -182,13 +182,13 @@ function AdFormModal({ open, onClose, title, form, setForm, onSubmit, saving }) 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <F label="رابط الصورة">
               <div className="relative">
-                <Image className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444460]" />
+                <Image className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input value={form.image_url} onChange={e => setForm(f => ({...f, image_url: e.target.value}))} className={inp + ' pr-9'} placeholder="https://..." dir="ltr" />
               </div>
             </F>
             <F label="رابط الإعلان">
               <div className="relative">
-                <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444460]" />
+                <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input value={form.link_url} onChange={e => setForm(f => ({...f, link_url: e.target.value}))} className={inp + ' pr-9'} placeholder="https://..." dir="ltr" />
               </div>
             </F>
@@ -207,7 +207,7 @@ function AdFormModal({ open, onClose, title, form, setForm, onSubmit, saving }) 
                     className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-semibold transition-all ${
                       selected
                         ? `border-[#FF7900] bg-[#FF7900]/10 ${p.color}`
-                        : 'border-white/8 bg-white/2 text-[#666680] hover:border-white/15'
+                        : 'border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -227,15 +227,15 @@ function AdFormModal({ open, onClose, title, form, setForm, onSubmit, saving }) 
             </F>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-white/3 rounded-xl border border-white/5">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div>
-              <p className="text-sm font-semibold text-white">حالة الإعلان</p>
-              <p className="text-xs text-[#555570] mt-0.5">{form.is_active ? 'الإعلان نشط ويظهر للمستخدمين' : 'الإعلان معطل ولا يظهر'}</p>
+              <p className="text-sm font-semibold text-[#071B33]">حالة الإعلان</p>
+              <p className="text-xs text-slate-500 mt-0.5">{form.is_active ? 'الإعلان نشط ويظهر للمستخدمين' : 'الإعلان معطل ولا يظهر'}</p>
             </div>
             <button
               type="button"
               onClick={() => setForm(f => ({...f, is_active: !f.is_active}))}
-              className={`w-12 h-6 rounded-full transition-colors ${form.is_active ? 'bg-emerald-500' : 'bg-[#333350]'}`}
+              className={`w-12 h-6 rounded-full transition-colors ${form.is_active ? 'bg-emerald-500' : 'bg-slate-300'}`}
             >
               <span className={`block w-5 h-5 bg-white rounded-full shadow transition-transform ${form.is_active ? 'translate-x-6' : 'translate-x-0.5'}`} />
             </button>
@@ -243,8 +243,8 @@ function AdFormModal({ open, onClose, title, form, setForm, onSubmit, saving }) 
 
           {form.image_url && (
             <div>
-              <p className="text-xs font-bold text-[#8888A8] uppercase tracking-wider mb-2">معاينة الصورة</p>
-              <img src={form.image_url} alt="preview" className="w-full h-40 object-cover rounded-xl border border-white/8" onError={e => e.target.style.display='none'} />
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">معاينة الصورة</p>
+              <img src={form.image_url} alt="preview" className="w-full h-40 object-cover rounded-xl border border-slate-200" onError={e => e.target.style.display='none'} />
             </div>
           )}
 
@@ -259,7 +259,7 @@ function AdFormModal({ open, onClose, title, form, setForm, onSubmit, saving }) 
                 : title.includes('تعديل') ? 'حفظ التعديلات' : 'إضافة الإعلان'
               }
             </button>
-            <button type="button" onClick={onClose} className="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/8 text-[#8888A8] text-sm font-medium transition-colors">
+            <button type="button" onClick={onClose} className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm font-medium transition-colors">
               إلغاء
             </button>
           </div>
@@ -369,8 +369,8 @@ export default function Ads() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">الإعلانات</h1>
-          <p className="text-sm text-[#666680] mt-0.5">إدارة الإعلانات المعروضة في التطبيق</p>
+          <h1 className="text-xl font-bold text-[#071B33]">الإعلانات</h1>
+          <p className="text-sm text-slate-500 mt-0.5">إدارة الإعلانات المعروضة في التطبيق</p>
         </div>
         <button
           onClick={openAdd}
@@ -381,34 +381,34 @@ export default function Ads() {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[#12121E] rounded-2xl border border-white/5 p-4 text-center">
-          <p className="text-3xl font-black text-white">{data.length}</p>
-          <p className="text-xs text-[#666680] mt-1 font-medium">إجمالي الإعلانات</p>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 text-center">
+          <p className="text-3xl font-black text-[#071B33]">{data.length}</p>
+          <p className="text-xs text-slate-500 mt-1 font-medium">إجمالي الإعلانات</p>
         </div>
-        <div className="bg-[#12121E] rounded-2xl border border-white/5 p-4 text-center">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 text-center">
           <p className="text-3xl font-black text-emerald-400">{activeCount}</p>
-          <p className="text-xs text-[#666680] mt-1 font-medium">نشطة</p>
+          <p className="text-xs text-slate-500 mt-1 font-medium">نشطة</p>
         </div>
-        <div className="bg-[#12121E] rounded-2xl border border-white/5 p-4 text-center">
-          <p className="text-3xl font-black text-[#444460]">{inactiveCount}</p>
-          <p className="text-xs text-[#666680] mt-1 font-medium">معطلة</p>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 text-center">
+          <p className="text-3xl font-black text-slate-400">{inactiveCount}</p>
+          <p className="text-xs text-slate-500 mt-1 font-medium">معطلة</p>
         </div>
       </div>
 
       <div className="flex gap-2 flex-wrap">
         <div className="relative flex-1 min-w-[160px]">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444460]" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="بحث عن إعلان..."
-            className="w-full bg-[#12121E] border border-white/8 rounded-xl pr-9 pl-4 py-2.5 text-sm text-white placeholder-[#444460] focus:outline-none focus:border-[#FF7900]/40 transition"
+            className="w-full bg-white border border-slate-200 rounded-xl pr-9 pl-4 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#FF7900]/40 transition"
           />
         </div>
         <div className="flex gap-1.5 flex-wrap">
           <button
             onClick={() => setFilterPlacement('')}
-            className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all ${!filterPlacement ? 'bg-[#FF7900] text-white' : 'bg-white/5 text-[#666680] hover:text-white hover:bg-white/8'}`}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all ${!filterPlacement ? 'bg-[#FF7900] text-white' : 'bg-slate-100 text-slate-500 hover:text-[#071B33] hover:bg-slate-200'}`}
           >
             الكل
           </button>
@@ -419,7 +419,7 @@ export default function Ads() {
               <button
                 key={p.value}
                 onClick={() => setFilterPlacement(active ? '' : p.value)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${active ? `${p.bg} ${p.color} border border-current/30` : 'bg-white/5 text-[#666680] hover:text-white hover:bg-white/8'}`}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${active ? `${p.bg} ${p.color} border border-current/30` : 'bg-slate-100 text-slate-500 hover:text-[#071B33] hover:bg-slate-200'}`}
               >
                 <Icon className="w-3 h-3" />
                 {p.labelAr}
@@ -431,12 +431,12 @@ export default function Ads() {
 
       {loading ? (
         <div className="py-20 text-center">
-          <div className="w-8 h-8 border-2 border-white/10 border-t-[#FF7900] rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF7900] rounded-full animate-spin mx-auto" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="py-20 text-center">
-          <Megaphone className="w-12 h-12 text-[#222235] mx-auto mb-3" />
-          <p className="text-[#555570] font-medium">لا توجد إعلانات</p>
+          <Megaphone className="w-12 h-12 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-500 font-medium">لا توجد إعلانات</p>
           {!search && !filterPlacement && (
             <button onClick={openAdd} className="mt-4 text-sm text-[#FF7900] hover:underline">
               أضف أول إعلان
