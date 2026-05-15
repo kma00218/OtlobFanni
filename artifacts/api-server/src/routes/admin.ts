@@ -16,6 +16,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [activeTechCount]    = await db.select({ count: count() }).from(techniciansTable).where(and(eq(techniciansTable.isActive, true), eq(techniciansTable.isApproved, true)));
   const [cityCount]          = await db.select({ count: count() }).from(citiesTable);
   const [catCount]           = await db.select({ count: count() }).from(categoriesTable);
+  const [activeCatCount]     = await db.select({ count: count() }).from(categoriesTable).where(eq(categoriesTable.isActive, true));
   const [activeAdsCount]     = await db.select({ count: count() }).from(adsTable).where(eq(adsTable.isActive, true));
   const [pendingTechApps]    = await db.select({ count: count() }).from(technicianApplicationsTable).where(eq(technicianApplicationsTable.status, "pending"));
   const [totalTechApps]      = await db.select({ count: count() }).from(technicianApplicationsTable);
@@ -35,6 +36,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     activeTechs:         Number(activeTechCount.count),
     totalCities:         Number(cityCount.count),
     totalCats:           Number(catCount.count),
+    totalCategories:     Number(activeCatCount.count),
     activeAds:           Number(activeAdsCount.count),
     pendingTechApps:     Number(pendingTechApps.count),
     totalTechApps:       Number(totalTechApps.count),
