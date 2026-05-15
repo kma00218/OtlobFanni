@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation, useRouter } from "wouter";
 import { useEffect, useState } from "react";
+import { track } from "./lib/tracker";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -63,6 +64,9 @@ function ScrollToTop() {
   const [location] = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (!location.startsWith('/admin')) {
+      track('page_view');
+    }
   }, [location]);
   return null;
 }
@@ -93,7 +97,7 @@ function InstallFAB() {
   if (location === '/more') return null;
 
   const handleClick = async () => {
-    if (installPrompt) { installPrompt.prompt(); return; }
+    if (installPrompt) { track('install'); installPrompt.prompt(); return; }
     navigate('/more');
     setTimeout(() => {
       document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });

@@ -8,6 +8,7 @@ import {
   Facebook, Instagram, Wrench, Heart,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
+import { track } from '../lib/tracker'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -104,6 +105,7 @@ export default function TechnicianDetails() {
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }
+    track('profile_view', id)
     Promise.all([
       api.technician(id),
       api.cities(),
@@ -236,11 +238,13 @@ export default function TechnicianDetails() {
             {/* Action buttons */}
             <div className="flex gap-2.5">
               <a href={`https://wa.me/${tech.whatsapp}`} target="_blank" rel="noreferrer"
+                onClick={() => track('whatsapp_click', id)}
                 className="flex-1 bg-[#25D366] text-white text-sm font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm">
                 <MessageSquare className="w-4 h-4" />
                 {ar ? 'واتساب' : 'WhatsApp'}
               </a>
               <a href={`tel:${tech.phone}`}
+                onClick={() => track('phone_click', id)}
                 className="flex-1 bg-[#071B33] text-white text-sm font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm">
                 <Phone className="w-4 h-4" />
                 {ar ? 'اتصال' : 'Call'}

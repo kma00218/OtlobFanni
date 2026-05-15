@@ -11,6 +11,7 @@ import {
   PieChart, Pie, Cell, AreaChart, Area, CartesianGrid,
 } from 'recharts'
 import api from '../../lib/api'
+import { Eye, Share2, Smartphone as SmartphoneIcon, PhoneCall, MessageCircle } from 'lucide-react'
 
 const STATUS_COLORS = {
   new:         '#FF7900',
@@ -33,35 +34,27 @@ const TOOLTIP = {
   boxShadow: '0 4px 16px rgba(7,27,51,0.1)',
 }
 
-function deriveAppStats(stats) {
-  return {
-    totalUsers:   (stats.totalTechs ?? 0) * 18 + (stats.totalCompanies ?? 0) * 12 + 340,
-    downloads:    (stats.totalTechs ?? 0) * 24 + 1280,
-    familyUsers:  Math.floor(((stats.totalTechs ?? 0) * 18 + 340) * 0.28),
-    satisfaction: 94,
-  }
-}
-
 export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({})
+  const [analytics, setAnalytics] = useState(null)
   const [recentRequests, setRecentRequests] = useState([])
   const [recentTechs, setRecentTechs] = useState([])
   const [requestsByStatus, setRequestsByStatus] = useState([])
   const [storageUsage, setStorageUsage] = useState(null)
   const [lastRefresh, setLastRefresh] = useState(new Date())
-  const [appStats, setAppStats] = useState({ totalUsers: 0, downloads: 0, familyUsers: 0, satisfaction: 94 })
 
   const load = () => {
     setLoading(true)
     Promise.all([
       api.admin.stats(),
       api.admin.storageUsage().catch(() => null),
-    ]).then(([s, usage]) => {
+      api.admin.analytics().catch(() => null),
+    ]).then(([s, usage, anl]) => {
       setStats(s)
+      setAnalytics(anl)
       setRecentRequests(s.recentRequests || [])
       setRecentTechs(s.recentTechs || [])
-      setAppStats(deriveAppStats(s))
       const statusCounts = {}
       ;(s.recentRequests || []).forEach(r => { statusCounts[r.status] = (statusCounts[r.status] || 0) + 1 })
       const pieData = Object.entries(STATUS_LABELS).map(([key, name]) => ({
@@ -129,14 +122,112 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── APP STATS ─────────────────────────────────────── */}
-      <SectionLabel icon={Activity} label="إحصائيات التطبيق" color="text-[#FF7900]" />
+      {/* ── ANALYTICS STATS ───────────────────────────────── */}
+      <SectionLabel icon={Activity} label="إحصائيات الزيارات والتفاعل" color="text-[#FF7900]" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="زبائن التطبيق"    value={appStats.totalUsers}   icon={Users}     gradient="orange" loading={loading} badge="المستخدمون" />
-        <StatCard title="تحميلات التطبيق"  value={appStats.downloads}    icon={Smartphone} gradient="blue"   loading={loading} badge="إجمالي" />
-        <StatCard title="الزبائن العائليون" value={appStats.familyUsers}  icon={Home}      gradient="purple" loading={loading} subtitle={`${Math.round((appStats.familyUsers / Math.max(appStats.totalUsers, 1)) * 100)}% من الإجمالي`} />
-        <StatCard title="معدل الرضا"        value={appStats.satisfaction} icon={Star}      gradient="amber"  loading={loading} badge="% من الزبائن" />
+        <StatCard title="زيارات (7 أيام)"    value={analytics?.visits?.last7d}      icon={Eye}           gradient="orange" loading={loading} subtitle={`إجمالي: ${(analytics?.visits?.total ?? 0).toLocaleString('en-US')}`} />
+        <StatCard title="زوار مختلفون (7 أيام)" value={analytics?.uniqueVisitors?.last7d} icon={Users}      gradient="blue"   loading={loading} subtitle={`شهري: ${analytics?.uniqueVisitors?.last30d ?? 0}`} />
+        <StatCard title="نقرات واتساب"        value={analytics?.whatsappClicks}      icon={MessageCircle} gradient="green"  loading={loading} subtitle={`هاتف: ${analytics?.phoneClicks ?? 0}`} />
+        <StatCard title="مشاركة / تثبيت"     value={(analytics?.shares ?? 0) + (analytics?.installs ?? 0)} icon={Share2} gradient="purple" loading={loading} subtitle={`مشاركة: ${analytics?.shares ?? 0} · تثبيت: ${analytics?.installs ?? 0}`} />
       </div>
+
+      {/* ── VISITS CHART + DEVICE BREAKDOWN ───────────────── */}
+      {analytics && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+            <ChartHeader icon={Eye} iconBg="bg-orange-50" iconColor="text-[#FF7900]"
+              title="الزيارات اليومية — آخر 30 يوم" sub="عدد مرات فتح التطبيق يومياً" />
+            {loading ? <Skeleton h="h-44" /> : analytics.dailyVisits?.length === 0 ? (
+              <EmptyState label="لا توجد زيارات مسجّلة بعد" />
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={(analytics.dailyVisits || []).map(d => ({ name: d.day?.slice(5), زيارات: d.count }))}>
+                  <defs>
+                    <linearGradient id="visitGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor="#FF7900" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#FF7900" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E7EE" />
+                  <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip contentStyle={TOOLTIP} />
+                  <Area type="monotone" dataKey="زيارات" stroke="#FF7900" strokeWidth={2.5} fill="url(#visitGrad)" dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+          <div className="bg-white rounded-2xl p-5 flex flex-col gap-3" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+            <ChartHeader icon={SmartphoneIcon} iconBg="bg-blue-50" iconColor="text-blue-500"
+              title="توزيع الأجهزة" sub="آخر 30 يوم" />
+            {loading ? <Skeleton h="h-36" /> : (analytics.devices || []).length === 0 ? (
+              <EmptyState label="لا توجد بيانات بعد" />
+            ) : (analytics.devices || []).map(({ device, count }) => {
+              const total = (analytics.devices || []).reduce((a, b) => a + b.count, 0) || 1
+              const pct = Math.round((count / total) * 100)
+              const labels = { mobile: 'جوال', tablet: 'لوحي', desktop: 'حاسوب' }
+              const colors = { mobile: '#FF7900', tablet: '#3B82F6', desktop: '#10B981' }
+              return (
+                <div key={device}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-slate-500">{labels[device] || device}</span>
+                    <span className="text-xs font-bold text-[#071B33]">{pct}% ({count})</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: colors[device] || '#071B33' }} />
+                  </div>
+                </div>
+              )
+            })}
+            <div className="mt-auto pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-orange-50 rounded-xl px-3 py-2 border border-orange-100 text-center">
+                <p className="text-slate-400">واتساب</p>
+                <p className="font-black text-[#FF7900] text-base">{analytics?.whatsappClicks ?? 0}</p>
+              </div>
+              <div className="bg-blue-50 rounded-xl px-3 py-2 border border-blue-100 text-center">
+                <p className="text-slate-400">هاتف</p>
+                <p className="font-black text-blue-600 text-base">{analytics?.phoneClicks ?? 0}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TOP TECHNICIANS + TOP SEARCHES ────────────────── */}
+      {analytics && (analytics.topTechs?.length > 0 || analytics.topSearches?.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {analytics.topTechs?.length > 0 && (
+            <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+              <ChartHeader icon={Wrench} iconBg="bg-orange-50" iconColor="text-[#FF7900]"
+                title="الفنيون الأكثر مشاهدة" sub="آخر 30 يوم" />
+              <div className="space-y-2">
+                {analytics.topTechs.map((t, i) => (
+                  <div key={t.id} className="flex items-center gap-3 text-sm">
+                    <span className="w-5 text-slate-400 text-xs font-bold text-center">{i + 1}</span>
+                    <span className="flex-1 text-slate-600 truncate font-mono text-xs">{t.id}</span>
+                    <span className="font-black text-[#FF7900]">{t.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {analytics.topSearches?.length > 0 && (
+            <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+              <ChartHeader icon={BarChart3} iconBg="bg-blue-50" iconColor="text-blue-500"
+                title="أكثر كلمات البحث" sub="آخر 30 يوم" />
+              <div className="space-y-2">
+                {analytics.topSearches.map((s, i) => (
+                  <div key={s.query} className="flex items-center gap-3 text-sm">
+                    <span className="w-5 text-slate-400 text-xs font-bold text-center">{i + 1}</span>
+                    <span className="flex-1 text-slate-600 truncate" dir="rtl">{s.query}</span>
+                    <span className="font-black text-blue-600">{s.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── DIRECTORY STATS ───────────────────────────────── */}
       <SectionLabel icon={Wrench} label="إحصائيات الفنيين والخدمات" color="text-emerald-600" />

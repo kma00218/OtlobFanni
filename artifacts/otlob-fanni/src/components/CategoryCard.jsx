@@ -1,5 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
+import { track } from '../lib/tracker'
 
 const iconMap = {
   electricity:          '/icons/services/electricity.svg',
@@ -142,7 +143,7 @@ export default function CategoryCard({ category }) {
   const iconSrc  = iconMap[category.iconName] || iconMap[category.id] || iconMap.maintenance
 
   return (
-    <Link href={href}>
+    <Link href={href} onClick={() => track('category_click', category.id)}>
       <div className="flex flex-col items-center gap-1.5 select-none cursor-pointer active:scale-90 transition-transform duration-150">
         <div
           className="w-[70px] h-[70px] rounded-[18px] flex items-center justify-center shadow-lg overflow-hidden"

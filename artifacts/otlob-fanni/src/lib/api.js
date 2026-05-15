@@ -148,6 +148,7 @@ export const api = {
     },
 
     storageUsage: () => get('/admin/storage-usage'),
+    analytics: () => get('/admin/analytics'),
 
     companies: {
       list:         ()             => get('/admin/companies'),

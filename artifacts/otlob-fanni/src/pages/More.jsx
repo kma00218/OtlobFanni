@@ -2,6 +2,7 @@ import { useLang } from '../context/LanguageContext';
 import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell } from 'lucide-react';
 import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
+import { track } from '../lib/tracker';
 import { NotificationSettingsRow } from '../components/NotificationPrompt';
 
 const IOS_STEPS_AR = [
@@ -97,6 +98,7 @@ export default function More() {
   }
 
   const handleShare = () => {
+    track('share')
     if (navigator.share) {
       navigator.share({
         title: 'اطلب فني – Otlob Fanni',
