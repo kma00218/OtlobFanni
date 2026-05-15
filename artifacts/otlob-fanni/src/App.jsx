@@ -158,14 +158,12 @@ function SearchFAB() {
   );
 }
 
-function JoinTopBanner() {
+function JoinFAB() {
   const [location] = useLocation();
-  const [dismissed, setDismissed] = useState(
-    () => sessionStorage.getItem('join_banner_dismissed') === '1'
-  );
+  const { lang } = useLang();
+  const ar = lang === 'ar';
 
   const hidden =
-    dismissed ||
     location === '/' ||
     location === '/join-us' ||
     location === '/join' ||
@@ -173,35 +171,34 @@ function JoinTopBanner() {
     location.startsWith('/admin');
   if (hidden) return null;
 
-  const dismiss = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    sessionStorage.setItem('join_banner_dismissed', '1');
-    setDismissed(true);
-  };
-
   return (
     <a
       href="/join-us"
-      className="fixed left-0 right-0 z-45 max-w-[480px] mx-auto flex items-center justify-between px-4"
+      className="fixed z-40 flex flex-col items-center gap-0.5 active:scale-90 transition-transform duration-150"
       style={{
-        top: '64px',
-        height: '44px',
-        background: 'linear-gradient(90deg, #FF7900 0%, #e06a00 100%)',
+        bottom: '96px',
+        left: '50%',
+        transform: 'translateX(-50%)',
         textDecoration: 'none',
-        boxShadow: '0 3px 12px rgba(255,121,0,0.35)',
       }}
     >
-      <span className="text-white font-extrabold text-sm">
-        انضم كفني أو كشركة &nbsp;·&nbsp; Join as a Technician
-      </span>
-      <button
-        onClick={dismiss}
-        className="text-white/70 hover:text-white text-lg font-bold leading-none px-1"
-        aria-label="إغلاق"
+      <div
+        style={{
+          width: '52px',
+          height: '52px',
+          borderRadius: '16px',
+          background: 'linear-gradient(135deg, #FF7900 0%, #e06a00 100%)',
+          boxShadow: '0 4px 20px rgba(255,121,0,0.45)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        ✕
-      </button>
+        <UserPlus className="w-6 h-6 text-white" />
+      </div>
+      <span style={{ fontSize: '10px', fontWeight: 800, color: '#FF7900', whiteSpace: 'nowrap' }}>
+        {ar ? 'انضم إلينا' : 'Join us'}
+      </span>
     </a>
   );
 }
@@ -257,7 +254,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           <BottomNav />
-          <JoinTopBanner />
+          <JoinFAB />
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />
