@@ -158,12 +158,14 @@ function SearchFAB() {
   );
 }
 
-function JoinFloatingButton() {
+function JoinTopBanner() {
   const [location] = useLocation();
-  const { lang } = useLang();
-  const ar = lang === 'ar';
+  const [dismissed, setDismissed] = useState(
+    () => sessionStorage.getItem('join_banner_dismissed') === '1'
+  );
 
   const hidden =
+    dismissed ||
     location === '/' ||
     location === '/join-us' ||
     location === '/join' ||
@@ -171,30 +173,35 @@ function JoinFloatingButton() {
     location.startsWith('/admin');
   if (hidden) return null;
 
+  const dismiss = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    sessionStorage.setItem('join_banner_dismissed', '1');
+    setDismissed(true);
+  };
+
   return (
     <a
       href="/join-us"
-      className="fixed z-40 left-0 right-0 flex justify-center pointer-events-none"
-      style={{ bottom: '76px', textDecoration: 'none' }}
+      className="fixed left-0 right-0 z-45 max-w-[480px] mx-auto flex items-center justify-between px-4"
+      style={{
+        top: '64px',
+        height: '44px',
+        background: 'linear-gradient(90deg, #FF7900 0%, #e06a00 100%)',
+        textDecoration: 'none',
+        boxShadow: '0 3px 12px rgba(255,121,0,0.35)',
+      }}
     >
-      <div
-        className="pointer-events-auto rounded-2xl px-6 py-3 text-center active:scale-95 transition-transform duration-150 select-none mx-4"
-        style={{
-          background: '#fff',
-          boxShadow: '0 4px 24px rgba(255,121,0,0.25)',
-          border: '1.5px solid #FFE0C2',
-          minWidth: '260px',
-          maxWidth: '400px',
-          width: '100%',
-        }}
+      <span className="text-white font-extrabold text-sm">
+        انضم كفني أو كشركة &nbsp;·&nbsp; Join as a Technician
+      </span>
+      <button
+        onClick={dismiss}
+        className="text-white/70 hover:text-white text-lg font-bold leading-none px-1"
+        aria-label="إغلاق"
       >
-        <p className="text-[#FF7900] font-extrabold text-base leading-tight">
-          انضم إلينا كفني أو كشركة
-        </p>
-        <p className="text-[#071B33]/50 text-xs mt-0.5 font-medium">
-          Join as a Technician or Company
-        </p>
-      </div>
+        ✕
+      </button>
     </a>
   );
 }
@@ -250,7 +257,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           <BottomNav />
-          <JoinFloatingButton />
+          <JoinTopBanner />
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />
