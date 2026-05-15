@@ -66,7 +66,7 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   return (
     <ProtectedAdminRoute>
-      <div className="flex h-screen overflow-hidden" style={{ background: '#F0F4F8' }} dir="rtl">
+      <div className="flex h-screen overflow-hidden" style={{ background: '#E2E7EE' }} dir="rtl">
         <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <AdminTopbar onMenuClick={() => setSidebarOpen(true)} />

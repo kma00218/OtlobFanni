@@ -250,7 +250,7 @@ export default function Orders() {
   }
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'طلباتي' : 'My Orders'} />
 
       <main className="px-4 pt-4 space-y-4">

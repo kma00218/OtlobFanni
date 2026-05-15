@@ -235,7 +235,7 @@ export default function JoinCompany() {
 
   if (submitted) {
     return (
-      <div className="bg-[#F7F8FA] min-h-screen flex items-center justify-center p-6" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="bg-[#ECEEF2] min-h-screen flex items-center justify-center p-6" dir={ar ? 'rtl' : 'ltr'}>
         <div className="text-center max-w-sm w-full">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
             <CheckCircle className="w-12 h-12 text-green-500" />
@@ -260,7 +260,7 @@ export default function JoinCompany() {
   const initials = form.company_name.trim().split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
 
   return (
-    <div className="bg-[#F7F8FA] min-h-screen" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#ECEEF2] min-h-screen" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'انضم كشركة' : 'Join as Company'} />
 
       <main className="pt-20 pb-12 px-4 max-w-[480px] mx-auto">

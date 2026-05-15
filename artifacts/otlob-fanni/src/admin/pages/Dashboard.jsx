@@ -173,7 +173,7 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="#FF7900" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F0F4F8" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E7EE" />
                 <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip contentStyle={TOOLTIP} cursor={{ stroke: 'rgba(255,121,0,0.15)', strokeWidth: 1 }} />
@@ -222,7 +222,7 @@ export default function Dashboard() {
           {loading ? <Skeleton h="h-36" /> : (
             <ResponsiveContainer width="100%" height={160}>
               <BarChart data={appsBarData} barSize={22} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F0F4F8" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E7EE" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#CBD5E1', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip contentStyle={TOOLTIP} cursor={{ fill: 'rgba(7,27,51,0.03)' }} />

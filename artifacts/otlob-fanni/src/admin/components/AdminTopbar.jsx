@@ -74,7 +74,7 @@ export default function AdminTopbar({ onMenuClick }) {
         {/* User avatar */}
         <div
           className="flex items-center gap-2.5 px-3 py-1.5 rounded-2xl cursor-default"
-          style={{ background: '#F0F4F8', border: '1px solid #E0E8F0' }}
+          style={{ background: '#E2E7EE', border: '1px solid #E0E8F0' }}
         >
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-white text-xs font-black"
