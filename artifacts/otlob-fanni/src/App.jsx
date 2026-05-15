@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Switch, Route, Router as WouterRouter, useLocation, useRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation, useRouter, Link } from "wouter";
 import { useEffect, useState } from "react";
 import { track } from "./lib/tracker";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -172,7 +172,7 @@ function JoinFAB() {
   if (hidden) return null;
 
   return (
-    <a
+    <Link
       href="/join-us"
       className="fixed z-40 flex flex-col items-center active:scale-90 transition-transform duration-150"
       style={{
@@ -187,28 +187,28 @@ function JoinFAB() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '4px',
+          gap: '6px',
           background: 'linear-gradient(180deg, #34C759 0%, #248a3d 100%)',
-          boxShadow: '0 4px 16px rgba(52,199,89,0.45)',
-          borderRadius: ar ? '14px 0 0 14px' : '0 14px 14px 0',
-          padding: '10px 8px',
+          boxShadow: '0 4px 20px rgba(52,199,89,0.5)',
+          borderRadius: ar ? '16px 0 0 16px' : '0 16px 16px 0',
+          padding: '14px 10px',
         }}
       >
-        <UserPlus className="w-5 h-5 text-white" />
+        <UserPlus className="w-6 h-6 text-white" />
         <span style={{
-          fontSize: '9px',
+          fontSize: '11px',
           fontWeight: 800,
           color: '#fff',
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: ar ? 'rotate(180deg)' : 'none',
           whiteSpace: 'nowrap',
-          letterSpacing: '0.5px',
+          letterSpacing: '0.8px',
         }}>
           {ar ? 'انضم إلينا' : 'Join us'}
         </span>
       </div>
-    </a>
+    </Link>
   );
 }
 

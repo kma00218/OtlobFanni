@@ -41,7 +41,7 @@ export default function Home() {
         </div>
 
         {/* زر الانضمام — ثابت تحت الشعار */}
-        <a href="/join-us" style={{ textDecoration: 'none' }}>
+        <Link href="/join-us">
           <div
             className="rounded-2xl px-5 py-3.5 text-center active:scale-95 transition-transform duration-150 select-none"
             style={{
@@ -50,13 +50,10 @@ export default function Home() {
             }}
           >
             <p className="text-white font-extrabold text-base leading-tight">
-              انضم إلينا كفني أو كشركة
-            </p>
-            <p className="text-white/70 text-xs mt-0.5 font-medium">
-              Join as a Technician or Company
+              {ar ? 'انضم إلينا كفني أو كشركة' : 'Join us as a Technician or Company'}
             </p>
           </div>
-        </a>
+        </Link>
 
         <SearchBar />
 
@@ -100,12 +97,15 @@ export default function Home() {
               </p>
             </div>
             <Link href="/join-us">
-              <div className="bg-white rounded-xl px-6 py-3 active:scale-95 transition-transform duration-150 shadow-lg">
-                <p className="text-[#FF7900] font-extrabold text-base leading-tight">
-                  انضم إلينا كفني أو كشركة
-                </p>
-                <p className="text-[#071B33]/60 text-xs mt-1 font-medium">
-                  Join as a Technician or Company
+              <div
+                className="rounded-xl px-6 py-3 active:scale-95 transition-transform duration-150 shadow-lg"
+                style={{
+                  background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
+                  boxShadow: '0 4px 16px rgba(52,199,89,0.4)',
+                }}
+              >
+                <p className="text-white font-extrabold text-base leading-tight">
+                  {ar ? 'انضم إلينا كفني أو كشركة' : 'Join us as a Technician or Company'}
                 </p>
               </div>
             </Link>
