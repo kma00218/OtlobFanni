@@ -158,59 +158,6 @@ function SearchFAB() {
   );
 }
 
-function JoinFAB() {
-  const [location] = useLocation();
-  const { lang } = useLang();
-  const ar = lang === 'ar';
-
-  const hidden =
-    location === '/' ||
-    location === '/join-us' ||
-    location === '/join' ||
-    location === '/join-company' ||
-    location.startsWith('/admin');
-  if (hidden) return null;
-
-  return (
-    <Link
-      href="/join-us"
-      className="fixed z-40 flex flex-col items-center active:scale-90 transition-transform duration-150"
-      style={{
-        top: '50%',
-        transform: 'translateY(-50%)',
-        [ar ? 'right' : 'left']: '0',
-        textDecoration: 'none',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '6px',
-          background: 'linear-gradient(180deg, #34C759 0%, #248a3d 100%)',
-          boxShadow: '0 4px 20px rgba(52,199,89,0.5)',
-          borderRadius: ar ? '16px 0 0 16px' : '0 16px 16px 0',
-          padding: '14px 10px',
-        }}
-      >
-        <UserPlus className="w-6 h-6 text-white" />
-        <span style={{
-          fontSize: '11px',
-          fontWeight: 800,
-          color: '#fff',
-          writingMode: 'vertical-rl',
-          textOrientation: 'mixed',
-          transform: ar ? 'rotate(180deg)' : 'none',
-          whiteSpace: 'nowrap',
-          letterSpacing: '0.8px',
-        }}>
-          {ar ? 'انضم إلينا' : 'Join us'}
-        </span>
-      </div>
-    </Link>
-  );
-}
 
 function AppContent() {
   const [location] = useLocation();
@@ -263,7 +210,6 @@ function AppContent() {
             </Switch>
           </Suspense>
           <BottomNav />
-          <JoinFAB />
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />

@@ -86,14 +86,13 @@ export default function Home() {
           >
             <span className="text-5xl">🚀</span>
             <div className="flex flex-col gap-2">
-              <p className="text-white font-extrabold text-xl leading-tight">
-                اطلب فني ينطلق!
+              <p className="text-white font-extrabold text-2xl leading-tight drop-shadow">
+                {ar ? 'اطلب فني ينطلق!' : 'Otlob Fanni is Launching!'}
               </p>
-              <p className="text-white font-medium text-sm leading-relaxed" dir="rtl">
-                التطبيق جديد وقاعدة الفنيين والشركات تنمو كل يوم.
-              </p>
-              <p className="text-white/80 text-sm leading-relaxed" dir="ltr">
-                Otlob Fanni is just getting started —<br />our network grows every day.
+              <p className="text-white font-semibold text-base leading-relaxed">
+                {ar
+                  ? 'التطبيق جديد وقاعدة الفنيين والشركات تنمو كل يوم'
+                  : 'Our network of technicians & companies grows every day'}
               </p>
             </div>
             <Link href="/join-us">

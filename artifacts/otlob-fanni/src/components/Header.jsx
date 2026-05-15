@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { MapPin, Bell, Loader2, Share2, Megaphone } from 'lucide-react'
+import { MapPin, Bell, Loader2, Share2, Megaphone, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useLocation } from 'wouter'
+import { useLocation, Link } from 'wouter'
 
 async function reverseGeocode(lat, lon, lang) {
   try {
@@ -90,6 +90,14 @@ export default function Header() {
       </button>
 
       <div className="flex items-end gap-3">
+        {location !== '/join-us' && location !== '/join' && location !== '/join-company' && (
+          <Link href="/join-us" className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150" style={{ textDecoration: 'none' }}>
+            <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #34C759 0%, #248a3d 100%)' }}>
+              <UserPlus className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'انضم إلينا' : 'Join us'}</span>
+          </Link>
+        )}
         <button
           onClick={() => navigate('/advertise')}
           className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
