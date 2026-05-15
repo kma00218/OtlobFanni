@@ -158,6 +158,9 @@ export default function CompanyDetails() {
                   <Building2 className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
                   <h1 className="font-bold text-gray-900 text-lg leading-tight">{name}</h1>
                 </div>
+                <span className="inline-flex items-center gap-1 bg-[#071B33]/8 border border-[#071B33]/15 text-[#071B33] text-[11px] font-black px-2.5 py-0.5 rounded-full my-1 tracking-wide">
+                  # COM-{String(company.id).padStart(4, '0')}
+                </span>
                 <p className="text-sm text-[#FF7900] font-medium">{catName}</p>
               </div>
             </div>
