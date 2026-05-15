@@ -112,6 +112,7 @@ export default function CompanyDetails() {
   const workImages  = (company.work_images || company.workImages || []).map(getFileUrl)
   const serviceRadius = company.service_radius || company.serviceRadius || ''
   const address       = company.address || ''
+  const createdAt     = company.created_at || company.createdAt || null
 
   const initials   = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2) || '?'
   const catName    = ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)
@@ -159,7 +160,7 @@ export default function CompanyDetails() {
                   <h1 className="font-bold text-gray-900 text-lg leading-tight">{name}</h1>
                 </div>
                 <span className="inline-flex items-center gap-1 bg-[#071B33]/8 border border-[#071B33]/15 text-[#071B33] text-[11px] font-black px-2.5 py-0.5 rounded-full my-1 tracking-wide">
-                  # COM-{String(company.id).padStart(4, '0')}
+                  # COM-{createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear()}-{company.id}
                 </span>
                 <p className="text-sm text-[#FF7900] font-medium">{catName}</p>
               </div>
