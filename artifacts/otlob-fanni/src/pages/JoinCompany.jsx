@@ -257,6 +257,14 @@ export default function JoinCompany() {
               <p className="text-xs text-gray-400 mt-2">{ar ? 'احتفظ بهذا الرقم لمتابعة حالة طلبك' : 'Save this number to track your request status'}</p>
             </div>
           )}
+          <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3 mb-2 text-right">
+            <span className="text-blue-400 text-base mt-0.5">💡</span>
+            <p className="text-xs text-blue-600 leading-relaxed">
+              {ar
+                ? 'إذا أغلقت التطبيق ونسيت الرقم، يمكنك دائماً الرجوع عبر: انضم إلينا ← تتبع حالة طلبك'
+                : 'If you close the app and forget the number, go to: Join Us → Track your request status'}
+            </p>
+          </div>
           <div className="space-y-3">
             {requestNumber && (
               <a href={`/status/${requestNumber}`}
