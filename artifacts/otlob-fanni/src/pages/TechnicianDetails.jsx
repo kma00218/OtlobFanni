@@ -5,7 +5,7 @@ import { useRoute } from 'wouter'
 import {
   MapPin, Phone, MessageSquare, Star, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, CheckCircle,
-  Facebook, Instagram, Wrench, Heart,
+  Facebook, Instagram, Wrench, Heart, Send, X,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { track } from '../lib/tracker'
@@ -29,16 +29,32 @@ const DAY_AR = {
   Tuesday: 'الثلاثاء', Wednesday: 'الأربعاء', Thursday: 'الخميس', Friday: 'الجمعة',
 }
 
-function Stars({ rating, count }) {
+function Stars({ rating, count, size = 'md' }) {
+  const sz = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
   return (
     <div className="flex items-center gap-1.5">
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map(i => (
-          <Star key={i} className={`w-4 h-4 ${i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}
+          <Star key={i} className={`${sz} ${i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}
             fill={i <= Math.round(rating) ? 'currentColor' : 'none'} />
         ))}
       </div>
       {count > 0 && <span className="text-sm text-gray-500 font-medium">({count})</span>}
+    </div>
+  )
+}
+
+function InteractiveStars({ value, onChange }) {
+  return (
+    <div className="flex items-center gap-2 justify-center">
+      {[1, 2, 3, 4, 5].map(i => (
+        <button key={i} type="button" onClick={() => onChange(i)} className="active:scale-90 transition-transform">
+          <Star
+            className={`w-9 h-9 transition-colors ${i <= value ? 'text-amber-400' : 'text-gray-200'}`}
+            fill={i <= value ? 'currentColor' : 'none'}
+          />
+        </button>
+      ))}
     </div>
   )
 }
@@ -93,15 +109,24 @@ function normalizeTech(t, cities = [], categories = []) {
   }
 }
 
+const RATING_LABELS_AR = { 1: 'سيء', 2: 'مقبول', 3: 'جيد', 4: 'جيد جداً', 5: 'ممتاز' }
+const RATING_LABELS_EN = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Very Good', 5: 'Excellent' }
+
 export default function TechnicianDetails() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const [, params] = useRoute('/technician/:id')
   const id = params?.id
 
-  const [tech,     setTech]     = useState(null)
-  const [lightbox, setLightbox] = useState(null)
-  const [notFound, setNotFound] = useState(false)
+  const [tech,        setTech]        = useState(null)
+  const [lightbox,    setLightbox]    = useState(null)
+  const [notFound,    setNotFound]    = useState(false)
+  const [reviews,     setReviews]     = useState([])
+  const [showReviews, setShowReviews] = useState(false)
+  const [reviewModal, setReviewModal] = useState(false)
+  const [form,        setForm]        = useState({ name: '', rating: 0, comment: '' })
+  const [submitting,  setSubmitting]  = useState(false)
+  const [submitted,   setSubmitted]   = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_technicians')
 
   useEffect(() => {
@@ -111,11 +136,42 @@ export default function TechnicianDetails() {
       api.technician(id),
       api.cities(),
       api.categories(),
-    ]).then(([t, cities, cats]) => {
+      api.technicianReviews(id),
+    ]).then(([t, cities, cats, revs]) => {
       if (!t) { setNotFound(true); return }
       setTech(normalizeTech(t, cities, cats))
+      setReviews(revs || [])
     }).catch(() => setNotFound(true))
   }, [id])
+
+  const handleSubmitReview = async () => {
+    if (!form.name.trim() || form.rating === 0) return
+    setSubmitting(true)
+    try {
+      const newReview = await api.submitReview(id, {
+        reviewer_name: form.name.trim(),
+        rating:        form.rating,
+        comment:       form.comment.trim() || null,
+      })
+      setReviews(prev => [newReview, ...prev])
+      setTech(prev => {
+        const total = prev.reviewsCount + 1
+        const avg   = (prev.rating * prev.reviewsCount + form.rating) / total
+        return { ...prev, rating: Math.round(avg * 10) / 10, reviewsCount: total }
+      })
+      setSubmitted(true)
+      setTimeout(() => {
+        setReviewModal(false)
+        setSubmitted(false)
+        setForm({ name: '', rating: 0, comment: '' })
+        setShowReviews(true)
+      }, 1800)
+    } catch {
+      alert(ar ? 'حدث خطأ، حاول مجدداً' : 'An error occurred, please try again')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (notFound) {
     return (
@@ -149,6 +205,82 @@ export default function TechnicianDetails() {
       {lightbox && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setLightbox(null)}>
           <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
+        </div>
+      )}
+
+      {/* ── Review Modal ─────────────────────────────────────────────── */}
+      {reviewModal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 pb-0" onClick={() => { setReviewModal(false); setForm({ name: '', rating: 0, comment: '' }) }}>
+          <div className="bg-white w-full max-w-lg rounded-t-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            {submitted ? (
+              <div className="flex flex-col items-center py-6 gap-3 text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-green-500" />
+                </div>
+                <p className="font-bold text-gray-800 text-lg">{ar ? 'شكراً على تقييمك!' : 'Thank you for your review!'}</p>
+                <p className="text-sm text-gray-400">{ar ? 'تقييمك سيساعد الآخرين في الاختيار' : 'Your review helps others choose'}</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-5">
+                  <p className="font-extrabold text-[#071B33] text-lg">{ar ? 'أضف تقييمك' : 'Add Your Review'}</p>
+                  <button onClick={() => { setReviewModal(false); setForm({ name: '', rating: 0, comment: '' }) }}
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                    <X className="w-4 h-4 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="mb-5 text-center">
+                  <p className="text-sm text-gray-500 mb-3">{ar ? 'كيف كانت تجربتك مع الفني؟' : 'How was your experience?'}</p>
+                  <InteractiveStars value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
+                  {form.rating > 0 && (
+                    <p className="text-sm font-bold text-amber-500 mt-2">
+                      {ar ? RATING_LABELS_AR[form.rating] : RATING_LABELS_EN[form.rating]}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">
+                    {ar ? 'اسمك *' : 'Your name *'}
+                  </label>
+                  <input
+                    dir={ar ? 'rtl' : 'ltr'}
+                    type="text"
+                    placeholder={ar ? 'أدخل اسمك' : 'Enter your name'}
+                    value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] bg-gray-50"
+                  />
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">
+                    {ar ? 'تعليقك (اختياري)' : 'Comment (optional)'}
+                  </label>
+                  <textarea
+                    dir={ar ? 'rtl' : 'ltr'}
+                    rows={3}
+                    placeholder={ar ? 'اكتب تجربتك مع هذا الفني...' : 'Share your experience...'}
+                    value={form.comment}
+                    onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] bg-gray-50 resize-none"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSubmitReview}
+                  disabled={submitting || !form.name.trim() || form.rating === 0}
+                  className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: 'linear-gradient(135deg, #FF7900 0%, #cc6200 100%)', color: 'white' }}>
+                  {submitting
+                    ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    : <><Send className="w-4 h-4" /> {ar ? 'إرسال التقييم' : 'Submit Review'}</>
+                  }
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -189,7 +321,6 @@ export default function TechnicianDetails() {
                 }
               </div>
               <div className="pb-1 flex-1 min-w-0">
-                {/* Available badge */}
                 {tech.availableNow && (
                   <span className="inline-flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
@@ -214,9 +345,16 @@ export default function TechnicianDetails() {
               </span>
             )}
 
-            {/* Rating */}
+            {/* Rating — clickable to open reviews */}
             <div className="flex items-center gap-3 mb-2">
-              <Stars rating={tech.rating} count={tech.reviewsCount} />
+              <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
+                <Stars rating={tech.rating} count={tech.reviewsCount} />
+                {tech.reviewsCount > 0 && (
+                  <span className="text-xs text-[#FF7900] font-bold underline underline-offset-2">
+                    {ar ? 'عرض التقييمات' : 'See reviews'}
+                  </span>
+                )}
+              </button>
             </div>
 
             {/* Location */}
@@ -359,6 +497,104 @@ export default function TechnicianDetails() {
             )}
           </div>
         )}
+
+        {/* ── Reviews Section ───────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#FF790018' }}>
+                <Star className="w-3.5 h-3.5 text-[#FF7900]" />
+              </div>
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                {ar ? `التقييمات (${tech.reviewsCount})` : `Reviews (${tech.reviewsCount})`}
+              </p>
+            </div>
+            <button
+              onClick={() => setReviewModal(true)}
+              className="flex items-center gap-1.5 bg-[#FF7900] text-white text-xs font-bold px-3 py-1.5 rounded-xl active:scale-95 transition-transform shadow-sm">
+              <Star className="w-3 h-3" fill="currentColor" />
+              {ar ? 'قيّم الفني' : 'Rate'}
+            </button>
+          </div>
+
+          <div className="px-4 py-3">
+            {tech.reviewsCount === 0 ? (
+              <div className="flex flex-col items-center py-5 gap-2 text-center">
+                <Star className="w-8 h-8 text-gray-200" />
+                <p className="text-sm text-gray-400">{ar ? 'لا يوجد تقييمات بعد' : 'No reviews yet'}</p>
+                <p className="text-xs text-gray-300">{ar ? 'كن أول من يقيّم هذا الفني' : 'Be the first to review'}</p>
+              </div>
+            ) : (
+              <>
+                {/* Summary bar */}
+                <div className="flex items-center gap-4 mb-4 p-3 bg-amber-50 rounded-xl">
+                  <div className="text-center flex-shrink-0">
+                    <p className="text-3xl font-black text-amber-500">{tech.rating.toFixed(1)}</p>
+                    <Stars rating={tech.rating} count={0} size="sm" />
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      {tech.reviewsCount} {ar ? 'تقييم' : 'reviews'}
+                    </p>
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    {[5, 4, 3, 2, 1].map(star => {
+                      const cnt = reviews.filter(r => r.rating === star).length
+                      const pct = reviews.length > 0 ? (cnt / reviews.length) * 100 : 0
+                      return (
+                        <div key={star} className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-gray-500 w-2">{star}</span>
+                          <Star className="w-2.5 h-2.5 text-amber-400" fill="currentColor" />
+                          <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          </div>
+                          <span className="text-[10px] text-gray-400 w-4">{cnt}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Reviews list */}
+                <div className="space-y-3">
+                  {(showReviews ? reviews : reviews.slice(0, 3)).map(r => (
+                    <div key={r.id} className="border border-gray-100 rounded-xl p-3">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-[#071B33] flex items-center justify-center flex-shrink-0">
+                            <span className="text-white text-[11px] font-bold">
+                              {(r.reviewer_name || r.reviewerName || '?')[0].toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="text-sm font-bold text-gray-800">{r.reviewer_name || r.reviewerName}</p>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          {[1,2,3,4,5].map(i => (
+                            <Star key={i} className={`w-3 h-3 ${i <= r.rating ? 'text-amber-400' : 'text-gray-200'}`} fill={i <= r.rating ? 'currentColor' : 'none'} />
+                          ))}
+                        </div>
+                      </div>
+                      {(r.comment) && (
+                        <p className="text-xs text-gray-600 leading-relaxed mt-1" dir={ar ? 'rtl' : 'ltr'}>{r.comment}</p>
+                      )}
+                      <p className="text-[10px] text-gray-300 mt-1.5">
+                        {new Date(r.created_at || r.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                {reviews.length > 3 && (
+                  <button
+                    onClick={() => setShowReviews(v => !v)}
+                    className="w-full mt-3 py-2 text-xs font-bold text-[#FF7900] border border-[#FF7900]/30 rounded-xl hover:bg-[#FF7900]/5 transition-colors">
+                    {showReviews
+                      ? (ar ? 'عرض أقل' : 'Show less')
+                      : (ar ? `عرض كل التقييمات (${reviews.length})` : `Show all reviews (${reviews.length})`)}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
 
       </main>
     </div>

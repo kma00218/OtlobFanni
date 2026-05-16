@@ -61,6 +61,8 @@ export const api = {
   ads: (placement) => get(`/ads${placement ? '?placement=' + placement : ''}`),
 
   technician: (id) => get(`/technicians/${id}`),
+  technicianReviews: (id) => get(`/technicians/${id}/reviews`),
+  submitReview: (id, data) => post(`/technicians/${id}/reviews`, data),
   searchTechnicians: (q) => get(`/technicians/search?q=${encodeURIComponent(q)}`),
   search: (q) => get(`/search?q=${encodeURIComponent(q)}`),
 

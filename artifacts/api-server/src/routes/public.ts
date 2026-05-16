@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable,
   adsTable, technicianApplicationsTable, companyApplicationsTable,
-  adRequestsTable, serviceRequestsTable,
+  adRequestsTable, serviceRequestsTable, reviewsTable,
 } from "@workspace/db/schema";
 import { eq, and, or, desc, inArray, ilike, sql } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
@@ -555,6 +555,49 @@ router.get("/status-by-phone/:phone", async (req, res): Promise<void> => {
   }
 
   res.json(results);
+});
+
+// ── Reviews ───────────────────────────────────────────────────────────────────
+router.get("/technicians/:id/reviews", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const reviews = await db
+    .select()
+    .from(reviewsTable)
+    .where(eq(reviewsTable.technicianId, id))
+    .orderBy(desc(reviewsTable.createdAt))
+    .limit(30);
+  res.json(reviews);
+});
+
+router.post("/technicians/:id/reviews", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { reviewer_name, rating, comment } = req.body;
+
+  if (!reviewer_name?.trim() || !rating || Number(rating) < 1 || Number(rating) > 5) {
+    res.status(400).json({ error: "reviewer_name and rating (1-5) are required" });
+    return;
+  }
+
+  const reviewId = "rev_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+  const [review] = await db.insert(reviewsTable).values({
+    id:           reviewId,
+    technicianId: id,
+    reviewerName: reviewer_name.trim(),
+    rating:       Number(rating),
+    comment:      comment?.trim() || null,
+  }).returning();
+
+  const allRatings = await db
+    .select({ rating: reviewsTable.rating })
+    .from(reviewsTable)
+    .where(eq(reviewsTable.technicianId, id));
+  const avg = allRatings.reduce((s, r) => s + r.rating, 0) / allRatings.length;
+  await db.update(techniciansTable).set({
+    rating:       Math.round(avg * 10) / 10,
+    reviewsCount: allRatings.length,
+  }).where(eq(techniciansTable.id, id));
+
+  res.status(201).json(review);
 });
 
 // ── Ad Request (submit) ───────────────────────────────────────────────────────
