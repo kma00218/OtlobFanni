@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react'
 import { MapPin, X } from 'lucide-react'
 import { useLang } from '../context/LanguageContext'
+import { useLocation } from 'wouter'
 
 const STORAGE_KEY = 'location_prompt_seen'
+
+const BLOCKED_PATHS = ['/join-us', '/join', '/join-company', '/status', '/advertise', '/contact', '/support']
 
 export default function LocationPrompt() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const [visible, setVisible] = useState(false)
+  const [location] = useLocation()
+
+  const isBlocked = BLOCKED_PATHS.some(p => location === p || location.startsWith(p + '/'))
 
   useEffect(() => {
+    if (isBlocked) { setVisible(false); return }
     const seen = localStorage.getItem(STORAGE_KEY)
     if (seen) return
     if (!navigator.geolocation) return
@@ -22,7 +29,7 @@ export default function LocationPrompt() {
       const timer = setTimeout(() => setVisible(true), 6000)
       return () => clearTimeout(timer)
     })
-  }, [])
+  }, [location, isBlocked])
 
   const handleAllow = () => {
     setVisible(false)

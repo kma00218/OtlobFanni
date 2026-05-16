@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Bell, X, BellOff } from 'lucide-react'
 import { useLang } from '../context/LanguageContext'
+import { useLocation } from 'wouter'
 
 const STORAGE_KEY = 'notif_prompt_seen'
+
+const BLOCKED_PATHS = ['/join-us', '/join', '/join-company', '/status', '/advertise', '/contact', '/support']
 
 export function useNotifications() {
   const [permission, setPermission] = useState(
@@ -36,14 +39,18 @@ export default function NotificationPrompt() {
   const ar = lang === 'ar'
   const [visible, setVisible] = useState(false)
   const { permission, requestPermission } = useNotifications()
+  const [location] = useLocation()
+
+  const isBlocked = BLOCKED_PATHS.some(p => location === p || location.startsWith(p + '/'))
 
   useEffect(() => {
+    if (isBlocked) { setVisible(false); return }
     if (permission !== 'default') return
     const seen = localStorage.getItem(STORAGE_KEY)
     if (seen) return
     const timer = setTimeout(() => setVisible(true), 4000)
     return () => clearTimeout(timer)
-  }, [permission])
+  }, [permission, location, isBlocked])
 
   const handleAllow = async () => {
     setVisible(false)
