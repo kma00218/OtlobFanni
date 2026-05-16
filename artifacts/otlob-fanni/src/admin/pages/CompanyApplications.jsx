@@ -92,13 +92,11 @@ export default function CompanyApplications() {
       }
       if (status === 'rejected' && rejectionReason) opts.rejectionReason = rejectionReason
       await api.admin.companyApplications.update(id, status, opts)
+      setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+      if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
       if (status === 'approved') {
-        setData(prev => prev.filter(r => r.id !== id))
-        if (viewItem?.id === id) setViewItem(null)
-        showToast('✓ تم قبول طلب الشركة — تجدها الآن في صفحة الشركات المقبولة')
+        showToast('✓ تم القبول — اضغط "نشر" الآن لإرسال رسالة الترحيب على واتساب')
       } else {
-        setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
-        if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
         showToast('تم رفض الطلب')
       }
     } catch { showToast('حدث خطأ', 'error') }
@@ -299,7 +297,7 @@ export default function CompanyApplications() {
       {/* Info banner */}
       <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
-        <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كشركة</strong>. عند القبول تظهر الشركة مباشرة في التطبيق.</span>
+        <span>طلبات <strong>انضم كشركة</strong> — الخطوات: <strong>١. قبول</strong> (تظهر الشركة في الدليل) ← <strong>٢. نشر</strong> (يُرسل رسالة واتساب تسويقية مع الرابط).</span>
       </div>
 
       {pendingCount > 0 && (
@@ -321,6 +319,7 @@ export default function CompanyApplications() {
             className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
+            <option value="approved">مقبول — بانتظار النشر</option>
             <option value="rejected">مرفوض</option>
           </select>
         }

@@ -100,13 +100,9 @@ export default function TechnicianApplications() {
       const result = await api.admin.technicianApplications.update(id, status, opts)
       const resolvedCatId = result?.resolvedCategoryId || null
 
-      if (status === 'approved') {
-        setData(prev => prev.filter(r => r.id !== id))
-        if (viewItem?.id === id) setViewItem(null)
-      } else {
-        setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
-        if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
-      }
+      setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+      if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
+
       if (status === 'approved' && app) {
         const name = app.fullName || app.full_name || ''
         const phone = app.phone || ''
@@ -141,7 +137,7 @@ export default function TechnicianApplications() {
               status:           (app.availableNow ?? app.available_now) ? 'available' : 'busy',
               application_id:   app.id,
             })
-            showToast('✓ تم قبول الطلب وإنشاء سجل الفني')
+            showToast('✓ تم القبول — اضغط "نشر" الآن لإرسال رسالة الترحيب على واتساب')
           } catch (err) {
             showToast('تم قبول الطلب لكن فشل إنشاء سجل الفني — تحقق من الاتصال', 'error')
           }
@@ -345,7 +341,7 @@ export default function TechnicianApplications() {
       {/* Info banner */}
       <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs rounded-xl px-3 py-2">
         <Info className="w-4 h-4 flex-shrink-0" />
-        <span>هذه الطلبات مقدمة عبر نموذج <strong>انضم كفني</strong> وتُحفظ في قاعدة البيانات.</span>
+        <span>طلبات <strong>انضم كفني</strong> — الخطوات: <strong>١. قبول</strong> (يُنشئ سجل الفني) ← <strong>٢. نشر</strong> (يُرسل رسالة واتساب تسويقية مع الرابط).</span>
       </div>
 
       {pendingCount > 0 && (
@@ -367,6 +363,7 @@ export default function TechnicianApplications() {
             className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-white/5">
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
+            <option value="approved">مقبول — بانتظار النشر</option>
             <option value="rejected">مرفوض</option>
           </select>
         }

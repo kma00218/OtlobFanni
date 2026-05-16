@@ -213,6 +213,14 @@ export default function Companies() {
             className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors" title="عرض التفاصيل">
             <Eye className="w-3.5 h-3.5" />
           </button>
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}`, '_blank')}
+              className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
+              title="فتح واتساب">
+              <WaIcon />
+            </button>
+          )}
           <button onClick={() => openEdit(row)}
             className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
             <Pencil className="w-3.5 h-3.5" />
