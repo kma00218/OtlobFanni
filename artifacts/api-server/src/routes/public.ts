@@ -468,12 +468,19 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
       fullName: technicianApplicationsTable.fullName,
       createdAt: technicianApplicationsTable.createdAt,
       requestNumber: technicianApplicationsTable.requestNumber,
+      specialty: technicianApplicationsTable.specialty,
+      customSpecialty: technicianApplicationsTable.customSpecialty,
+      city: technicianApplicationsTable.city,
     })
     .from(technicianApplicationsTable)
     .where(eq(technicianApplicationsTable.requestNumber, reqNum));
 
   if (techApp) {
-    res.json({ type: "technician", ...techApp });
+    const [cityRow] = await db
+      .select({ nameAr: citiesTable.nameAr, nameEn: citiesTable.nameEn })
+      .from(citiesTable)
+      .where(eq(citiesTable.id, techApp.city));
+    res.json({ type: "technician", ...techApp, cityName: cityRow?.nameAr || null });
     return;
   }
 
@@ -484,12 +491,19 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
       companyName: companyApplicationsTable.companyName,
       createdAt: companyApplicationsTable.createdAt,
       requestNumber: companyApplicationsTable.requestNumber,
+      specialty: companyApplicationsTable.specialty,
+      customSpecialty: companyApplicationsTable.customSpecialty,
+      city: companyApplicationsTable.city,
     })
     .from(companyApplicationsTable)
     .where(eq(companyApplicationsTable.requestNumber, reqNum));
 
   if (compApp) {
-    res.json({ type: "company", fullName: compApp.companyName, ...compApp });
+    const [cityRow] = await db
+      .select({ nameAr: citiesTable.nameAr, nameEn: citiesTable.nameEn })
+      .from(citiesTable)
+      .where(eq(citiesTable.id, compApp.city));
+    res.json({ type: "company", fullName: compApp.companyName, ...compApp, cityName: cityRow?.nameAr || null });
     return;
   }
 
