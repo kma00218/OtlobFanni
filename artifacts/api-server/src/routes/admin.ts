@@ -121,9 +121,9 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
   }
 
   // ── Ensure technician record exists in public directory ──────────────────────
-  // When approving OR publishing, create the technician record if it doesn't exist yet.
-  // This handles the case where approval happened without record creation (frontend error, etc.)
-  if ((status === "approved" || status === "published") && app.fullName && app.phone) {
+  // Only on publish: the approve flow creates the record from the frontend.
+  // This catches cases where approval happened without record creation (network error, etc.)
+  if (status === "published" && app.fullName && app.phone) {
     const [existing] = await db.select({ id: techniciansTable.id })
       .from(techniciansTable)
       .where(eq(techniciansTable.applicationId, app.id));
