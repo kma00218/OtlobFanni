@@ -354,7 +354,7 @@ export default function More() {
             </div>
             <div className={ar ? 'text-right' : 'text-left'}>
               <p className="text-white font-extrabold text-sm leading-tight">WhatsApp</p>
-              <p className="text-white/80 text-xs mt-0.5 font-medium" dir="ltr">+49 157 3513 9486</p>
+              <p className="text-white/80 text-xs mt-0.5 font-medium" dir="ltr">+1 929 718 6991</p>
             </div>
           </div>
           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
