@@ -5,7 +5,7 @@ import { useRoute } from 'wouter'
 import {
   MapPin, Phone, MessageSquare, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, Building2,
-  Facebook, Instagram, CheckCircle, XCircle, Heart,
+  Facebook, Instagram, CheckCircle, Heart, Star, Send, X,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { categories } from '../data/services'
@@ -43,6 +43,9 @@ const EXP_EN = {
   less1:'< 1 year','1-2':'1-2 years','3-5':'3-5 years','6-10':'6-10 years','10+':'10+ years',
 }
 
+const RATING_LABELS_AR = { 1: 'سيء', 2: 'مقبول', 3: 'جيد', 4: 'جيد جداً', 5: 'ممتاز' }
+const RATING_LABELS_EN = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Very Good', 5: 'Excellent' }
+
 function InfoRow({ label, value, dir }) {
   if (!value) return null
   return (
@@ -53,23 +56,99 @@ function InfoRow({ label, value, dir }) {
   )
 }
 
+function Stars({ rating, count, size = 'md' }) {
+  const sz = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map(i => (
+          <Star key={i} className={`${sz} ${i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}
+            fill={i <= Math.round(rating) ? 'currentColor' : 'none'} />
+        ))}
+      </div>
+      {count > 0 && <span className="text-sm text-gray-500 font-medium">({count})</span>}
+    </div>
+  )
+}
+
+function InteractiveStars({ value, onChange }) {
+  return (
+    <div className="flex items-center gap-2 justify-center">
+      {[1, 2, 3, 4, 5].map(i => (
+        <button key={i} type="button" onClick={() => onChange(i)} className="active:scale-90 transition-transform">
+          <Star
+            className={`w-9 h-9 transition-colors ${i <= value ? 'text-amber-400' : 'text-gray-200'}`}
+            fill={i <= value ? 'currentColor' : 'none'}
+          />
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function CompanyDetails() {
   const { lang, dir } = useLang()
   const ar = lang === 'ar'
   const [, params] = useRoute('/company/:id')
   const id = params?.id
 
-  const [company,  setCompany]  = useState(null)
-  const [lightbox, setLightbox] = useState(null)
-  const [notFound, setNotFound] = useState(false)
+  const [company,      setCompany]      = useState(null)
+  const [lightbox,     setLightbox]     = useState(null)
+  const [notFound,     setNotFound]     = useState(false)
+  const [reviews,      setReviews]      = useState([])
+  const [showReviews,  setShowReviews]  = useState(false)
+  const [reviewModal,  setReviewModal]  = useState(true)
+  const [form,         setForm]         = useState({ name: '', rating: 0, comment: '' })
+  const [submitting,   setSubmitting]   = useState(false)
+  const [submitted,    setSubmitted]    = useState(false)
+  const [showComment,  setShowComment]  = useState(false)
+  const [rating,       setRating]       = useState(0)
+  const [reviewsCount, setReviewsCount] = useState(0)
   const { isFav, toggle: toggleFav } = useFavorites('fav_companies')
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }
-    api.company(id)
-      .then(c => { if (!c) { setNotFound(true); return } setCompany(c) })
-      .catch(() => setNotFound(true))
+    Promise.all([
+      api.company(id),
+      api.companyReviews(id),
+    ]).then(([c, revs]) => {
+      if (!c) { setNotFound(true); return }
+      setCompany(c)
+      setReviews(revs || [])
+      setRating(Number(c.rating || 0))
+      setReviewsCount(Number(c.reviews_count || c.reviewsCount || 0))
+    }).catch(() => setNotFound(true))
   }, [id])
+
+  const handleSubmitReview = async () => {
+    if (!form.name.trim() || form.rating === 0) return
+    setSubmitting(true)
+    try {
+      const newReview = await api.submitCompanyReview(id, {
+        reviewer_name: form.name.trim(),
+        rating:        form.rating,
+        comment:       form.comment.trim() || null,
+      })
+      setReviews(prev => [newReview, ...prev])
+      setReviewsCount(prev => {
+        const total = prev + 1
+        const avg   = (rating * prev + form.rating) / total
+        setRating(Math.round(avg * 10) / 10)
+        return total
+      })
+      setSubmitted(true)
+      setTimeout(() => {
+        setReviewModal(false)
+        setSubmitted(false)
+        setForm({ name: '', rating: 0, comment: '' })
+        setShowReviews(true)
+      }, 1800)
+    } catch {
+      alert(ar ? 'حدث خطأ، حاول مجدداً' : 'An error occurred, please try again')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (notFound) return (
     <div className="bg-[#EEF4FF] min-h-screen pt-20" dir={dir}>
@@ -170,6 +249,16 @@ export default function CompanyDetails() {
               <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
               <p className="text-sm text-gray-600">{city}{area ? ` · ${area}` : ''}</p>
             </div>
+
+            {/* التقييم */}
+            <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 mb-2 active:opacity-70 transition-opacity">
+              <Stars rating={rating} count={reviewsCount} />
+              {reviewsCount > 0 && (
+                <span className="text-xs text-[#FF7900] font-bold underline underline-offset-2">
+                  {ar ? 'عرض التقييمات' : 'See reviews'}
+                </span>
+              )}
+            </button>
 
             <div className="flex flex-wrap gap-2 mt-3">
               {availableNow && (
@@ -341,6 +430,182 @@ export default function CompanyDetails() {
             )}
           </div>
         )}
+
+        {/* ── قسم التقييمات ─────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#FF790018' }}>
+                <Star className="w-3.5 h-3.5 text-[#FF7900]" />
+              </div>
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                {ar ? `التقييمات (${reviewsCount})` : `Reviews (${reviewsCount})`}
+              </p>
+            </div>
+          </div>
+
+          <div className="px-4 py-3">
+            {reviewsCount === 0 ? (
+              <div className="flex flex-col items-center py-5 gap-2 text-center">
+                <Star className="w-8 h-8 text-gray-200" />
+                <p className="text-sm text-gray-400">{ar ? 'لا يوجد تقييمات بعد' : 'No reviews yet'}</p>
+                <p className="text-xs text-gray-300">{ar ? 'كن أول من يقيّم هذه الشركة' : 'Be the first to review'}</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-4 mb-4 p-3 bg-amber-50 rounded-xl">
+                  <div className="text-center flex-shrink-0">
+                    <p className="text-3xl font-black text-amber-500">{Number(rating).toFixed(1)}</p>
+                    <Stars rating={rating} count={0} size="sm" />
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      {reviewsCount} {ar ? 'تقييم' : 'reviews'}
+                    </p>
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    {[5, 4, 3, 2, 1].map(star => {
+                      const cnt = reviews.filter(r => r.rating === star).length
+                      const pct = reviews.length > 0 ? (cnt / reviews.length) * 100 : 0
+                      return (
+                        <div key={star} className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-gray-500 w-2">{star}</span>
+                          <Star className="w-2.5 h-2.5 text-amber-400" fill="currentColor" />
+                          <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                            <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowReviews(v => !v)}
+                  className="w-full text-center text-xs text-[#FF7900] font-semibold py-1 mb-2"
+                >
+                  {showReviews
+                    ? (ar ? 'إخفاء التقييمات ▲' : 'Hide reviews ▲')
+                    : (ar ? 'عرض كل التقييمات ▼' : 'Show all reviews ▼')}
+                </button>
+
+                {showReviews && (
+                  <div className="space-y-3 mt-1">
+                    {reviews.map(r => (
+                      <div key={r.id} className="bg-gray-50 rounded-xl p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-semibold text-gray-800">{r.reviewer_name || r.reviewerName}</p>
+                          <Stars rating={r.rating} count={0} size="sm" />
+                        </div>
+                        {(r.comment) && (
+                          <p className="text-sm text-gray-600 leading-relaxed">{r.comment}</p>
+                        )}
+                        <p className="text-[10px] text-gray-300 mt-1">
+                          {new Date(r.created_at || r.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB')}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── نموذج إضافة تقييم ─────────────────────────────────────────── */}
+        {reviewModal && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-amber-50">
+                  <Star className="w-3.5 h-3.5 text-amber-500" />
+                </div>
+                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                  {ar ? 'أضف تقييمك' : 'Add Your Review'}
+                </p>
+              </div>
+              <button onClick={() => setReviewModal(false)} className="text-gray-300 hover:text-gray-500 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="px-4 py-4">
+              {submitted ? (
+                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-green-500" />
+                  </div>
+                  <p className="text-sm font-bold text-gray-800">
+                    {ar ? 'شكراً على تقييمك!' : 'Thank you for your review!'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-2 text-center">
+                      {ar ? 'كيف تقيّم هذه الشركة؟' : 'How would you rate this company?'}
+                    </p>
+                    <InteractiveStars value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
+                    {form.rating > 0 && (
+                      <p className="text-center text-xs text-amber-500 font-semibold mt-1">
+                        {ar ? RATING_LABELS_AR[form.rating] : RATING_LABELS_EN[form.rating]}
+                      </p>
+                    )}
+                  </div>
+
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder={ar ? 'اسمك *' : 'Your name *'}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] text-right"
+                    dir={ar ? 'rtl' : 'ltr'}
+                  />
+
+                  {!showComment ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowComment(true)}
+                      className="text-xs text-gray-400 underline underline-offset-2 w-full text-center"
+                    >
+                      {ar ? '+ أضف تعليقاً (اختياري)' : '+ Add a comment (optional)'}
+                    </button>
+                  ) : (
+                    <textarea
+                      value={form.comment}
+                      onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
+                      placeholder={ar ? 'اكتب تعليقك هنا...' : 'Write your comment here...'}
+                      rows={3}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] resize-none text-right"
+                      dir={ar ? 'rtl' : 'ltr'}
+                    />
+                  )}
+
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={submitting || !form.name.trim() || form.rating === 0}
+                    className="w-full bg-[#FF7900] disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+                  >
+                    {submitting
+                      ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      : <Send className="w-4 h-4" />
+                    }
+                    {ar ? 'إرسال التقييم' : 'Submit Review'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {!reviewModal && (
+          <button
+            onClick={() => { setReviewModal(true); setForm({ name: '', rating: 0, comment: '' }); setShowComment(false) }}
+            className="w-full bg-white border border-gray-200 rounded-2xl py-3 text-sm font-semibold text-[#FF7900] flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-sm"
+          >
+            <Star className="w-4 h-4" />
+            {ar ? 'أضف تقييمك' : 'Add Your Review'}
+          </button>
+        )}
+
       </main>
     </div>
   )

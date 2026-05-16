@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, jsonb, integer, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -35,6 +35,8 @@ export const companyApplicationsTable = pgTable("company_applications", {
   status:         text("status").notNull().default("pending"),
   rejectionReason: text("rejection_reason"),
   requestNumber:  text("request_number"),
+  rating:         numeric("rating").default("0"),
+  reviewsCount:   integer("reviews_count").default(0),
   createdAt:      timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

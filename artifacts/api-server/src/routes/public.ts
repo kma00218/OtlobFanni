@@ -616,6 +616,49 @@ router.post("/technicians/:id/reviews", async (req, res): Promise<void> => {
   res.status(201).json(review);
 });
 
+// ── Company Reviews ────────────────────────────────────────────────────────────
+router.get("/companies/:id/reviews", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const reviews = await db
+    .select()
+    .from(reviewsTable)
+    .where(eq(reviewsTable.companyId, id))
+    .orderBy(desc(reviewsTable.createdAt))
+    .limit(30);
+  res.json(reviews);
+});
+
+router.post("/companies/:id/reviews", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { reviewer_name, rating, comment } = req.body;
+
+  if (!reviewer_name?.trim() || !rating || Number(rating) < 1 || Number(rating) > 5) {
+    res.status(400).json({ error: "reviewer_name and rating (1-5) are required" });
+    return;
+  }
+
+  const reviewId = "crev_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+  const [review] = await db.insert(reviewsTable).values({
+    id:           reviewId,
+    companyId:    id,
+    reviewerName: reviewer_name.trim(),
+    rating:       Number(rating),
+    comment:      comment?.trim() || null,
+  }).returning();
+
+  const allRatings = await db
+    .select({ rating: reviewsTable.rating })
+    .from(reviewsTable)
+    .where(eq(reviewsTable.companyId, id));
+  const avg = allRatings.reduce((s, r) => s + r.rating, 0) / allRatings.length;
+  await db.update(companyApplicationsTable).set({
+    rating:       String(Math.round(avg * 10) / 10),
+    reviewsCount: allRatings.length,
+  }).where(eq(companyApplicationsTable.id, id));
+
+  res.status(201).json(review);
+});
+
 // ── Ad Request (submit) ───────────────────────────────────────────────────────
 router.post("/ad-requests", async (req, res): Promise<void> => {
   const body = req.body;

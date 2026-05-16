@@ -84,6 +84,8 @@ export const api = {
     return get(`/companies${qs ? '?' + qs : ''}`)
   },
   company: (id) => get(`/companies/${id}`),
+  companyReviews: (id) => get(`/companies/${id}/reviews`),
+  submitCompanyReview: (id, data) => post(`/companies/${id}/reviews`, data),
   submitAdRequest:             (data) => post('/ad-requests',             data),
 
   // ── Admin ─────────────────────────────────────────────────────────────────
