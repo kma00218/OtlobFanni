@@ -76,8 +76,11 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 backdrop-blur-md border-t border-gray-200 z-50 max-w-[480px] mx-auto"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 8px)', background: '#F2F4F7' }}
+      className="fixed bottom-0 left-0 right-0 border-t border-[#d4b87a] z-50 max-w-[480px] mx-auto"
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom, 8px)',
+        background: `repeating-linear-gradient(92deg, transparent 0px, transparent 4px, rgba(160,100,20,0.04) 4px, rgba(160,100,20,0.04) 7px, transparent 7px, transparent 13px, rgba(160,100,20,0.025) 13px, rgba(160,100,20,0.025) 15px), linear-gradient(180deg, #f5e4c8 0%, #f0dbb8 50%, #f8ead4 100%)`
+      }}
     >
       <div className="flex items-center justify-around px-4 pt-2 pb-2">
         {TABS.map((tab) => {
