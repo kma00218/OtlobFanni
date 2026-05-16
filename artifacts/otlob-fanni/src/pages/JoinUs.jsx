@@ -43,7 +43,7 @@ export default function JoinUs() {
       </header>
 
       {/* Title */}
-      <div className="pt-20 pb-3 flex flex-col items-center text-center px-6">
+      <div className="pt-20 pb-2 flex flex-col items-center text-center px-6">
         <h1 className="text-4xl font-extrabold text-[#071B33] leading-tight mb-1">
           {ar ? 'انضم إلينا' : 'Join Us'}
         </h1>
@@ -54,31 +54,8 @@ export default function JoinUs() {
         </p>
       </div>
 
-      {/* Track existing request — prominent, top */}
-      <div className="px-5 mb-2">
-        <Link href="/status">
-          <div className="flex items-center gap-4 px-5 py-4 rounded-2xl cursor-pointer active:scale-[0.97] transition-all duration-150 shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' }}>
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <ClipboardList className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white font-extrabold text-base leading-tight">
-                {ar ? 'تتبع حالة طلبك' : 'Track Your Request'}
-              </p>
-              <p className="text-white/80 text-xs mt-0.5">
-                {ar ? 'قدّمت طلباً من قبل؟ اعرف حالته الآن' : 'Already applied? Check your status now'}
-              </p>
-            </div>
-            <div className="flex-shrink-0">
-              {ar ? <ChevronLeft className="w-5 h-5 text-white/70" /> : <ChevronRight className="w-5 h-5 text-white/70" />}
-            </div>
-          </div>
-        </Link>
-      </div>
-
       {/* Cards */}
-      <div className="px-5 space-y-4">
+      <div className="px-5 space-y-3">
 
         {/* Multi-specialty note */}
         <div className="rounded-2xl border-2 border-[#FF7900]/60 overflow-hidden" style={{ background: '#FFF4E8' }}>
@@ -199,6 +176,26 @@ export default function JoinUs() {
           </div>
         </Link>
 
+        {/* Track existing request — below company card */}
+        <Link href="/status">
+          <div className="flex items-center gap-4 px-5 py-4 rounded-2xl cursor-pointer active:scale-[0.97] transition-all duration-150 shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' }}>
+            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ClipboardList className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-extrabold text-base leading-tight">
+                {ar ? 'تتبع حالة طلبك' : 'Track Your Request'}
+              </p>
+              <p className="text-white/80 text-xs mt-0.5">
+                {ar ? 'قدّمت طلباً من قبل؟ اعرف حالته الآن' : 'Already applied? Check your status now'}
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              {ar ? <ChevronLeft className="w-5 h-5 text-white/70" /> : <ChevronRight className="w-5 h-5 text-white/70" />}
+            </div>
+          </div>
+        </Link>
 
       </div>
     </div>
