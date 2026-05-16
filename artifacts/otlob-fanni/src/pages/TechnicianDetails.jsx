@@ -211,7 +211,8 @@ export default function TechnicianDetails() {
       {/* ── Review Modal ─────────────────────────────────────────────── */}
       {reviewModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 pb-0" onClick={() => { setReviewModal(false); setForm({ name: '', rating: 0, comment: '' }) }}>
-          <div className="bg-white w-full max-w-lg rounded-t-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white w-full max-w-lg rounded-t-3xl shadow-2xl overflow-y-auto" style={{ maxHeight: '90vh', paddingBottom: 'env(safe-area-inset-bottom, 16px)' }} onClick={e => e.stopPropagation()}>
+            <div className="p-6">
             {submitted ? (
               <div className="flex flex-col items-center py-6 gap-3 text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -280,6 +281,7 @@ export default function TechnicianDetails() {
                 </button>
               </>
             )}
+            </div>
           </div>
         </div>
       )}
