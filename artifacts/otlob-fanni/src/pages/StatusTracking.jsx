@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react'
-import { useParams, useLocation } from 'wouter'
+import { useParams } from 'wouter'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import api from '../lib/api'
-import { CheckCircle, Clock, XCircle, Megaphone, Search, Share2, Copy, Check } from 'lucide-react'
+import { CheckCircle, Clock, XCircle, Megaphone, Search, Share2, Copy, Check, Phone } from 'lucide-react'
 
 const STATUS_INFO = {
   ar: {
-    pending:  { label: 'قيد المراجعة',  sub: 'طلبك وصل وسيتم مراجعته من قِبل الإدارة قريباً.', color: 'text-amber-500',  bg: 'bg-amber-50',  border: 'border-amber-200',  Icon: Clock         },
-    approved: { label: 'مقبول',          sub: 'تم قبول طلبك! ستظهر في التطبيق قريباً بعد النشر.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', Icon: CheckCircle   },
-    published:{ label: 'منشور على المنصة', sub: 'مبروك! طلبك مقبول ومنشور. يمكن للعملاء رؤية ملفك الآن.', color: 'text-[#FF7900]',  bg: 'bg-orange-50', border: 'border-orange-200', Icon: Megaphone    },
-    rejected: { label: 'مرفوض',          sub: 'للأسف، لم يتم قبول طلبك. يمكنك التواصل مع الدعم لمزيد من التفاصيل.', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200', Icon: XCircle },
+    pending:  { label: 'قيد المراجعة',    sub: 'طلبك وصل وسيتم مراجعته من قِبل الإدارة قريباً.', color: 'text-amber-500',  bg: 'bg-amber-50',  border: 'border-amber-200',  Icon: Clock       },
+    approved: { label: 'مقبول',            sub: 'تم قبول طلبك! ستظهر في التطبيق قريباً بعد النشر.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', Icon: CheckCircle },
+    published:{ label: 'منشور على المنصة', sub: 'مبروك! طلبك مقبول ومنشور. يمكن للعملاء رؤية ملفك الآن.', color: 'text-[#FF7900]', bg: 'bg-orange-50', border: 'border-orange-200', Icon: Megaphone   },
+    rejected: { label: 'مرفوض',            sub: 'للأسف، لم يتم قبول طلبك. يمكنك التواصل مع الدعم لمزيد من التفاصيل.', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200', Icon: XCircle },
   },
   en: {
-    pending:  { label: 'Under Review',   sub: 'Your request has been received and will be reviewed by our team shortly.', color: 'text-amber-500',  bg: 'bg-amber-50',  border: 'border-amber-200',  Icon: Clock        },
-    approved: { label: 'Accepted',       sub: 'Your application has been accepted! You will appear on the app soon after publishing.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', Icon: CheckCircle  },
-    published:{ label: 'Live on Platform', sub: 'Congratulations! Your application is accepted and published. Clients can now see your profile.', color: 'text-[#FF7900]', bg: 'bg-orange-50', border: 'border-orange-200', Icon: Megaphone },
-    rejected: { label: 'Rejected',       sub: 'Unfortunately your application was not accepted. Please contact support for more details.', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200', Icon: XCircle },
+    pending:  { label: 'Under Review',    sub: 'Your request has been received and will be reviewed by our team shortly.', color: 'text-amber-500',  bg: 'bg-amber-50',  border: 'border-amber-200',  Icon: Clock       },
+    approved: { label: 'Accepted',        sub: 'Your application has been accepted! You will appear on the app soon after publishing.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', Icon: CheckCircle },
+    published:{ label: 'Live on Platform',sub: 'Congratulations! Your application is accepted and published. Clients can now see your profile.', color: 'text-[#FF7900]', bg: 'bg-orange-50', border: 'border-orange-200', Icon: Megaphone },
+    rejected: { label: 'Rejected',        sub: 'Unfortunately your application was not accepted. Please contact support for more details.', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200', Icon: XCircle },
   },
 }
 
@@ -35,25 +35,41 @@ function getStepIndex(status) {
 export default function StatusTracking() {
   const { id } = useParams()
   const { ar } = useLang()
-  const [, navigate] = useLocation()
 
-  const [query, setQuery] = useState(id || '')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
-  const [copied, setCopied] = useState(false)
+  const [tab, setTab]               = useState('number')
+  const [query, setQuery]           = useState(id || '')
+  const [phoneQuery, setPhoneQuery] = useState('')
+  const [loading, setLoading]       = useState(false)
+  const [result, setResult]         = useState(null)
+  const [phoneResults, setPhoneResults] = useState(null)
+  const [error, setError]           = useState(null)
+  const [copied, setCopied]         = useState(false)
+
+  const reset = () => { setResult(null); setPhoneResults(null); setError(null) }
 
   const doSearch = async (reqNum) => {
     const num = (reqNum || query).trim().toUpperCase()
     if (!num) return
-    setLoading(true)
-    setError(null)
-    setResult(null)
+    setLoading(true); reset()
     try {
       const data = await api.trackRequest(num)
       setResult(data)
     } catch {
       setError(ar ? 'رقم الطلب غير موجود. تحقق من الرقم وحاول مرة أخرى.' : 'Request number not found. Please check and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const doSearchByPhone = async () => {
+    const phone = phoneQuery.trim()
+    if (!phone) return
+    setLoading(true); reset()
+    try {
+      const data = await api.trackRequestByPhone(phone)
+      setPhoneResults(Array.isArray(data) ? data : [data])
+    } catch {
+      setError(ar ? 'لم يُعثر على طلبات بهذا الرقم. تحقق من رقم الهاتف وحاول مرة أخرى.' : 'No applications found for this phone number. Please check and try again.')
     } finally {
       setLoading(false)
     }
@@ -83,8 +99,10 @@ export default function StatusTracking() {
   }
 
   const statusLang = ar ? STATUS_INFO.ar : STATUS_INFO.en
-  const steps = ar ? STEPS.ar : STEPS.en
-  const info = result ? (statusLang[result.status] || statusLang.pending) : null
+  const steps      = ar ? STEPS.ar : STEPS.en
+  const info       = result ? (statusLang[result.status] || statusLang.pending) : null
+
+  const switchTab = (t) => { setTab(t); reset() }
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen" dir={ar ? 'rtl' : 'ltr'}>
@@ -92,30 +110,86 @@ export default function StatusTracking() {
 
       <main className="pt-20 pb-12 px-4 max-w-[480px] mx-auto">
 
-        <div className="bg-white rounded-2xl p-5 shadow-sm mb-4">
-          <p className="text-sm font-semibold text-[#071B33] mb-3">
-            {ar ? 'أدخل رقم تتبع طلبك' : 'Enter your tracking number'}
-          </p>
-          <div className="flex gap-2">
-            <input
-              value={query}
-              onChange={e => setQuery(e.target.value.toUpperCase())}
-              onKeyDown={e => e.key === 'Enter' && doSearch()}
-              placeholder={ar ? 'مثال: OF-T-123456' : 'e.g. OF-T-123456'}
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:border-[#FF7900] transition-colors placeholder:text-gray-400 font-mono tracking-wider"
-              dir="ltr"
-            />
-            <button
-              onClick={() => doSearch()}
-              disabled={loading || !query.trim()}
-              className="px-4 py-3 bg-[#FF7900] text-white rounded-xl font-bold text-sm hover:bg-[#e86d00] disabled:opacity-50 transition-colors flex items-center gap-1.5 flex-shrink-0"
-            >
-              <Search className="w-4 h-4" />
-              {ar ? 'بحث' : 'Search'}
-            </button>
-          </div>
+        {/* Tab switcher */}
+        <div className="bg-white rounded-2xl p-1.5 shadow-sm mb-4 flex gap-1">
+          <button
+            onClick={() => switchTab('number')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-colors ${
+              tab === 'number' ? 'bg-[#FF7900] text-white' : 'text-gray-500 hover:bg-gray-50'
+            }`}
+          >
+            <Search className="w-4 h-4" />
+            {ar ? 'رقم التتبع' : 'Tracking Number'}
+          </button>
+          <button
+            onClick={() => switchTab('phone')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-colors ${
+              tab === 'phone' ? 'bg-[#FF7900] text-white' : 'text-gray-500 hover:bg-gray-50'
+            }`}
+          >
+            <Phone className="w-4 h-4" />
+            {ar ? 'رقم الهاتف' : 'Phone Number'}
+          </button>
         </div>
 
+        {/* Search box */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm mb-4">
+          {tab === 'number' ? (
+            <>
+              <p className="text-sm font-semibold text-[#071B33] mb-3">
+                {ar ? 'أدخل رقم تتبع طلبك' : 'Enter your tracking number'}
+              </p>
+              <div className="flex gap-2">
+                <input
+                  value={query}
+                  onChange={e => setQuery(e.target.value.toUpperCase())}
+                  onKeyDown={e => e.key === 'Enter' && doSearch()}
+                  placeholder={ar ? 'مثال: OF-T-123456' : 'e.g. OF-T-123456'}
+                  className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:border-[#FF7900] transition-colors placeholder:text-gray-400 font-mono tracking-wider"
+                  dir="ltr"
+                />
+                <button
+                  onClick={() => doSearch()}
+                  disabled={loading || !query.trim()}
+                  className="px-4 py-3 bg-[#FF7900] text-white rounded-xl font-bold text-sm hover:bg-[#e86d00] disabled:opacity-50 transition-colors flex items-center gap-1.5 flex-shrink-0"
+                >
+                  <Search className="w-4 h-4" />
+                  {ar ? 'بحث' : 'Search'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-[#071B33] mb-1">
+                {ar ? 'أدخل رقم الهاتف الذي سجّلت به' : 'Enter the phone number you registered with'}
+              </p>
+              <p className="text-xs text-gray-400 mb-3">
+                {ar ? 'سيظهر لك جميع طلباتك المرتبطة بهذا الرقم' : 'All your applications linked to this number will appear'}
+              </p>
+              <div className="flex gap-2">
+                <input
+                  value={phoneQuery}
+                  onChange={e => setPhoneQuery(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && doSearchByPhone()}
+                  placeholder={ar ? 'مثال: 0913XXXXXXX' : 'e.g. 0913XXXXXXX'}
+                  className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:border-[#FF7900] transition-colors placeholder:text-gray-400"
+                  dir="ltr"
+                  type="tel"
+                />
+                <button
+                  onClick={doSearchByPhone}
+                  disabled={loading || !phoneQuery.trim()}
+                  className="px-4 py-3 bg-[#FF7900] text-white rounded-xl font-bold text-sm hover:bg-[#e86d00] disabled:opacity-50 transition-colors flex items-center gap-1.5 flex-shrink-0"
+                >
+                  <Search className="w-4 h-4" />
+                  {ar ? 'بحث' : 'Search'}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Loading */}
         {loading && (
           <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
             <div className="w-10 h-10 border-4 border-[#FF7900]/30 border-t-[#FF7900] rounded-full animate-spin mx-auto mb-3" />
@@ -123,6 +197,7 @@ export default function StatusTracking() {
           </div>
         )}
 
+        {/* Error */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-5 shadow-sm text-center">
             <XCircle className="w-10 h-10 text-red-400 mx-auto mb-2" />
@@ -130,6 +205,39 @@ export default function StatusTracking() {
           </div>
         )}
 
+        {/* Phone results list */}
+        {phoneResults && !loading && (
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-gray-500 px-1">
+              {ar ? `${phoneResults.length} طلب مرتبط بهذا الرقم` : `${phoneResults.length} application(s) found`}
+            </p>
+            {phoneResults.map((r) => {
+              const si = statusLang[r.status] || statusLang.pending
+              return (
+                <button
+                  key={r.id}
+                  onClick={() => { setTab('number'); setQuery(r.requestNumber); setPhoneResults(null); setResult(r) }}
+                  className="w-full bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-right flex items-center gap-4 hover:border-[#FF7900]/40 transition-colors active:scale-[0.98]"
+                >
+                  <div className={`w-10 h-10 rounded-xl ${si.bg} border ${si.border} flex items-center justify-center flex-shrink-0`}>
+                    <si.Icon className={`w-5 h-5 ${si.color}`} />
+                  </div>
+                  <div className="flex-1 min-w-0 text-right" dir={ar ? 'rtl' : 'ltr'}>
+                    <p className="font-bold text-[#071B33] text-sm truncate">{r.fullName}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {r.requestNumber} · {r.type === 'technician' ? (ar ? 'فني' : 'Technician') : (ar ? 'شركة' : 'Company')}
+                    </p>
+                  </div>
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 ${si.bg} ${si.color} border ${si.border}`}>
+                    {si.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Single result detail */}
         {result && info && (
           <>
             <div className={`${info.bg} border ${info.border} rounded-2xl p-5 shadow-sm mb-4`}>
@@ -139,9 +247,7 @@ export default function StatusTracking() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-gray-500 mb-0.5">
-                    {result.type === 'technician'
-                      ? (ar ? 'فني / حرفي' : 'Technician')
-                      : (ar ? 'شركة / مؤسسة' : 'Company')}
+                    {result.type === 'technician' ? (ar ? 'فني / حرفي' : 'Technician') : (ar ? 'شركة / مؤسسة' : 'Company')}
                   </p>
                   <p className="font-bold text-[#071B33] text-base leading-tight mb-1 truncate">{result.fullName}</p>
                   <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${info.bg} ${info.color} border ${info.border}`}>
@@ -158,9 +264,9 @@ export default function StatusTracking() {
               </p>
               <div className="flex items-center gap-1">
                 {steps.map((step, i) => {
-                  const stepIdx = getStepIndex(result.status)
-                  const done = i <= stepIdx
-                  const active = i === stepIdx
+                  const stepIdx  = getStepIndex(result.status)
+                  const done     = i <= stepIdx
+                  const active   = i === stepIdx
                   const rejected = result.status === 'rejected'
                   return (
                     <div key={i} className="flex items-center flex-1 min-w-0">
@@ -216,16 +322,20 @@ export default function StatusTracking() {
           </>
         )}
 
-        {!result && !loading && !error && (
+        {!result && !phoneResults && !loading && !error && (
           <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
-            <Search className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+            {tab === 'number'
+              ? <Search className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+              : <Phone  className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+            }
             <p className="text-sm text-gray-400 leading-relaxed">
-              {ar
-                ? 'أدخل رقم التتبع الذي حصلت عليه عند تقديم طلبك لمعرفة حالته.'
-                : 'Enter the tracking number you received when submitting your application.'}
+              {tab === 'number'
+                ? (ar ? 'أدخل رقم التتبع الذي حصلت عليه عند تقديم طلبك.' : 'Enter the tracking number you received when submitting your application.')
+                : (ar ? 'أدخل رقم هاتفك لاسترجاع جميع طلباتك.' : 'Enter your phone number to retrieve all your applications.')}
             </p>
           </div>
         )}
+
       </main>
     </div>
   )

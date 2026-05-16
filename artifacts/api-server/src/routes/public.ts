@@ -496,6 +496,51 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
   res.status(404).json({ error: "Request not found" });
 });
 
+// ── Status by phone ───────────────────────────────────────────────────────────
+router.get("/status-by-phone/:phone", async (req, res): Promise<void> => {
+  const phone = (req.params.phone as string).replace(/\D/g, '');
+  if (!phone || phone.length < 7) {
+    res.status(400).json({ error: "Invalid phone number" });
+    return;
+  }
+
+  const techApps = await db
+    .select({
+      id: technicianApplicationsTable.id,
+      status: technicianApplicationsTable.status,
+      fullName: technicianApplicationsTable.fullName,
+      createdAt: technicianApplicationsTable.createdAt,
+      requestNumber: technicianApplicationsTable.requestNumber,
+    })
+    .from(technicianApplicationsTable)
+    .where(ilike(technicianApplicationsTable.phone, `%${phone.slice(-9)}%`))
+    .orderBy(desc(technicianApplicationsTable.createdAt));
+
+  const compApps = await db
+    .select({
+      id: companyApplicationsTable.id,
+      status: companyApplicationsTable.status,
+      companyName: companyApplicationsTable.companyName,
+      createdAt: companyApplicationsTable.createdAt,
+      requestNumber: companyApplicationsTable.requestNumber,
+    })
+    .from(companyApplicationsTable)
+    .where(ilike(companyApplicationsTable.phone, `%${phone.slice(-9)}%`))
+    .orderBy(desc(companyApplicationsTable.createdAt));
+
+  const results = [
+    ...techApps.map(r => ({ type: "technician", fullName: r.fullName, ...r })),
+    ...compApps.map(r => ({ type: "company",    fullName: r.companyName, ...r })),
+  ].sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+
+  if (results.length === 0) {
+    res.status(404).json({ error: "No applications found for this phone number" });
+    return;
+  }
+
+  res.json(results);
+});
+
 // ── Ad Request (submit) ───────────────────────────────────────────────────────
 router.post("/ad-requests", async (req, res): Promise<void> => {
   const body = req.body;

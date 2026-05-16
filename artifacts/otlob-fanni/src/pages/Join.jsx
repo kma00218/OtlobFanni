@@ -258,8 +258,8 @@ export default function Join() {
             <span className="text-blue-400 text-base mt-0.5">💡</span>
             <p className="text-xs text-blue-600 leading-relaxed">
               {ar
-                ? 'إذا أغلقت التطبيق ونسيت الرقم، يمكنك دائماً الرجوع عبر: انضم إلينا ← تتبع حالة طلبك'
-                : 'If you close the app and forget the number, go to: Join Us → Track your request status'}
+                ? 'إذا نسيت رقم التتبع، يمكنك البحث برقم هاتفك عبر: انضم إلينا ← تتبع حالة طلبك'
+                : 'If you forget the tracking number, you can search by your phone number via: Join Us → Track your request status'}
             </p>
           </div>
           <div className="space-y-3">

@@ -73,6 +73,7 @@ export const api = {
   submitTechnicianApplication: (data) => post('/technician-applications', data),
   submitCompanyApplication:    (data) => post('/company-applications',    data),
   trackRequest:                (reqNum) => get(`/status/${encodeURIComponent(reqNum)}`),
+  trackRequestByPhone:         (phone)  => get(`/status-by-phone/${encodeURIComponent(phone.replace(/\D/g,''))}`),
 
   companies: (params = {}) => {
     const qs = new URLSearchParams(Object.fromEntries(
