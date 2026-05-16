@@ -509,12 +509,6 @@ export default function TechnicianDetails() {
                 {ar ? `التقييمات (${tech.reviewsCount})` : `Reviews (${tech.reviewsCount})`}
               </p>
             </div>
-            <button
-              onClick={() => setReviewModal(true)}
-              className="flex items-center gap-1.5 bg-[#FF7900] text-white text-xs font-bold px-3 py-1.5 rounded-xl active:scale-95 transition-transform shadow-sm">
-              <Star className="w-3 h-3" fill="currentColor" />
-              {ar ? 'قيّم الفني' : 'Rate'}
-            </button>
           </div>
 
           <div className="px-4 py-3">
@@ -593,6 +587,19 @@ export default function TechnicianDetails() {
                 )}
               </>
             )}
+          </div>
+
+          {/* Prominent rate button */}
+          <div className="px-4 pb-4">
+            <button
+              onClick={() => setReviewModal(true)}
+              className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform duration-150 font-bold text-white text-base"
+              style={{ background: 'linear-gradient(90deg, #FF7900 0%, #d96400 100%)', boxShadow: '0 4px 18px rgba(255,121,0,0.35)' }}
+            >
+              <Star className="w-5 h-5" fill="currentColor" />
+              {ar ? 'قيّم هذا الفني' : 'Rate this Technician'}
+              <Star className="w-5 h-5" fill="currentColor" />
+            </button>
           </div>
         </div>
 
