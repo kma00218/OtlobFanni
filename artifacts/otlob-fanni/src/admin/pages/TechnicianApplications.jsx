@@ -103,47 +103,8 @@ export default function TechnicianApplications() {
       setData(prev => prev.map(r => r.id === id ? { ...r, status } : r))
       if (viewItem?.id === id) setViewItem(v => ({ ...v, status }))
 
-      if (status === 'approved' && app) {
-        const name = app.fullName || app.full_name || ''
-        const phone = app.phone || ''
-        if (name && phone) {
-          try {
-            const appCity = app.city || ''
-            const cityRow = cities.find(c =>
-              c.nameAr === appCity || c.nameEn === appCity || c.id === appCity
-            )
-            const effectiveCatId = resolvedCatId || (specialtyAction === 'link' ? linkCatId : null) || (app.customSpecialty ? 'more_services' : app.specialty) || null
-            const appExtraSpecialties = app.extraSpecialties || app.extra_specialties || []
-            await api.admin.technicians.create({
-              id:               'tech_' + app.id,
-              name_ar:          name,
-              phone:            phone,
-              whatsapp:         app.whatsapp || phone,
-              city_id:          cityRow?.id || null,
-              area:             app.area || '',
-              category_id:      effectiveCatId,
-              extra_specialties: appExtraSpecialties,
-              experience_years: EXP_YEARS[app.experience] ?? 0,
-              price_from:       parseFloat(app.priceFrom || app.price_from) || 0,
-              price_to:         parseFloat(app.priceTo   || app.price_to)   || 0,
-              description_ar:   app.description || '',
-              profile_photo:    app.profilePhoto || app.profile_photo || null,
-              work_images:      app.workImages   || app.work_images   || [],
-              available_now:    !!(app.availableNow ?? app.available_now),
-              emergency:        !!(app.emergency),
-              is_active:        false,
-              is_approved:      false,
-              is_featured:      false,
-              status:           'inactive',
-              application_id:   app.id,
-            })
-            showToast('✓ تم القبول — اضغط "نشر" الآن لإرسال رسالة الترحيب على واتساب')
-          } catch (err) {
-            showToast('تم قبول الطلب لكن فشل إنشاء سجل الفني — تحقق من الاتصال', 'error')
-          }
-        } else {
-          showToast('✓ تم قبول الطلب (لا يوجد اسم أو هاتف لإنشاء السجل)')
-        }
+      if (status === 'approved') {
+        showToast('✓ تم القبول — اضغط "نشر" لإرسال رسالة الترحيب وتفعيل الفني')
       } else {
         showToast('تم رفض الطلب')
       }

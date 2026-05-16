@@ -461,7 +461,9 @@ router.post("/company-applications", async (req, res): Promise<void> => {
 router.get("/status/:requestNumber", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.requestNumber) ? req.params.requestNumber[0] : req.params.requestNumber;
   // Normalise: uppercase + replace digit-zero with letter-O so "0F-T-123" == "OF-T-123"
-  const reqNum = raw.toUpperCase().replace(/0/g, 'O');
+  // Only fix a leading "0" typed instead of the letter "O" (e.g. "0F-T-123" → "OF-T-123")
+  // Do NOT replace all zeros — numeric parts of the request number contain real zeros
+  const reqNum = raw.toUpperCase().replace(/^0F-/, 'OF-');
 
   const [techApp] = await db
     .select({
