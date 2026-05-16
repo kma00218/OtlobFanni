@@ -36,6 +36,7 @@ export default function CompanyApplications() {
   const [viewItem, setViewItem]               = useState(null)
   const [lightbox, setLightbox]               = useState(null)
   const [toast, setToast]                     = useState(null)
+  const [lastPublished, setLastPublished]     = useState(null)
   const [specialtyAction, setSpecialtyAction] = useState('none')
   const [linkCatId, setLinkCatId]             = useState('')
   const [allCats, setAllCats]                 = useState([])
@@ -103,9 +104,13 @@ export default function CompanyApplications() {
 
   const handlePublish = async (id) => {
     try {
+      const app = data.find(r => r.id === id)
       await api.admin.companyApplications.publish(id)
       setData(prev => prev.filter(r => r.id !== id))
       if (viewItem?.id === id) setViewItem(null)
+      if (app?.phone && app?.requestNumber) {
+        setLastPublished({ name: app.companyName || app.company_name || '', phone: app.phone, requestNumber: app.requestNumber })
+      }
       showToast('✓ تم نشر الشركة على المنصة')
     } catch { showToast('حدث خطأ', 'error') }
   }
@@ -114,6 +119,11 @@ export default function CompanyApplications() {
     const msg = status === 'approved'
       ? `مرحباً ${name}، تهانينا! ✅ تم قبول طلب شركتك على منصة اطلب فني.\nرقم طلبك: ${requestNumber}\nتابع حالتك هنا: https://otlobfanni.ly/status/${requestNumber}`
       : `مرحباً ${name}، نأسف لإبلاغك بأن طلب شركتك على منصة اطلب فني لم يتم قبوله.\nرقم طلبك: ${requestNumber}\nللاستفسار تواصل معنا.`
+    window.open(`https://wa.me/${(phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
+  const openPublishedWhatsApp = ({ name, phone, requestNumber }) => {
+    const msg = `مبروك ${name}! 🎉 تم نشر شركتك الآن على منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}`
     window.open(`https://wa.me/${(phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
@@ -256,6 +266,24 @@ export default function CompanyApplications() {
       {toast && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl text-white text-sm shadow-lg ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
           {toast.msg}
+        </div>
+      )}
+
+      {/* Published WhatsApp nudge */}
+      {lastPublished && (
+        <div className="bg-gradient-to-l from-green-600 to-green-500 rounded-2xl p-4 flex items-center gap-3 shadow-md">
+          <div className="text-2xl flex-shrink-0">🎉</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-bold text-sm">تم نشر شركة {lastPublished.name}</p>
+            <p className="text-green-100 text-xs mt-0.5">أرسل لهم واتساب ليشاركوا نشاطهم مع عملائهم</p>
+          </div>
+          <button
+            onClick={() => openPublishedWhatsApp(lastPublished)}
+            className="flex items-center gap-1.5 bg-white text-green-700 font-bold text-xs px-3 py-2 rounded-xl hover:bg-green-50 transition-colors flex-shrink-0">
+            <WaIcon />
+            أرسل
+          </button>
+          <button onClick={() => setLastPublished(null)} className="text-green-200 hover:text-white transition-colors flex-shrink-0 text-lg leading-none">×</button>
         </div>
       )}
 
