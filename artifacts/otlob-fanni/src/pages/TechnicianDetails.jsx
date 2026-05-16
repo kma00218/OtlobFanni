@@ -211,10 +211,9 @@ export default function TechnicianDetails() {
       {/* ── Review Modal ─────────────────────────────────────────────── */}
       {reviewModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 pb-0" onClick={() => { setReviewModal(false); setForm({ name: '', rating: 0, comment: '' }) }}>
-          <div className="bg-white w-full max-w-lg rounded-t-3xl shadow-2xl overflow-y-auto" style={{ maxHeight: '90vh', paddingBottom: 'env(safe-area-inset-bottom, 16px)' }} onClick={e => e.stopPropagation()}>
-            <div className="p-6">
+          <div className="bg-white w-full max-w-lg rounded-t-3xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
             {submitted ? (
-              <div className="flex flex-col items-center py-6 gap-3 text-center">
+              <div className="flex flex-col items-center py-10 px-6 gap-3 text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-8 h-8 text-green-500" />
                 </div>
@@ -223,65 +222,70 @@ export default function TechnicianDetails() {
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between mb-5">
-                  <p className="font-extrabold text-[#071B33] text-lg">{ar ? 'أضف تقييمك' : 'Add Your Review'}</p>
-                  <button onClick={() => { setReviewModal(false); setForm({ name: '', rating: 0, comment: '' }) }}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                    <X className="w-4 h-4 text-gray-500" />
+                {/* Scrollable content */}
+                <div className="overflow-y-auto flex-1 px-6 pt-6 pb-2">
+                  <div className="flex items-center justify-between mb-5">
+                    <p className="font-extrabold text-[#071B33] text-lg">{ar ? 'أضف تقييمك' : 'Add Your Review'}</p>
+                    <button onClick={() => { setReviewModal(false); setForm({ name: '', rating: 0, comment: '' }) }}
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                      <X className="w-4 h-4 text-gray-500" />
+                    </button>
+                  </div>
+
+                  <div className="mb-5 text-center">
+                    <p className="text-sm text-gray-500 mb-3">{ar ? 'كيف كانت تجربتك مع الفني؟' : 'How was your experience?'}</p>
+                    <InteractiveStars value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
+                    {form.rating > 0 && (
+                      <p className="text-sm font-bold text-amber-500 mt-2">
+                        {ar ? RATING_LABELS_AR[form.rating] : RATING_LABELS_EN[form.rating]}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-xs font-bold text-gray-600 mb-1.5">
+                      {ar ? 'اسمك *' : 'Your name *'}
+                    </label>
+                    <input
+                      dir={ar ? 'rtl' : 'ltr'}
+                      type="text"
+                      placeholder={ar ? 'أدخل اسمك' : 'Enter your name'}
+                      value={form.name}
+                      onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] bg-gray-50"
+                    />
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="block text-xs font-bold text-gray-600 mb-1.5">
+                      {ar ? 'تعليقك (اختياري)' : 'Comment (optional)'}
+                    </label>
+                    <textarea
+                      dir={ar ? 'rtl' : 'ltr'}
+                      rows={3}
+                      placeholder={ar ? 'اكتب تجربتك مع هذا الفني...' : 'Share your experience...'}
+                      value={form.comment}
+                      onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] bg-gray-50 resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Sticky submit button — always visible */}
+                <div className="px-6 py-4 border-t border-gray-100 bg-white" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={submitting || !form.name.trim() || form.rating === 0}
+                    className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: 'linear-gradient(135deg, #FF7900 0%, #cc6200 100%)', color: 'white' }}>
+                    {submitting
+                      ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      : <><Send className="w-4 h-4" /> {ar ? 'إرسال التقييم' : 'Submit Review'}</>
+                    }
                   </button>
                 </div>
-
-                <div className="mb-5 text-center">
-                  <p className="text-sm text-gray-500 mb-3">{ar ? 'كيف كانت تجربتك مع الفني؟' : 'How was your experience?'}</p>
-                  <InteractiveStars value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
-                  {form.rating > 0 && (
-                    <p className="text-sm font-bold text-amber-500 mt-2">
-                      {ar ? RATING_LABELS_AR[form.rating] : RATING_LABELS_EN[form.rating]}
-                    </p>
-                  )}
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-xs font-bold text-gray-600 mb-1.5">
-                    {ar ? 'اسمك *' : 'Your name *'}
-                  </label>
-                  <input
-                    dir={ar ? 'rtl' : 'ltr'}
-                    type="text"
-                    placeholder={ar ? 'أدخل اسمك' : 'Enter your name'}
-                    value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] bg-gray-50"
-                  />
-                </div>
-
-                <div className="mb-5">
-                  <label className="block text-xs font-bold text-gray-600 mb-1.5">
-                    {ar ? 'تعليقك (اختياري)' : 'Comment (optional)'}
-                  </label>
-                  <textarea
-                    dir={ar ? 'rtl' : 'ltr'}
-                    rows={3}
-                    placeholder={ar ? 'اكتب تجربتك مع هذا الفني...' : 'Share your experience...'}
-                    value={form.comment}
-                    onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#FF7900] bg-gray-50 resize-none"
-                  />
-                </div>
-
-                <button
-                  onClick={handleSubmitReview}
-                  disabled={submitting || !form.name.trim() || form.rating === 0}
-                  className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: 'linear-gradient(135deg, #FF7900 0%, #cc6200 100%)', color: 'white' }}>
-                  {submitting
-                    ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    : <><Send className="w-4 h-4" /> {ar ? 'إرسال التقييم' : 'Submit Review'}</>
-                  }
-                </button>
               </>
             )}
-            </div>
           </div>
         </div>
       )}
