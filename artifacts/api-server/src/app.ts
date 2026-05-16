@@ -69,7 +69,8 @@ if (process.env.NODE_ENV === "production") {
 
   if (existsSync(staticDir)) {
     // Hashed assets (JS/CSS chunks) — cache aggressively, content hash guarantees freshness
-    app.use(express.static(staticDir, { maxAge: '1y', immutable: true }));
+    // index: false prevents express.static from serving index.html (handled below with no-cache)
+    app.use(express.static(staticDir, { maxAge: '1y', immutable: true, index: false }));
     // SPA fallback — always send index.html with no-store so browsers never cache it
     app.use((_req, res) => {
       const indexPath = path.join(staticDir, "index.html");
