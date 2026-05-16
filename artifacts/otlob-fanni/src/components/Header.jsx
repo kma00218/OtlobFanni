@@ -72,10 +72,7 @@ export default function Header({ woodTexture = false }) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 max-w-[480px] mx-auto ${woodTexture ? 'border-b border-[#d4b87a]' : 'border-b border-gray-200 bg-white'}`}
-      style={woodTexture ? {
-        background: `repeating-linear-gradient(92deg, transparent 0px, transparent 4px, rgba(160,100,20,0.04) 4px, rgba(160,100,20,0.04) 7px, transparent 7px, transparent 13px, rgba(160,100,20,0.025) 13px, rgba(160,100,20,0.025) 15px), linear-gradient(180deg, #f8ead4 0%, #f0dbb8 50%, #f5e4c8 100%)`
-      } : undefined}
+      className="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 max-w-[480px] mx-auto bg-white border-b border-[#EAEAEA]"
     >
       {/* Location button — tappable to request GPS */}
       <button
