@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Building2, Shield } from 'lucide-react'
+import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Building2, Shield, MessageCircle } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
@@ -108,6 +108,13 @@ export default function CompanyApplications() {
       if (viewItem?.id === id) setViewItem(null)
       showToast('✓ تم نشر الشركة على المنصة')
     } catch { showToast('حدث خطأ', 'error') }
+  }
+
+  const openWhatsApp = (phone, name, status, requestNumber) => {
+    const msg = status === 'approved'
+      ? `مرحباً ${name}، تهانينا! ✅ تم قبول طلب شركتك على منصة اطلب فني.\nرقم طلبك: ${requestNumber}\nتابع حالتك هنا: https://otlobfanni.ly/status/${requestNumber}`
+      : `مرحباً ${name}، نأسف لإبلاغك بأن طلب شركتك على منصة اطلب فني لم يتم قبوله.\nرقم طلبك: ${requestNumber}\nللاستفسار تواصل معنا.`
+    window.open(`https://wa.me/${(phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const handleDelete = async (id) => {
@@ -224,6 +231,14 @@ export default function CompanyApplications() {
             <button onClick={() => handlePublish(row.id)}
               className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 rounded-lg font-medium transition-colors">
               نشر
+            </button>
+          )}
+          {(row.status === 'approved' || row.status === 'rejected') && row.phone && row.requestNumber && (
+            <button
+              onClick={() => openWhatsApp(row.phone, row.companyName || row.company_name || '', row.status, row.requestNumber)}
+              className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
+              title="إشعار واتساب">
+              <MessageCircle className="w-3.5 h-3.5" />
             </button>
           )}
           <button onClick={() => handleDelete(row.id)}

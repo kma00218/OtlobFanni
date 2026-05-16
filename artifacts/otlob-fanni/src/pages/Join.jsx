@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { sections, categories } from '../data/services'
-import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info } from 'lucide-react'
+import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info, Copy, Check } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const DAYS = {
@@ -110,6 +110,7 @@ export default function Join() {
 
   const [submitted, setSubmitted] = useState(false)
   const [requestNumber, setRequestNumber] = useState(null)
+  const [copied, setCopied] = useState(false)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(0)
   const [profilePhoto, setProfilePhoto] = useState(null)
@@ -250,7 +251,15 @@ export default function Join() {
           {requestNumber && (
             <div className="bg-white rounded-2xl p-4 mb-6 border border-gray-200 shadow-sm">
               <p className="text-xs text-gray-400 mb-1">{ar ? 'رقم تتبع طلبك' : 'Your tracking number'}</p>
-              <p className="text-lg font-bold text-[#071B33] font-mono tracking-widest">{requestNumber}</p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-lg font-bold text-[#071B33] font-mono tracking-widest">{requestNumber}</p>
+                <button
+                  onClick={() => { navigator.clipboard.writeText(requestNumber); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all ${copied ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? (ar ? 'تم النسخ' : 'Copied!') : (ar ? 'نسخ' : 'Copy')}
+                </button>
+              </div>
               <p className="text-xs text-gray-400 mt-2">{ar ? 'احتفظ بهذا الرقم لمتابعة حالة طلبك' : 'Save this number to track your request status'}</p>
             </div>
           )}
