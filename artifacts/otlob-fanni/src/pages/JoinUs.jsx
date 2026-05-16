@@ -38,11 +38,11 @@ export default function JoinUs() {
             onClick={() => navigate('/status')}
             className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0"
           >
-            <div className="h-10 px-3 rounded-[12px] flex items-center gap-1.5 bg-[#071B33]">
+            <div className="h-10 px-4 rounded-[12px] flex items-center gap-1.5 bg-[#1877F2]">
               <Search className="h-4 w-4 text-white flex-shrink-0" />
-              <span className="text-white text-xs font-bold whitespace-nowrap">{ar ? 'تتبع' : 'Track'}</span>
+              <span className="text-white text-xs font-bold whitespace-nowrap">{ar ? 'تتبع طلبك' : 'Track'}</span>
             </div>
-            <span className="text-[10px] font-semibold text-gray-500 leading-none">{ar ? 'طلبك' : 'request'}</span>
+            <span className="text-[10px] font-semibold text-gray-500 leading-none">{ar ? 'حالة طلبك' : 'request'}</span>
           </button>
         </div>
 
