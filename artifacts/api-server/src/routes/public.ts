@@ -73,7 +73,7 @@ router.get("/technicians", async (req, res): Promise<void> => {
   res.json(techs);
 });
 
-// ── Companies (public directory — approved only) ──────────────────────────────
+// ── Companies (public directory — approved or published) ───────────────────────
 router.get("/companies", async (req, res): Promise<void> => {
   const { specialty, city } = req.query as Record<string, string>;
 
@@ -85,7 +85,7 @@ router.get("/companies", async (req, res): Promise<void> => {
     })
     .from(companyApplicationsTable)
     .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
-    .where(eq(companyApplicationsTable.status, "approved"))
+    .where(or(eq(companyApplicationsTable.status, "approved"), eq(companyApplicationsTable.status, "published")))
     .orderBy(desc(companyApplicationsTable.createdAt));
 
   let companies = companyRows.map(r => ({
@@ -129,7 +129,7 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
     })
     .from(companyApplicationsTable)
     .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
-    .where(and(eq(companyApplicationsTable.id, raw), eq(companyApplicationsTable.status, "approved")));
+    .where(and(eq(companyApplicationsTable.id, raw), or(eq(companyApplicationsTable.status, "approved"), eq(companyApplicationsTable.status, "published"))));
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
   res.json({
     ...row.company,

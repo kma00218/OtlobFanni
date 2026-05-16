@@ -85,6 +85,10 @@ router.get("/technician-applications", async (_req, res): Promise<void> => {
   res.json(apps);
 });
 
+const EXP_YEARS_MAP: Record<string, number> = {
+  less1: 0, '1-2': 2, '3-5': 5, '6-10': 10, '10+': 11,
+};
+
 router.patch("/technician-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const { status, createCategory, linkCategoryId, rejectionReason } = req.body;
@@ -100,7 +104,7 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
 
   let resolvedCategoryId: string | null = linkCategoryId || null;
 
-  if (status === "approved" && app.customSpecialty && createCategory === true) {
+  if ((status === "approved" || status === "published") && app.customSpecialty && createCategory === true) {
     const customName = app.customSpecialty.trim();
     const allCats = await db.select().from(categoriesTable);
     const existing = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
@@ -113,6 +117,50 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
       resolvedCategoryId = catId;
     } else {
       resolvedCategoryId = existing.id;
+    }
+  }
+
+  // ── Ensure technician record exists in public directory ──────────────────────
+  // When approving OR publishing, create the technician record if it doesn't exist yet.
+  // This handles the case where approval happened without record creation (frontend error, etc.)
+  if ((status === "approved" || status === "published") && app.fullName && app.phone) {
+    const [existing] = await db.select({ id: techniciansTable.id })
+      .from(techniciansTable)
+      .where(eq(techniciansTable.applicationId, app.id));
+
+    if (!existing) {
+      // Resolve city ID from city name stored in application
+      const cityRows = await db.select().from(citiesTable);
+      const cityRow = cityRows.find(c =>
+        c.nameAr === app.city || c.nameEn === app.city || c.id === app.city
+      );
+      const effectiveCatId = resolvedCategoryId
+        || (app.customSpecialty ? "more_services" : app.specialty)
+        || null;
+
+      await db.insert(techniciansTable).values({
+        id: "tech_" + app.id,
+        nameAr: app.fullName,
+        phone: app.phone,
+        whatsapp: app.whatsapp || app.phone,
+        cityId: cityRow?.id ?? null,
+        area: app.area ?? "",
+        categoryId: effectiveCatId,
+        extraSpecialties: (app as any).extraSpecialties || [],
+        experienceYears: EXP_YEARS_MAP[app.experience as string] ?? 0,
+        priceFrom: parseFloat(String(app.priceFrom ?? 0)) || 0,
+        priceTo: parseFloat(String(app.priceTo ?? 0)) || 0,
+        descriptionAr: app.description ?? "",
+        profilePhoto: app.profilePhoto ?? null,
+        workImages: (app as any).workImages || [],
+        isApproved: true,
+        isActive: true,
+        isFeatured: false,
+        status: app.availableNow ? "available" : "busy",
+        availableNow: app.availableNow ?? false,
+        emergency: app.emergency ?? false,
+        applicationId: app.id,
+      }).onConflictDoNothing();
     }
   }
 
