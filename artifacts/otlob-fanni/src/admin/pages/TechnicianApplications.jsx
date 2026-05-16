@@ -131,10 +131,10 @@ export default function TechnicianApplications() {
               work_images:      app.workImages   || app.work_images   || [],
               available_now:    !!(app.availableNow ?? app.available_now),
               emergency:        !!(app.emergency),
-              is_active:        true,
-              is_approved:      true,
+              is_active:        false,
+              is_approved:      false,
               is_featured:      false,
-              status:           (app.availableNow ?? app.available_now) ? 'available' : 'busy',
+              status:           'inactive',
               application_id:   app.id,
             })
             showToast('✓ تم القبول — اضغط "نشر" الآن لإرسال رسالة الترحيب على واتساب')

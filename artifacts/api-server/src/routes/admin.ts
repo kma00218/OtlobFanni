@@ -128,8 +128,17 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
       .from(techniciansTable)
       .where(eq(techniciansTable.applicationId, app.id));
 
-    if (!existing) {
-      // Resolve city ID from city name stored in application
+    if (existing) {
+      // Technician record already exists (created during approval) — activate it now
+      await db.update(techniciansTable)
+        .set({
+          isActive: true,
+          isApproved: true,
+          status: app.availableNow ? "available" : "busy",
+        })
+        .where(eq(techniciansTable.applicationId, app.id));
+    } else {
+      // Fallback: create if somehow missing (e.g. approval happened before this fix)
       const cityRows = await db.select().from(citiesTable);
       const cityRow = cityRows.find(c =>
         c.nameAr === app.city || c.nameEn === app.city || c.id === app.city
