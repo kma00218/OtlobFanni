@@ -312,12 +312,6 @@ export default function Join() {
           </p>
         </div>
 
-        {/* Track existing request */}
-        <a href="/status" className="flex items-center justify-center gap-2 mb-5 py-3 rounded-2xl border-2 border-dashed border-[#FF7900]/40 text-[#FF7900] text-sm font-bold hover:bg-[#FF7900]/5 transition-colors">
-          <CheckCircle className="w-4 h-4" />
-          {ar ? 'هل قدمت طلباً من قبل؟ تتبع حالة طلبك' : 'Already applied? Track your request status'}
-        </a>
-
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* ── 1. Profile Photo ─────────────────────────────────────── */}
