@@ -189,7 +189,7 @@ function AppContent() {
       <TooltipProvider>
         <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
-          {!hasOwnHeader && <Header />}
+          {!hasOwnHeader && <Header woodTexture={location === '/'} />}
           <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
             <Switch>

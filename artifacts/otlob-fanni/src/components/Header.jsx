@@ -27,7 +27,7 @@ async function reverseGeocode(lat, lon, lang) {
   }
 }
 
-export default function Header() {
+export default function Header({ woodTexture = false }) {
   const { dir, t, toggleLang, lang } = useLang()
   const [, navigate] = useLocation()
   const [locationLabel, setLocationLabel] = useState(null)
@@ -71,9 +71,12 @@ export default function Header() {
   const displayLabel = locationLabel || t('location')
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 border-b border-[#d4b87a] z-50 flex items-center justify-between px-4 max-w-[480px] mx-auto" style={{
-      background: `repeating-linear-gradient(92deg, transparent 0px, transparent 4px, rgba(160,100,20,0.04) 4px, rgba(160,100,20,0.04) 7px, transparent 7px, transparent 13px, rgba(160,100,20,0.025) 13px, rgba(160,100,20,0.025) 15px), linear-gradient(180deg, #f8ead4 0%, #f0dbb8 50%, #f5e4c8 100%)`
-    }}>
+    <header
+      className={`fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 max-w-[480px] mx-auto ${woodTexture ? 'border-b border-[#d4b87a]' : 'border-b border-gray-200 bg-white'}`}
+      style={woodTexture ? {
+        background: `repeating-linear-gradient(92deg, transparent 0px, transparent 4px, rgba(160,100,20,0.04) 4px, rgba(160,100,20,0.04) 7px, transparent 7px, transparent 13px, rgba(160,100,20,0.025) 13px, rgba(160,100,20,0.025) 15px), linear-gradient(180deg, #f8ead4 0%, #f0dbb8 50%, #f5e4c8 100%)`
+      } : undefined}
+    >
       {/* Location button — tappable to request GPS */}
       <button
         onClick={requestLocation}
