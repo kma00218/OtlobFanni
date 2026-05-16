@@ -4,9 +4,9 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
-  Facebook, Image, FileText, Lock, Shield, Info, XCircle
+  Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X
 } from 'lucide-react'
-import api, { getFileUrl } from '../../lib/api'
+import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const EXP_LABEL = {
@@ -42,6 +42,7 @@ const emptyForm = {
   price_from: '', price_to: '', available_now: false, emergency: false,
   working_days: [],
   hours_from: '', hours_to: '', service_radius: '', facebook: '', instagram: '',
+  company_logo: '',
 }
 
 export default function Companies() {
@@ -55,6 +56,7 @@ export default function Companies() {
   const [editItem, setEditItem]     = useState(null)
   const [form, setForm]             = useState(emptyForm)
   const [saving, setSaving]         = useState(false)
+  const [logoUploading, setLogoUploading] = useState(false)
   const [lightbox, setLightbox]     = useState(null)
   const [categories, setCategories] = useState([])
   const [toast, setToast]           = useState(null)
@@ -124,6 +126,7 @@ export default function Companies() {
       facebook:       row.facebook      || '',
       instagram:      row.instagram     || '',
       working_days:   row.workingDays   || [],
+      company_logo:   row.companyLogo   || '',
     })
     setViewItem(null)
   }
@@ -499,6 +502,40 @@ export default function Companies() {
       >
         {editItem && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="form-label">شعار الشركة</label>
+              <div className="flex items-center gap-3 mt-1">
+                <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 flex-shrink-0 bg-slate-50 flex items-center justify-center">
+                  {form.company_logo
+                    ? <img src={getFileUrl(form.company_logo)} alt="" className="w-full h-full object-cover" onError={e => e.target.style.display='none'} />
+                    : <span className="text-slate-300 text-lg font-bold">{(form.company_name || '').charAt(0) || '؟'}</span>
+                  }
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border border-[#FF7900]/40 text-[#FF7900] text-sm font-medium hover:bg-[#FF7900]/5 transition-colors ${logoUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <Upload className="w-4 h-4" />
+                    {logoUploading ? 'جاري الرفع...' : 'رفع شعار'}
+                    <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+                      setLogoUploading(true)
+                      try {
+                        const objectPath = await uploadFile(file)
+                        setForm(f => ({ ...f, company_logo: objectPath }))
+                      } catch { showToast('فشل رفع الصورة، حاول مجدداً', 'error') }
+                      setLogoUploading(false)
+                      e.target.value = ''
+                    }} />
+                  </label>
+                  {form.company_logo && (
+                    <button type="button" onClick={() => setForm(f => ({ ...f, company_logo: '' }))}
+                      className="text-xs text-red-400 hover:text-red-500 text-right">
+                      حذف الشعار
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
             <div>
               <label className="form-label">اسم الشركة *</label>
               <input required value={form.company_name}

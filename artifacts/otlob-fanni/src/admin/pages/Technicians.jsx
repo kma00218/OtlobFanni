@@ -3,9 +3,9 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2,
+  Image, Shield, Zap, User, Settings2, Upload,
 } from 'lucide-react'
-import api, { getFileUrl } from '../../lib/api'
+import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const PAGE_SIZE = 15
@@ -257,6 +257,7 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
 }
 
 function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, cities, categories, isSuperAdmin, cityId }) {
+  const [photoUploading, setPhotoUploading] = useState(false)
   if (!open) return null
 
   const inp = "form-input"
@@ -297,11 +298,38 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                 <input value={form.name_en} onChange={e => setForm(f => ({...f, name_en: e.target.value}))} className={inp} placeholder="Ahmed Mohamed" dir="ltr" />
               </div>
               <div className="sm:col-span-2">
-                <label className={lbl}>رابط صورة البروفايل</label>
-                <input value={form.profile_photo} onChange={e => setForm(f => ({...f, profile_photo: e.target.value}))} className={inp} placeholder="https://..." dir="ltr" />
-                {form.profile_photo && (
-                  <img src={form.profile_photo} alt="" className="mt-2 w-16 h-16 rounded-xl object-cover border border-slate-200" onError={e => e.target.style.display='none'} />
-                )}
+                <label className={lbl}>صورة البروفايل</label>
+                <div className="flex items-center gap-3 mt-1">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 flex-shrink-0 bg-slate-50 flex items-center justify-center">
+                    {form.profile_photo
+                      ? <img src={getFileUrl(form.profile_photo)} alt="" className="w-full h-full object-cover" onError={e => e.target.style.display='none'} />
+                      : <User className="w-6 h-6 text-slate-300" />
+                    }
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border border-[#FF7900]/40 text-[#FF7900] text-sm font-medium hover:bg-[#FF7900]/5 transition-colors ${photoUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                      <Upload className="w-4 h-4" />
+                      {photoUploading ? 'جاري الرفع...' : 'رفع صورة'}
+                      <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        setPhotoUploading(true)
+                        try {
+                          const objectPath = await uploadFile(file)
+                          setForm(f => ({ ...f, profile_photo: objectPath }))
+                        } catch { alert('فشل رفع الصورة، حاول مجدداً') }
+                        setPhotoUploading(false)
+                        e.target.value = ''
+                      }} />
+                    </label>
+                    {form.profile_photo && (
+                      <button type="button" onClick={() => setForm(f => ({ ...f, profile_photo: '' }))}
+                        className="text-xs text-red-400 hover:text-red-500 text-right">
+                        حذف الصورة
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </Section>

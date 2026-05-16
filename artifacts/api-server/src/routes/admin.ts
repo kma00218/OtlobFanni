@@ -231,6 +231,7 @@ router.patch("/companies/:id", async (req, res): Promise<void> => {
   if (b.service_radius!== undefined) updates.serviceRadius = b.service_radius;
   if (b.facebook      !== undefined) updates.facebook      = b.facebook;
   if (b.instagram     !== undefined) updates.instagram     = b.instagram;
+  if (b.company_logo  !== undefined) updates.companyLogo   = b.company_logo;
   const [app] = await db
     .update(companyApplicationsTable)
     .set(updates)
