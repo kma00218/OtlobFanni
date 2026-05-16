@@ -295,6 +295,15 @@ export default function StatusTracking() {
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">{info.sub}</p>
             </div>
 
+            {result.status === 'rejected' && result.rejectionReason && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 shadow-sm mb-4">
+                <p className="text-xs font-bold text-red-500 uppercase tracking-wider mb-2">
+                  {ar ? 'سبب الرفض' : 'Rejection Reason'}
+                </p>
+                <p className="text-sm text-red-700 leading-relaxed" dir="rtl">{result.rejectionReason}</p>
+              </div>
+            )}
+
             <div className="bg-white rounded-2xl p-5 shadow-sm mb-4">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">
                 {ar ? 'مراحل الطلب' : 'Request Progress'}

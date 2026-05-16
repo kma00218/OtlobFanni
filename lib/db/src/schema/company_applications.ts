@@ -33,6 +33,7 @@ export const companyApplicationsTable = pgTable("company_applications", {
   commercialDoc:  text("commercial_doc"),
   workLicense:    text("work_license"),
   status:         text("status").notNull().default("pending"),
+  rejectionReason: text("rejection_reason"),
   requestNumber:  text("request_number"),
   createdAt:      timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

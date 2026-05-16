@@ -41,6 +41,7 @@ export default function CompanyApplications() {
   const [linkCatId, setLinkCatId]             = useState('')
   const [allCats, setAllCats]                 = useState([])
   const [categories, setCategories]           = useState([])
+  const [rejectModal, setRejectModal]         = useState({ open: false, id: null, reason: '', isView: false })
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -79,7 +80,7 @@ export default function CompanyApplications() {
     setLinkCatId('')
   }, [viewItem?.id])
 
-  const setStatus = async (id, status) => {
+  const setStatus = async (id, status, rejectionReason = null) => {
     try {
       const opts = {}
       if (status === 'approved') {
@@ -89,6 +90,7 @@ export default function CompanyApplications() {
           if (specialtyAction === 'link' && linkCatId) opts.linkCategoryId = linkCatId
         }
       }
+      if (status === 'rejected' && rejectionReason) opts.rejectionReason = rejectionReason
       await api.admin.companyApplications.update(id, status, opts)
       if (status === 'approved') {
         setData(prev => prev.filter(r => r.id !== id))
@@ -231,7 +233,7 @@ export default function CompanyApplications() {
                 className="px-2 py-1 text-xs bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg font-medium transition-colors">
                 قبول
               </button>
-              <button onClick={() => setStatus(row.id, 'rejected')}
+              <button onClick={() => setRejectModal({ open: true, id: row.id, reason: '', isView: false })}
                 className="px-2 py-1 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg font-medium transition-colors">
                 رفض
               </button>
@@ -593,7 +595,7 @@ export default function CompanyApplications() {
               {/* Reject */}
               {viewItem.status === 'pending' && (
                 <button
-                  onClick={() => { setStatus(viewItem.id, 'rejected'); setViewItem(null) }}
+                  onClick={() => setRejectModal({ open: true, id: viewItem.id, reason: '', isView: true })}
                   className="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 font-medium py-2.5 rounded-xl text-sm transition-colors">
                   رفض الطلب
                 </button>
@@ -602,6 +604,40 @@ export default function CompanyApplications() {
           )
         })()}
       </FormModal>
+
+      {/* Rejection Reason Modal */}
+      {rejectModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setRejectModal(m => ({ ...m, open: false }))}>
+          <div className="bg-[#0f2236] rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700" onClick={e => e.stopPropagation()}>
+            <p className="text-white font-bold text-base mb-1 text-right">سبب الرفض</p>
+            <p className="text-slate-400 text-xs mb-4 text-right">اختياري — سيظهر للمتقدم في صفحة تتبع طلبه</p>
+            <textarea
+              dir="rtl"
+              rows={3}
+              placeholder="مثال: البيانات غير مكتملة، المستندات غير واضحة..."
+              className="w-full bg-slate-800 text-white text-sm rounded-xl p-3 border border-slate-600 focus:border-[#FF7900] focus:outline-none resize-none placeholder-slate-500"
+              value={rejectModal.reason}
+              onChange={e => setRejectModal(m => ({ ...m, reason: e.target.value }))}
+            />
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={async () => {
+                  await setStatus(rejectModal.id, 'rejected', rejectModal.reason || null)
+                  if (rejectModal.isView) setViewItem(null)
+                  setRejectModal({ open: false, id: null, reason: '', isView: false })
+                }}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                تأكيد الرفض
+              </button>
+              <button
+                onClick={() => setRejectModal({ open: false, id: null, reason: '', isView: false })}
+                className="flex-1 border border-slate-600 text-slate-400 hover:bg-slate-700 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

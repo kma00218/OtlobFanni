@@ -87,10 +87,13 @@ router.get("/technician-applications", async (_req, res): Promise<void> => {
 
 router.patch("/technician-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status, createCategory, linkCategoryId } = req.body;
+  const { status, createCategory, linkCategoryId, rejectionReason } = req.body;
+  const setData: Record<string, unknown> = { status };
+  if (status === "rejected" && rejectionReason) setData.rejectionReason = rejectionReason;
+  if (status !== "rejected") setData.rejectionReason = null;
   const [app] = await db
     .update(technicianApplicationsTable)
-    .set({ status })
+    .set(setData)
     .where(eq(technicianApplicationsTable.id, raw))
     .returning();
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
@@ -188,10 +191,12 @@ router.get("/company-applications", async (_req, res): Promise<void> => {
 
 router.patch("/company-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status, createCategory, linkCategoryId } = req.body;
+  const { status, createCategory, linkCategoryId, rejectionReason } = req.body;
 
   let resolvedCategoryId: string | null = linkCategoryId || null;
   const updates: Record<string, unknown> = { status };
+  if (status === "rejected" && rejectionReason) updates.rejectionReason = rejectionReason;
+  if (status !== "rejected") updates.rejectionReason = null;
 
   if (status === "approved") {
     const [existingApp] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));

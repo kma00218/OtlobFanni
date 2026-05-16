@@ -471,6 +471,7 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
       specialty: technicianApplicationsTable.specialty,
       customSpecialty: technicianApplicationsTable.customSpecialty,
       city: technicianApplicationsTable.city,
+      rejectionReason: technicianApplicationsTable.rejectionReason,
     })
     .from(technicianApplicationsTable)
     .where(eq(technicianApplicationsTable.requestNumber, reqNum));
@@ -494,6 +495,7 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
       specialty: companyApplicationsTable.specialty,
       customSpecialty: companyApplicationsTable.customSpecialty,
       city: companyApplicationsTable.city,
+      rejectionReason: companyApplicationsTable.rejectionReason,
     })
     .from(companyApplicationsTable)
     .where(eq(companyApplicationsTable.requestNumber, reqNum));
