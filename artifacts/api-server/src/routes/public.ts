@@ -485,7 +485,11 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
       .select({ nameAr: citiesTable.nameAr, nameEn: citiesTable.nameEn })
       .from(citiesTable)
       .where(eq(citiesTable.id, techApp.city));
-    res.json({ type: "technician", ...techApp, cityName: cityRow?.nameAr || null });
+    const [techRecord] = await db
+      .select({ id: techniciansTable.id })
+      .from(techniciansTable)
+      .where(eq(techniciansTable.applicationId, techApp.id));
+    res.json({ type: "technician", ...techApp, cityName: cityRow?.nameAr || null, technicianId: techRecord?.id || null });
     return;
   }
 
@@ -548,8 +552,16 @@ router.get("/status-by-phone/:phone", async (req, res): Promise<void> => {
     .where(ilike(companyApplicationsTable.phone, `%${phone.slice(-9)}%`))
     .orderBy(desc(companyApplicationsTable.createdAt));
 
+  const techAppIds = techApps.map(r => r.id);
+  const techRecords = techAppIds.length > 0
+    ? await db.select({ id: techniciansTable.id, applicationId: techniciansTable.applicationId })
+        .from(techniciansTable)
+        .where(inArray(techniciansTable.applicationId, techAppIds))
+    : [];
+  const techIdMap = Object.fromEntries(techRecords.map(t => [t.applicationId, t.id]));
+
   const results = [
-    ...techApps.map(r => ({ type: "technician", fullName: r.fullName, ...r })),
+    ...techApps.map(r => ({ type: "technician", fullName: r.fullName, ...r, technicianId: techIdMap[r.id] || null })),
     ...compApps.map(r => ({ type: "company",    fullName: r.companyName, ...r })),
   ].sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
 

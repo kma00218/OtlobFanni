@@ -4,7 +4,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import api from '../lib/api'
 import { categories } from '../data/services'
-import { CheckCircle, Clock, XCircle, Megaphone, Search, Copy, Check, Phone } from 'lucide-react'
+import { CheckCircle, Clock, XCircle, Megaphone, Search, Copy, Check, Phone, ExternalLink } from 'lucide-react'
 
 const STATUS_INFO = {
   ar: {
@@ -303,6 +303,22 @@ export default function StatusTracking() {
                       {copiedMsg ? (ar ? 'تم النسخ!' : 'Copied!') : (ar ? 'نسخ الرسالة' : 'Copy Message')}
                     </button>
                   </div>
+
+                  {(() => {
+                    const profilePath = result.type === 'technician'
+                      ? (result.technicianId ? `/technician/${result.technicianId}` : null)
+                      : `/company/${result.id}`
+                    if (!profilePath) return null
+                    return (
+                      <a
+                        href={profilePath}
+                        className="mt-2 w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border-2 border-[#FF7900] text-[#FF7900] hover:bg-[#FF7900]/5 transition-colors active:scale-95"
+                      >
+                        <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                        {ar ? 'شاهد ملفك على المنصة' : 'View your profile'}
+                      </a>
+                    )
+                  })()}
                 </div>
               </>
             )}
