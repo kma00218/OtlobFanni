@@ -3,8 +3,8 @@ import { useLang } from '../context/LanguageContext';
 import BackHeader from '../components/BackHeader';
 import { MessageCircle, Phone, ChevronDown, ChevronUp, Send, LifeBuoy } from 'lucide-react';
 
-const WHATSAPP_URL = 'https://wa.me/218910000000';
-const PHONE_NUMBER = 'tel:+218910000000';
+const WHATSAPP_URL = 'https://wa.me/19297186991';
+const PHONE_NUMBER = 'tel:+19297186991';
 
 const faqs = {
   ar: [
