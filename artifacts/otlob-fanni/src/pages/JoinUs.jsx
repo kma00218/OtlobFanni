@@ -54,6 +54,29 @@ export default function JoinUs() {
         </p>
       </div>
 
+      {/* Track existing request — prominent, top */}
+      <div className="px-5 mb-2">
+        <Link href="/status">
+          <div className="flex items-center gap-4 px-5 py-4 rounded-2xl cursor-pointer active:scale-[0.97] transition-transform duration-150"
+            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #cc6200 100%)' }}>
+            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <ClipboardList className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-extrabold text-base leading-tight">
+                {ar ? 'تتبع حالة طلبك' : 'Track Your Request'}
+              </p>
+              <p className="text-white/75 text-xs mt-0.5">
+                {ar ? 'قدّمت طلباً من قبل؟ اعرف حالته الآن' : 'Already applied? Check your status now'}
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              {ar ? <ChevronLeft className="w-5 h-5 text-white/70" /> : <ChevronRight className="w-5 h-5 text-white/70" />}
+            </div>
+          </div>
+        </Link>
+      </div>
+
       {/* Cards */}
       <div className="px-5 space-y-4">
 
@@ -176,13 +199,6 @@ export default function JoinUs() {
           </div>
         </Link>
 
-        {/* Track existing request */}
-        <Link href="/status">
-          <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl border-2 border-dashed border-[#FF7900]/50 text-[#FF7900] font-bold text-sm active:scale-[0.97] transition-transform duration-150 cursor-pointer">
-            <ClipboardList className="w-5 h-5" />
-            {ar ? 'هل قدمت طلباً من قبل؟ تتبع حالة طلبك' : 'Already applied? Track your request status'}
-          </div>
-        </Link>
 
       </div>
     </div>
