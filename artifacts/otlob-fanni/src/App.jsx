@@ -37,7 +37,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const AllSpecialties = lazy(() => import("./pages/AllSpecialties"));
 const CityTechnicians = lazy(() => import("./pages/CityTechnicians"));
-const StatusTracking = lazy(() => import("./pages/StatusTracking"));
+import StatusTracking from "./pages/StatusTracking";
 const NotFound = lazy(() => import("./pages/not-found"));
 
 // Admin — lazy loaded as a separate chunk
