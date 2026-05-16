@@ -67,8 +67,9 @@ export default function StatusTracking() {
   }
 
   const doSearch = async (reqNum) => {
-    // Normalise: uppercase + replace digit-zero with letter-O (OF-T vs 0F-T confusion)
-    const num = (reqNum || query).trim().toUpperCase().replace(/0/g, 'O')
+    // Normalise: uppercase + fix only a leading "0F-" typed instead of "OF-"
+    // Do NOT replace all zeros — numeric parts of the request number contain real zeros
+    const num = (reqNum || query).trim().toUpperCase().replace(/^0F-/, 'OF-')
     if (!num) return
     setLoading(true); reset()
     try {
