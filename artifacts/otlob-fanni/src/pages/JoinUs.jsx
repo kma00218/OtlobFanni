@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link } from 'wouter'
-import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Info, Share2 } from 'lucide-react'
+import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Info, Share2, ClipboardList } from 'lucide-react'
 
 export default function JoinUs() {
   const { lang, toggleLang } = useLang()
@@ -173,6 +173,14 @@ export default function JoinUs() {
                 {ar ? 'شركات صيانة، مقاولات، تنظيف، تكييف...' : 'Maintenance, contracting, cleaning companies...'}
               </span>
             </div>
+          </div>
+        </Link>
+
+        {/* Track existing request */}
+        <Link href="/status">
+          <div className="flex items-center justify-center gap-2.5 py-4 rounded-2xl border-2 border-dashed border-[#FF7900]/50 text-[#FF7900] font-bold text-sm active:scale-[0.97] transition-transform duration-150 cursor-pointer">
+            <ClipboardList className="w-5 h-5" />
+            {ar ? 'هل قدمت طلباً من قبل؟ تتبع حالة طلبك' : 'Already applied? Track your request status'}
           </div>
         </Link>
 
