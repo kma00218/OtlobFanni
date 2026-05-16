@@ -267,12 +267,12 @@ export default function StatusTracking() {
           <>
             {/* ── Celebration banner (published only) ── */}
             {result.status === 'published' && (
-              <div className="bg-gradient-to-br from-[#FF7900] to-[#e86d00] rounded-2xl p-5 shadow-md mb-4 text-white text-center">
+              <div className="bg-gradient-to-br from-[#16a34a] to-[#15803d] rounded-2xl p-5 shadow-md mb-4 text-white text-center">
                 <div className="text-4xl mb-2">🎉</div>
                 <p className="font-extrabold text-lg leading-tight mb-1">
                   {ar ? 'تم قبول حسابك ونشر نشاطك بنجاح!' : 'Your account is live on the platform!'}
                 </p>
-                <p className="text-sm text-orange-100 leading-relaxed">
+                <p className="text-sm text-green-100 leading-relaxed">
                   {ar
                     ? 'أصبح نشاطك ظاهراً الآن داخل منصة اطلب فني 🇱🇾 — شارك الخبر مع أصدقائك!'
                     : 'Your profile is now visible on Otlob Fanni 🇱🇾 — share the news with your friends!'}
@@ -322,17 +322,20 @@ export default function StatusTracking() {
                       <div className="flex flex-col items-center flex-shrink-0">
                         <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors ${
                           rejected && active ? 'bg-red-100 border-red-400 text-red-600'
+                          : done && i === steps.length - 1 && result.status === 'published' ? 'bg-[#16a34a] border-[#16a34a] text-white'
                           : done ? 'bg-[#FF7900] border-[#FF7900] text-white'
                           : 'bg-gray-100 border-gray-200 text-gray-400'
                         }`}>
                           {done && !rejected ? <Check className="w-3.5 h-3.5" /> : i + 1}
                         </div>
                         <p className={`text-[9px] mt-1 text-center leading-tight max-w-[50px] ${
-                          done && !rejected ? 'text-[#FF7900] font-bold' : 'text-gray-400'
+                          done && !rejected && i === steps.length - 1 && result.status === 'published' ? 'text-[#16a34a] font-bold'
+                          : done && !rejected ? 'text-[#FF7900] font-bold'
+                          : 'text-gray-400'
                         }`}>{step}</p>
                       </div>
                       {i < steps.length - 1 && (
-                        <div className={`h-0.5 flex-1 mx-1 rounded ${i < stepIdx ? 'bg-[#FF7900]' : 'bg-gray-200'}`} />
+                        <div className={`h-0.5 flex-1 mx-1 rounded ${i < stepIdx ? (result.status === 'published' && i === steps.length - 2 ? 'bg-[#16a34a]' : 'bg-[#FF7900]') : 'bg-gray-200'}`} />
                       )}
                     </div>
                   )
