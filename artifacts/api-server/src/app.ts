@@ -68,9 +68,14 @@ if (process.env.NODE_ENV === "production") {
   logger.info({ staticDir, exists: existsSync(staticDir) }, "Static files directory");
 
   if (existsSync(staticDir)) {
-    app.use(express.static(staticDir));
+    // Hashed assets (JS/CSS chunks) — cache aggressively, content hash guarantees freshness
+    app.use(express.static(staticDir, { maxAge: '1y', immutable: true }));
+    // SPA fallback — always send index.html with no-store so browsers never cache it
     app.use((_req, res) => {
       const indexPath = path.join(staticDir, "index.html");
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.sendFile(indexPath, (err) => {
         if (err) {
           logger.error({ err, indexPath }, "Failed to send index.html");

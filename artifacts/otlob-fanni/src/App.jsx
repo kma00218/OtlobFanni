@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation, useRouter, Link } from "wouter";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { useEffect, useState } from "react";
 import { track } from "./lib/tracker";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -168,12 +169,14 @@ function AppContent() {
     return (
       <AdminProvider>
         <ScrollToTop />
-        <Suspense fallback={<PageLoader />}>
-          <Switch>
-            <Route path="/admin/login" component={AdminLogin} />
-            <Route path="/admin/:rest*" component={AdminLayout} />
-          </Switch>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Switch>
+              <Route path="/admin/login" component={AdminLogin} />
+              <Route path="/admin/:rest*" component={AdminLayout} />
+            </Switch>
+          </Suspense>
+        </ErrorBoundary>
       </AdminProvider>
     );
   }
@@ -183,6 +186,7 @@ function AppContent() {
       <TooltipProvider>
         <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
+          <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
             <Switch>
               <Route path="/" component={Home} />
@@ -212,6 +216,7 @@ function AppContent() {
               <Route component={NotFound} />
             </Switch>
           </Suspense>
+          </ErrorBoundary>
           <BottomNav />
           <SearchFAB />
           <InstallFAB />
