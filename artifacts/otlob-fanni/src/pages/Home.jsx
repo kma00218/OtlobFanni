@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import { useLang } from '../context/LanguageContext'
-import Header from '../components/Header'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
@@ -33,7 +32,6 @@ export default function Home() {
 
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">
-      <Header />
 
       <main className="px-4 pt-2 pb-4 flex flex-col gap-4">
         <div className="text-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>

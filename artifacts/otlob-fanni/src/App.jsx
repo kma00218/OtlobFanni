@@ -12,6 +12,7 @@ import { Download, Search, UserPlus } from "lucide-react";
 import NotificationPrompt from "./components/NotificationPrompt";
 import LocationPrompt from "./components/LocationPrompt";
 import BottomNav from "./components/BottomNav";
+import Header from "./components/Header";
 import SearchOverlay from "./components/SearchOverlay";
 
 // Public Pages — lazy loaded
@@ -181,11 +182,14 @@ function AppContent() {
     );
   }
 
+  const hasOwnHeader = location === '/join-us' || location === '/more';
+
   return (
     <LanguageProvider>
       <TooltipProvider>
         <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
+          {!hasOwnHeader && <Header />}
           <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
             <Switch>

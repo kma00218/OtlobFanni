@@ -217,7 +217,7 @@ export default function More() {
     <div className="bg-[#F2F2F7] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
       {/* Fixed header — Share | Icon | Lang */}
-      <header className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-gray-100 z-50 flex items-center px-3 max-w-[480px] mx-auto">
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-[#d4b87a] z-50 flex items-center px-3 max-w-[480px] mx-auto" style={{ background: `repeating-linear-gradient(92deg, transparent 0px, transparent 4px, rgba(160,100,20,0.04) 4px, rgba(160,100,20,0.04) 7px, transparent 7px, transparent 13px, rgba(160,100,20,0.025) 13px, rgba(160,100,20,0.025) 15px), linear-gradient(180deg, #f8ead4 0%, #f0dbb8 50%, #f5e4c8 100%)` }}>
         <button onClick={handleShare} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0">
           <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
             <Share2 className="h-5 w-5 text-white" />
