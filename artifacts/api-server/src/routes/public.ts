@@ -459,7 +459,9 @@ router.post("/company-applications", async (req, res): Promise<void> => {
 
 // ── Application Status (public tracking) ─────────────────────────────────────
 router.get("/status/:requestNumber", async (req, res): Promise<void> => {
-  const reqNum = Array.isArray(req.params.requestNumber) ? req.params.requestNumber[0] : req.params.requestNumber;
+  const raw = Array.isArray(req.params.requestNumber) ? req.params.requestNumber[0] : req.params.requestNumber;
+  // Normalise: uppercase + replace digit-zero with letter-O so "0F-T-123" == "OF-T-123"
+  const reqNum = raw.toUpperCase().replace(/0/g, 'O');
 
   const [techApp] = await db
     .select({

@@ -35,7 +35,8 @@ function getStepIndex(status) {
 
 export default function StatusTracking() {
   const { id } = useParams()
-  const { ar } = useLang()
+  const { lang } = useLang()
+  const ar = lang === 'ar'
 
   const [tab, setTab]               = useState('number')
   const [query, setQuery]           = useState(id || '')
@@ -66,7 +67,8 @@ export default function StatusTracking() {
   }
 
   const doSearch = async (reqNum) => {
-    const num = (reqNum || query).trim().toUpperCase()
+    // Normalise: uppercase + replace digit-zero with letter-O (OF-T vs 0F-T confusion)
+    const num = (reqNum || query).trim().toUpperCase().replace(/0/g, 'O')
     if (!num) return
     setLoading(true); reset()
     try {
