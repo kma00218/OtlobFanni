@@ -76,7 +76,7 @@ export default function AdminLogin() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold text-[#8080B0] mb-2 tracking-wider uppercase">
+              <label className="block text-xs font-bold text-[#A0A0C8] mb-2 tracking-wider uppercase">
                 البريد الإلكتروني
               </label>
               <input
@@ -86,18 +86,18 @@ export default function AdminLogin() {
                 placeholder="admin@otlobfanni.ly"
                 required
                 autoComplete="email"
-                className="w-full px-4 py-3.5 rounded-2xl text-sm text-white placeholder:text-[#3A3A60] transition-all outline-none"
+                className="w-full px-4 py-3.5 rounded-2xl text-sm text-white placeholder:text-[#6060A0] transition-all outline-none"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1.5px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.12)',
+                  border: '1.5px solid rgba(255,255,255,0.22)',
                 }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(255,121,0,0.5)'; e.target.style.background = 'rgba(255,121,0,0.04)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.05)' }}
+                onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.background = 'rgba(255,121,0,0.10)' }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.22)'; e.target.style.background = 'rgba(255,255,255,0.12)' }}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#8080B0] mb-2 tracking-wider uppercase">
+              <label className="block text-xs font-bold text-[#A0A0C8] mb-2 tracking-wider uppercase">
                 كلمة المرور
               </label>
               <div className="relative">
@@ -108,13 +108,13 @@ export default function AdminLogin() {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full px-4 py-3.5 pl-12 rounded-2xl text-sm text-white placeholder:text-[#3A3A60] transition-all outline-none"
+                  className="w-full px-4 py-3.5 pl-12 rounded-2xl text-sm text-white placeholder:text-[#6060A0] transition-all outline-none"
                   style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1.5px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.12)',
+                    border: '1.5px solid rgba(255,255,255,0.22)',
                   }}
-                  onFocus={e => { e.target.style.borderColor = 'rgba(255,121,0,0.5)'; e.target.style.background = 'rgba(255,121,0,0.04)' }}
-                  onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.05)' }}
+                  onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.background = 'rgba(255,121,0,0.10)' }}
+                  onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.22)'; e.target.style.background = 'rgba(255,255,255,0.12)' }}
                 />
                 <button
                   type="button"
