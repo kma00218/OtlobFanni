@@ -1,12 +1,49 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
-import { sections, categories } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid } from 'lucide-react'
+import { sections } from '../data/services'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
+import { api, getFileUrl } from '../lib/api'
+import { SkeletonRecentCard } from '../components/Skeleton'
+
+function RecentCard({ item, ar }) {
+  const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
+  const city = ar ? item.cityAr : (item.cityEn || item.cityAr)
+  const photo = getFileUrl(item.photo)
+  const isCo = item.type === 'company'
+  const href = isCo ? `/companies/${item.id}` : `/technician/${item.id}`
+  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
+
+  return (
+    <Link href={href}>
+      <div className="w-36 flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden active:scale-[0.97] transition-transform cursor-pointer">
+        <div className="w-full h-24 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center overflow-hidden">
+          {photo
+            ? <img src={photo} alt={name} className="w-full h-full object-cover" />
+            : isCo
+              ? <Building2 className="w-8 h-8 text-white/60" />
+              : <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <span className="text-white font-extrabold text-base">{firstWord.charAt(0)}</span>
+                </div>
+          }
+        </div>
+        <div className="p-2.5">
+          <p className="text-xs font-bold text-[#071B33] truncate leading-tight">{name || '—'}</p>
+          {city ? <p className="text-[10px] text-[#FF7900] font-medium mt-0.5 truncate">{city}</p> : null}
+          <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+            isCo ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-[#FF7900]'
+          }`}>
+            {isCo ? (ar ? 'شركة' : 'Company') : (ar ? 'فني' : 'Tech')}
+          </span>
+        </div>
+      </div>
+    </Link>
+  )
+}
 
 export default function Home() {
   const { dir, lang } = useLang()
@@ -14,6 +51,8 @@ export default function Home() {
   const [, navigate] = useLocation()
   const logoClickCount = useRef(0)
   const logoClickTimer = useRef(null)
+  const [recent, setRecent] = useState([])
+  const [recentLoading, setRecentLoading] = useState(true)
 
   const handleLogoClick = () => {
     logoClickCount.current += 1
@@ -28,6 +67,13 @@ export default function Home() {
     }, 5000)
   }
 
+  useEffect(() => {
+    api.recentlyJoined()
+      .then(data => setRecent(Array.isArray(data) ? data : []))
+      .catch(() => setRecent([]))
+      .finally(() => setRecentLoading(false))
+  }, [])
+
   const activeSections = sections.filter(s => s.isActive)
 
   return (
@@ -38,7 +84,7 @@ export default function Home() {
           <Logo />
         </div>
 
-        {/* زر الانضمام — ثابت تحت الشعار */}
+        {/* زر الانضمام */}
         <Link href="/join-us">
           <div
             className="rounded-2xl px-5 py-3.5 text-center active:scale-95 transition-transform duration-150 select-none"
@@ -55,8 +101,34 @@ export default function Home() {
 
         <SearchBar />
 
-        {/* إعلان أعلى الصفحة — تحت شريط البحث مباشرة */}
+        {/* إعلان أعلى الصفحة */}
         <AdBanner placement="home_top" dismissible />
+
+        {/* Recently Joined */}
+        {(recentLoading || recent.length > 0) && (
+          <div>
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-base font-bold text-foreground">
+                {ar ? 'انضموا مؤخراً' : 'Recently Joined'}
+              </h2>
+              <div className="flex items-center gap-1 text-[#FF7900]">
+                <Users className="w-3.5 h-3.5" />
+                <span className="text-xs font-semibold">{recent.length}</span>
+              </div>
+            </div>
+            <div
+              className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {recentLoading
+                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRecentCard key={i} />)
+                : recent.map(item => (
+                    <RecentCard key={`${item.type}-${item.id}`} item={item} ar={ar} />
+                  ))
+              }
+            </div>
+          </div>
+        )}
 
         <div>
           <div className="flex justify-between items-center mb-3">
@@ -77,7 +149,7 @@ export default function Home() {
             ))}
           </div>
 
-          {/* بطاقة الانطلاق — دعوة للفنيين والشركات */}
+          {/* بطاقة الانطلاق */}
           <div
             className="mt-4 rounded-2xl p-6 flex flex-col items-center gap-4 text-center select-none"
             style={{ background: 'linear-gradient(135deg, #FF7900 0%, #071B33 100%)' }}
@@ -108,7 +180,7 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* كل التخصصات — زر بارز */}
+          {/* كل التخصصات */}
           <Link href="/categories">
             <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl py-4 bg-[#FF7900] active:bg-[#e06a00] transition-colors cursor-pointer select-none shadow-md shadow-[#FF7900]/30">
               <LayoutGrid className="w-5 h-5 text-white" />
@@ -121,7 +193,7 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* إعلان أسفل الصفحة — بعد زر كل التخصصات */}
+          {/* إعلان أسفل الصفحة */}
           <div className="mt-4">
             <AdBanner placement="home_bottom" compact />
           </div>

@@ -10,6 +10,8 @@ import {
 import api, { getFileUrl } from '../lib/api'
 import { track } from '../lib/tracker'
 import ImageLightbox from '../components/ImageLightbox'
+import ShareSheet from '../components/ShareSheet'
+import { SkeletonProfileHeader } from '../components/Skeleton'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -141,6 +143,7 @@ export default function TechnicianDetails() {
   const [submitting,  setSubmitting]  = useState(false)
   const [submitted,   setSubmitted]   = useState(false)
   const [showComment, setShowComment] = useState(false)
+  const [showShare,   setShowShare]   = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_technicians')
 
   useEffect(() => {
@@ -202,8 +205,13 @@ export default function TechnicianDetails() {
   if (!tech) return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
+      <div className="px-4 pt-4 space-y-3">
+        <SkeletonProfileHeader />
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+          {[1,2,3].map(i => (
+            <div key={i} className="animate-pulse h-4 bg-gray-200 rounded-xl w-full" />
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -328,7 +336,9 @@ export default function TechnicianDetails() {
 
             {/* Action buttons */}
             <div className="flex gap-2.5">
-              <a href={`https://wa.me/${tech.whatsapp}`} target="_blank" rel="noreferrer"
+              <a
+                href={`https://wa.me/${tech.whatsapp}?text=${encodeURIComponent('مرحباً، وجدتك عبر منصة اطلب فني 🇱🇾\nهل أنت متاح؟')}`}
+                target="_blank" rel="noreferrer"
                 onClick={() => track('whatsapp_click', id)}
                 className="flex-1 bg-[#25D366] text-white text-sm font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm">
                 <MessageSquare className="w-4 h-4" />
@@ -341,6 +351,12 @@ export default function TechnicianDetails() {
                 {ar ? 'اتصال' : 'Call'}
               </a>
             </div>
+            <button
+              onClick={() => setShowShare(true)}
+              className="w-full mt-1 flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-2xl active:scale-[0.98] transition-transform">
+              <Send className="w-4 h-4" />
+              {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
+            </button>
           </div>
         </div>
 
@@ -632,6 +648,15 @@ export default function TechnicianDetails() {
         </div>
 
       </main>
+
+      {showShare && (
+        <ShareSheet
+          name={tech.name || ''}
+          city={ar ? tech.cityAr : tech.cityEn}
+          profileUrl={window.location.href}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </div>
   )
 }

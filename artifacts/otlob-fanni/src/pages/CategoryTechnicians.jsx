@@ -5,6 +5,7 @@ import ServiceImageIcon from '../components/ServiceImageIcon'
 import { categories } from '../data/services'
 import { useRoute, useLocation } from 'wouter'
 import { getFileUrl } from '../lib/api'
+import { SkeletonListCards } from '../components/Skeleton'
 import {
   Star, MapPin, Phone, MessageSquare, Zap, Search,
   Users, Loader2, Building2, Heart,
@@ -483,10 +484,7 @@ export default function CategoryTechnicians() {
 
         {/* القائمة */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <Loader2 className="w-8 h-8 text-[#FF7900] animate-spin" />
-            <p className="text-gray-400 text-sm">{ar ? 'جارٍ التحميل...' : 'Loading...'}</p>
-          </div>
+          <SkeletonListCards count={4} />
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
             <p className="text-red-500 text-sm">{ar ? 'حدث خطأ أثناء التحميل' : 'Error loading data'}</p>
@@ -497,23 +495,24 @@ export default function CategoryTechnicians() {
           </div>
         ) : totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-              <Users className="w-10 h-10 text-gray-300" />
+            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center">
+              <Users className="w-10 h-10 text-[#FF7900]/40" />
             </div>
             <div>
-              <p className="text-gray-700 font-bold text-base mb-1">
-                {ar ? 'لا يوجد مقدمو خدمة متاحون' : 'No providers available'}
+              <p className="text-[#071B33] font-extrabold text-base mb-1">
+                {ar ? 'لم يتم العثور على نتائج' : 'No results found'}
               </p>
-              <p className="text-gray-400 text-sm max-w-[240px] mx-auto">
+              <p className="text-gray-400 text-sm max-w-[240px] mx-auto leading-relaxed">
                 {ar
-                  ? 'لم يتم إضافة فنيين أو شركات لهذا التخصص بعد، أو جرب تغيير المدينة.'
-                  : 'No technicians or companies found for this category. Try changing the city.'}
+                  ? 'جرّب تخصصاً أو مدينة أخرى'
+                  : 'Try a different specialty or city'}
               </p>
             </div>
             {selectedCity && (
-              <button onClick={() => { setSelectedCity(''); setCityChosen(false); navigate(`/category/${categoryId}`) }}
-                className="text-[#FF7900] text-sm font-medium hover:underline">
-                {ar ? 'عرض كل المدن' : 'Show all cities'}
+              <button
+                onClick={() => { setSelectedCity(''); setCityChosen(false); navigate(`/category/${categoryId}`) }}
+                className="bg-[#FF7900] text-white text-sm font-bold px-5 py-2.5 rounded-xl active:scale-[0.97] transition-transform shadow-sm shadow-[#FF7900]/30">
+                {ar ? 'إعادة ضبط البحث' : 'Reset Search'}
               </button>
             )}
           </div>

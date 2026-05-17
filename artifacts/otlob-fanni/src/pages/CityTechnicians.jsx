@@ -5,6 +5,7 @@ import BackHeader from '../components/BackHeader'
 import TechnicianCard from '../components/TechnicianCard'
 import { MapPin, Globe, Search, Building2, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
+import { SkeletonListCards } from '../components/Skeleton'
 
 function CompanyRow({ company, ar, onOpen }) {
   const name = company.companyName || ''
@@ -128,15 +129,20 @@ export default function CityTechnicians() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-4 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
-          </div>
+          <SkeletonListCards count={4} />
         ) : total === 0 ? (
-          <div className="text-center py-16">
-            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-400 font-medium">
-              {ar ? 'لا يوجد مقدمو خدمة في هذه المدينة بعد' : 'No providers in this city yet'}
-            </p>
+          <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
+            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center">
+              <MapPin className="w-10 h-10 text-[#FF7900]/40" />
+            </div>
+            <div>
+              <p className="text-[#071B33] font-extrabold text-base mb-1">
+                {ar ? 'لم يتم العثور على نتائج' : 'No results found'}
+              </p>
+              <p className="text-gray-400 text-sm max-w-[240px] mx-auto leading-relaxed">
+                {ar ? 'جرّب تخصصاً أو مدينة أخرى' : 'Try a different specialty or city'}
+              </p>
+            </div>
           </div>
         ) : (
           <>

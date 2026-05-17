@@ -10,6 +10,8 @@ import {
 import api, { getFileUrl } from '../lib/api'
 import { categories } from '../data/services'
 import ImageLightbox from '../components/ImageLightbox'
+import ShareSheet from '../components/ShareSheet'
+import { SkeletonProfileHeader } from '../components/Skeleton'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -105,6 +107,7 @@ export default function CompanyDetails() {
   const [showComment,  setShowComment]  = useState(false)
   const [rating,       setRating]       = useState(0)
   const [reviewsCount, setReviewsCount] = useState(0)
+  const [showShare, setShowShare] = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_companies')
 
   useEffect(() => {
@@ -164,8 +167,13 @@ export default function CompanyDetails() {
   if (!company) return (
     <div className="bg-[#EEF4FF] min-h-screen pt-20" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
+      <div className="px-4 pt-4 space-y-3">
+        <SkeletonProfileHeader />
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+          {[1,2,3].map(i => (
+            <div key={i} className="animate-pulse h-4 bg-gray-200 rounded-xl w-full" />
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -296,7 +304,7 @@ export default function CompanyDetails() {
         {/* أزرار التواصل */}
         <div className="flex gap-2">
           <a
-            href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}`}
+            href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent('مرحباً، وجدتك عبر منصة اطلب فني 🇱🇾\nهل أنت متاح؟')}`}
             target="_blank"
             rel="noreferrer"
             className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
@@ -312,6 +320,12 @@ export default function CompanyDetails() {
             {ar ? 'اتصال' : 'Call'}
           </a>
         </div>
+        <button
+          onClick={() => setShowShare(true)}
+          className="w-full flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl active:scale-[0.98] transition-transform mt-1">
+          <Send className="w-3.5 h-3.5" />
+          {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
+        </button>
 
         {/* السعر */}
         {priceFrom && (
@@ -620,6 +634,15 @@ export default function CompanyDetails() {
         )}
 
       </main>
+
+      {showShare && (
+        <ShareSheet
+          name={name}
+          city={ar ? company.city_ar || company.city || '' : company.city_en || company.city || ''}
+          profileUrl={window.location.href}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </div>
   )
 }

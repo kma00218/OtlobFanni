@@ -338,6 +338,60 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
   res.json(r);
 });
 
+// ── Recently Joined ───────────────────────────────────────────────────────────
+router.get("/recently-joined", async (_req, res): Promise<void> => {
+  const [techRows, companyRows] = await Promise.all([
+    db.select({
+      id: techniciansTable.id,
+      nameAr: techniciansTable.nameAr,
+      nameEn: techniciansTable.nameEn,
+      profilePhoto: techniciansTable.profilePhoto,
+      cityId: techniciansTable.cityId,
+      cityNameAr: citiesTable.nameAr,
+      cityNameEn: citiesTable.nameEn,
+      createdAt: techniciansTable.createdAt,
+    })
+    .from(techniciansTable)
+    .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+    .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)))
+    .orderBy(desc(techniciansTable.createdAt))
+    .limit(10),
+
+    db.select({
+      id: companyApplicationsTable.id,
+      companyName: companyApplicationsTable.companyName,
+      companyLogo: companyApplicationsTable.companyLogo,
+      city: companyApplicationsTable.city,
+      createdAt: companyApplicationsTable.createdAt,
+    })
+    .from(companyApplicationsTable)
+    .where(eq(companyApplicationsTable.status, "published"))
+    .orderBy(desc(companyApplicationsTable.createdAt))
+    .limit(10),
+  ]);
+
+  const techs = techRows.map(r => ({
+    id: r.id, type: 'technician',
+    nameAr: r.nameAr, nameEn: r.nameEn,
+    photo: r.profilePhoto,
+    cityAr: r.cityNameAr ?? '', cityEn: r.cityNameEn ?? '',
+    createdAt: r.createdAt,
+  }));
+  const companies = companyRows.map(r => ({
+    id: r.id, type: 'company',
+    nameAr: r.companyName, nameEn: r.companyName,
+    photo: r.companyLogo,
+    cityAr: r.city ?? '', cityEn: r.city ?? '',
+    createdAt: r.createdAt,
+  }));
+
+  const all = [...techs, ...companies]
+    .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+    .slice(0, 12);
+
+  res.json(all);
+});
+
 // ── Ads (public, active by placement) ────────────────────────────────────────
 router.get("/ads", async (req, res): Promise<void> => {
   const { placement } = req.query as Record<string, string>;

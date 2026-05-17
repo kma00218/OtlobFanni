@@ -86,6 +86,7 @@ export const api = {
   company: (id) => get(`/companies/${id}`),
   companyReviews: (id) => get(`/companies/${id}/reviews`),
   submitCompanyReview: (id, data) => post(`/companies/${id}/reviews`, data),
+  recentlyJoined: () => get('/recently-joined'),
   submitAdRequest:             (data) => post('/ad-requests',             data),
   referralStats:               (id)   => get(`/referral-stats/${id}`),
 

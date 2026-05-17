@@ -6,6 +6,7 @@ import {
   MapPin, Phone, Search, Building2, Zap, Briefcase, Clock, ChevronLeft, ChevronRight
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
+import { SkeletonCompanyCard } from '../components/Skeleton'
 import { categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
 
@@ -208,12 +209,17 @@ export default function Companies() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
-              <Building2 className="w-8 h-8 text-gray-300" />
+            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center">
+              <Building2 className="w-10 h-10 text-[#FF7900]/40" />
             </div>
-            <p className="text-gray-500 font-medium text-sm">
-              {ar ? 'لا توجد شركات بعد' : 'No companies found'}
-            </p>
+            <div>
+              <p className="text-[#071B33] font-extrabold text-base mb-1">
+                {ar ? 'لم يتم العثور على نتائج' : 'No results found'}
+              </p>
+              <p className="text-gray-400 text-sm max-w-[240px] mx-auto leading-relaxed">
+                {ar ? 'جرّب تخصصاً أو مدينة أخرى' : 'Try a different specialty or city'}
+              </p>
+            </div>
           </div>
         ) : (
           <>
