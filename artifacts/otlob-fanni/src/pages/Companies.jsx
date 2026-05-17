@@ -25,6 +25,14 @@ function CompanyCard({ company, lang, onOpen }) {
   const city = company.city || ''
   const area = company.area || ''
   const specialty = company.specialty || ''
+  const extraIds = company.extra_specialties || company.extraSpecialties || []
+  const extraNames = extraIds
+    .map(id => ar ? (CAT_LABEL[id] || '') : (CAT_LABEL_EN[id] || ''))
+    .filter(Boolean)
+  const primaryName = ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)
+  const allSpecialtyNames = primaryName
+    ? [primaryName, ...extraNames.filter(n => n !== primaryName)]
+    : extraNames
   const availableNow = company.available_now ?? company.availableNow ?? false
   const emergency = company.emergency || false
   const yearsActive = company.years_active || company.yearsActive || ''
@@ -63,9 +71,11 @@ function CompanyCard({ company, lang, onOpen }) {
           <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
         </div>
 
-        <p className="text-xs text-[#FF7900] font-medium mb-2">
-          {ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)}
-        </p>
+        {allSpecialtyNames.length > 0 && (
+          <p className="text-xs text-[#FF7900] font-medium mb-2 truncate">
+            {allSpecialtyNames.join(' · ')}
+          </p>
+        )}
 
         <div className="flex items-center gap-1 mb-1">
           <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />

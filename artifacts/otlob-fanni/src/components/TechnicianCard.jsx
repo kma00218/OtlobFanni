@@ -2,11 +2,23 @@ import { useLang } from '../context/LanguageContext';
 import { Link } from 'wouter';
 import { Star, MapPin, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { getFileUrl } from '../lib/api';
+import { categories as CAT_LIST } from '../data/services';
+
+const CAT_AR = Object.fromEntries(CAT_LIST.map(c => [c.id, c.nameAr]));
+const CAT_EN = Object.fromEntries(CAT_LIST.map(c => [c.id, c.nameEn || c.nameAr]));
 
 export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
-  const name      = (lang === 'ar' ? technician.nameAr : technician.nameEn) || technician.nameAr || technician.nameEn || '';
-  const specialty = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
+  const name        = (lang === 'ar' ? technician.nameAr : technician.nameEn) || technician.nameAr || technician.nameEn || '';
+  const primarySpec = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
+  const extraIds    = technician.extraSpecialties || [];
+  const extraNames  = extraIds
+    .map(id => lang === 'ar' ? CAT_AR[id] : CAT_EN[id])
+    .filter(Boolean);
+  const allSpecialties = primarySpec
+    ? [primarySpec, ...extraNames.filter(n => n !== primarySpec)]
+    : extraNames;
+  const specialty = allSpecialties.join(' · ');
   const city      = lang === 'ar'
     ? (technician.cityAr || technician.city_name_ar || technician.city || '')
     : (technician.cityEn || technician.city_name_en || technician.city_name_ar || technician.city || '');
