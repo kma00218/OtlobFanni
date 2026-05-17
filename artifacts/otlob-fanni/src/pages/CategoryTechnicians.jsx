@@ -43,7 +43,7 @@ function Stars({ rating }) {
 function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
   const ar = lang === 'ar'
   const name = tech.nameAr || tech.name_ar || ''
-  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
+  const firstName = name ? (name.trim().split(' ')[0] || '?') : '?'
   const photo = getFileUrl(tech.profilePhoto || tech.profile_photo || null)
   const availableNow = tech.availableNow ?? tech.available_now ?? (tech.status === 'available')
   const emergency = tech.emergency || false
@@ -63,8 +63,8 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
         {photo ? (
           <img src={photo} alt={name} className="w-full h-36 object-cover" />
         ) : (
-          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#1a3a5c] flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">{initials}</span>
+          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+            <span className="text-white text-2xl font-bold text-center px-2">{firstName}</span>
           </div>
         )}
         <div className="absolute top-2 right-2 flex flex-col gap-1">
@@ -153,7 +153,7 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
 function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }) {
   const ar = lang === 'ar'
   const name = company.companyName || company.company_name || ''
-  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
+  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
   const logo = getFileUrl(company.companyLogo || company.company_logo || null)
   const availableNow = company.availableNow ?? company.available_now ?? false
   const emergency = company.emergency || false
@@ -170,9 +170,8 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }
         {logo ? (
           <img src={logo} alt={name} className="w-full h-36 object-cover" />
         ) : (
-          <div className="w-full h-36 bg-gradient-to-br from-[#0e3460] to-[#1a56db] flex items-center justify-center">
-            <Building2 className="w-10 h-10 text-white/40 absolute" />
-            <span className="text-white text-3xl font-bold relative">{initials}</span>
+          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+            <span className="text-white text-2xl font-bold text-center px-2">{firstWord}</span>
           </div>
         )}
         <div className="absolute top-2 right-2 flex flex-col gap-1">

@@ -49,7 +49,7 @@ function OrderCard({ req, lang, cities, onCancel, onComplete }) {
   const techName     = showTech ? (req.assigned_technician_name || req.assignedTechnicianName || null) : null
   const techPhone    = showTech ? (req.assigned_technician_phone || req.assignedTechnicianPhone || null) : null
   const techWhatsapp = showTech ? (req.assigned_technician_whatsapp || techPhone || null) : null
-  const techInitials = techName ? techName.split(' ').map(n => n[0]).join('').substring(0, 2) : '?'
+  const techFirstName = techName ? (techName.trim().split(' ')[0] || '؟') : '؟'
 
   const problemDesc = req.problem_description || req.problemDescription
 
@@ -135,8 +135,8 @@ function OrderCard({ req, lang, cities, onCancel, onComplete }) {
           <p className="text-xs text-gray-400 mb-2.5">{ar ? 'الفني المُسند' : 'Assigned Technician'}</p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-full bg-[#071B33] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                {techInitials}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-[10px] font-bold text-center px-0.5 leading-tight">{techFirstName}</span>
               </div>
               <span className="font-semibold text-gray-800 text-sm">{techName}</span>
             </div>

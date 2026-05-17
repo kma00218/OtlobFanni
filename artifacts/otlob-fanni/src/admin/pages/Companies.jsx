@@ -173,8 +173,8 @@ export default function Companies() {
             <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
               {logo
                 ? <img src={logo} alt="" className="w-full h-full object-cover" />
-                : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-bold rounded-xl">
-                    {(v || '').split(' ').map(n => n[0]).join('').substring(0, 2)}
+                : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center rounded-xl">
+                    <span className="text-white text-[10px] font-bold text-center px-0.5 leading-tight">{(v || '').trim().split(' ')[0]}</span>
                   </div>
               }
             </div>
@@ -322,8 +322,8 @@ export default function Companies() {
                 <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-slate-200 shadow">
                   {logo
                     ? <img src={logo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
-                    : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-2xl rounded-xl">
-                        {compName.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center rounded-xl">
+                        <span className="text-white font-bold text-base text-center px-1 leading-tight">{compName.trim().split(' ')[0]}</span>
                       </div>
                   }
                 </div>

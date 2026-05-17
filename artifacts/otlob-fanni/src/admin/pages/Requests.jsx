@@ -332,8 +332,8 @@ export default function Requests() {
                   {eligibles.map(tech => (
                     <label key={tech.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedTechId === tech.id ? 'border-[#FF7900] bg-[#FF7900]/5' : 'border-white/8 hover:border-white/15 hover:bg-white/5'}`}>
                       <input type="radio" name="techSelect" value={tech.id} checked={selectedTechId === tech.id} onChange={() => setSelectedTechId(tech.id)} className="accent-[#FF7900]" data-testid="tech-radio" />
-                      <div className="w-9 h-9 rounded-full bg-[#1A1A30] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                        {tech.name_ar.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center flex-shrink-0">
+                        <span className="text-white text-[10px] font-bold text-center px-0.5 leading-tight">{(tech.name_ar || '').trim().split(' ')[0]}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-white text-sm">{tech.name_ar}</p>

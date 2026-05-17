@@ -294,7 +294,7 @@ export default function JoinCompany() {
     )
   }
 
-  const initials = form.company_name.trim().split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
+  const firstWord = form.company_name.trim().split(' ')[0] || '؟'
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen" dir={ar ? 'rtl' : 'ltr'}>
@@ -334,10 +334,8 @@ export default function JoinCompany() {
                 {(logoPreview || companyLogo) ? (
                   <img src={logoPreview || getFileUrl(companyLogo)} alt="logo" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-16 h-16 rounded-xl bg-[#071B33] flex items-center justify-center text-white font-bold text-xl">
-                      {initials}
-                    </div>
+                  <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center rounded-2xl">
+                    <span className="text-white font-bold text-base text-center px-2 leading-tight">{firstWord}</span>
                   </div>
                 )}
                 {uploading > 0 && (
@@ -358,7 +356,7 @@ export default function JoinCompany() {
                   {(logoPreview || companyLogo) ? (ar ? 'تغيير الشعار' : 'Change Logo') : (ar ? 'رفع شعار الشركة' : 'Upload Company Logo')}
                 </button>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  {ar ? 'سيظهر هذا الشعار في ملف الشركة على التطبيق' : 'This logo will appear on your company profile in the app'}
+                  {ar ? 'إضافة شعار الشركة يساعد العملاء على التعرف على نشاطك بشكل أفضل (اختياري)' : 'A company logo helps clients recognize your business better (optional)'}
                 </p>
                 {(logoPreview || companyLogo) && (
                   <button type="button" onClick={() => { setCompanyLogo(null); setLogoPreview(null) }}

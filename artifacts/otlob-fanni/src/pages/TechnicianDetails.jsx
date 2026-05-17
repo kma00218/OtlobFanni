@@ -198,7 +198,7 @@ export default function TechnicianDetails() {
 
   const catName  = ar ? tech.categoryNameAr : tech.categoryNameEn
   const cityName = ar ? tech.cityAr : tech.cityEn
-  const initials = tech.name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
+  const firstName = tech.name ? (tech.name.trim().split(' ')[0] || '?') : '?'
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
@@ -247,7 +247,9 @@ export default function TechnicianDetails() {
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md flex-shrink-0 bg-[#071B33] flex items-center justify-center">
                 {tech.photoUrl
                   ? <img src={tech.photoUrl} alt={tech.name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [tech.photoUrl], index: 0 })} />
-                  : <span className="text-white text-2xl font-bold">{initials}</span>
+                  : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+                      <span className="text-white text-lg font-bold text-center px-1 leading-tight">{firstName}</span>
+                    </div>
                 }
               </div>
               <div className="pb-1 flex-1 min-w-0">

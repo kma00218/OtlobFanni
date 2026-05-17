@@ -101,7 +101,7 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
   }
   const statusInfo = statusMap[tech.status] || statusMap.inactive
 
-  const initials = nameAr.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2)
+  const firstName = nameAr ? (nameAr.trim().split(' ')[0] || '') : ''
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
@@ -135,8 +135,8 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
             <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 border-slate-200 shadow">
               {photo
                 ? <img src={photo} alt={nameAr} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(photo)} />
-                : <div className="w-full h-full bg-gradient-to-br from-[#FF7900]/30 to-[#071B33] flex items-center justify-center text-white font-bold text-2xl">
-                    {initials || <User className="w-8 h-8 opacity-50" />}
+                : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+                    <span className="text-white font-bold text-base text-center px-1 leading-tight">{firstName}</span>
                   </div>
               }
             </div>
@@ -763,7 +763,7 @@ export default function Technicians() {
                 const approved = row.isApproved ?? row.is_approved ?? true
                 const featured = row.isFeatured ?? row.is_featured ?? false
                 const photo    = getFileUrl(row.profilePhoto || row.profile_photo || null)
-                const initials = (row.nameAr || row.name_ar || '').split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2)
+                const rowFirstName = ((row.nameAr || row.name_ar || '').trim().split(' ')[0] || '')
                 const pFrom    = row.priceFrom ?? row.price_from ?? 0
                 const pTo      = row.priceTo   ?? row.price_to   ?? 0
                 return (
@@ -773,7 +773,9 @@ export default function Technicians() {
                         <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
                           {photo
                             ? <img src={photo} alt="" className="w-full h-full object-cover" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#FF7900]/20 to-[#071B33] flex items-center justify-center text-white text-xs font-bold">{initials}</div>
+                            : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+                                <span className="text-white text-[10px] font-bold text-center px-0.5 leading-tight">{rowFirstName}</span>
+                              </div>
                           }
                         </div>
                         <div>

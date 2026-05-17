@@ -194,7 +194,7 @@ export default function CompanyDetails() {
   const address       = company.address || ''
   const createdAt     = company.created_at || company.createdAt || null
 
-  const initials   = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2) || '?'
+  const firstWord  = name ? (name.trim().split(' ')[0] || '?') : '?'
   const catName    = ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)
   const expLabel   = ar ? (EXP_AR[yearsActive] || yearsActive) : (EXP_EN[yearsActive] || yearsActive)
 
@@ -233,7 +233,9 @@ export default function CompanyDetails() {
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#0e3460] flex items-center justify-center">
                 {logo
                   ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [logo], index: 0 })} />
-                  : <span className="text-white text-2xl font-bold">{initials}</span>
+                  : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+                      <span className="text-white text-lg font-bold text-center px-1 leading-tight">{firstWord}</span>
+                    </div>
                 }
               </div>
               <div className="flex-1 min-w-0 mt-10">

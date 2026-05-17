@@ -291,7 +291,7 @@ export default function Join() {
     )
   }
 
-  const initials = form.full_name.trim().split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '?'
+  const firstName = form.full_name.trim().split(' ')[0] || '؟'
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen" dir={ar ? 'rtl' : 'ltr'}>
@@ -328,10 +328,8 @@ export default function Join() {
                 {(profilePreview || profilePhoto) ? (
                   <img src={profilePreview || getFileUrl(profilePhoto)} alt="profile" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-16 h-16 rounded-full bg-[#071B33] flex items-center justify-center text-white font-bold text-xl">
-                      {initials}
-                    </div>
+                  <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center rounded-full">
+                    <span className="text-white font-bold text-base text-center px-2 leading-tight">{firstName}</span>
                   </div>
                 )}
                 {uploading > 0 && (
@@ -352,7 +350,7 @@ export default function Join() {
                   {(profilePreview || profilePhoto) ? (ar ? 'تغيير الصورة' : 'Change Photo') : (ar ? 'رفع صورة شخصية' : 'Upload Profile Photo')}
                 </button>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  {ar ? 'ستظهر هذه الصورة في ملفك على التطبيق' : 'This photo will appear on your profile in the app'}
+                  {ar ? 'إضافة صورة شخصية تزيد ثقة العملاء بملفك داخل المنصة (اختياري)' : 'A profile photo builds client trust in your profile (optional)'}
                 </p>
                 {(profilePreview || profilePhoto) && (
                   <button type="button" onClick={() => { setProfilePhoto(null); setProfilePreview(null) }}

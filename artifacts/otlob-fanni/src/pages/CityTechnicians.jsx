@@ -8,7 +8,7 @@ import api, { getFileUrl } from '../lib/api'
 
 function CompanyRow({ company, ar, onOpen }) {
   const name = company.companyName || ''
-  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2).toUpperCase() || '؟'
+  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
   const logo = getFileUrl(company.companyLogo || null)
   const category = ar ? company.categoryAr : company.categoryEn
   const ChevIcon = ar ? ChevronLeft : ChevronRight
@@ -21,7 +21,9 @@ function CompanyRow({ company, ar, onOpen }) {
       <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden bg-blue-100 flex items-center justify-center">
         {logo
           ? <img src={logo} alt={name} className="w-full h-full object-cover" />
-          : <span className="font-bold text-blue-600 text-base">{initials}</span>}
+          : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+              <span className="text-white font-bold text-xs text-center px-1 leading-tight">{firstWord}</span>
+            </div>}
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</p>

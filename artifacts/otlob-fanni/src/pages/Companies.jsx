@@ -20,7 +20,7 @@ const EXP_LABEL_AR = {
 function CompanyCard({ company, lang, onOpen }) {
   const ar = lang === 'ar'
   const name = company.company_name || company.companyName || ''
-  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2) || '?'
+  const firstWord = name ? (name.trim().split(' ')[0] || '?') : '?'
   const logo = getFileUrl(company.company_logo || company.companyLogo || null)
   const city = company.city || ''
   const area = company.area || ''
@@ -39,8 +39,8 @@ function CompanyCard({ company, lang, onOpen }) {
         {logo ? (
           <img src={logo} alt={name} className="w-full h-36 object-cover" />
         ) : (
-          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#1a3a5c] flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">{initials}</span>
+          <div className="w-full h-36 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+            <span className="text-white text-2xl font-bold text-center px-2">{firstWord}</span>
           </div>
         )}
         <div className="absolute top-2 right-2 flex flex-col gap-1">

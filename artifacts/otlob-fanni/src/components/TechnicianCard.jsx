@@ -11,7 +11,7 @@ export default function TechnicianCard({ technician }) {
     ? (technician.cityAr || technician.city_name_ar || technician.city || '')
     : (technician.cityEn || technician.city_name_en || technician.city_name_ar || technician.city || '');
   const status    = lang === 'ar' ? technician.statusAr   : technician.statusEn;
-  const initials  = name ? name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0, 2) : '؟';
+  const firstName = name ? (name.trim().split(' ')[0] || '؟') : '؟';
 
   return (
     <Link href={`/technician/${technician.id}`} className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 active:scale-[0.98] transition-all">
@@ -23,10 +23,9 @@ export default function TechnicianCard({ technician }) {
             <img src={getFileUrl(technician.profilePhoto)} alt={name} className="w-full h-full object-cover" />
           ) : (
             <div
-              className="w-full h-full flex items-center justify-center text-white font-bold text-lg"
-              style={{ backgroundColor: technician.avatarColor }}
+              className="w-full h-full flex items-center justify-center text-white font-bold text-sm bg-gradient-to-br from-[#071B33] to-[#1a56db]"
             >
-              {initials}
+              {firstName}
             </div>
           )}
         </div>

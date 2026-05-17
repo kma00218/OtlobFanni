@@ -20,7 +20,7 @@ function TechRow({ tech, ar, onRemove }) {
   const [, navigate] = useLocation()
   const name     = tech.nameAr || tech.name_ar || ''
   const photo    = getFileUrl(tech.profilePhoto || tech.profile_photo || null)
-  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0,2) || '?'
+  const firstName = name ? (name.trim().split(' ')[0] || '?') : '?'
   const avail    = tech.availableNow ?? tech.available_now ?? (tech.status === 'available')
   const emergency= tech.emergency || false
   const rating   = tech.rating || 0
@@ -37,8 +37,8 @@ function TechRow({ tech, ar, onRemove }) {
         <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
           {photo
             ? <img src={photo} alt={name} className="w-full h-full object-cover" />
-            : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a3a5c] flex items-center justify-center">
-                <span className="text-white text-xl font-bold">{initials}</span>
+            : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+                <span className="text-white text-sm font-bold text-center px-1 leading-tight">{firstName}</span>
               </div>
           }
         </div>
@@ -93,7 +93,7 @@ function CompanyRow({ company, ar, onRemove }) {
   const [, navigate] = useLocation()
   const name     = company.companyName || company.company_name || ''
   const logo     = getFileUrl(company.companyLogo || company.company_logo || null)
-  const initials = name.split(' ').map(n => n[0]).filter(Boolean).join('').substring(0,2) || '؟'
+  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
   const avail    = company.availableNow ?? company.available_now ?? false
   const emergency= company.emergency || false
   const price    = company.priceFrom || company.price_from || ''
@@ -108,9 +108,8 @@ function CompanyRow({ company, ar, onRemove }) {
         <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
           {logo
             ? <img src={logo} alt={name} className="w-full h-full object-cover" />
-            : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#0e3460] flex items-center justify-center relative">
-                <Building2 className="w-7 h-7 text-white/30 absolute" />
-                <span className="text-white text-xl font-bold relative">{initials}</span>
+            : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+                <span className="text-white text-sm font-bold text-center px-1 leading-tight">{firstWord}</span>
               </div>
           }
         </div>
