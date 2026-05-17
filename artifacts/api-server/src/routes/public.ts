@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable,
   adsTable, technicianApplicationsTable, companyApplicationsTable,
-  adRequestsTable, serviceRequestsTable, reviewsTable, referralsTable,
+  adRequestsTable, serviceRequestsTable, reviewsTable,
 } from "@workspace/db/schema";
 import { eq, and, or, desc, inArray, ilike, sql } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
@@ -368,6 +368,19 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
     return;
   }
 
+  let referredByName: string | null = null;
+  let referredByType: string | null = null;
+  if (body.referred_by) {
+    const [techRef] = await db.select({ fullName: technicianApplicationsTable.fullName })
+      .from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, body.referred_by));
+    if (techRef) { referredByName = techRef.fullName; referredByType = "technician"; }
+    else {
+      const [compRef] = await db.select({ companyName: companyApplicationsTable.companyName })
+        .from(companyApplicationsTable).where(eq(companyApplicationsTable.id, body.referred_by));
+      if (compRef) { referredByName = compRef.companyName; referredByType = "company"; }
+    }
+  }
+
   const [app] = await db
     .insert(technicianApplicationsTable)
     .values({
@@ -401,24 +414,13 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
       idDocFront:     body.id_doc_front,
       idDocBack:      body.id_doc_back,
       workLicense:    body.work_license,
+      referredBy:     body.referred_by || null,
+      referredByName: referredByName,
+      referredByType: referredByType,
       status:         "pending",
       requestNumber:  "OF-T-" + String(Date.now()).slice(-6),
     })
     .returning();
-
-  // Auto-link: mark matching referrals as registered
-  if (body.phone) {
-    const digits = body.phone.replace(/\D/g, "").slice(-9);
-    await db
-      .update(referralsTable)
-      .set({ status: "registered", linkedApplicationId: app.id })
-      .where(
-        and(
-          sql`regexp_replace(${referralsTable.referredPhone}, '[^0-9]', '', 'g') LIKE ${'%' + digits}`,
-          eq(referralsTable.status, "not_registered")
-        )
-      );
-  }
 
   res.status(201).json(app);
 });
@@ -429,6 +431,19 @@ router.post("/company-applications", async (req, res): Promise<void> => {
   if (!body.id || !body.company_name || !body.phone || !body.city) {
     res.status(400).json({ error: "Missing required fields" });
     return;
+  }
+
+  let refByName: string | null = null;
+  let refByType: string | null = null;
+  if (body.referred_by) {
+    const [techRef] = await db.select({ fullName: technicianApplicationsTable.fullName })
+      .from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, body.referred_by));
+    if (techRef) { refByName = techRef.fullName; refByType = "technician"; }
+    else {
+      const [compRef] = await db.select({ companyName: companyApplicationsTable.companyName })
+        .from(companyApplicationsTable).where(eq(companyApplicationsTable.id, body.referred_by));
+      if (compRef) { refByName = compRef.companyName; refByType = "company"; }
+    }
   }
 
   const [app] = await db
@@ -463,24 +478,13 @@ router.post("/company-applications", async (req, res): Promise<void> => {
       workImages:     body.work_images || [],
       commercialDoc:  body.commercial_doc,
       workLicense:    body.work_license,
+      referredBy:     body.referred_by || null,
+      referredByName: refByName,
+      referredByType: refByType,
       status:         "pending",
       requestNumber:  "OF-C-" + String(Date.now()).slice(-6),
     })
     .returning();
-
-  // Auto-link: mark matching referrals as registered
-  if (body.phone) {
-    const digits = body.phone.replace(/\D/g, "").slice(-9);
-    await db
-      .update(referralsTable)
-      .set({ status: "registered", linkedApplicationId: app.id })
-      .where(
-        and(
-          sql`regexp_replace(${referralsTable.referredPhone}, '[^0-9]', '', 'g') LIKE ${'%' + digits}`,
-          eq(referralsTable.status, "not_registered")
-        )
-      );
-  }
 
   res.status(201).json(app);
 });
@@ -716,41 +720,6 @@ router.post("/ad-requests", async (req, res): Promise<void> => {
     .returning();
 
   res.status(201).json(req_);
-});
-
-// ── Referrals (submit) ────────────────────────────────────────────────────────
-router.post("/referrals", async (req, res): Promise<void> => {
-  const { referrals, referrerId, referrerName, referrerType } = req.body;
-  if (!Array.isArray(referrals) || referrals.length === 0) {
-    res.status(400).json({ error: "referrals array required" });
-    return;
-  }
-  if (!referrerId || !referrerName || !referrerType) {
-    res.status(400).json({ error: "referrer info required" });
-    return;
-  }
-  const inserted = [];
-  for (const r of referrals.slice(0, 5)) {
-    if (!r.name || !r.phone || !r.whatsapp || !r.specialty || !r.city) continue;
-    const id = "REF-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7);
-    const [row] = await db
-      .insert(referralsTable)
-      .values({
-        id,
-        referredName:      r.name,
-        referredPhone:     r.phone,
-        referredWhatsapp:  r.whatsapp,
-        referredSpecialty: r.specialty,
-        referredCity:      r.city,
-        referrerName,
-        referrerId,
-        referrerType,
-        status: "not_registered",
-      })
-      .returning();
-    inserted.push(row);
-  }
-  res.status(201).json(inserted);
 });
 
 export default router;

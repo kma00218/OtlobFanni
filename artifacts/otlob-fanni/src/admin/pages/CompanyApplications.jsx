@@ -213,9 +213,16 @@ export default function CompanyApplications() {
     },
     {
       key: 'requestNumber', label: 'رقم الطلب',
-      render: (v) => v
-        ? <span className="text-xs font-mono text-slate-400 tracking-wider">{v}</span>
-        : <span className="text-xs text-slate-600">—</span>,
+      render: (v, row) => (
+        <div className="flex flex-col gap-0.5">
+          {v ? <span className="text-xs font-mono text-slate-400 tracking-wider">{v}</span> : <span className="text-xs text-slate-600">—</span>}
+          {row?.referredByName && (
+            <span className="text-[10px] bg-orange-50 text-[#FF7900] border border-orange-100 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
+              👤 {row.referredByName}
+            </span>
+          )}
+        </div>
+      ),
     },
     {
       key: 'id', label: 'إجراءات',

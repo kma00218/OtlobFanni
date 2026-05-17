@@ -9,4 +9,3 @@ export * from "./admins";
 export * from "./service_requests";
 export * from "./analytics";
 export * from "./reviews";
-export * from "./referrals";

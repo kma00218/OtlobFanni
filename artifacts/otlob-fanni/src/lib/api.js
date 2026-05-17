@@ -87,7 +87,6 @@ export const api = {
   companyReviews: (id) => get(`/companies/${id}/reviews`),
   submitCompanyReview: (id, data) => post(`/companies/${id}/reviews`, data),
   submitAdRequest:             (data) => post('/ad-requests',             data),
-  submitReferrals:             (data) => post('/referrals',               data),
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   admin: {
@@ -165,10 +164,6 @@ export const api = {
       update:       (id, data)    => patch(`/admin/companies/${id}`, data),
     },
 
-    referrals: {
-      list:   ()           => get('/admin/referrals'),
-      update: (id, status) => patch(`/admin/referrals/${id}`, { status }),
-    },
   },
 }
 

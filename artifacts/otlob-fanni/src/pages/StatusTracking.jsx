@@ -5,7 +5,6 @@ import BackHeader from '../components/BackHeader'
 import api from '../lib/api'
 import { categories } from '../data/services'
 import { CheckCircle, Clock, XCircle, Megaphone, Search, Copy, Check, Phone, ExternalLink } from 'lucide-react'
-import ReferralModal from '../components/ReferralModal'
 
 const STATUS_INFO = {
   ar: {
@@ -48,7 +47,7 @@ export default function StatusTracking() {
   const [error, setError]           = useState(null)
   const [copied, setCopied]         = useState(false)
   const [copiedMsg, setCopiedMsg]   = useState(false)
-  const [showReferral, setShowReferral] = useState(false)
+  const [copiedRef, setCopiedRef]   = useState(null)
 
   const reset = () => { setResult(null); setPhoneResults(null); setError(null) }
 
@@ -323,32 +322,66 @@ export default function StatusTracking() {
                   })()}
                 </div>
 
-                {/* ── Referral Card ── */}
-                <div className="bg-gradient-to-br from-[#071B33] to-[#0d2a4d] rounded-2xl p-5 shadow-md text-white">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xl">👥</span>
-                    <p className="font-extrabold text-sm leading-tight">
-                      {ar ? 'رشّح فنيين وشركات خدمات موثوقين' : 'Refer Trusted Technicians & Companies'}
-                    </p>
-                  </div>
-                  <p className="text-xs text-blue-200 leading-relaxed mb-1">
-                    {ar
-                      ? 'ساهم في بناء أكبر دليل خدمات في ليبيا 🇱🇾'
-                      : 'Help build the largest service directory in Libya 🇱🇾'}
-                  </p>
-                  <p className="text-xs text-blue-300 leading-relaxed mb-4">
-                    {ar
-                      ? 'عند قبول الفنيين الذين رشّحتهم، يمكنك الحصول على مزايا أو إعلان مجاني داخل المنصة.'
-                      : 'When your referrals get approved, you can earn a free ad or special benefits on the platform.'}
-                  </p>
-                  <button
-                    onClick={() => setShowReferral(true)}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-[#FF7900] hover:bg-[#e86d00] text-white rounded-xl text-sm font-bold transition-colors active:scale-95"
-                  >
-                    <span className="text-base">🔧</span>
-                    {ar ? 'رشّح الآن' : 'Refer Now'}
-                  </button>
-                </div>
+                {/* ── Referral Link Card ── */}
+                {(() => {
+                  const base = window.location.origin + (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+                  const techLink = `${base}/join?ref=${result.id}`
+                  const compLink = `${base}/join-company?ref=${result.id}`
+                  const waMsg = (link) => encodeURIComponent(
+                    ar
+                      ? `سجّل في منصة اطلب فني — أكبر دليل خدمات فنية في ليبيا 🇱🇾\n${link}`
+                      : `Register on Otlob Fanni — Libya's largest service directory 🇱🇾\n${link}`
+                  )
+                  const copyLink = async (text, key) => {
+                    try { await navigator.clipboard.writeText(text) } catch { }
+                    setCopiedRef(key)
+                    setTimeout(() => setCopiedRef(null), 2000)
+                  }
+                  return (
+                    <div className="bg-gradient-to-br from-[#071B33] to-[#0d2a4d] rounded-2xl p-5 shadow-md text-white">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-2xl">👥</span>
+                        <p className="font-extrabold text-sm leading-tight">
+                          {ar ? 'رشّح فنيين وشركات موثوقين' : 'Refer Trusted Technicians & Companies'}
+                        </p>
+                      </div>
+                      <p className="text-xs text-blue-200 leading-relaxed mb-4">
+                        {ar
+                          ? 'شارك الرابط مع من تعرفهم — عند تسجيلهم يظهر اسمك تلقائياً كمرشِّح ويمكنك الحصول على مزايا.'
+                          : 'Share the link — when they register, your name appears as the referrer.'}
+                      </p>
+                      <div className="space-y-2.5">
+                        {[
+                          { label: ar ? '🔧 رابط تسجيل فني'   : '🔧 Technician Link', link: techLink, key: 'tech' },
+                          { label: ar ? '🏢 رابط تسجيل شركة' : '🏢 Company Link',    link: compLink, key: 'comp' },
+                        ].map(({ label, link, key }) => (
+                          <div key={key} className="bg-white/10 rounded-xl p-3 space-y-2">
+                            <p className="text-xs font-bold text-blue-200">{label}</p>
+                            <div className="flex items-center gap-2" dir="ltr">
+                              <p className="flex-1 text-[11px] text-white/60 font-mono truncate">{link}</p>
+                              <button
+                                onClick={() => copyLink(link, key)}
+                                className="flex items-center gap-1 px-2.5 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"
+                              >
+                                {copiedRef === key ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                                {copiedRef === key ? (ar ? 'تم!' : 'Done!') : (ar ? 'نسخ' : 'Copy')}
+                              </button>
+                              <a
+                                href={`https://wa.me/?text=${waMsg(link)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-2.5 py-1.5 bg-green-600/70 hover:bg-green-600 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"
+                              >
+                                <span>💬</span>
+                                {ar ? 'واتساب' : 'WA'}
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
               </>
             )}
 
@@ -445,14 +478,6 @@ export default function StatusTracking() {
 
       </main>
 
-      {showReferral && result && (
-        <ReferralModal
-          referrerId={result.id}
-          referrerName={result.fullName}
-          referrerType={result.type}
-          onClose={() => setShowReferral(false)}
-        />
-      )}
     </div>
   )
 }

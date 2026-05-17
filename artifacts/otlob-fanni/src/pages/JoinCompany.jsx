@@ -105,6 +105,8 @@ export default function JoinCompany() {
   const [cities, setCities] = useState([])
   useEffect(() => { api.cities().then(setCities).catch(() => {}) }, [])
 
+  const refCode = new URLSearchParams(window.location.search).get('ref')
+
   const [submitted, setSubmitted] = useState(false)
   const [requestNumber, setRequestNumber] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -225,6 +227,7 @@ export default function JoinCompany() {
         tiktok:         form.tiktok,
         company_logo:   companyLogo || null,
         work_images:    workImages,
+        referred_by:    refCode || undefined,
       })
       if (result?.requestNumber) setRequestNumber(result.requestNumber)
       setSubmitted(true)
