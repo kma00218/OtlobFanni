@@ -50,6 +50,7 @@ export default function TechnicianApplications() {
   const [allCats, setAllCats]             = useState([])
   const [categories, setCategories]       = useState([])
   const [rejectModal, setRejectModal]     = useState({ open: false, id: null, reason: '', isView: false })
+  const [tab, setTab]                     = useState('all')
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -147,11 +148,14 @@ export default function TechnicianApplications() {
     } catch { showToast('حدث خطأ', 'error') }
   }
 
+  const referredCount = data.filter(r => !!r.referredByName).length
+
   const filtered = data.filter(r => {
     const name = r.fullName || r.full_name || ''
     const s = !search || name.includes(search) || r.phone?.includes(search) || r.city?.includes(search)
     const f = !filter || r.status === filter
-    return s && f
+    const t = tab === 'all' || (tab === 'referred' && !!r.referredByName)
+    return s && f && t
   })
 
   const pendingCount = data.filter(r => r.status === 'pending').length
@@ -324,6 +328,23 @@ export default function TechnicianApplications() {
           <span>يوجد <strong>{pendingCount}</strong> {pendingCount === 1 ? 'طلب' : 'طلبات'} قيد المراجعة.</span>
         </div>
       )}
+
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <button onClick={() => setTab('all')}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === 'all' ? 'bg-[#FF7900] text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+          الكل
+        </button>
+        <button onClick={() => setTab('referred')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === 'referred' ? 'bg-[#FF7900] text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+          🔗 المرشَّحون
+          {referredCount > 0 && (
+            <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${tab === 'referred' ? 'bg-white/20 text-white' : 'bg-orange-100 text-[#FF7900]'}`}>
+              {referredCount}
+            </span>
+          )}
+        </button>
+      </div>
 
       <DataTable
         columns={columns}
