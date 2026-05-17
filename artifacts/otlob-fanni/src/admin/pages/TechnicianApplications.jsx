@@ -5,6 +5,7 @@ import FormModal from '../components/FormModal'
 import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Info, Shield, MessageCircle } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
+import ImageLightbox from '../../components/ImageLightbox'
 
 const EXP_YEARS = {
   less1: 0, '1-2': 2, '3-5': 5, '6-10': 10, '10+': 11,
@@ -294,9 +295,11 @@ export default function TechnicianApplications() {
 
       {/* Lightbox */}
       {lightbox && (
-        <div className="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
-        </div>
+        <ImageLightbox
+          images={lightbox.images}
+          startIndex={lightbox.index}
+          onClose={() => setLightbox(null)}
+        />
       )}
 
       {/* Info banner */}
@@ -367,7 +370,7 @@ export default function TechnicianApplications() {
               <div className="flex items-center gap-4 bg-slate-50 rounded-2xl p-4">
                 <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-4 border-slate-200 shadow">
                   {photo
-                    ? <img src={photo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(photo)} />
+                    ? <img src={photo} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [photo], index: 0 })} />
                     : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-2xl">
                         {name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                       </div>
@@ -545,7 +548,7 @@ export default function TechnicianApplications() {
                     {workImgs.map((src, i) => (
                       <img key={i} src={src} alt={`صورة ${i + 1}`}
                         className="w-full aspect-square object-cover rounded-xl border border-slate-200 cursor-zoom-in hover:opacity-90"
-                        onClick={() => setLightbox(src)} />
+                        onClick={() => setLightbox({ images: workImgs, index: i })} />
                     ))}
                   </div>
                 </Sec>
@@ -573,7 +576,7 @@ export default function TechnicianApplications() {
                               <p className="text-xs text-slate-500 mb-1">الوجه الأمامي</p>
                               <img src={idFront} alt="front"
                                 className="w-full rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
-                                onClick={() => setLightbox(idFront)} />
+                                onClick={() => setLightbox({ images: [idFront, idBack].filter(Boolean), index: 0 })} />
                             </div>
                           )}
                           {idBack && (
@@ -581,7 +584,7 @@ export default function TechnicianApplications() {
                               <p className="text-xs text-slate-500 mb-1">الوجه الخلفي</p>
                               <img src={idBack} alt="back"
                                 className="w-full rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
-                                onClick={() => setLightbox(idBack)} />
+                                onClick={() => setLightbox({ images: [idFront, idBack].filter(Boolean), index: [idFront, idBack].filter(Boolean).indexOf(idBack) })} />
                             </div>
                           )}
                         </div>
@@ -592,7 +595,7 @@ export default function TechnicianApplications() {
                         <p className="text-xs text-slate-500 font-medium mb-1">رخصة العمل / الشهادة المهنية</p>
                         <img src={workLic} alt="license"
                           className="w-full max-h-40 rounded-xl border border-slate-200 object-cover cursor-zoom-in hover:opacity-90"
-                          onClick={() => setLightbox(workLic)} />
+                          onClick={() => setLightbox({ images: [workLic], index: 0 })} />
                       </div>
                     )}
                   </div>

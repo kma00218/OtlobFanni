@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { track } from '../lib/tracker'
+import ImageLightbox from '../components/ImageLightbox'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -204,9 +205,11 @@ export default function TechnicianDetails() {
       <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
 
       {lightbox && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
-        </div>
+        <ImageLightbox
+          images={lightbox.images}
+          startIndex={lightbox.index}
+          onClose={() => setLightbox(null)}
+        />
       )}
 
       {/* ── Review Modal ─────────────────────────────────────────────── */}
@@ -243,7 +246,7 @@ export default function TechnicianDetails() {
             <div className="flex items-end gap-3 -mt-8 mb-3">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md flex-shrink-0 bg-[#071B33] flex items-center justify-center">
                 {tech.photoUrl
-                  ? <img src={tech.photoUrl} alt={tech.name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(tech.photoUrl)} />
+                  ? <img src={tech.photoUrl} alt={tech.name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [tech.photoUrl], index: 0 })} />
                   : <span className="text-white text-2xl font-bold">{initials}</span>
                 }
               </div>
@@ -401,7 +404,7 @@ export default function TechnicianDetails() {
               {tech.workImages.map((src, i) => (
                 <img key={i} src={src} alt={`${i + 1}`}
                   className="w-full aspect-square object-cover rounded-xl border border-gray-100 cursor-zoom-in hover:opacity-90 transition-opacity shadow-sm"
-                  onClick={() => setLightbox(src)} />
+                  onClick={() => setLightbox({ images: tech.workImages, index: i })} />
               ))}
             </div>
           </SectionCard>

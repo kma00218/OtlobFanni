@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { categories } from '../data/services'
+import ImageLightbox from '../components/ImageLightbox'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -202,9 +203,11 @@ export default function CompanyDetails() {
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
 
       {lightbox && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
-        </div>
+        <ImageLightbox
+          images={lightbox.images}
+          startIndex={lightbox.index}
+          onClose={() => setLightbox(null)}
+        />
       )}
 
       <main className="px-4 pt-4 space-y-4">
@@ -229,7 +232,7 @@ export default function CompanyDetails() {
             <div className="flex items-end gap-3 mb-3">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#0e3460] flex items-center justify-center">
                 {logo
-                  ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(logo)} />
+                  ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [logo], index: 0 })} />
                   : <span className="text-white text-2xl font-bold">{initials}</span>
                 }
               </div>
@@ -401,7 +404,7 @@ export default function CompanyDetails() {
                   src={src}
                   alt={`${i + 1}`}
                   className="w-full aspect-square object-cover rounded-xl border border-gray-100 cursor-zoom-in hover:opacity-90"
-                  onClick={() => setLightbox(src)}
+                  onClick={() => setLightbox({ images: workImages, index: i })}
                 />
               ))}
             </div>
