@@ -35,7 +35,7 @@ export default function ShareSheet({ name, city, profileUrl, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end" dir="rtl">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full bg-white rounded-t-3xl px-4 pt-4 pb-8 shadow-2xl">
+      <div className="relative w-full bg-white rounded-t-3xl px-4 pt-4 pb-28 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-extrabold text-[#071B33]">مشاركة الملف الشخصي</h3>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
