@@ -5,6 +5,7 @@ import BackHeader from '../components/BackHeader'
 import api from '../lib/api'
 import { categories } from '../data/services'
 import { CheckCircle, Clock, XCircle, Megaphone, Search, Copy, Check, Phone, ExternalLink } from 'lucide-react'
+import ReferralModal from '../components/ReferralModal'
 
 const STATUS_INFO = {
   ar: {
@@ -47,6 +48,7 @@ export default function StatusTracking() {
   const [error, setError]           = useState(null)
   const [copied, setCopied]         = useState(false)
   const [copiedMsg, setCopiedMsg]   = useState(false)
+  const [showReferral, setShowReferral] = useState(false)
 
   const reset = () => { setResult(null); setPhoneResults(null); setError(null) }
 
@@ -340,12 +342,7 @@ export default function StatusTracking() {
                       : 'When your referrals get approved, you can earn a free ad or special benefits on the platform.'}
                   </p>
                   <button
-                    onClick={() => {
-                      const msg = ar
-                        ? `مرحباً، أرغب في ترشيح فني / شركة خدمات للتسجيل في منصة اطلب فني.\n\nالاسم:\nرقم الهاتف:\nالتخصص:\nالمدينة:`
-                        : `Hello, I'd like to refer a technician / service company to register on Otlob Fanni.\n\nName:\nPhone:\nSpecialty:\nCity:`
-                      window.open(`https://wa.me/19297186991?text=${encodeURIComponent(msg)}`, '_blank')
-                    }}
+                    onClick={() => setShowReferral(true)}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-[#FF7900] hover:bg-[#e86d00] text-white rounded-xl text-sm font-bold transition-colors active:scale-95"
                   >
                     <span className="text-base">🔧</span>
@@ -447,6 +444,15 @@ export default function StatusTracking() {
         )}
 
       </main>
+
+      {showReferral && result && (
+        <ReferralModal
+          referrerId={result.id}
+          referrerName={result.fullName}
+          referrerType={result.type}
+          onClose={() => setShowReferral(false)}
+        />
+      )}
     </div>
   )
 }

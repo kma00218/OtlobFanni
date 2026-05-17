@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable,
   adsTable, technicianApplicationsTable, companyApplicationsTable,
-  adRequestsTable, serviceRequestsTable, reviewsTable,
+  adRequestsTable, serviceRequestsTable, reviewsTable, referralsTable,
 } from "@workspace/db/schema";
 import { eq, and, or, desc, inArray, ilike, sql } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
@@ -406,6 +406,20 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
     })
     .returning();
 
+  // Auto-link: mark matching referrals as registered
+  if (body.phone) {
+    const digits = body.phone.replace(/\D/g, "").slice(-9);
+    await db
+      .update(referralsTable)
+      .set({ status: "registered", linkedApplicationId: app.id })
+      .where(
+        and(
+          sql`regexp_replace(${referralsTable.referredPhone}, '[^0-9]', '', 'g') LIKE ${'%' + digits}`,
+          eq(referralsTable.status, "not_registered")
+        )
+      );
+  }
+
   res.status(201).json(app);
 });
 
@@ -453,6 +467,20 @@ router.post("/company-applications", async (req, res): Promise<void> => {
       requestNumber:  "OF-C-" + String(Date.now()).slice(-6),
     })
     .returning();
+
+  // Auto-link: mark matching referrals as registered
+  if (body.phone) {
+    const digits = body.phone.replace(/\D/g, "").slice(-9);
+    await db
+      .update(referralsTable)
+      .set({ status: "registered", linkedApplicationId: app.id })
+      .where(
+        and(
+          sql`regexp_replace(${referralsTable.referredPhone}, '[^0-9]', '', 'g') LIKE ${'%' + digits}`,
+          eq(referralsTable.status, "not_registered")
+        )
+      );
+  }
 
   res.status(201).json(app);
 });
@@ -688,6 +716,41 @@ router.post("/ad-requests", async (req, res): Promise<void> => {
     .returning();
 
   res.status(201).json(req_);
+});
+
+// ── Referrals (submit) ────────────────────────────────────────────────────────
+router.post("/referrals", async (req, res): Promise<void> => {
+  const { referrals, referrerId, referrerName, referrerType } = req.body;
+  if (!Array.isArray(referrals) || referrals.length === 0) {
+    res.status(400).json({ error: "referrals array required" });
+    return;
+  }
+  if (!referrerId || !referrerName || !referrerType) {
+    res.status(400).json({ error: "referrer info required" });
+    return;
+  }
+  const inserted = [];
+  for (const r of referrals.slice(0, 5)) {
+    if (!r.name || !r.phone || !r.whatsapp || !r.specialty || !r.city) continue;
+    const id = "REF-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7);
+    const [row] = await db
+      .insert(referralsTable)
+      .values({
+        id,
+        referredName:      r.name,
+        referredPhone:     r.phone,
+        referredWhatsapp:  r.whatsapp,
+        referredSpecialty: r.specialty,
+        referredCity:      r.city,
+        referrerName,
+        referrerId,
+        referrerType,
+        status: "not_registered",
+      })
+      .returning();
+    inserted.push(row);
+  }
+  res.status(201).json(inserted);
 });
 
 export default router;

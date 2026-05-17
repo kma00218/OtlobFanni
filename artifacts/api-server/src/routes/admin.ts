@@ -3,9 +3,9 @@ import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
-  adminsTable, serviceRequestsTable,
+  adminsTable, serviceRequestsTable, referralsTable,
 } from "@workspace/db/schema";
-import { eq, desc, count, and, or } from "drizzle-orm";
+import { eq, desc, count, and, or, ilike } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
 
 const router: IRouter = Router();
@@ -575,6 +575,28 @@ router.delete("/admin-users/:id", async (req, res): Promise<void> => {
   if (target.role === "super_admin") { res.status(403).json({ error: "لا يمكن حذف المدير العام" }); return; }
   await db.delete(adminsTable).where(eq(adminsTable.id, idNum));
   res.sendStatus(204);
+});
+
+// ── Referrals ─────────────────────────────────────────────────────────────────
+router.get("/referrals", async (_req, res): Promise<void> => {
+  const rows = await db
+    .select()
+    .from(referralsTable)
+    .orderBy(desc(referralsTable.createdAt));
+  res.json(rows);
+});
+
+router.patch("/referrals/:id", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { status } = req.body;
+  if (!status) { res.status(400).json({ error: "status required" }); return; }
+  const [row] = await db
+    .update(referralsTable)
+    .set({ status })
+    .where(eq(referralsTable.id, id))
+    .returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
 });
 
 export default router;
