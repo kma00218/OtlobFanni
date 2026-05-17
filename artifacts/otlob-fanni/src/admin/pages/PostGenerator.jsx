@@ -22,6 +22,8 @@ export default function PostGenerator() {
   const [cityFilter, setCityFilter] = useState('')
   const [specFilter, setSpecFilter] = useState('')
   const [sortBy,     setSortBy]     = useState('recent')
+  const [dateFrom,   setDateFrom]   = useState('')
+  const [dateTo,     setDateTo]     = useState('')
   const [cities,     setCities]     = useState([])
   const [postText,   setPostText]   = useState('')
   const [loading,    setLoading]    = useState(false)
@@ -49,14 +51,29 @@ export default function PostGenerator() {
     try {
       let techItems = [], compItems = []
 
+      // Date range boundaries (start of from-day, end of to-day)
+      const fromMs = dateFrom ? new Date(dateFrom).setHours(0, 0, 0, 0)    : null
+      const toMs   = dateTo   ? new Date(dateTo).setHours(23, 59, 59, 999) : null
+      const inRange = (iso) => {
+        if (!iso) return !(fromMs || toMs)
+        const ms = new Date(iso).getTime()
+        if (fromMs && ms < fromMs) return false
+        if (toMs   && ms > toMs)   return false
+        return true
+      }
+
       if (techCount > 0) {
         const params = {}
         if (specFilter) params.category = specFilter
         if (cityFilter) params.city_id  = cityFilter
         const raw = await api.technicians(params)
-        let sorted = [...raw]
-        if (sortBy === 'recent') sorted.sort((a, b) => String(b.id).localeCompare(String(a.id)))
-        techItems = sorted.slice(0, techCount).map(t => ({
+        let filtered = raw.filter(t => inRange(t.createdAt || t.created_at))
+        if (sortBy === 'recent') filtered.sort((a, b) => {
+          const da = new Date(b.createdAt || b.created_at || 0).getTime()
+          const db2 = new Date(a.createdAt || a.created_at || 0).getTime()
+          return da - db2
+        })
+        techItems = filtered.slice(0, techCount).map(t => ({
           name:      t.nameAr || t.name_ar || '',
           specialty: t.categoryAr || '',
           city:      t.city_name_ar || '',
@@ -69,9 +86,13 @@ export default function PostGenerator() {
         if (specFilter) params.specialty = specFilter
         if (cityFilter) params.city      = cityFilter
         const raw = await api.companies(params)
-        let sorted = [...raw]
-        if (sortBy === 'recent') sorted.sort((a, b) => String(b.id).localeCompare(String(a.id)))
-        compItems = sorted.slice(0, compCount).map(c => ({
+        let filtered = raw.filter(c => inRange(c.createdAt || c.created_at))
+        if (sortBy === 'recent') filtered.sort((a, b) => {
+          const da = new Date(b.createdAt || b.created_at || 0).getTime()
+          const db2 = new Date(a.createdAt || a.created_at || 0).getTime()
+          return da - db2
+        })
+        compItems = filtered.slice(0, compCount).map(c => ({
           name:      c.companyName || c.company_name || '',
           specialty: c.categoryAr || c.specialty || '',
           city:      c.city || '',
@@ -129,7 +150,7 @@ export default function PostGenerator() {
     } finally {
       setLoading(false)
     }
-  }, [techCount, compCount, cityFilter, specFilter, sortBy, cities, cats, base])
+  }, [techCount, compCount, cityFilter, specFilter, sortBy, dateFrom, dateTo, cities, cats, base])
 
   const copyPost = async () => {
     try { await navigator.clipboard.writeText(postText) } catch { }
@@ -189,6 +210,43 @@ export default function PostGenerator() {
           <option value="recent">آخر المسجلين</option>
           <option value="featured">المميزون أولاً</option>
         </Select>
+
+        {/* Date range */}
+        <div>
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+            نطاق التاريخ <span className="normal-case font-normal text-slate-400">(اختياري)</span>
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[11px] text-slate-400 mb-1">من تاريخ</p>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={e => setDateFrom(e.target.value)}
+                max={dateTo || undefined}
+                className="w-full bg-slate-50 border border-slate-200 text-[#071B33] text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+              />
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-400 mb-1">إلى تاريخ</p>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={e => setDateTo(e.target.value)}
+                min={dateFrom || undefined}
+                className="w-full bg-slate-50 border border-slate-200 text-[#071B33] text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+              />
+            </div>
+          </div>
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={() => { setDateFrom(''); setDateTo('') }}
+              className="mt-2 text-xs text-slate-400 hover:text-red-500 transition-colors underline"
+            >
+              مسح التواريخ
+            </button>
+          )}
+        </div>
 
         {/* Generate button */}
         <button
