@@ -602,10 +602,18 @@ export default function CompanyApplications() {
                           onChange={e => setLinkCatId(e.target.value)}
                           className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
                         >
-                          <option value="">اختر التخصص الموجود...</option>
-                          {allCats.filter(c => c.id !== 'more').map(c => (
-                            <option key={c.id} value={c.id}>{c.nameAr || c.nameEn}</option>
-                          ))}
+                          <option value="">— اختر القسم والتخصص —</option>
+                          {SECTIONS.filter(s => s.id !== 'more_services').map(sec => {
+                            const secCats = SERVICES_CATS.filter(c => c.sectionId === sec.id)
+                            if (!secCats.length) return null
+                            return (
+                              <optgroup key={sec.id} label={sec.nameAr}>
+                                {secCats.map(c => (
+                                  <option key={c.id} value={c.id}>{c.nameAr}</option>
+                                ))}
+                              </optgroup>
+                            )
+                          })}
                         </select>
                       )}
                     </div>
