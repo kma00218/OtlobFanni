@@ -46,6 +46,8 @@ export default function CityTechnicians() {
   const [companies, setCompanies] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [visibleTechs, setVisibleTechs]         = useState(20)
+  const [visibleCompanies, setVisibleCompanies] = useState(20)
 
   const isLibya = id === 'libya'
 
@@ -80,6 +82,14 @@ export default function CityTechnicians() {
     !q || (c.companyName || '').toLowerCase().includes(q)
   )
   const total = filteredTechs.length + filteredCompanies.length
+
+  useEffect(() => {
+    setVisibleTechs(20)
+    setVisibleCompanies(20)
+  }, [search, id])
+
+  const shownTechs     = filteredTechs.slice(0, visibleTechs)
+  const shownCompanies = filteredCompanies.slice(0, visibleCompanies)
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
@@ -135,9 +145,19 @@ export default function CityTechnicians() {
                 <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase px-1 pb-1">
                   {ar ? 'الفنيون' : 'Technicians'}
                 </p>
-                {filteredTechs.map(tech => (
+                {shownTechs.map(tech => (
                   <TechnicianCard key={tech.id} technician={tech} />
                 ))}
+                {filteredTechs.length > visibleTechs && (
+                  <button
+                    onClick={() => setVisibleTechs(v => v + 20)}
+                    className="w-full mt-2 py-3 rounded-2xl bg-white border border-[#FF7900]/30 text-[#FF7900] font-bold text-sm active:scale-[0.98] transition-transform"
+                  >
+                    {ar
+                      ? `تحميل المزيد (${filteredTechs.length - visibleTechs})`
+                      : `Load More (${filteredTechs.length - visibleTechs})`}
+                  </button>
+                )}
               </div>
             )}
             {filteredCompanies.length > 0 && (
@@ -145,7 +165,7 @@ export default function CityTechnicians() {
                 <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase px-1 pb-1">
                   {ar ? 'الشركات' : 'Companies'}
                 </p>
-                {filteredCompanies.map(company => (
+                {shownCompanies.map(company => (
                   <CompanyRow
                     key={company.id}
                     company={company}
@@ -153,6 +173,16 @@ export default function CityTechnicians() {
                     onOpen={(id) => navigate(`/company/${id}`)}
                   />
                 ))}
+                {filteredCompanies.length > visibleCompanies && (
+                  <button
+                    onClick={() => setVisibleCompanies(v => v + 20)}
+                    className="w-full mt-2 py-3 rounded-2xl bg-white border border-blue-300 text-blue-600 font-bold text-sm active:scale-[0.98] transition-transform"
+                  >
+                    {ar
+                      ? `تحميل المزيد (${filteredCompanies.length - visibleCompanies})`
+                      : `Load More (${filteredCompanies.length - visibleCompanies})`}
+                  </button>
+                )}
               </div>
             )}
           </>

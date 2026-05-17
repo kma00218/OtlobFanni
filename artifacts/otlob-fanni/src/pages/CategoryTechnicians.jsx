@@ -345,6 +345,8 @@ export default function CategoryTechnicians() {
   const [search, setSearch]             = useState('')
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState(null)
+  const [visibleTechs, setVisibleTechs]         = useState(20)
+  const [visibleCompanies, setVisibleCompanies] = useState(20)
 
   // Sync state with URL when user presses browser back/forward
   useEffect(() => {
@@ -423,7 +425,14 @@ export default function CategoryTechnicians() {
     return name.includes(q) || city.includes(q) || area.includes(q)
   })
 
-  const totalCount = filteredTechs.length + filteredCompanies.length
+  useEffect(() => {
+    setVisibleTechs(20)
+    setVisibleCompanies(20)
+  }, [search, categoryId, selectedCity])
+
+  const shownTechs     = filteredTechs.slice(0, visibleTechs)
+  const shownCompanies = filteredCompanies.slice(0, visibleCompanies)
+  const totalCount     = filteredTechs.length + filteredCompanies.length
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
@@ -522,7 +531,7 @@ export default function CategoryTechnicians() {
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
-                  {filteredTechs.map(tech => (
+                  {shownTechs.map(tech => (
                     <TechCard
                       key={tech.id}
                       tech={tech}
@@ -534,6 +543,16 @@ export default function CategoryTechnicians() {
                     />
                   ))}
                 </div>
+                {filteredTechs.length > visibleTechs && (
+                  <button
+                    onClick={() => setVisibleTechs(v => v + 20)}
+                    className="w-full mt-3 py-3 rounded-2xl bg-white border border-[#FF7900]/30 text-[#FF7900] font-bold text-sm active:scale-[0.98] transition-transform"
+                  >
+                    {ar
+                      ? `تحميل المزيد (${filteredTechs.length - visibleTechs})`
+                      : `Load More (${filteredTechs.length - visibleTechs})`}
+                  </button>
+                )}
               </div>
             )}
 
@@ -549,7 +568,7 @@ export default function CategoryTechnicians() {
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
-                  {filteredCompanies.map(company => (
+                  {shownCompanies.map(company => (
                     <CompanyCard
                       key={company.id}
                       company={company}
@@ -561,6 +580,16 @@ export default function CategoryTechnicians() {
                     />
                   ))}
                 </div>
+                {filteredCompanies.length > visibleCompanies && (
+                  <button
+                    onClick={() => setVisibleCompanies(v => v + 20)}
+                    className="w-full mt-3 py-3 rounded-2xl bg-white border border-blue-300 text-blue-600 font-bold text-sm active:scale-[0.98] transition-transform"
+                  >
+                    {ar
+                      ? `تحميل المزيد (${filteredCompanies.length - visibleCompanies})`
+                      : `Load More (${filteredCompanies.length - visibleCompanies})`}
+                  </button>
+                )}
               </div>
             )}
           </div>

@@ -110,6 +110,7 @@ export default function Companies() {
   const [search, setSearch]     = useState('')
   const [filterCity, setFilterCity] = useState('')
   const [filterSpec, setFilterSpec] = useState('')
+  const [visibleCount, setVisibleCount] = useState(20)
 
   useEffect(() => {
     api.companies()
@@ -129,6 +130,12 @@ export default function Companies() {
     const sp = !filterSpec || (r.specialty || '') === filterSpec
     return s && c && sp
   })
+
+  useEffect(() => {
+    setVisibleCount(20)
+  }, [search, filterCity, filterSpec])
+
+  const shownCompanies = filtered.slice(0, visibleCount)
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-28" dir={dir}>
@@ -199,16 +206,28 @@ export default function Companies() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map(c => (
-              <CompanyCard
-                key={c.id}
-                company={c}
-                lang={lang}
-                onOpen={id => navigate(`/company/${id}`)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              {shownCompanies.map(c => (
+                <CompanyCard
+                  key={c.id}
+                  company={c}
+                  lang={lang}
+                  onOpen={id => navigate(`/company/${id}`)}
+                />
+              ))}
+            </div>
+            {filtered.length > visibleCount && (
+              <button
+                onClick={() => setVisibleCount(v => v + 20)}
+                className="w-full mt-3 py-3 rounded-2xl bg-white border border-[#FF7900]/30 text-[#FF7900] font-bold text-sm active:scale-[0.98] transition-transform"
+              >
+                {ar
+                  ? `تحميل المزيد (${filtered.length - visibleCount})`
+                  : `Load More (${filtered.length - visibleCount})`}
+              </button>
+            )}
+          </>
         )}
       </main>
     </div>
