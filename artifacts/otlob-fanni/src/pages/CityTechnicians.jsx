@@ -75,13 +75,32 @@ export default function CityTechnicians() {
   }, [id])
 
   const cityName = city ? (ar ? city.nameAr : city.nameEn) : (ar ? 'المدينة' : 'City')
-  const q = search.toLowerCase()
-  const filteredTechs = techs.filter(t =>
-    !q || (t.nameAr || '').toLowerCase().includes(q) || (t.nameEn || '').toLowerCase().includes(q)
-  )
-  const filteredCompanies = companies.filter(c =>
-    !q || (c.companyName || '').toLowerCase().includes(q)
-  )
+  const q = search.trim().toLowerCase()
+
+  const matchesTech = (t) => {
+    if (!q) return true
+    const fields = [
+      t.nameAr, t.nameEn,
+      t.categoryAr, t.categoryEn,
+      t.descriptionAr, t.descriptionEn,
+      t.customSpecialty,
+    ]
+    return fields.some(f => f && f.toLowerCase().includes(q))
+  }
+
+  const matchesCompany = (c) => {
+    if (!q) return true
+    const fields = [
+      c.companyName, c.company_name,
+      c.categoryAr, c.categoryEn,
+      c.description,
+      c.customSpecialty,
+    ]
+    return fields.some(f => f && f.toLowerCase().includes(q))
+  }
+
+  const filteredTechs     = techs.filter(matchesTech)
+  const filteredCompanies = companies.filter(matchesCompany)
   const total = filteredTechs.length + filteredCompanies.length
 
   useEffect(() => {
@@ -116,16 +135,38 @@ export default function CityTechnicians() {
         </div>
 
         {/* Search within city */}
-        <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-3 py-2.5 shadow-sm">
-          <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          <input
-            type="search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={ar ? 'بحث داخل المدينة...' : 'Search within city...'}
-            className="flex-1 bg-transparent outline-none text-sm text-[#071B33] placeholder-gray-400"
-            dir={ar ? 'rtl' : 'ltr'}
-          />
+        <div className="rounded-2xl border-2 border-[#FF7900] bg-white shadow-[0_4px_16px_rgba(255,121,0,0.12)] overflow-hidden">
+          {/* City scope label */}
+          <div className="flex items-center gap-1.5 px-3 pt-2.5 pb-1">
+            {isLibya
+              ? <Globe className="w-3 h-3 text-[#FF7900] flex-shrink-0" />
+              : <MapPin className="w-3 h-3 text-[#FF7900] flex-shrink-0" />}
+            <span className="text-[10px] font-black text-[#FF7900] tracking-wide uppercase leading-none">
+              {ar
+                ? `بحث داخل ${cityName}`
+                : `Search in ${cityName}`}
+            </span>
+          </div>
+          {/* Input row */}
+          <div className="flex items-center gap-2 px-3 pb-2.5">
+            <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <input
+              type="search"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder={ar ? 'اسم، تخصص، وصف...' : 'Name, specialty, description...'}
+              className="flex-1 bg-transparent outline-none text-sm text-[#071B33] placeholder-gray-400 font-medium"
+              dir={ar ? 'rtl' : 'ltr'}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-100 flex-shrink-0"
+              >
+                <span className="text-gray-500 text-xs leading-none">✕</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {loading ? (
