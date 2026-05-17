@@ -257,7 +257,9 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
           <ChartHeader icon={BarChart3} iconBg="bg-orange-50" iconColor="text-[#FF7900]"
             title="الطلبات — آخر 7 أيام" sub="توزيع الطلبات حسب اليوم" />
-          {loading ? <Skeleton h="h-44" /> : (
+          {loading ? <Skeleton h="h-44" /> : !areaData.some(d => d.طلبات > 0) ? (
+            <EmptyState label="لا توجد طلبات مسجّلة بعد" icon={ClipboardList} sub="سيظهر المخطط تلقائياً عند أول طلب خدمة" />
+          ) : (
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={areaData}>
                 <defs>
@@ -370,7 +372,7 @@ export default function Dashboard() {
                 </div>
               ))
             : recentRequests.length === 0
-              ? <EmptyState label="لا توجد طلبات بعد" />
+              ? <EmptyState label="لا توجد طلبات بعد" icon={ClipboardList} sub="ستظهر طلبات الخدمة هنا عند استقبالها" />
               : recentRequests.map(r => (
                   <div key={r.id} className="px-5 py-3.5 flex items-center justify-between gap-3 hover:bg-orange-50/30 transition-colors">
                     <div className="min-w-0 flex-1">
@@ -402,7 +404,7 @@ export default function Dashboard() {
             {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-11 bg-slate-100 rounded-xl animate-pulse" />)}
           </div>
         ) : recentTechs.length === 0 ? (
-          <EmptyState label="لا يوجد فنيون بعد" />
+          <EmptyState label="لا يوجد فنيون بعد" icon={Wrench} sub="سيظهر الفنيون هنا بعد قبول طلباتهم" />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -451,7 +453,7 @@ export default function Dashboard() {
             {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-11 bg-slate-100 rounded-xl animate-pulse" />)}
           </div>
         ) : recentCompanies.length === 0 ? (
-          <EmptyState label="لا يوجد شركات بعد" />
+          <EmptyState label="لا يوجد شركات بعد" icon={Building2} sub="ستظهر الشركات هنا بعد قبول طلباتها" />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -536,10 +538,12 @@ export default function Dashboard() {
 
 function SectionLabel({ icon: Icon, label, color }) {
   return (
-    <div className="flex items-center gap-2 pt-1">
-      <Icon className={`w-4 h-4 ${color}`} />
-      <span className={`text-sm font-black ${color} uppercase tracking-wide`}>{label}</span>
-      <div className="flex-1 h-px bg-slate-200" />
+    <div className="flex items-center gap-2.5 pt-2">
+      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm`}>
+        <Icon className={`w-3.5 h-3.5 ${color}`} />
+        <span className={`text-xs font-black ${color} tracking-wide`}>{label}</span>
+      </div>
+      <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent" />
     </div>
   )
 }
@@ -562,11 +566,16 @@ function Skeleton({ h }) {
   return <div className={`${h} bg-slate-100 rounded-xl animate-pulse`} />
 }
 
-function EmptyState({ label }) {
+function EmptyState({ label, icon: Icon = BarChart3, sub = 'ستظهر هنا تلقائياً عند وجود بيانات' }) {
   return (
-    <div className="px-5 py-12 flex flex-col items-center gap-2">
-      <AlertCircle className="w-8 h-8 text-slate-300" />
-      <p className="text-slate-400 text-sm">{label}</p>
+    <div className="py-10 flex flex-col items-center gap-4">
+      <div className="w-16 h-16 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center">
+        <Icon className="w-7 h-7 text-slate-300" strokeWidth={1.5} />
+      </div>
+      <div className="text-center">
+        <p className="text-slate-600 text-sm font-bold">{label}</p>
+        <p className="text-slate-400 text-xs mt-1">{sub}</p>
+      </div>
     </div>
   )
 }
