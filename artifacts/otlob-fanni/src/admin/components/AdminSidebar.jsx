@@ -39,7 +39,7 @@ const NAV_GROUPS = [
     id: 'marketing',
     label: 'التسويق',
     items: [
-      { path: '/admin/poster', label: 'توليد بوستر', icon: ImageIcon },
+      { path: '/admin/poster', label: 'توليد منشور', icon: ImageIcon },
     ]
   },
   {
