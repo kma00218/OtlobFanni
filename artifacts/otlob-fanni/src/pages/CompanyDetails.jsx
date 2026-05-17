@@ -173,6 +173,14 @@ export default function CompanyDetails() {
   const name      = company.company_name || company.companyName || ''
   const logo      = getFileUrl(company.company_logo || company.companyLogo || null)
   const specialty = company.specialty || ''
+  const extraIds = company.extra_specialties || company.extraSpecialties || []
+  const extraCatNames = extraIds
+    .map(id => ar ? (CAT_LABEL[id] || '') : (CAT_LABEL_EN[id] || ''))
+    .filter(Boolean)
+  const primaryCatName = ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)
+  const allCatNames = primaryCatName
+    ? [primaryCatName, ...extraCatNames.filter(n => n !== primaryCatName)]
+    : extraCatNames
   const city      = company.city || ''
   const area      = company.area || ''
   const phone     = company.phone || ''
@@ -195,7 +203,7 @@ export default function CompanyDetails() {
   const createdAt     = company.created_at || company.createdAt || null
 
   const firstWord  = name ? (name.trim().split(' ')[0] || '?') : '?'
-  const catName    = ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)
+  const catName    = allCatNames.join(' · ')
   const expLabel   = ar ? (EXP_AR[yearsActive] || yearsActive) : (EXP_EN[yearsActive] || yearsActive)
 
   return (

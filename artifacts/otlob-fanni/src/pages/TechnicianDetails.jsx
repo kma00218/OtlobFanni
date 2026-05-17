@@ -77,6 +77,16 @@ function SectionCard({ icon: Icon, title, children, accent = '#FF7900' }) {
 function normalizeTech(t, cities = [], categories = []) {
   const city = cities.find(c => c.id === (t.city_id || t.cityId))
   const cat  = categories.find(c => c.id === (t.category_id || t.categoryId))
+  const extraIds  = t.extraSpecialties || t.extra_specialties || []
+  const extraCats = extraIds.map(id => categories.find(c => c.id === id)).filter(Boolean)
+  const primaryAr = cat?.name_ar || cat?.nameAr || t.categoryAr || t.category_ar || ''
+  const primaryEn = cat?.name_en || cat?.nameEn || t.categoryEn || t.category_en || primaryAr
+  const allAr = primaryAr
+    ? [primaryAr, ...extraCats.map(c => c.name_ar || c.nameAr || '').filter(n => n && n !== primaryAr)]
+    : extraCats.map(c => c.name_ar || c.nameAr || '').filter(Boolean)
+  const allEn = primaryEn
+    ? [primaryEn, ...extraCats.map(c => c.name_en || c.nameEn || c.name_ar || c.nameAr || '').filter(n => n && n !== primaryEn)]
+    : extraCats.map(c => c.name_en || c.nameEn || c.name_ar || c.nameAr || '').filter(Boolean)
   return {
     id:             t.id,
     name:           t.name_ar || t.nameAr || t.name || '',
@@ -87,8 +97,10 @@ function normalizeTech(t, cities = [], categories = []) {
     city:           city?.name_ar || t.city_name_ar || t.city || '',
     area:           t.area || '',
     categoryId:     t.category_id || t.categoryId || '',
-    categoryNameAr: cat?.name_ar || cat?.nameAr || t.categoryAr || t.category_ar || '',
-    categoryNameEn: cat?.name_en || cat?.nameEn || t.categoryEn || t.category_en || cat?.name_ar || cat?.nameAr || t.categoryAr || '',
+    categoryNameAr: primaryAr,
+    categoryNameEn: primaryEn,
+    allCategoryNamesAr: allAr,
+    allCategoryNamesEn: allEn,
     photoUrl:       getFileUrl(t.profile_photo || t.profilePhoto || null),
     workImages:     (t.work_images || t.workImages || []).map(getFileUrl),
     rating:         Number(t.rating || 0),
@@ -196,7 +208,7 @@ export default function TechnicianDetails() {
     </div>
   )
 
-  const catName  = ar ? tech.categoryNameAr : tech.categoryNameEn
+  const allCatNames = ar ? tech.allCategoryNamesAr : tech.allCategoryNamesEn
   const cityName = ar ? tech.cityAr : tech.cityEn
   const firstName = tech.name ? (tech.name.trim().split(' ')[0] || '?') : '?'
 
@@ -269,12 +281,16 @@ export default function TechnicianDetails() {
               🪪 {ar ? 'رقم التعريف' : 'ID'}: TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
             </span>
 
-            {/* Specialty badge */}
-            {catName && (
-              <span className="inline-flex items-center gap-1.5 bg-[#FF7900]/10 border border-[#FF7900]/20 text-[#FF7900] text-xs font-bold px-3 py-1 rounded-full mb-3">
-                <Wrench className="w-3 h-3" />
-                {catName}
-              </span>
+            {/* Specialty badges */}
+            {allCatNames.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {allCatNames.map((name, i) => (
+                  <span key={i} className="inline-flex items-center gap-1.5 bg-[#FF7900]/10 border border-[#FF7900]/20 text-[#FF7900] text-xs font-bold px-3 py-1 rounded-full">
+                    <Wrench className="w-3 h-3 flex-shrink-0" />
+                    {name}
+                  </span>
+                ))}
+              </div>
             )}
 
             {/* Rating — clickable to open reviews */}

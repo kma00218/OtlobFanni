@@ -225,6 +225,7 @@ router.get("/search", async (req, res): Promise<void> => {
       categoryEn: r.categoryEn ?? '',
       cityNameAr: r.cityNameAr ?? '',
       cityNameEn: r.cityNameEn ?? '',
+      extraSpecialties: r.tech.extraSpecialties ?? [],
     })),
     companies: companyRows.map(r => ({
       id: r.company.id,
@@ -233,6 +234,8 @@ router.get("/search", async (req, res): Promise<void> => {
       categoryAr: r.categoryAr ?? '',
       categoryEn: r.categoryEn ?? '',
       companyLogo: r.company.companyLogo,
+      extra_specialties: (r.company as any).extra_specialties ?? [],
+      specialty: r.company.specialty ?? '',
     })),
     cities: cityRows.map(c => ({
       id: c.id,
