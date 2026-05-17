@@ -394,6 +394,11 @@ export default function CategoryTechnicians() {
     navigate(`/category/${categoryId}?city=${cityId}`)
   }
 
+  useEffect(() => {
+    setVisibleTechs(20)
+    setVisibleCompanies(20)
+  }, [search, categoryId, selectedCity])
+
   // Show city picker if no city in URL yet
   if (!cityChosen) {
     return (
@@ -424,11 +429,6 @@ export default function CategoryTechnicians() {
     const q    = search.toLowerCase()
     return name.includes(q) || city.includes(q) || area.includes(q)
   })
-
-  useEffect(() => {
-    setVisibleTechs(20)
-    setVisibleCompanies(20)
-  }, [search, categoryId, selectedCity])
 
   const shownTechs     = filteredTechs.slice(0, visibleTechs)
   const shownCompanies = filteredCompanies.slice(0, visibleCompanies)
