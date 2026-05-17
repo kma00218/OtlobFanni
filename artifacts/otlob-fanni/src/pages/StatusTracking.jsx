@@ -48,8 +48,15 @@ export default function StatusTracking() {
   const [copied, setCopied]         = useState(false)
   const [copiedMsg, setCopiedMsg]   = useState(false)
   const [copiedRef, setCopiedRef]   = useState(null)
+  const [refStats, setRefStats]     = useState(null)
 
-  const reset = () => { setResult(null); setPhoneResults(null); setError(null) }
+  const reset = () => { setResult(null); setPhoneResults(null); setError(null); setRefStats(null) }
+
+  useEffect(() => {
+    if (result?.id) {
+      api.referralStats(result.id).then(setRefStats).catch(() => setRefStats({ registered: 0, accepted: 0 }))
+    }
+  }, [result?.id])
 
   const getSpecialtyLabel = (specialty, customSpecialty) => {
     if (customSpecialty) return customSpecialty
@@ -350,6 +357,14 @@ export default function StatusTracking() {
                           ? 'شارك الرابط مع من تعرفهم — عند تسجيلهم يظهر اسمك تلقائياً كمرشِّح ويمكنك الحصول على مزايا.'
                           : 'Share the link — when they register, your name appears as the referrer.'}
                       </p>
+                      <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2.5 mb-3">
+                        <span className="text-base">📊</span>
+                        <p className="text-[12px] text-white font-semibold">
+                          {ar
+                            ? `تم تسجيل ${refStats?.registered ?? 0} عبر رابطك — تم قبول ${refStats?.accepted ?? 0}`
+                            : `${refStats?.registered ?? 0} registered · ${refStats?.accepted ?? 0} accepted`}
+                        </p>
+                      </div>
                       <div className="space-y-2.5">
                         {[
                           { label: ar ? '🔧 رابط تسجيل فني'   : '🔧 Technician Link', link: techLink, key: 'tech' },
@@ -358,7 +373,9 @@ export default function StatusTracking() {
                           <div key={key} className="bg-white/10 rounded-xl p-3 space-y-2">
                             <p className="text-xs font-bold text-blue-200">{label}</p>
                             <div className="flex items-center gap-2" dir="ltr">
-                              <p className="flex-1 text-[11px] text-white/60 font-mono truncate">{link}</p>
+                              <p className="flex-1 text-[11px] text-white/60 font-mono truncate">
+                                {window.location.hostname}{key === 'tech' ? '/join…' : '/join-company…'}
+                              </p>
                               <button
                                 onClick={() => copyLink(link, key)}
                                 className="flex items-center gap-1 px-2.5 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"

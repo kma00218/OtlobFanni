@@ -217,9 +217,12 @@ export default function CompanyApplications() {
         <div className="flex flex-col gap-0.5">
           {v ? <span className="text-xs font-mono text-slate-400 tracking-wider">{v}</span> : <span className="text-xs text-slate-600">—</span>}
           {row?.referredByName && (
-            <span className="text-[10px] bg-orange-50 text-[#FF7900] border border-orange-100 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
-              👤 {row.referredByName}
-            </span>
+            <div className="flex flex-col gap-0.5 mt-0.5">
+              <span className="text-[10px] bg-orange-100 text-[#FF7900] border border-orange-200 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
+                🔗 جاء عبر ترشيح
+              </span>
+              <span className="text-[10px] text-slate-400 px-0.5">👤 {row.referredByName}</span>
+            </div>
           )}
         </div>
       ),

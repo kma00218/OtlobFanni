@@ -87,6 +87,7 @@ export const api = {
   companyReviews: (id) => get(`/companies/${id}/reviews`),
   submitCompanyReview: (id, data) => post(`/companies/${id}/reviews`, data),
   submitAdRequest:             (data) => post('/ad-requests',             data),
+  referralStats:               (id)   => get(`/referral-stats/${id}`),
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   admin: {

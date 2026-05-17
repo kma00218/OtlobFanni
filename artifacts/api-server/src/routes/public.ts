@@ -5,7 +5,7 @@ import {
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
 } from "@workspace/db/schema";
-import { eq, and, or, desc, inArray, ilike, sql } from "drizzle-orm";
+import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
 
 const router: IRouter = Router();
@@ -720,6 +720,26 @@ router.post("/ad-requests", async (req, res): Promise<void> => {
     .returning();
 
   res.status(201).json(req_);
+});
+
+// ── Referral Stats ────────────────────────────────────────────────────────────
+router.get("/referral-stats/:referrerId", async (req, res): Promise<void> => {
+  const referrerId = Array.isArray(req.params.referrerId) ? req.params.referrerId[0] : req.params.referrerId;
+
+  const [techStats] = await db.select({
+    registered: sql<number>`count(*)::int`,
+    accepted:   sql<number>`(count(*) filter (where ${technicianApplicationsTable.status} in ('approved', 'published')))::int`,
+  }).from(technicianApplicationsTable).where(eq(technicianApplicationsTable.referredBy, referrerId));
+
+  const [compStats] = await db.select({
+    registered: sql<number>`count(*)::int`,
+    accepted:   sql<number>`(count(*) filter (where ${companyApplicationsTable.status} in ('approved', 'published')))::int`,
+  }).from(companyApplicationsTable).where(eq(companyApplicationsTable.referredBy, referrerId));
+
+  res.json({
+    registered: (techStats?.registered ?? 0) + (compStats?.registered ?? 0),
+    accepted:   (techStats?.accepted   ?? 0) + (compStats?.accepted   ?? 0),
+  });
 });
 
 export default router;
