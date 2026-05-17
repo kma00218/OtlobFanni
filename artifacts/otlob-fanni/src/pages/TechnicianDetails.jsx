@@ -353,7 +353,7 @@ export default function TechnicianDetails() {
             </div>
             <button
               onClick={() => setShowShare(true)}
-              className="w-full mt-1 flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-2xl active:scale-[0.98] transition-transform">
+              className="w-full mt-1 flex items-center justify-center gap-2 bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-2xl active:scale-[0.98] transition-transform shadow-sm shadow-[#FF7900]/30">
               <Send className="w-4 h-4" />
               {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
             </button>

@@ -322,7 +322,7 @@ export default function CompanyDetails() {
         </div>
         <button
           onClick={() => setShowShare(true)}
-          className="w-full flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl active:scale-[0.98] transition-transform mt-1">
+          className="w-full flex items-center justify-center gap-2 bg-[#FF7900] text-white text-xs font-bold py-2.5 rounded-xl active:scale-[0.98] transition-transform mt-1 shadow-sm shadow-[#FF7900]/30">
           <Send className="w-3.5 h-3.5" />
           {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
         </button>
