@@ -585,12 +585,14 @@ router.get("/search-account", async (req, res): Promise<void> => {
   const [techRows, compRows] = await Promise.all([
     db.select().from(technicianApplicationsTable).where(or(
       eq(technicianApplicationsTable.id, q),
+      ilike(technicianApplicationsTable.requestNumber, `%${q}%`),
       ilike(technicianApplicationsTable.fullName, `%${q}%`),
       ilike(technicianApplicationsTable.phone, `%${q}%`),
       ilike(technicianApplicationsTable.whatsapp, `%${q}%`),
     )).limit(10),
     db.select().from(companyApplicationsTable).where(or(
       eq(companyApplicationsTable.id, q),
+      ilike(companyApplicationsTable.requestNumber, `%${q}%`),
       ilike(companyApplicationsTable.companyName, `%${q}%`),
       ilike(companyApplicationsTable.contactName, `%${q}%`),
       ilike(companyApplicationsTable.phone, `%${q}%`),
