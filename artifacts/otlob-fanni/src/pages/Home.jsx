@@ -15,7 +15,7 @@ function RecentCard({ item, ar }) {
   const city = ar ? item.cityAr : (item.cityEn || item.cityAr)
   const photo = getFileUrl(item.photo)
   const isCo = item.type === 'company'
-  const href = isCo ? `/companies/${item.id}` : `/technician/${item.id}`
+  const href = isCo ? `/company/${item.id}` : `/technician/${item.id}`
   const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
 
   return (
