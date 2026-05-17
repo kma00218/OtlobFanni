@@ -3,7 +3,7 @@ import { useLocation, Link } from 'wouter'
 import { useAdmin } from '../../context/AdminContext'
 import {
   LayoutDashboard, Wrench, Building2, Tag, MapPin, FileCheck,
-  Megaphone, Users, Settings, Activity, LogOut, X, Shield, Newspaper,
+  Megaphone, Users, Settings, Activity, LogOut, X, Shield, Newspaper, Search,
 } from 'lucide-react'
 import api from '../../lib/api'
 
@@ -28,6 +28,7 @@ const NAV_GROUPS = [
     id: 'requests',
     label: 'الطلبات والانضمام',
     items: [
+      { path: '/admin/search',                   label: 'بحث عن حساب',    icon: Search },
       { path: '/admin/technician-applications', label: 'طلبات الفنيين',   icon: FileCheck,  badgeKey: 'pendingTechApps',    badgeColor: 'orange' },
       { path: '/admin/company-applications',    label: 'طلبات الشركات',   icon: Building2,  badgeKey: 'pendingCompanyApps', badgeColor: 'orange' },
       { path: '/admin/ad-requests',             label: 'طلبات الإعلانات', icon: Newspaper,  badgeKey: 'pendingAdRequests',  badgeColor: 'purple' },

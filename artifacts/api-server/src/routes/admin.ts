@@ -5,7 +5,7 @@ import {
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable,
 } from "@workspace/db/schema";
-import { eq, desc, count, and, or, ilike } from "drizzle-orm";
+import { eq, desc, count, and, or, ilike, sql } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
 
 const router: IRouter = Router();
@@ -575,6 +575,55 @@ router.delete("/admin-users/:id", async (req, res): Promise<void> => {
   if (target.role === "super_admin") { res.status(403).json({ error: "لا يمكن حذف المدير العام" }); return; }
   await db.delete(adminsTable).where(eq(adminsTable.id, idNum));
   res.sendStatus(204);
+});
+
+// ── Account Search ────────────────────────────────────────────────────────────
+router.get("/search-account", async (req, res): Promise<void> => {
+  const q = (Array.isArray(req.query.q) ? req.query.q[0] : (req.query.q as string) || "").trim();
+  if (!q || q.length < 2) { res.json([]); return; }
+
+  const [techRows, compRows] = await Promise.all([
+    db.select().from(technicianApplicationsTable).where(or(
+      eq(technicianApplicationsTable.id, q),
+      ilike(technicianApplicationsTable.fullName, `%${q}%`),
+      ilike(technicianApplicationsTable.phone, `%${q}%`),
+      ilike(technicianApplicationsTable.whatsapp, `%${q}%`),
+    )).limit(10),
+    db.select().from(companyApplicationsTable).where(or(
+      eq(companyApplicationsTable.id, q),
+      ilike(companyApplicationsTable.companyName, `%${q}%`),
+      ilike(companyApplicationsTable.contactName, `%${q}%`),
+      ilike(companyApplicationsTable.phone, `%${q}%`),
+      ilike(companyApplicationsTable.whatsapp, `%${q}%`),
+    )).limit(10),
+  ]);
+
+  const withStats = async (row: any, type: string) => {
+    const [ts] = await db.select({
+      registered: sql<number>`count(*)::int`,
+      accepted:   sql<number>`(count(*) filter (where ${technicianApplicationsTable.status} in ('approved','published')))::int`,
+    }).from(technicianApplicationsTable).where(eq(technicianApplicationsTable.referredBy, row.id));
+    const [cs] = await db.select({
+      registered: sql<number>`count(*)::int`,
+      accepted:   sql<number>`(count(*) filter (where ${companyApplicationsTable.status} in ('approved','published')))::int`,
+    }).from(companyApplicationsTable).where(eq(companyApplicationsTable.referredBy, row.id));
+    return {
+      ...row,
+      accountType:   type,
+      displayName:   type === "technician" ? row.fullName : row.companyName,
+      referralStats: {
+        registered: (ts?.registered ?? 0) + (cs?.registered ?? 0),
+        accepted:   (ts?.accepted   ?? 0) + (cs?.accepted   ?? 0),
+      },
+    };
+  };
+
+  const results = await Promise.all([
+    ...techRows.map(r => withStats(r, "technician")),
+    ...compRows.map(r => withStats(r, "company")),
+  ]);
+
+  res.json(results);
 });
 
 export default router;

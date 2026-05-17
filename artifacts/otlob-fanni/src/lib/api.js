@@ -91,7 +91,8 @@ export const api = {
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   admin: {
-    login: (email, password) => post('/admin/login', { email, password }),
+    login:         (email, password) => post('/admin/login', { email, password }),
+    searchAccount: (q)              => get(`/admin/search-account?q=${encodeURIComponent(q)}`),
 
     stats: () => get('/admin/stats'),
 
