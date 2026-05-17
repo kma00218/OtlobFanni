@@ -344,6 +344,14 @@ export default function StatusTracking() {
                     setCopiedRef(key)
                     setTimeout(() => setCopiedRef(null), 2000)
                   }
+                  const regCount = refStats?.registered ?? 0
+                  const arabicRegMsg = (n) => {
+                    if (n === 1) return '🎉 تم تسجيل فني عبر دعوتك'
+                    if (n === 2) return '🎉 تم تسجيل فنيين عبر دعوتك'
+                    const words = ['', '', '', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة', 'عشرة']
+                    if (n <= 10) return `🎉 تم تسجيل ${words[n]} فنيين عبر دعوتك`
+                    return `🎉 تم تسجيل ${n} فنياً عبر دعوتك`
+                  }
                   return (
                     <div className="bg-gradient-to-br from-[#071B33] to-[#0d2a4d] rounded-2xl p-5 shadow-md text-white">
                       <div className="flex items-center gap-2 mb-3">
@@ -357,14 +365,15 @@ export default function StatusTracking() {
                           ? 'شارك الرابط مع من تعرفهم — عند تسجيلهم يظهر اسمك تلقائياً كمرشِّح ويمكنك الحصول على مزايا.'
                           : 'Share the link — when they register, your name appears as the referrer.'}
                       </p>
-                      <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2.5 mb-3">
-                        <span className="text-base">📊</span>
-                        <p className="text-[12px] text-white font-semibold">
-                          {ar
-                            ? `تم تسجيل ${refStats?.registered ?? 0} عبر رابطك — تم قبول ${refStats?.accepted ?? 0}`
-                            : `${refStats?.registered ?? 0} registered · ${refStats?.accepted ?? 0} accepted`}
-                        </p>
-                      </div>
+                      {regCount > 0 && (
+                        <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2.5 mb-3">
+                          <p className="text-[12px] text-white font-semibold">
+                            {ar
+                              ? arabicRegMsg(regCount)
+                              : `🎉 ${regCount === 1 ? '1 technician' : `${regCount} technicians`} registered via your invite`}
+                          </p>
+                        </div>
+                      )}
                       <div className="space-y-2.5">
                         {[
                           { label: ar ? '🔧 رابط تسجيل فني'   : '🔧 Technician Link', link: techLink, key: 'tech' },
