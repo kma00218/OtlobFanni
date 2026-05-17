@@ -16,18 +16,30 @@ const Select = ({ label, value, onChange, children }) => (
   </div>
 )
 
+const Toggle = ({ label, checked, onChange }) => (
+  <label className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 cursor-pointer select-none">
+    <span className="text-sm font-semibold text-[#071B33]">{label}</span>
+    <div
+      onClick={() => onChange(!checked)}
+      className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-[#071B33]' : 'bg-slate-300'}`}
+    >
+      <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
+    </div>
+  </label>
+)
+
 export default function PostGenerator() {
-  const [techCount,  setTechCount]  = useState(5)
-  const [compCount,  setCompCount]  = useState(3)
-  const [cityFilter, setCityFilter] = useState('')
-  const [specFilter, setSpecFilter] = useState('')
-  const [sortBy,     setSortBy]     = useState('recent')
-  const [dateFrom,   setDateFrom]   = useState('')
-  const [dateTo,     setDateTo]     = useState('')
-  const [cities,     setCities]     = useState([])
-  const [postText,   setPostText]   = useState('')
-  const [loading,    setLoading]    = useState(false)
-  const [copied,     setCopied]     = useState(false)
+  const [includeTechs, setIncludeTechs] = useState(true)
+  const [includeComps, setIncludeComps] = useState(true)
+  const [cityFilter,   setCityFilter]   = useState('')
+  const [specFilter,   setSpecFilter]   = useState('')
+  const [sortBy,       setSortBy]       = useState('recent')
+  const [dateFrom,     setDateFrom]     = useState('')
+  const [dateTo,       setDateTo]       = useState('')
+  const [cities,       setCities]       = useState([])
+  const [postText,     setPostText]     = useState('')
+  const [loading,      setLoading]      = useState(false)
+  const [copied,       setCopied]       = useState(false)
   const [citiesLoaded, setCitiesLoaded] = useState(false)
 
   const cats = SERVICES_CATS || []
@@ -51,7 +63,6 @@ export default function PostGenerator() {
     try {
       let techItems = [], compItems = []
 
-      // Date range boundaries (start of from-day, end of to-day)
       const fromMs = dateFrom ? new Date(dateFrom).setHours(0, 0, 0, 0)    : null
       const toMs   = dateTo   ? new Date(dateTo).setHours(23, 59, 59, 999) : null
       const inRange = (iso) => {
@@ -62,39 +73,35 @@ export default function PostGenerator() {
         return true
       }
 
-      if (techCount > 0) {
+      if (includeTechs) {
         const params = {}
         if (specFilter) params.category = specFilter
         if (cityFilter) params.city_id  = cityFilter
         const raw = await api.technicians(params)
         let filtered = raw.filter(t => inRange(t.createdAt || t.created_at))
-        if (sortBy === 'recent') filtered.sort((a, b) => {
-          const da = new Date(b.createdAt || b.created_at || 0).getTime()
-          const db2 = new Date(a.createdAt || a.created_at || 0).getTime()
-          return da - db2
-        })
-        techItems = filtered.slice(0, techCount).map(t => ({
+        if (sortBy === 'recent') filtered.sort((a, b) =>
+          new Date(b.createdAt || b.created_at || 0).getTime() -
+          new Date(a.createdAt || a.created_at || 0).getTime()
+        )
+        techItems = filtered.map(t => ({
           name:      t.nameAr || t.name_ar || '',
-          specialty: t.categoryAr || '',
           city:      t.city_name_ar || '',
           url:       `${base}/technician/${t.id}`,
         }))
       }
 
-      if (compCount > 0) {
+      if (includeComps) {
         const params = {}
         if (specFilter) params.specialty = specFilter
         if (cityFilter) params.city      = cityFilter
         const raw = await api.companies(params)
         let filtered = raw.filter(c => inRange(c.createdAt || c.created_at))
-        if (sortBy === 'recent') filtered.sort((a, b) => {
-          const da = new Date(b.createdAt || b.created_at || 0).getTime()
-          const db2 = new Date(a.createdAt || a.created_at || 0).getTime()
-          return da - db2
-        })
-        compItems = filtered.slice(0, compCount).map(c => ({
+        if (sortBy === 'recent') filtered.sort((a, b) =>
+          new Date(b.createdAt || b.created_at || 0).getTime() -
+          new Date(a.createdAt || a.created_at || 0).getTime()
+        )
+        compItems = filtered.map(c => ({
           name:      c.companyName || c.company_name || '',
-          specialty: c.categoryAr || c.specialty || '',
           city:      c.city || '',
           url:       `${base}/company/${c.id}`,
         }))
@@ -106,7 +113,6 @@ export default function PostGenerator() {
       }
 
       const lines = []
-
       lines.push('📢 انضم حديثاً إلى منصة اطلب فني 🇱🇾')
       lines.push('')
 
@@ -149,7 +155,7 @@ export default function PostGenerator() {
     } finally {
       setLoading(false)
     }
-  }, [techCount, compCount, cityFilter, specFilter, sortBy, dateFrom, dateTo, cities, cats, base])
+  }, [includeTechs, includeComps, cityFilter, specFilter, sortBy, dateFrom, dateTo, cities, cats, base])
 
   const copyPost = async () => {
     try { await navigator.clipboard.writeText(postText) } catch { }
@@ -160,25 +166,17 @@ export default function PostGenerator() {
   return (
     <div className="space-y-4">
 
-      {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-[#071B33]">توليد منشور</h1>
         <p className="text-sm text-slate-500 mt-1">أنشئ نص منشور جاهز للنسخ والنشر على فيسبوك وواتساب وتيليجرام</p>
       </div>
 
-      {/* Controls */}
       <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
 
-        {/* Counts row */}
+        {/* Include toggles */}
         <div className="grid grid-cols-2 gap-3">
-          <Select label="عدد الفنيين" value={techCount} onChange={v => setTechCount(Number(v))}>
-            <option value={0}>بدون فنيين</option>
-            {[1, 3, 5, 8, 10].map(n => <option key={n} value={n}>{n} فنيين</option>)}
-          </Select>
-          <Select label="عدد الشركات" value={compCount} onChange={v => setCompCount(Number(v))}>
-            <option value={0}>بدون شركات</option>
-            {[1, 3, 5, 8, 10].map(n => <option key={n} value={n}>{n} شركات</option>)}
-          </Select>
+          <Toggle label="تضمين الفنيين"  checked={includeTechs} onChange={setIncludeTechs} />
+          <Toggle label="تضمين الشركات" checked={includeComps} onChange={setIncludeComps} />
         </div>
 
         {/* City + Specialty */}
@@ -250,7 +248,7 @@ export default function PostGenerator() {
         {/* Generate button */}
         <button
           onClick={generate}
-          disabled={loading || (techCount === 0 && compCount === 0)}
+          disabled={loading || (!includeTechs && !includeComps)}
           className="w-full py-3 bg-[#071B33] text-white rounded-xl text-sm font-bold hover:bg-[#0f2a4a] transition-colors flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
