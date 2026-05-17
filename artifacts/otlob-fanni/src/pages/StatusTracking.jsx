@@ -320,6 +320,38 @@ export default function StatusTracking() {
                     )
                   })()}
                 </div>
+
+                {/* ── Referral Card ── */}
+                <div className="bg-gradient-to-br from-[#071B33] to-[#0d2a4d] rounded-2xl p-5 shadow-md text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-2xl">👥</span>
+                    <p className="font-extrabold text-sm leading-tight">
+                      {ar ? 'رشّح فنيين وشركات خدمات موثوقين' : 'Refer Trusted Technicians & Companies'}
+                    </p>
+                  </div>
+                  <p className="text-xs text-blue-200 leading-relaxed mb-1">
+                    {ar
+                      ? 'ساهم في بناء أكبر دليل خدمات في ليبيا 🇱🇾'
+                      : 'Help build the largest service directory in Libya 🇱🇾'}
+                  </p>
+                  <p className="text-xs text-blue-300 leading-relaxed mb-4">
+                    {ar
+                      ? 'عند قبول الفنيين الذين رشّحتهم، يمكنك الحصول على مزايا أو إعلان مجاني داخل المنصة.'
+                      : 'When your referrals get approved, you can earn a free ad or special benefits on the platform.'}
+                  </p>
+                  <button
+                    onClick={() => {
+                      const msg = ar
+                        ? `مرحباً، أرغب في ترشيح فني / شركة خدمات للتسجيل في منصة اطلب فني.\n\nالاسم:\nرقم الهاتف:\nالتخصص:\nالمدينة:`
+                        : `Hello, I'd like to refer a technician / service company to register on Otlob Fanni.\n\nName:\nPhone:\nSpecialty:\nCity:`
+                      window.open(`https://wa.me/19297186991?text=${encodeURIComponent(msg)}`, '_blank')
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-[#FF7900] hover:bg-[#e86d00] text-white rounded-xl text-sm font-bold transition-colors active:scale-95"
+                  >
+                    <span className="text-base">🔧</span>
+                    {ar ? 'رشّح الآن' : 'Refer Now'}
+                  </button>
+                </div>
               </>
             )}
 
