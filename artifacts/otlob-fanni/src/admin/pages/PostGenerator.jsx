@@ -100,48 +100,47 @@ export default function PostGenerator() {
         }))
       }
 
-      const lines = []
-
-      const cityLabel = cities.find(c => c.id === cityFilter)?.nameAr || ''
-      const specLabel = cats.find(c => c.id === specFilter)?.nameAr || ''
-      const filterNote = [cityLabel, specLabel].filter(Boolean).join(' · ')
-
-      lines.push('📢 انضم إلى منصة اطلب فني' + (filterNote ? ` — ${filterNote}` : ''))
-      lines.push('ابحث عن أفضل الفنيين والشركات الموثوقة في ليبيا')
-      lines.push('')
-
-      if (techItems.length > 0) {
-        lines.push('🔧 فنيون مسجّلون في المنصة:')
-        lines.push('─────────────────────')
-        techItems.forEach((t, i) => {
-          lines.push(`${i + 1}. ${t.name}`)
-          const details = [t.city && `📍 ${t.city}`, t.specialty && `🛠 ${t.specialty}`].filter(Boolean).join('  ')
-          if (details) lines.push(`   ${details}`)
-          lines.push(`   🔗 ${t.url}`)
-          lines.push('')
-        })
-      }
-
-      if (compItems.length > 0) {
-        lines.push('🏢 شركات خدمات مسجّلة في المنصة:')
-        lines.push('─────────────────────')
-        compItems.forEach((c, i) => {
-          lines.push(`${i + 1}. ${c.name}`)
-          const details = [c.city && `📍 ${c.city}`, c.specialty && `🛠 ${c.specialty}`].filter(Boolean).join('  ')
-          if (details) lines.push(`   ${details}`)
-          lines.push(`   🔗 ${c.url}`)
-          lines.push('')
-        })
-      }
-
       if (techItems.length === 0 && compItems.length === 0) {
         setPostText('لا توجد نتائج بهذه الفلاتر.')
         return
       }
 
-      lines.push('─────────────────────')
+      const lines = []
+
+      lines.push('📢 انضم حديثاً إلى منصة اطلب فني 🇱🇾')
+      lines.push('')
+
+      if (techItems.length > 0) {
+        lines.push('🔧 الفنيون:')
+        lines.push('─────────────────────')
+        lines.push('')
+        techItems.forEach((t, i) => {
+          lines.push(`${i + 1}. ${t.name}`)
+          if (t.city) lines.push(`📍 ${t.city}`)
+          lines.push(`🔗 ${t.url}`)
+          lines.push('')
+        })
+        lines.push('─────────────────────')
+        lines.push('')
+      }
+
+      if (compItems.length > 0) {
+        lines.push('🏢 الشركات:')
+        lines.push('─────────────────────')
+        lines.push('')
+        compItems.forEach((c, i) => {
+          lines.push(`${i + 1}. ${c.name}`)
+          if (c.city) lines.push(`📍 ${c.city}`)
+          lines.push(`🔗 ${c.url}`)
+          lines.push('')
+        })
+        lines.push('─────────────────────')
+        lines.push('')
+      }
+
       lines.push('🌐 www.otlobfanni.ly')
-      lines.push('📱 سجّل الآن وأضف ملفك مجاناً')
+      lines.push('')
+      lines.push('📱 سجّل الآن وأضف نشاطك مجاناً')
 
       setPostText(lines.join('\n'))
     } catch (e) {
