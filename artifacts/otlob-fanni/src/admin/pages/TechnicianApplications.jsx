@@ -374,7 +374,7 @@ export default function TechnicianApplications() {
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-white text-lg leading-tight">{name}</h3>
+                  <h3 className="font-bold text-[#071B33] text-lg leading-tight">{name}</h3>
                   <p className="text-sm text-slate-400 mt-0.5">
                     {catLabel(viewItem.specialty) || viewItem.specialty} • {viewItem.city}
                   </p>
@@ -397,7 +397,7 @@ export default function TechnicianApplications() {
                     <p className="text-amber-400 text-xs font-bold tracking-wide">تخصص مكتوب يدوياً — المزيد من الخدمات</p>
                   </div>
                   <div className="bg-slate-100 rounded-xl px-3 py-2.5">
-                    <p className="text-white font-semibold text-sm">"{viewItem.customSpecialty}"</p>
+                    <p className="text-[#071B33] font-semibold text-sm">"{viewItem.customSpecialty}"</p>
                   </div>
                   {viewItem.status === 'pending' && (
                     <div className="space-y-2.5">
@@ -441,7 +441,7 @@ export default function TechnicianApplications() {
                   <IC label="رقم الهاتف"     value={viewItem.phone}     dir="ltr" />
                   <div className="bg-slate-50 rounded-xl p-3">
                     <p className="text-xs text-slate-500 mb-0.5">واتساب</p>
-                    <p className="font-medium text-white text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
+                    <p className="font-medium text-[#071B33] text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
                     {viewItem.whatsapp && (
                       <a href={`https://wa.me/${viewItem.whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
                          className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-green-400 hover:text-green-300 transition-colors">
@@ -671,7 +671,7 @@ function IC({ label, value, dir, valueClass }) {
   return (
     <div className="bg-slate-50 rounded-xl p-3">
       <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-      <p className={`font-medium text-white text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
+      <p className={`font-medium text-[#071B33] text-sm ${valueClass || ''}`} dir={dir}>{value || '—'}</p>
     </div>
   )
 }
