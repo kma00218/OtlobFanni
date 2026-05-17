@@ -7,9 +7,15 @@ import { categories as CAT_LIST } from '../data/services';
 const CAT_AR = Object.fromEntries(CAT_LIST.map(c => [c.id, c.nameAr]));
 const CAT_EN = Object.fromEntries(CAT_LIST.map(c => [c.id, c.nameEn || c.nameAr]));
 
+function isNewProfile(createdAt) {
+  if (!createdAt) return false
+  return Date.now() - new Date(createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
+}
+
 export default function TechnicianCard({ technician }) {
   const { lang, dir, t } = useLang();
   const name        = (lang === 'ar' ? technician.nameAr : technician.nameEn) || technician.nameAr || technician.nameEn || '';
+  const isNew = isNewProfile(technician.createdAt);
   const primarySpec = lang === 'ar' ? technician.categoryAr : technician.categoryEn;
   const extraIds    = technician.extraSpecialties || [];
   const extraNames  = extraIds
@@ -43,11 +49,18 @@ export default function TechnicianCard({ technician }) {
         </div>
 
         <div className="flex-1 min-w-0">
-          {/* Status badge top-right */}
+          {/* Status badge + name row */}
           <div className="flex justify-between items-center gap-2 mb-1">
             <h3 className="font-extrabold text-[#071B33] text-base leading-tight truncate">{name}</h3>
-            <div className={`flex-shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${technician.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-              {status}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {isNew && (
+                <span className="bg-emerald-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">
+                  {lang === 'ar' ? 'جديد' : 'New'}
+                </span>
+              )}
+              <div className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${technician.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                {status}
+              </div>
             </div>
           </div>
 

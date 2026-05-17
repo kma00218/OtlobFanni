@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { Search, X, ChevronLeft, User, Building2, MapPin, Globe } from 'lucide-react'
+import { Search, X, ChevronLeft, User, Building2, MapPin, Globe, Clock, Trash2 } from 'lucide-react'
 import { useLocation } from 'wouter'
 import { searchIndex } from '../data/searchIndex'
 import { sections } from '../data/services'
@@ -16,6 +16,34 @@ function useDebounce(value, delay) {
   return debounced
 }
 
+const HISTORY_KEY = 'otlob_search_history'
+const MAX_HISTORY = 5
+
+function useSearchHistory() {
+  const getHistory = () => {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') } catch { return [] }
+  }
+  const [history, setHistory] = useState(getHistory)
+
+  const addEntry = useCallback((q) => {
+    const trimmed = q.trim()
+    if (!trimmed) return
+    setHistory(prev => {
+      const filtered = prev.filter(h => h.toLowerCase() !== trimmed.toLowerCase())
+      const next = [trimmed, ...filtered].slice(0, MAX_HISTORY)
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)) } catch {}
+      return next
+    })
+  }, [])
+
+  const clearHistory = useCallback(() => {
+    try { localStorage.removeItem(HISTORY_KEY) } catch {}
+    setHistory([])
+  }, [])
+
+  return { history, addEntry, clearHistory }
+}
+
 export default function SearchBar({ onResultSelect } = {}) {
   const { t, dir, lang } = useLang()
   const [, navigate] = useLocation()
@@ -25,8 +53,10 @@ export default function SearchBar({ onResultSelect } = {}) {
   const [techResults, setTechResults] = useState([])
   const [companyResults, setCompanyResults] = useState([])
   const [cityResults, setCityResults] = useState([])
+  const [activeFilter, setActiveFilter] = useState('all')
   const inputRef = useRef(null)
   const containerRef = useRef(null)
+  const { history, addEntry, clearHistory } = useSearchHistory()
 
   const ar = lang === 'ar'
   const debouncedQuery = useDebounce(query, 280)
@@ -38,6 +68,7 @@ export default function SearchBar({ onResultSelect } = {}) {
   useEffect(() => {
     if (debouncedQuery.trim().length < 2) {
       setTechResults([]); setCompanyResults([]); setCityResults([])
+      setActiveFilter('all')
       return
     }
     const q = debouncedQuery.trim()
@@ -49,6 +80,7 @@ export default function SearchBar({ onResultSelect } = {}) {
           setTechResults(data?.technicians || [])
           setCompanyResults(data?.companies || [])
           setCityResults(data?.cities || [])
+          setActiveFilter('all')
         }
       })
       .catch(() => {
@@ -58,8 +90,51 @@ export default function SearchBar({ onResultSelect } = {}) {
   }, [debouncedQuery])
 
   const hasResults = specialtyResults.length > 0 || techResults.length > 0 || companyResults.length > 0 || cityResults.length > 0
+  const showHistory = open && focused && query.trim() === '' && history.length > 0
 
-  const handleSelectSpecialty = (entry) => {
+  /* ── Contextual filter chips ── */
+  const showFilters = (techResults.length > 0 || companyResults.length > 0) && debouncedQuery.trim().length >= 2
+
+  const uniqueSpecialties = (() => {
+    if (!showFilters) return []
+    const seen = new Set()
+    const list = []
+    ;[...techResults, ...companyResults].forEach(item => {
+      const name = ar
+        ? (item.categoryAr || item.specialty || '')
+        : (item.categoryEn || item.specialty || '')
+      if (name && !seen.has(name)) { seen.add(name); list.push(name) }
+    })
+    return list
+  })()
+
+  const filterChips = showFilters
+    ? [
+        { id: 'all',      label: ar ? 'الكل' : 'All' },
+        ...uniqueSpecialties.map(s => ({ id: s, label: s })),
+        ...(companyResults.length > 0 ? [{ id: 'companies', label: ar ? 'شركات' : 'Companies' }] : []),
+      ]
+    : []
+
+  const filteredTechs = activeFilter === 'all' || activeFilter === 'companies'
+    ? (activeFilter === 'companies' ? [] : techResults)
+    : techResults.filter(t => {
+        const name = ar ? t.categoryAr : t.categoryEn
+        return name === activeFilter
+      })
+
+  const filteredCompanies = activeFilter === 'all'
+    ? companyResults
+    : activeFilter === 'companies'
+      ? companyResults
+      : companyResults.filter(c => {
+          const name = ar ? c.categoryAr : c.categoryEn
+          return name === activeFilter
+        })
+
+  /* ── Handlers ── */
+  const handleSelectSpecialty = (entry, fromHistory = false) => {
+    if (!fromHistory) addEntry(ar ? entry.nameAr : entry.nameEn)
     setQuery(''); setOpen(false); onResultSelect?.()
     if (entry.type === 'section') navigate(`/section/${entry.id}`)
     else {
@@ -69,18 +144,27 @@ export default function SearchBar({ onResultSelect } = {}) {
   }
 
   const handleSelectTech = (tech) => {
+    addEntry(ar ? tech.nameAr : (tech.nameEn || tech.nameAr))
     setQuery(''); setOpen(false); onResultSelect?.()
     navigate(`/technician/${tech.id}`)
   }
 
   const handleSelectCompany = (company) => {
+    addEntry(company.companyName || company.company_name || '')
     setQuery(''); setOpen(false); onResultSelect?.()
     navigate(`/company/${company.id}`)
   }
 
   const handleSelectCity = (city) => {
+    addEntry(ar ? city.nameAr : city.nameEn)
     setQuery(''); setOpen(false); onResultSelect?.()
     navigate(`/city/${city.id}`)
+  }
+
+  const handleHistorySelect = (q) => {
+    setQuery(q)
+    setOpen(true)
+    inputRef.current?.focus()
   }
 
   const handleClear = () => {
@@ -134,7 +218,7 @@ export default function SearchBar({ onResultSelect } = {}) {
           type="search"
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true) }}
-          onFocus={() => { setFocused(true); query.trim() && setOpen(true) }}
+          onFocus={() => { setFocused(true); setOpen(true) }}
           onBlur={() => setFocused(false)}
           placeholder={t('searchPlaceholder')}
           autoComplete="off"
@@ -152,14 +236,72 @@ export default function SearchBar({ onResultSelect } = {}) {
         )}
       </div>
 
+      {/* ── Search History ── */}
+      {showHistory && (
+        <div
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
+          onTouchStart={e => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between px-4 pt-3 pb-1">
+            <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {ar ? 'عمليات بحث سابقة' : 'Recent Searches'}
+            </span>
+            <button
+              onMouseDown={e => e.preventDefault()}
+              onClick={clearHistory}
+              className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-red-400 transition-colors font-semibold"
+            >
+              <Trash2 className="w-3 h-3" />
+              {ar ? 'مسح' : 'Clear'}
+            </button>
+          </div>
+          {history.map((q, i) => (
+            <button
+              key={i}
+              onMouseDown={e => e.preventDefault()}
+              onClick={() => handleHistorySelect(q)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 active:bg-gray-100 transition-colors text-start border-t border-gray-50"
+            >
+              <Clock className="w-4 h-4 text-gray-300 flex-shrink-0" />
+              <span className="text-[#071B33] text-sm font-medium truncate">{q}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Search Results ── */}
       {open && hasResults && (
         <div
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto z-50"
           style={{ maxHeight: '65vh', overscrollBehavior: 'contain' }}
           onTouchStart={e => e.stopPropagation()}
         >
+          {/* ── Filter chips ── */}
+          {filterChips.length > 1 && (
+            <div
+              className="flex gap-2 px-3 pt-3 pb-2 overflow-x-auto border-b border-gray-100"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {filterChips.map(chip => (
+                <button
+                  key={chip.id}
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => setActiveFilter(chip.id)}
+                  className={`flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full transition-all ${
+                    activeFilter === chip.id
+                      ? 'bg-[#FF7900] text-white shadow-sm shadow-[#FF7900]/30'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* ── Specialties ── */}
-          {specialtyResults.length > 0 && (
+          {specialtyResults.length > 0 && activeFilter === 'all' && (
             <>
               <SectionHeader label={ar ? 'التخصصات والأقسام' : 'Specialties & Departments'} hasBorder={false} />
               {specialtyResults.map((entry) => {
@@ -196,10 +338,10 @@ export default function SearchBar({ onResultSelect } = {}) {
           )}
 
           {/* ── Technicians ── */}
-          {techResults.length > 0 && (
+          {filteredTechs.length > 0 && (
             <>
-              <SectionHeader label={ar ? 'الفنيون' : 'Technicians'} hasBorder={specialtyResults.length > 0} />
-              {techResults.map((tech) => {
+              <SectionHeader label={ar ? 'الفنيون' : 'Technicians'} hasBorder={specialtyResults.length > 0 && activeFilter === 'all'} />
+              {filteredTechs.map((tech) => {
                 let touchStartY = 0
                 return (
                   <button
@@ -232,10 +374,10 @@ export default function SearchBar({ onResultSelect } = {}) {
           )}
 
           {/* ── Companies ── */}
-          {companyResults.length > 0 && (
+          {filteredCompanies.length > 0 && (
             <>
-              <SectionHeader label={ar ? 'الشركات' : 'Companies'} hasBorder={specialtyResults.length > 0 || techResults.length > 0} />
-              {companyResults.map((company) => {
+              <SectionHeader label={ar ? 'الشركات' : 'Companies'} hasBorder={specialtyResults.length > 0 || filteredTechs.length > 0} />
+              {filteredCompanies.map((company) => {
                 let touchStartY = 0
                 return (
                   <button
@@ -266,9 +408,9 @@ export default function SearchBar({ onResultSelect } = {}) {
           )}
 
           {/* ── Cities ── */}
-          {cityResults.length > 0 && (
+          {cityResults.length > 0 && activeFilter === 'all' && (
             <>
-              <SectionHeader label={ar ? 'المدن' : 'Cities'} hasBorder={specialtyResults.length > 0 || techResults.length > 0 || companyResults.length > 0} />
+              <SectionHeader label={ar ? 'المدن' : 'Cities'} hasBorder={specialtyResults.length > 0 || filteredTechs.length > 0 || filteredCompanies.length > 0} />
               {cityResults.map((city) => {
                 let touchStartY = 0
                 return (
@@ -279,7 +421,7 @@ export default function SearchBar({ onResultSelect } = {}) {
                     onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectCity(city) }}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 active:bg-green-100 transition-colors text-start border-t border-gray-50"
                   >
-                    <div className={`w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center ${city.id === 'libya' ? 'bg-green-100' : 'bg-green-100'}`}>
+                    <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center bg-green-100">
                       {city.id === 'libya'
                         ? <Globe className="w-5 h-5 text-green-600" />
                         : <MapPin className="w-5 h-5 text-green-500" />}
@@ -299,6 +441,13 @@ export default function SearchBar({ onResultSelect } = {}) {
                 )
               })}
             </>
+          )}
+
+          {/* empty filtered state */}
+          {activeFilter !== 'all' && filteredTechs.length === 0 && filteredCompanies.length === 0 && (
+            <div className="px-4 py-6 text-center text-gray-400 text-sm">
+              {ar ? 'لا توجد نتائج لهذا الفلتر' : 'No results for this filter'}
+            </div>
           )}
         </div>
       )}

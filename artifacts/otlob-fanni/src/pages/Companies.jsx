@@ -18,9 +18,15 @@ const EXP_LABEL_AR = {
   '6-10': '6-10 سنوات', '10+': 'أكثر من 10 سنوات',
 }
 
+function isNewProfile(createdAt) {
+  if (!createdAt) return false
+  return Date.now() - new Date(createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
+}
+
 function CompanyCard({ company, lang, onOpen }) {
   const ar = lang === 'ar'
   const name = company.company_name || company.companyName || ''
+  const isNew = isNewProfile(company.createdAt || company.created_at)
   const firstWord = name ? (name.trim().split(' ')[0] || '?') : '?'
   const logo = getFileUrl(company.company_logo || company.companyLogo || null)
   const city = company.city || ''
@@ -53,6 +59,11 @@ function CompanyCard({ company, lang, onOpen }) {
           </div>
         )}
         <div className="absolute top-2 right-2 flex flex-col gap-1">
+          {isNew && (
+            <span className="bg-emerald-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">
+              {ar ? 'جديد' : 'New'}
+            </span>
+          )}
           {availableNow && (
             <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
               {ar ? 'متاح الآن' : 'Available'}

@@ -151,9 +151,15 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
   )
 }
 
+function isNewProfile(createdAt) {
+  if (!createdAt) return false
+  return Date.now() - new Date(createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
+}
+
 function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }) {
   const ar = lang === 'ar'
   const name = company.companyName || company.company_name || ''
+  const isNew = isNewProfile(company.createdAt || company.created_at)
   const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
   const logo = getFileUrl(company.companyLogo || company.company_logo || null)
   const availableNow = company.availableNow ?? company.available_now ?? false
@@ -179,6 +185,11 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }
           <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
             <Building2 className="w-2.5 h-2.5" /> {ar ? 'شركة' : 'Company'}
           </span>
+          {isNew && (
+            <span className="bg-emerald-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">
+              {ar ? 'جديد' : 'New'}
+            </span>
+          )}
           {availableNow && (
             <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
               {ar ? 'متاحة الآن' : 'Available'}
