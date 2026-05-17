@@ -3,12 +3,13 @@ import { Copy, Check, RefreshCw, ChevronDown } from 'lucide-react'
 import api from '../../lib/api'
 import { categories as SERVICES_CATS } from '../../data/services'
 
+const inputCls = "w-full bg-white border-2 border-slate-300 text-[#071B33] text-sm rounded-xl px-3 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900] focus:ring-2 focus:ring-[#FF7900]/15 transition-all shadow-sm hover:border-slate-400"
+
 const Select = ({ label, value, onChange, children }) => (
   <div>
-    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{label}</p>
+    <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{label}</p>
     <div className="relative">
-      <select value={value} onChange={e => onChange(e.target.value)}
-        className="w-full bg-slate-50 border border-slate-200 text-[#071B33] text-sm rounded-xl px-3 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50">
+      <select value={value} onChange={e => onChange(e.target.value)} className={inputCls}>
         {children}
       </select>
       <ChevronDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
@@ -17,8 +18,8 @@ const Select = ({ label, value, onChange, children }) => (
 )
 
 const Toggle = ({ label, checked, onChange }) => (
-  <label className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 cursor-pointer select-none">
-    <span className="text-sm font-semibold text-[#071B33]">{label}</span>
+  <label className={`flex items-center justify-between bg-white border-2 rounded-xl px-3 py-2.5 cursor-pointer select-none transition-all shadow-sm ${checked ? 'border-[#071B33] bg-[#071B33]/5' : 'border-slate-300 hover:border-slate-400'}`}>
+    <span className={`text-sm font-semibold transition-colors ${checked ? 'text-[#071B33]' : 'text-slate-500'}`}>{label}</span>
     <div
       onClick={() => onChange(!checked)}
       className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-[#071B33]' : 'bg-slate-300'}`}
@@ -188,7 +189,7 @@ export default function PostGenerator() {
                 value={cityFilter}
                 onFocus={ensureCities}
                 onChange={e => setCityFilter(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-[#071B33] text-sm rounded-xl px-3 py-2.5 appearance-none focus:outline-none focus:border-[#FF7900]/50"
+                className={inputCls}
               >
                 <option value="">كل المدن</option>
                 {cities.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
@@ -215,23 +216,23 @@ export default function PostGenerator() {
           </p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[11px] text-slate-400 mb-1">من تاريخ</p>
+              <p className="text-[11px] text-slate-500 font-semibold mb-1">من تاريخ</p>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={e => setDateFrom(e.target.value)}
                 max={dateTo || undefined}
-                className="w-full bg-slate-50 border border-slate-200 text-[#071B33] text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+                className={inputCls}
               />
             </div>
             <div>
-              <p className="text-[11px] text-slate-400 mb-1">إلى تاريخ</p>
+              <p className="text-[11px] text-slate-500 font-semibold mb-1">إلى تاريخ</p>
               <input
                 type="date"
                 value={dateTo}
                 onChange={e => setDateTo(e.target.value)}
                 min={dateFrom || undefined}
-                className="w-full bg-slate-50 border border-slate-200 text-[#071B33] text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#FF7900]/50"
+                className={inputCls}
               />
             </div>
           </div>
