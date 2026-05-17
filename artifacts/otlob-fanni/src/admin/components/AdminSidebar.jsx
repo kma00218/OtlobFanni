@@ -155,9 +155,13 @@ export default function AdminSidebar({ open, onClose }) {
           return (
             <div key={group.id} className="mb-2">
               {group.label && (
-                <p className="text-white/30 text-[10px] font-black uppercase tracking-widest px-3 py-2 mt-1">
-                  {group.label}
-                </p>
+                <div className="flex items-center gap-2 px-3 py-2 mt-2">
+                  <div className="h-px flex-1 bg-white/15" />
+                  <span className="text-white/60 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                    {group.label}
+                  </span>
+                  <div className="h-px flex-1 bg-white/15" />
+                </div>
               )}
               {visibleItems.map(item => (
                 <NavItem
