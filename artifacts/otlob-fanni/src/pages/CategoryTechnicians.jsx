@@ -8,10 +8,11 @@ import { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
 import {
   Star, MapPin, Phone, MessageSquare, Zap, Search,
-  Users, Loader2, Building2, Heart,
+  Users, Loader2, Building2, Heart, Navigation, Map, List, X as XIcon,
 } from 'lucide-react'
 import AdBanner from '../components/AdBanner'
 import api from '../lib/api'
+import MapView, { haversine, formatDist } from '../components/MapView'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -41,7 +42,7 @@ function Stars({ rating }) {
   )
 }
 
-function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
+function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName, distance }) {
   const ar = lang === 'ar'
   const name = tech.nameAr || tech.name_ar || ''
   const firstName = name ? (name.trim().split(' ')[0] || '?') : '?'
@@ -107,12 +108,19 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName }) {
           </div>
         )}
 
-        <div className="flex items-center gap-1 mb-2">
+        <div className="flex items-center gap-1 mb-1.5">
           <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
           <p className="text-xs text-gray-500 truncate">
             {city}{area ? ` · ${area}` : ''}
           </p>
         </div>
+
+        {distance != null && (
+          <div className="flex items-center gap-1 mb-2">
+            <Navigation className="w-3 h-3 text-green-600 flex-shrink-0" />
+            <span className="text-[11px] font-bold text-green-700">{formatDist(distance, ar)}</span>
+          </div>
+        )}
 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1.5">
@@ -156,7 +164,7 @@ function isNewProfile(createdAt) {
   return Date.now() - new Date(createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
 }
 
-function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }) {
+function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName, distance }) {
   const ar = lang === 'ar'
   const name = company.companyName || company.company_name || ''
   const isNew = isNewProfile(company.createdAt || company.created_at)
@@ -223,12 +231,19 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName }
           </div>
         )}
 
-        <div className="flex items-center gap-1 mb-2">
+        <div className="flex items-center gap-1 mb-1.5">
           <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
           <p className="text-xs text-gray-500 truncate">
             {city}{area ? ` · ${area}` : ''}
           </p>
         </div>
+
+        {distance != null && (
+          <div className="flex items-center gap-1 mb-2">
+            <Navigation className="w-3 h-3 text-green-600 flex-shrink-0" />
+            <span className="text-[11px] font-bold text-green-700">{formatDist(distance, ar)}</span>
+          </div>
+        )}
 
         <div className="flex items-center justify-between mb-3">
           <span className="text-[10px] text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full font-medium">
@@ -359,6 +374,9 @@ export default function CategoryTechnicians() {
   const [error, setError]               = useState(null)
   const [visibleTechs, setVisibleTechs]         = useState(20)
   const [visibleCompanies, setVisibleCompanies] = useState(20)
+  const [userLocation, setUserLocation]   = useState(null)
+  const [nearMeLoading, setNearMeLoading] = useState(false)
+  const [viewMode, setViewMode]           = useState('list')
 
   // Sync state with URL when user presses browser back/forward
   useEffect(() => {
@@ -402,8 +420,21 @@ export default function CategoryTechnicians() {
   const handleCitySelect = (cityId) => {
     setSelectedCity(cityId)
     setCityChosen(true)
-    // Push a new history entry so back from TechnicianDetails returns to this list
     navigate(`/category/${categoryId}?city=${cityId}`)
+  }
+
+  const handleNearMe = () => {
+    if (userLocation) { setUserLocation(null); return }
+    if (!navigator.geolocation) return
+    setNearMeLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+        setNearMeLoading(false)
+      },
+      () => setNearMeLoading(false),
+      { timeout: 8000 }
+    )
   }
 
   useEffect(() => {
@@ -424,23 +455,42 @@ export default function CategoryTechnicians() {
     )
   }
 
-  const filteredTechs = techs.filter(t => {
-    if (!search) return true
-    const name = (t.nameAr || t.name_ar || '').toLowerCase()
-    const city = (t.city_name || t.city || '').toLowerCase()
-    const area = (t.area || '').toLowerCase()
-    const q    = search.toLowerCase()
-    return name.includes(q) || city.includes(q) || area.includes(q)
+  const withDist = (item) => ({
+    ...item,
+    _dist: (userLocation && item.lat && item.lng)
+      ? haversine(userLocation.lat, userLocation.lng, item.lat, item.lng)
+      : null,
   })
+  const byDist = (a, b) => {
+    if (a._dist == null && b._dist == null) return 0
+    if (a._dist == null) return 1
+    if (b._dist == null) return -1
+    return a._dist - b._dist
+  }
 
-  const filteredCompanies = companies.filter(c => {
-    if (!search) return true
-    const name = (c.companyName || c.company_name || '').toLowerCase()
-    const city = (c.city || '').toLowerCase()
-    const area = (c.area || '').toLowerCase()
-    const q    = search.toLowerCase()
-    return name.includes(q) || city.includes(q) || area.includes(q)
-  })
+  const filteredTechs = techs
+    .filter(t => {
+      if (!search) return true
+      const name = (t.nameAr || t.name_ar || '').toLowerCase()
+      const city = (t.city_name || t.city || '').toLowerCase()
+      const area = (t.area || '').toLowerCase()
+      const q    = search.toLowerCase()
+      return name.includes(q) || city.includes(q) || area.includes(q)
+    })
+    .map(withDist)
+    .sort(byDist)
+
+  const filteredCompanies = companies
+    .filter(c => {
+      if (!search) return true
+      const name = (c.companyName || c.company_name || '').toLowerCase()
+      const city = (c.city || '').toLowerCase()
+      const area = (c.area || '').toLowerCase()
+      const q    = search.toLowerCase()
+      return name.includes(q) || city.includes(q) || area.includes(q)
+    })
+    .map(withDist)
+    .sort(byDist)
 
   const shownTechs     = filteredTechs.slice(0, visibleTechs)
   const shownCompanies = filteredCompanies.slice(0, visibleCompanies)
@@ -478,25 +528,78 @@ export default function CategoryTechnicians() {
           </button>
         </div>
 
-        {/* بحث */}
-        <div className="relative">
-          <Search className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 ${ar ? 'right-3' : 'left-3'}`} />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={ar ? 'بحث عن فني أو شركة...' : 'Search provider...'}
-            className={`w-full border border-gray-200 rounded-xl py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${ar ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
-          />
+        {/* بحث + Near Me + View Toggle */}
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 ${ar ? 'right-3' : 'left-3'}`} />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder={ar ? 'بحث عن فني أو شركة...' : 'Search provider...'}
+              className={`w-full border border-gray-200 rounded-xl py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF7900]/40 ${ar ? 'pr-8 pl-3' : 'pl-8 pr-3'}`}
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleNearMe}
+              disabled={nearMeLoading}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all flex-shrink-0 ${
+                userLocation
+                  ? 'bg-green-50 text-green-700 border-green-200'
+                  : 'bg-white text-gray-600 border-gray-200 active:scale-95'
+              }`}
+            >
+              {nearMeLoading
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                : <Navigation className="w-3.5 h-3.5" />}
+              {ar ? 'الأقرب إليّ' : 'Near Me'}
+              {userLocation && (
+                <span
+                  onClick={e => { e.stopPropagation(); setUserLocation(null) }}
+                  className="ml-0.5 text-green-600 hover:text-red-500 cursor-pointer"
+                >
+                  <XIcon className="w-3 h-3 inline" />
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode(v => v === 'list' ? 'map' : 'list')}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-600 active:scale-95 transition-all flex-shrink-0"
+            >
+              {viewMode === 'list'
+                ? <><Map className="w-3.5 h-3.5" />{ar ? 'خريطة' : 'Map'}</>
+                : <><List className="w-3.5 h-3.5" />{ar ? 'قائمة' : 'List'}</>}
+            </button>
+          </div>
+          {userLocation && (
+            <p className="text-[11px] text-green-600 font-medium px-1">
+              ✓ {ar ? 'يتم الترتيب حسب المسافة منك' : 'Sorted by distance from you'}
+            </p>
+          )}
         </div>
 
         {/* إعلان */}
         <AdBanner placement="category_page" categoryId={categoryId} dismissible />
 
+        {/* Map View */}
+        {viewMode === 'map' && !loading && (
+          <MapView
+            techs={filteredTechs}
+            companies={filteredCompanies}
+            userLocation={userLocation}
+            ar={ar}
+            onSelectTech={id => navigate(`/technician/${id}`)}
+            onSelectCompany={id => navigate(`/company/${id}`)}
+          />
+        )}
+
         {/* القائمة */}
-        {loading ? (
+        {viewMode === 'list' && loading ? (
           <SkeletonListCards count={4} />
-        ) : error ? (
+        ) : viewMode === 'list' && error ? (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
             <p className="text-red-500 text-sm">{ar ? 'حدث خطأ أثناء التحميل' : 'Error loading data'}</p>
             <button onClick={() => window.location.reload()}
@@ -504,7 +607,7 @@ export default function CategoryTechnicians() {
               {ar ? 'إعادة المحاولة' : 'Retry'}
             </button>
           </div>
-        ) : totalCount === 0 ? (
+        ) : viewMode === 'list' && totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
             <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center">
               <Users className="w-10 h-10 text-[#FF7900]/40" />
@@ -527,7 +630,7 @@ export default function CategoryTechnicians() {
               </button>
             )}
           </div>
-        ) : (
+        ) : viewMode === 'list' ? (
           <div className="space-y-4">
             {/* الفنيون الأفراد */}
             {filteredTechs.length > 0 && (
@@ -550,6 +653,7 @@ export default function CategoryTechnicians() {
                       isFav={isFav(tech.id)}
                       onToggleFav={toggleFav}
                       categoryName={categoryName}
+                      distance={tech._dist}
                     />
                   ))}
                 </div>
@@ -587,6 +691,7 @@ export default function CategoryTechnicians() {
                       isFav={isCompanyFav(company.id)}
                       onToggleFav={toggleCompanyFav}
                       categoryName={categoryName}
+                      distance={company._dist}
                     />
                   ))}
                 </div>

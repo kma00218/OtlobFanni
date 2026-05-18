@@ -3,8 +3,9 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { sections, categories } from '../data/services'
-import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info, Copy, Check, ChevronDown } from 'lucide-react'
+import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info, Copy, Check, ChevronDown, MapPin as MapPinIcon } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
+import LocationPicker from '../components/LocationPicker'
 
 const DAYS = {
   ar: ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],
@@ -149,6 +150,7 @@ export default function Join() {
   const [otherChecked, setOtherChecked] = useState(false)
   const [expandedSections, setExpandedSections] = useState([])
   const [suggestedSpecialties, setSuggestedSpecialties] = useState({})
+  const [location, setLocation] = useState(null)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const toggleCategory = (id) => setSelectedCategories(p =>
@@ -217,6 +219,8 @@ export default function Join() {
         extra_specialties: extraSpecialties,
         custom_specialty: otherChecked ? form.customSpecialty : undefined,
         suggested_specialties: suggestions.length ? suggestions : undefined,
+        lat: location?.lat ?? undefined,
+        lng: location?.lng ?? undefined,
         experience:       form.experience,
         type:            form.type,
         description:     form.description,
@@ -622,6 +626,23 @@ export default function Join() {
                   placeholder="https://tiktok.com/@youraccount" dir="ltr" />
               </Field>
             </div>
+          </div>
+
+          {/* ── 7.5 Location ─────────────────────────────────────────── */}
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <div className="flex items-center gap-2 mb-1">
+              <MapPinIcon className="w-5 h-5 text-[#FF7900]" />
+              <h3 className="font-bold text-[#071B33] text-base">
+                {ar ? 'موقعك على الخريطة' : 'Your Location on Map'}
+                <span className="text-gray-400 text-xs font-normal mr-1.5">{ar ? '(اختياري)' : '(optional)'}</span>
+              </h3>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+              {ar
+                ? 'يساعد تحديد موقعك العملاء القريبين منك في إيجادك بسرعة أكبر عبر ميزة "الأقرب إليّ".'
+                : 'Pinning your location helps nearby customers find you faster via the "Near Me" feature.'}
+            </p>
+            <LocationPicker value={location} onChange={setLocation} ar={ar} />
           </div>
 
           {/* ── 8. Terms ──────────────────────────────────────────────── */}

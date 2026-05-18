@@ -3,8 +3,9 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { sections, categories } from '../data/services'
-import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook, Info, Copy, Check, ChevronDown } from 'lucide-react'
+import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook, Info, Copy, Check, ChevronDown, MapPin as MapPinIcon } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
+import LocationPicker from '../components/LocationPicker'
 
 const DAYS = {
   ar: ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],
@@ -158,6 +159,7 @@ export default function JoinCompany() {
   const [otherChecked, setOtherChecked] = useState(false)
   const [expandedSections, setExpandedSections] = useState([])
   const [suggestedSpecialties, setSuggestedSpecialties] = useState({})
+  const [location, setLocation] = useState(null)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const toggleCategory = (id) => setSelectedCategories(p =>
@@ -227,6 +229,8 @@ export default function JoinCompany() {
         extra_specialties: extraSpecialties,
         custom_specialty: otherChecked ? form.customSpecialty : undefined,
         suggested_specialties: suggestions.length ? suggestions : undefined,
+        lat: location?.lat ?? undefined,
+        lng: location?.lng ?? undefined,
         years_active:   form.years_active,
         description:    form.description,
         certifications: form.certifications,
@@ -640,6 +644,23 @@ export default function JoinCompany() {
                 </label>
               )}
             </div>
+          </div>
+
+          {/* ── 7.5 Location ─────────────────────────────────────────── */}
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+            <div className="flex items-center gap-2 mb-1">
+              <MapPinIcon className="w-5 h-5 text-[#FF7900]" />
+              <h3 className="font-bold text-[#071B33] text-base">
+                {ar ? 'موقع الشركة على الخريطة' : 'Company Location on Map'}
+                <span className="text-gray-400 text-xs font-normal mr-1.5">{ar ? '(اختياري)' : '(optional)'}</span>
+              </h3>
+            </div>
+            <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+              {ar
+                ? 'يساعد تحديد موقع شركتك العملاء القريبين في إيجادكم بسرعة عبر ميزة "الأقرب إليّ".'
+                : 'Pinning your company location helps nearby customers find you faster via the "Near Me" feature.'}
+            </p>
+            <LocationPicker value={location} onChange={setLocation} ar={ar} />
           </div>
 
           {/* ── 8. Terms & Submit ───────────────────────────────────── */}

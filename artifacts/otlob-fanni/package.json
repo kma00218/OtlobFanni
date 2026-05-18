@@ -75,6 +75,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "@workspace/object-storage-web": "workspace:*"
+    "@workspace/object-storage-web": "workspace:*",
+    "leaflet": "^1.9.4"
   }
 }

@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp, jsonb, integer, numeric } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, jsonb, integer, numeric, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -16,6 +16,8 @@ export const companyApplicationsTable = pgTable("company_applications", {
   extraSpecialties:     text("extra_specialties").array().default([]),
   customSpecialty:      text("custom_specialty"),
   suggestedSpecialties: jsonb("suggested_specialties").$type<{sectionId: string, name: string}[]>().default([]),
+  lat:            real("lat"),
+  lng:            real("lng"),
   yearsActive:    text("years_active"),
   description:    text("description"),
   certifications: text("certifications"),

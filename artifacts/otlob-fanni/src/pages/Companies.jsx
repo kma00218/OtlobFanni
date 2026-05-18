@@ -3,14 +3,16 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { useLocation } from 'wouter'
 import {
-  MapPin, Phone, Search, Building2, Zap, Briefcase, Clock, ChevronLeft, ChevronRight
+  MapPin, Phone, Search, Building2, Zap, Briefcase,
+  Navigation, Map, List, Loader2, X as XIcon,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { SkeletonCompanyCard } from '../components/Skeleton'
 import { categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
+import MapView, { haversine, formatDist } from '../components/MapView'
 
-const CAT_LABEL = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
+const CAT_LABEL    = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
 const CAT_LABEL_EN = Object.fromEntries(categories.map(c => [c.id, c.nameEn || c.nameAr]))
 
 const EXP_LABEL_AR = {
@@ -23,7 +25,7 @@ function isNewProfile(createdAt) {
   return Date.now() - new Date(createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
 }
 
-function CompanyCard({ company, lang, onOpen }) {
+function CompanyCard({ company, lang, onOpen, distance }) {
   const ar = lang === 'ar'
   const name = company.company_name || company.companyName || ''
   const isNew = isNewProfile(company.createdAt || company.created_at)
@@ -96,6 +98,13 @@ function CompanyCard({ company, lang, onOpen }) {
           </p>
         </div>
 
+        {distance != null && (
+          <div className="flex items-center gap-1 mb-1">
+            <Navigation className="w-3 h-3 text-green-600 flex-shrink-0" />
+            <span className="text-[11px] font-bold text-green-700">{formatDist(distance, ar)}</span>
+          </div>
+        )}
+
         {yearsActive && (
           <div className="flex items-center gap-1 mb-2">
             <Briefcase className="w-3 h-3 text-gray-400 flex-shrink-0" />
@@ -127,12 +136,15 @@ export default function Companies() {
   const ar = lang === 'ar'
   const [, navigate] = useLocation()
 
-  const [data, setData]         = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [search, setSearch]     = useState('')
+  const [data, setData]             = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [search, setSearch]         = useState('')
   const [filterCity, setFilterCity] = useState('')
   const [filterSpec, setFilterSpec] = useState('')
-  const [visibleCount, setVisibleCount] = useState(20)
+  const [visibleCount, setVisibleCount]   = useState(20)
+  const [userLocation, setUserLocation]   = useState(null)
+  const [nearMeLoading, setNearMeLoading] = useState(false)
+  const [viewMode, setViewMode]           = useState('list')
 
   useEffect(() => {
     api.companies()
@@ -140,22 +152,48 @@ export default function Companies() {
       .catch(() => setLoading(false))
   }, [])
 
+  const handleNearMe = () => {
+    if (userLocation) { setUserLocation(null); return }
+    if (!navigator.geolocation) return
+    setNearMeLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+        setNearMeLoading(false)
+      },
+      () => setNearMeLoading(false),
+      { timeout: 8000 }
+    )
+  }
+
   const cities = [...new Set(data.map(r => r.city).filter(Boolean))].sort()
   const specs  = [...new Set(data.map(r => r.specialty).filter(Boolean))]
 
-  const filtered = data.filter(r => {
-    const name = r.company_name || r.companyName || ''
-    const phone = r.phone || ''
-    const city = r.city || ''
-    const s = !search || name.includes(search) || phone.includes(search) || city.includes(search)
-    const c = !filterCity || city === filterCity
-    const sp = !filterSpec || (r.specialty || '') === filterSpec
-    return s && c && sp
-  })
+  const filtered = data
+    .filter(r => {
+      const name  = r.company_name || r.companyName || ''
+      const city  = r.city || ''
+      const s = !search || name.includes(search) || city.includes(search)
+      const c = !filterCity || city === filterCity
+      const sp = !filterSpec || (r.specialty || '') === filterSpec
+      return s && c && sp
+    })
+    .map(r => ({
+      ...r,
+      _dist: (userLocation && r.lat && r.lng)
+        ? haversine(userLocation.lat, userLocation.lng, r.lat, r.lng)
+        : null,
+    }))
+    .sort((a, b) => {
+      if (a._dist == null && b._dist == null) return 0
+      if (a._dist == null) return 1
+      if (b._dist == null) return -1
+      return a._dist - b._dist
+    })
 
   useEffect(() => {
     setVisibleCount(20)
-  }, [search, filterCity, filterSpec])
+  }, [search, filterCity, filterSpec, userLocation])
 
   const shownCompanies = filtered.slice(0, visibleCount)
 
@@ -166,16 +204,63 @@ export default function Companies() {
       <main className="px-4 pt-4 space-y-4">
         <AdBanner placement="trusted_companies" dismissible />
 
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute top-1/2 -translate-y-1/2 right-3 w-4 h-4 text-gray-400" style={dir === 'ltr' ? {right:'auto',left:'12px'} : {}} />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={ar ? 'بحث باسم الشركة أو المدينة...' : 'Search by company name or city...'}
-            className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
-            style={dir === 'ltr' ? {paddingRight:'16px', paddingLeft:'40px'} : {}}
-          />
+        {/* Search + Near Me + View Toggle */}
+        <div className="space-y-2">
+          <div className="relative">
+            <Search
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              style={ar ? { right: 12 } : { left: 12 }}
+            />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder={ar ? 'بحث باسم الشركة أو المدينة...' : 'Search by company name or city...'}
+              className="w-full bg-white border border-gray-200 rounded-2xl py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+              style={ar ? { paddingRight: 40, paddingLeft: 16 } : { paddingLeft: 40, paddingRight: 16 }}
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleNearMe}
+              disabled={nearMeLoading}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all flex-shrink-0 ${
+                userLocation
+                  ? 'bg-green-50 text-green-700 border-green-200'
+                  : 'bg-white text-gray-600 border-gray-200 active:scale-95'
+              }`}
+            >
+              {nearMeLoading
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                : <Navigation className="w-3.5 h-3.5" />}
+              {ar ? 'الأقرب إليّ' : 'Near Me'}
+              {userLocation && (
+                <span
+                  onClick={e => { e.stopPropagation(); setUserLocation(null) }}
+                  className="ml-0.5 text-green-600 hover:text-red-500 cursor-pointer"
+                >
+                  <XIcon className="w-3 h-3 inline" />
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode(v => v === 'list' ? 'map' : 'list')}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-600 active:scale-95 transition-all flex-shrink-0"
+            >
+              {viewMode === 'list'
+                ? <><Map className="w-3.5 h-3.5" />{ar ? 'خريطة' : 'Map'}</>
+                : <><List className="w-3.5 h-3.5" />{ar ? 'قائمة' : 'List'}</>}
+            </button>
+          </div>
+
+          {userLocation && (
+            <p className="text-[11px] text-green-600 font-medium px-1">
+              ✓ {ar ? 'يتم الترتيب حسب المسافة منك' : 'Sorted by distance from you'}
+            </p>
+          )}
         </div>
 
         {/* Filters */}
@@ -194,19 +279,31 @@ export default function Companies() {
             className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-600 bg-white focus:outline-none"
           >
             <option value="">{ar ? 'كل التخصصات' : 'All Specialties'}</option>
-            {specs.map(s => <option key={s} value={s}>{ar ? (CAT_LABEL[s] || s) : (CAT_LABEL_EN[s] || s)}</option>)}
+            {specs.map(s => (
+              <option key={s} value={s}>{ar ? (CAT_LABEL[s] || s) : (CAT_LABEL_EN[s] || s)}</option>
+            ))}
           </select>
         </div>
 
         {/* Results count */}
-        {!loading && (
+        {!loading && viewMode === 'list' && (
           <p className="text-xs text-gray-400 px-1">
             {ar ? `${filtered.length} شركة` : `${filtered.length} companies`}
           </p>
         )}
 
-        {/* Grid */}
-        {loading ? (
+        {/* Map View */}
+        {viewMode === 'map' && !loading && (
+          <MapView
+            companies={filtered}
+            userLocation={userLocation}
+            ar={ar}
+            onSelectCompany={id => navigate(`/company/${id}`)}
+          />
+        )}
+
+        {/* List View */}
+        {viewMode === 'list' && (loading ? (
           <div className="grid grid-cols-2 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="bg-white rounded-2xl overflow-hidden">
@@ -241,6 +338,7 @@ export default function Companies() {
                   company={c}
                   lang={lang}
                   onOpen={id => navigate(`/company/${id}`)}
+                  distance={c._dist}
                 />
               ))}
             </div>
@@ -255,7 +353,7 @@ export default function Companies() {
               </button>
             )}
           </>
-        )}
+        ))}
       </main>
     </div>
   )

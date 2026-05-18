@@ -27,6 +27,8 @@ export const techniciansTable = pgTable("technicians", {
   status:          text("status").default("available"),
   emergency:       boolean("emergency").default(false),
   availableNow:    boolean("available_now").default(false),
+  lat:             real("lat"),
+  lng:             real("lng"),
   facebook:        text("facebook"),
   instagram:       text("instagram"),
   applicationId:   text("application_id"),

@@ -168,6 +168,8 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
         status: app.availableNow ? "available" : "busy",
         availableNow: app.availableNow ?? false,
         emergency: app.emergency ?? false,
+        lat: app.lat ?? null,
+        lng: app.lng ?? null,
         applicationId: app.id,
       }).onConflictDoNothing();
     }
