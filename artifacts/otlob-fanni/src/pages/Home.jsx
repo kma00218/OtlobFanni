@@ -79,6 +79,20 @@ export default function Home() {
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">
 
+      {/* Ticker bar */}
+      <Link href="/join-us">
+        <div className="w-full overflow-hidden cursor-pointer select-none" style={{ background: '#071B33', height: '38px', display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'ticker-scroll 28s linear infinite' }}>
+            {[0, 1].map(i => (
+              <span key={i} className="text-white text-[13px] font-semibold" style={{ padding: '0 3rem' }}>
+                🇱🇾 يجري الآن بناء أكبر دليل فنيين وشركات خدمات في ليبيا — التسجيل مفتوح مجاناً
+              </span>
+            ))}
+          </div>
+        </div>
+        <style>{`@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
+      </Link>
+
       <main className="px-4 pt-2 pb-4 flex flex-col gap-4">
         <div className="text-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>
           <Logo />
