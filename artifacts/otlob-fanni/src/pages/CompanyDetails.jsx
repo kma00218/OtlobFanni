@@ -8,6 +8,7 @@ import {
   Facebook, Instagram, CheckCircle, Heart, Star, Send, X,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
+import { track } from '../lib/tracker'
 import { categories } from '../data/services'
 import ImageLightbox from '../components/ImageLightbox'
 import ShareSheet from '../components/ShareSheet'
@@ -112,6 +113,7 @@ export default function CompanyDetails() {
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }
+    track('company_view', id)
     Promise.all([
       api.company(id),
       api.companyReviews(id),

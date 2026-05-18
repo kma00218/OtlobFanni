@@ -195,39 +195,64 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── TOP TECHNICIANS + TOP SEARCHES ────────────────── */}
-      {analytics && (analytics.topTechs?.length > 0 || analytics.topSearches?.length > 0) && (
+      {/* ── TOP TECHNICIANS + TOP COMPANIES ────────────────── */}
+      {analytics && (analytics.topTechs?.length > 0 || analytics.topCompanies?.length > 0) && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {analytics.topTechs?.length > 0 && (
             <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
               <ChartHeader icon={Wrench} iconBg="bg-orange-50" iconColor="text-[#FF7900]"
                 title="الفنيون الأكثر مشاهدة" sub="آخر 30 يوم" />
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {analytics.topTechs.map((t, i) => (
-                  <div key={t.id} className="flex items-center gap-3 text-sm">
-                    <span className="w-5 text-slate-400 text-xs font-bold text-center">{i + 1}</span>
-                    <span className="flex-1 text-slate-600 truncate font-mono text-xs">{t.id}</span>
-                    <span className="font-black text-[#FF7900]">{t.count}</span>
-                  </div>
+                  <a key={t.id} href={`/admin/technicians?id=${t.id}`}
+                    className="flex items-center gap-3 text-sm px-2 py-1.5 rounded-xl hover:bg-orange-50 transition-colors cursor-pointer group">
+                    <span className="w-5 text-slate-400 text-xs font-bold text-center flex-shrink-0">{i + 1}</span>
+                    <span className="flex-1 text-slate-700 font-semibold truncate group-hover:text-[#FF7900] transition-colors">
+                      {t.name || <span className="text-slate-400 font-mono text-xs">{t.id}</span>}
+                    </span>
+                    <span className="font-black text-[#FF7900] flex-shrink-0">{t.count}</span>
+                  </a>
                 ))}
               </div>
             </div>
           )}
-          {analytics.topSearches?.length > 0 && (
+          {analytics.topCompanies?.length > 0 && (
             <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
-              <ChartHeader icon={BarChart3} iconBg="bg-blue-50" iconColor="text-blue-500"
-                title="أكثر كلمات البحث" sub="آخر 30 يوم" />
-              <div className="space-y-2">
-                {analytics.topSearches.map((s, i) => (
-                  <div key={s.query} className="flex items-center gap-3 text-sm">
-                    <span className="w-5 text-slate-400 text-xs font-bold text-center">{i + 1}</span>
-                    <span className="flex-1 text-slate-600 truncate" dir="rtl">{s.query}</span>
-                    <span className="font-black text-blue-600">{s.count}</span>
-                  </div>
+              <ChartHeader icon={Building2} iconBg="bg-indigo-50" iconColor="text-indigo-500"
+                title="الشركات الأكثر مشاهدة" sub="آخر 30 يوم" />
+              <div className="space-y-1.5">
+                {analytics.topCompanies.map((c, i) => (
+                  <a key={c.id} href={`/admin/companies?id=${c.id}`}
+                    className="flex items-center gap-3 text-sm px-2 py-1.5 rounded-xl hover:bg-indigo-50 transition-colors cursor-pointer group">
+                    <span className="w-5 text-slate-400 text-xs font-bold text-center flex-shrink-0">{i + 1}</span>
+                    <span className="flex-1 text-slate-700 font-semibold truncate group-hover:text-indigo-600 transition-colors">
+                      {c.name || <span className="text-slate-400 font-mono text-xs">{c.id}</span>}
+                    </span>
+                    <span className="font-black text-indigo-600 flex-shrink-0">{c.count}</span>
+                  </a>
                 ))}
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── TOP SEARCHES ────────────────── */}
+      {analytics?.topSearches?.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+            <ChartHeader icon={BarChart3} iconBg="bg-blue-50" iconColor="text-blue-500"
+              title="أكثر كلمات البحث" sub="آخر 30 يوم" />
+            <div className="space-y-2">
+              {analytics.topSearches.map((s, i) => (
+                <div key={s.query} className="flex items-center gap-3 text-sm">
+                  <span className="w-5 text-slate-400 text-xs font-bold text-center">{i + 1}</span>
+                  <span className="flex-1 text-slate-600 truncate" dir="rtl">{s.query}</span>
+                  <span className="font-black text-blue-600">{s.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
