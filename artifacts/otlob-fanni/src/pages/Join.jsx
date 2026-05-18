@@ -422,7 +422,7 @@ export default function Join() {
                   {ar ? 'الأقسام والتخصصات' : 'Departments & Specialties'}
                   <span className="text-[#FF7900] font-bold text-sm">*</span>
                 </label>
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-[13px] text-[#071B33] font-semibold leading-relaxed">
                   {ar
                     ? 'افتح أي قسم واختر التخصصات التي تعمل بها — يمكنك الاختيار من أكثر من قسم'
                     : 'Open any section and select your specialties — you can choose from multiple sections'}
