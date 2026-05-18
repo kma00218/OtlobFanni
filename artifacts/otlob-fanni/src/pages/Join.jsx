@@ -148,6 +148,7 @@ export default function Join() {
   const [selectedCategories, setSelectedCategories] = useState([])
   const [otherChecked, setOtherChecked] = useState(false)
   const [expandedSections, setExpandedSections] = useState([])
+  const [suggestedSpecialties, setSuggestedSpecialties] = useState({})
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const toggleCategory = (id) => setSelectedCategories(p =>
@@ -199,6 +200,9 @@ export default function Join() {
     try {
       const primarySpecialty = selectedCategories[0] || 'more_services'
       const extraSpecialties = selectedCategories.slice(1)
+      const suggestions = Object.entries(suggestedSpecialties)
+        .filter(([, name]) => name.trim())
+        .map(([sectionId, name]) => ({ sectionId, name: name.trim() }))
 
       const result = await api.submitTechnicianApplication({
         id:               'jr' + Date.now(),
@@ -212,6 +216,7 @@ export default function Join() {
         specialty:        primarySpecialty,
         extra_specialties: extraSpecialties,
         custom_specialty: otherChecked ? form.customSpecialty : undefined,
+        suggested_specialties: suggestions.length ? suggestions : undefined,
         experience:       form.experience,
         type:            form.type,
         description:     form.description,
@@ -471,12 +476,26 @@ export default function Join() {
                                 )}
                               </div>
                             ) : (
-                              sectionCats.map(c => (
-                                <label key={c.id} className="flex items-center gap-3 px-6 py-2.5 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
-                                  <input type="checkbox" className="w-4 h-4 accent-[#FF7900] flex-shrink-0" checked={selectedCategories.includes(c.id)} onChange={() => toggleCategory(c.id)} />
-                                  <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
-                                </label>
-                              ))
+                              <>
+                                {sectionCats.map(c => (
+                                  <label key={c.id} className="flex items-center gap-3 px-6 py-2.5 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
+                                    <input type="checkbox" className="w-4 h-4 accent-[#FF7900] flex-shrink-0" checked={selectedCategories.includes(c.id)} onChange={() => toggleCategory(c.id)} />
+                                    <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
+                                  </label>
+                                ))}
+                                <div className="px-4 py-3 bg-orange-50/60 border-t border-dashed border-orange-200">
+                                  <p className="text-[11px] text-gray-500 mb-1.5 font-medium">
+                                    {ar ? '💡 اقترح تخصصاً غير مذكور في هذا القسم (اختياري)' : '💡 Suggest an unlisted specialty for this section (optional)'}
+                                  </p>
+                                  <input
+                                    type="text"
+                                    className={inp}
+                                    value={suggestedSpecialties[section.id] || ''}
+                                    onChange={e => setSuggestedSpecialties(p => ({ ...p, [section.id]: e.target.value }))}
+                                    placeholder={ar ? 'مثال: صيانة خزانات المياه' : 'e.g., Water tank maintenance'}
+                                  />
+                                </div>
+                              </>
                             )}
                           </div>
                         )}

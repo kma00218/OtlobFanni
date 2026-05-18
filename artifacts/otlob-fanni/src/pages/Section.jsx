@@ -15,11 +15,11 @@ export default function Section() {
   const section = sections.find(s => s.id === id)
   const sectionCats = categories.filter(c => c.sectionId === id)
 
-  // If section not found, or only one category — redirect immediately
+  // If section not found redirect; if single category (non-more_services) skip the section page
   const redirectTo = !section
     ? '/categories'
-    : sectionCats.length === 1
-      ? (sectionCats[0].id === 'more' ? '/category/more_services' : `/category/${sectionCats[0].id}`)
+    : sectionCats.length === 1 && id !== 'more_services'
+      ? `/category/${sectionCats[0].id}`
       : null
 
   useEffect(() => {

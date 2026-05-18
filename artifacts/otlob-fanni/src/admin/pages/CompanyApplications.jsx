@@ -434,6 +434,24 @@ export default function CompanyApplications() {
                         )
                       })()}
                       {contactName && <p className="text-xs text-gray-500 mt-0.5">جهة التواصل: {contactName}</p>}
+                      {(() => {
+                        const sugg = viewItem.suggestedSpecialties || viewItem.suggested_specialties || []
+                        if (!sugg.length) return null
+                        return (
+                          <div className="mt-2.5 bg-yellow-50 border border-yellow-200 rounded-xl p-3 space-y-1.5">
+                            <p className="text-xs text-yellow-600 font-bold">💡 تخصصات مقترحة ({sugg.length})</p>
+                            {sugg.map((s, i) => {
+                              const secLabel = SECTIONS.find(x => x.id === s.sectionId)?.nameAr || s.sectionId
+                              return (
+                                <div key={i} className="bg-yellow-100 rounded-lg px-2.5 py-1.5">
+                                  <p className="text-[10px] text-yellow-600 mb-0.5">{secLabel}</p>
+                                  <p className="text-sm text-yellow-800 font-semibold">"{s.name}"</p>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )
+                      })()}
                     </div>
                   </div>
 

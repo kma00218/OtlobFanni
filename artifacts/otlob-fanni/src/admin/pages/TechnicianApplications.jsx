@@ -544,6 +544,28 @@ export default function TechnicianApplications() {
                     <p className="text-sm text-blue-300 leading-relaxed">{viewItem.certifications}</p>
                   </div>
                 )}
+                {(() => {
+                  const sugg = viewItem.suggestedSpecialties || viewItem.suggested_specialties || []
+                  if (!sugg.length) return null
+                  return (
+                    <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 space-y-2">
+                      <p className="text-xs text-yellow-400 font-bold flex items-center gap-1.5">
+                        <span>💡</span> تخصصات مقترحة من الفني ({sugg.length})
+                      </p>
+                      {sugg.map((s, i) => {
+                        const secLabel = SECTIONS.find(x => x.id === s.sectionId)?.nameAr || s.sectionId
+                        return (
+                          <div key={i} className="bg-slate-800 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+                            <div>
+                              <p className="text-[10px] text-slate-400 mb-0.5">{secLabel}</p>
+                              <p className="text-sm text-white font-semibold">"{s.name}"</p>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })()}
               </Sec>
 
               {/* Availability */}
