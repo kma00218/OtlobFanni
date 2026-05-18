@@ -514,6 +514,22 @@ export default function TechnicianApplications() {
                   <IC label="السعر الأدنى"   value={priceFrom ? `${priceFrom} د.ل` : '—'} />
                   <IC label="السعر الأقصى"   value={priceTo   ? `${priceTo} د.ل`   : '—'} />
                 </G2>
+                {(() => {
+                  const extras = viewItem.extraSpecialties || viewItem.extra_specialties || []
+                  if (extras.length === 0) return null
+                  return (
+                    <div className="mt-3 bg-slate-50 rounded-xl p-3">
+                      <p className="text-xs text-slate-500 font-semibold mb-2">تخصصات إضافية ({extras.length})</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {extras.map(id => (
+                          <span key={id} className="bg-[#FF7900]/10 text-[#FF7900] border border-[#FF7900]/20 text-xs font-semibold px-2.5 py-1 rounded-full">
+                            {catLabel(id) || id}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
                 {viewItem.description && (
                   <div className="mt-2.5 bg-slate-50 rounded-xl p-3">
                     <p className="text-xs text-slate-500 mb-1">وصف الخدمة</p>

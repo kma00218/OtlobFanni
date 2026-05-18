@@ -420,6 +420,19 @@ export default function CompanyApplications() {
                         <h3 className="font-bold text-gray-900 text-lg leading-tight">{compName}</h3>
                       </div>
                       <p className="text-sm text-[#FF7900] font-medium mt-0.5">{catLabel(viewItem.specialty)}</p>
+                      {(() => {
+                        const extras = viewItem.extraSpecialties || viewItem.extra_specialties || []
+                        if (extras.length === 0) return null
+                        return (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {extras.map(id => (
+                              <span key={id} className="bg-[#FF7900]/10 text-[#FF7900] border border-[#FF7900]/20 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                                {catLabel(id) || id}
+                              </span>
+                            ))}
+                          </div>
+                        )
+                      })()}
                       {contactName && <p className="text-xs text-gray-500 mt-0.5">جهة التواصل: {contactName}</p>}
                     </div>
                   </div>
