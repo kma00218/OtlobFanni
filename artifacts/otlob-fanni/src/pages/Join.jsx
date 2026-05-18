@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { sections, categories } from '../data/services'
-import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info, Copy, Check } from 'lucide-react'
+import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info, Copy, Check, ChevronDown } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const DAYS = {
@@ -18,6 +18,18 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
 
 const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-800 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
 const sel = inp + ' appearance-none cursor-pointer'
+
+const SECTION_GRADIENT = {
+  home_services:     ['#FF7900', '#e85e00'],
+  car_services:      ['#1E40AF', '#0f2472'],
+  construction:      ['#D97706', '#b35500'],
+  tech_security:     ['#6366F1', '#4338CA'],
+  moving_general:    ['#8B5CF6', '#6D28D9'],
+  gardens_pools:     ['#10B981', '#047857'],
+  energy_generators: ['#F59E0B', '#D97706'],
+  business_services: ['#0EA5E9', '#0369A1'],
+  more_services:     ['#6B7280', '#374151'],
+}
 
 function SectionTitle({ icon: Icon, step, children }) {
   return (
@@ -124,7 +136,7 @@ export default function Join() {
   const [form, setForm] = useState({
     full_name: '', phone: '', whatsapp: '', national_id: '',
     city: '', area: '', address: '',
-    section: '', customSpecialty: '', experience: '', type: 'individual',
+    customSpecialty: '', experience: '', type: 'individual',
     description: '', certifications: '',
     price_from: '', price_to: '',
     available_now: 'yes', emergency: 'no',
@@ -135,14 +147,13 @@ export default function Join() {
   })
   const [selectedCategories, setSelectedCategories] = useState([])
   const [otherChecked, setOtherChecked] = useState(false)
+  const [expandedSections, setExpandedSections] = useState([])
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-  const setSection = (v) => {
-    setForm(f => ({ ...f, section: v, customSpecialty: '' }))
-    setSelectedCategories([])
-    setOtherChecked(false)
-  }
   const toggleCategory = (id) => setSelectedCategories(p =>
+    p.includes(id) ? p.filter(x => x !== id) : [...p, id]
+  )
+  const toggleSection = (id) => setExpandedSections(p =>
     p.includes(id) ? p.filter(x => x !== id) : [...p, id]
   )
   const toggleDay = (d) => setDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])
@@ -186,12 +197,8 @@ export default function Join() {
     e.preventDefault()
     setSaving(true)
     try {
-      const primarySpecialty = form.section === 'more_services'
-        ? 'more_services'
-        : (selectedCategories[0] || 'more_services')
-      const extraSpecialties = form.section === 'more_services'
-        ? []
-        : selectedCategories.slice(1)
+      const primarySpecialty = selectedCategories[0] || 'more_services'
+      const extraSpecialties = selectedCategories.slice(1)
 
       const result = await api.submitTechnicianApplication({
         id:               'jr' + Date.now(),
@@ -204,9 +211,7 @@ export default function Join() {
         address:          form.address,
         specialty:        primarySpecialty,
         extra_specialties: extraSpecialties,
-        custom_specialty: (form.section === 'more_services' || otherChecked)
-          ? form.customSpecialty
-          : undefined,
+        custom_specialty: otherChecked ? form.customSpecialty : undefined,
         experience:       form.experience,
         type:            form.type,
         description:     form.description,
@@ -310,8 +315,8 @@ export default function Join() {
           <Info className="w-4 h-4 text-[#FF7900] flex-shrink-0 mt-0.5" />
           <p className="text-xs font-bold text-[#3d2200] leading-relaxed">
             {ar
-              ? 'يمكنك اختيار أكثر من تخصص ضمن نفس القسم في طلب واحد.'
-              : 'You can select multiple specialties within the same section in a single application.'}
+              ? 'يمكنك الاختيار من أكثر من قسم وأكثر من تخصص في طلب واحد.'
+              : 'You can choose from multiple departments and multiple specialties in a single application.'}
           </p>
         </div>
 
@@ -411,69 +416,75 @@ export default function Join() {
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <SectionTitle icon={Briefcase} step={3}>{ar ? 'المعلومات المهنية' : 'Professional Information'}</SectionTitle>
             <div className="space-y-4">
-              <Field label={ar ? 'القسم الرئيسي' : 'Main Section'} required>
-                <select className={sel} required value={form.section} onChange={e => setSection(e.target.value)}>
-                  <option value="">{ar ? 'اختر القسم...' : 'Select section...'}</option>
-                  {sections.map(s => (
-                    <option key={s.id} value={s.id}>{ar ? s.nameAr : s.nameEn}</option>
-                  ))}
-                </select>
-              </Field>
-
-              {form.section === 'more_services' ? (
-                <Field label={ar ? 'اكتب تخصصك' : 'Write your specialty'} required>
-                  <input
-                    className={inp}
-                    required
-                    value={form.customSpecialty}
-                    onChange={e => set('customSpecialty', e.target.value)}
-                    placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'}
-                  />
-                </Field>
-              ) : form.section ? (
-                <Field
-                  label={ar ? 'التخصصات' : 'Specialties'}
-                  required
-                  hint={ar ? 'اختر تخصصاً واحداً أو أكثر' : 'Select one or more specialties'}
-                >
-                  <div className="rounded-xl border-2 border-gray-800 bg-blue-50 divide-y divide-gray-200 overflow-hidden">
-                    {categories
-                      .filter(c => c.sectionId === form.section && c.id !== 'more')
-                      .map(c => (
-                        <label key={c.id} className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
-                            checked={selectedCategories.includes(c.id)}
-                            onChange={() => toggleCategory(c.id)}
-                          />
-                          <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
-                        </label>
-                      ))}
-                    <label className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
-                        checked={otherChecked}
-                        onChange={() => { setOtherChecked(v => !v); if (otherChecked) set('customSpecialty', '') }}
-                      />
-                      <span className="text-sm text-[#071B33] font-medium">{ar ? '✏️ تخصص آخر' : '✏️ Other Specialty'}</span>
-                    </label>
-                  </div>
-                  {otherChecked && (
-                    <input
-                      className={inp + ' mt-2'}
-                      required={otherChecked && selectedCategories.length === 0}
-                      value={form.customSpecialty}
-                      onChange={e => set('customSpecialty', e.target.value)}
-                      placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'}
-                    />
-                  )}
-                  {form.section && selectedCategories.length === 0 && !otherChecked && (
-                    <input type="text" className="sr-only" required tabIndex={-1} readOnly value="" aria-hidden />
-                  )}
-                </Field>
-              ) : null}
+              {/* ── Multi-Section Specialty Picker ── */}
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-1 text-[13px] font-semibold text-gray-700">
+                  {ar ? 'الأقسام والتخصصات' : 'Departments & Specialties'}
+                  <span className="text-[#FF7900] font-bold text-sm">*</span>
+                </label>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  {ar
+                    ? 'افتح أي قسم واختر التخصصات التي تعمل بها — يمكنك الاختيار من أكثر من قسم'
+                    : 'Open any section and select your specialties — you can choose from multiple sections'}
+                </p>
+                <div className="rounded-xl border-2 border-gray-800 overflow-hidden bg-blue-50 divide-y divide-gray-200">
+                  {sections.map((section) => {
+                    const isMore = section.id === 'more_services'
+                    const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more')
+                    const selectedCount = isMore ? (otherChecked ? 1 : 0) : sectionCats.filter(c => selectedCategories.includes(c.id)).length
+                    const isOpen = expandedSections.includes(section.id)
+                    const [c1, c2] = SECTION_GRADIENT[section.id] || ['#6B7280', '#374151']
+                    return (
+                      <div key={section.id}>
+                        <button
+                          type="button"
+                          onClick={() => toggleSection(section.id)}
+                          className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[#FF7900]/5 active:bg-[#FF7900]/10 transition-colors text-start"
+                        >
+                          <div className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                            <img src={`/icons/services/${isMore ? 'more' : section.id}.svg`} alt="" style={{ width: 18, height: 18 }} className="object-contain brightness-0 invert" onError={e => { e.currentTarget.style.display = 'none' }} />
+                          </div>
+                          <span className="flex-1 font-bold text-[#071B33] text-sm text-start">{ar ? section.nameAr : section.nameEn}</span>
+                          {selectedCount > 0 && (
+                            <span className="bg-[#FF7900] text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[20px] text-center">{selectedCount}</span>
+                          )}
+                          <ChevronDown className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {isOpen && (
+                          <div className="bg-white border-t border-gray-100 divide-y divide-gray-50">
+                            {isMore ? (
+                              <div className="px-4 py-3 space-y-2">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                  <input type="checkbox" className="w-4 h-4 accent-[#FF7900] flex-shrink-0" checked={otherChecked} onChange={() => { setOtherChecked(v => !v); if (otherChecked) set('customSpecialty', '') }} />
+                                  <span className="text-sm text-[#071B33] font-medium">{ar ? '✏️ تخصص غير مذكور في القائمة' : '✏️ Specialty not listed above'}</span>
+                                </label>
+                                {otherChecked && (
+                                  <input className={inp} value={form.customSpecialty} onChange={e => set('customSpecialty', e.target.value)} placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'} />
+                                )}
+                              </div>
+                            ) : (
+                              sectionCats.map(c => (
+                                <label key={c.id} className="flex items-center gap-3 px-6 py-2.5 cursor-pointer hover:bg-[#FF7900]/5 transition-colors">
+                                  <input type="checkbox" className="w-4 h-4 accent-[#FF7900] flex-shrink-0" checked={selectedCategories.includes(c.id)} onChange={() => toggleCategory(c.id)} />
+                                  <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
+                                </label>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                {selectedCategories.length > 0 && (
+                  <p className="text-xs text-green-600 font-semibold">
+                    {ar ? `✓ تم اختيار ${selectedCategories.length} تخصص` : `✓ ${selectedCategories.length} specialt${selectedCategories.length === 1 ? 'y' : 'ies'} selected`}
+                  </p>
+                )}
+                {selectedCategories.length === 0 && !otherChecked && (
+                  <input type="text" className="sr-only" required tabIndex={-1} readOnly value="" aria-hidden />
+                )}
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label={ar ? 'سنوات الخبرة' : 'Experience'} required>
