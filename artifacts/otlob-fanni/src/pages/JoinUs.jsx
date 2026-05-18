@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link, useLocation } from 'wouter'
-import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Info, Share2, ClipboardList, Search } from 'lucide-react'
+import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Share2, ClipboardList, Search } from 'lucide-react'
 
 export default function JoinUs() {
   const { lang, toggleLang } = useLang()
@@ -76,21 +76,6 @@ export default function JoinUs() {
 
       {/* Cards */}
       <div className="px-5 space-y-3">
-
-        {/* Multi-specialty note */}
-        <div className="rounded-2xl border-2 border-[#FF7900]/60 overflow-hidden" style={{ background: '#FFF4E8' }}>
-          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-red-200 bg-white">
-            <Info className="w-4 h-4 text-red-600 flex-shrink-0" />
-            <span className="text-sm font-extrabold text-red-600 tracking-wide">
-              {ar ? '⚠ ملاحظة مهمة' : '⚠ Important Note'}
-            </span>
-          </div>
-          <p className="px-4 py-3 text-base font-extrabold text-[#3d2200] leading-relaxed">
-            {ar
-              ? 'تعمل في أكثر من تخصص؟ أرسل طلبًا منفصلًا لكل تخصص.'
-              : 'Work in multiple specialties? Submit a separate application for each.'}
-          </p>
-        </div>
 
         {/* Technician Card */}
         <Link href="/join">
