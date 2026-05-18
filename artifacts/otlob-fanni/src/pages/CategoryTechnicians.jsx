@@ -708,7 +708,7 @@ export default function CategoryTechnicians() {
               </div>
             )}
           </div>
-        )}
+        ) : null}
 
       </main>
     </div>
