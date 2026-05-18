@@ -349,17 +349,25 @@ export default function Join() {
                 )}
               </div>
               <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handleProfilePhoto} />
-              <div className="text-center">
+              <div className="text-center w-full">
                 <button type="button" onClick={() => photoInputRef.current?.click()}
-                  className="text-sm font-medium text-[#FF7900] hover:underline" disabled={uploading > 0}>
-                  {(profilePreview || profilePhoto) ? (ar ? 'تغيير الصورة' : 'Change Photo') : (ar ? 'رفع صورة شخصية' : 'Upload Profile Photo')}
+                  className="text-sm font-bold text-[#FF7900] hover:underline" disabled={uploading > 0}>
+                  {(profilePreview || profilePhoto) ? (ar ? 'تغيير الصورة' : 'Change Photo') : (ar ? '📷 أضف صورتك الشخصية' : '📷 Add Your Profile Photo')}
                 </button>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {ar ? 'إضافة صورة شخصية تزيد ثقة العملاء بملفك داخل المنصة (اختياري)' : 'A profile photo builds client trust in your profile (optional)'}
-                </p>
+                <div className="mt-2 flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 text-right">
+                  <span className="text-lg flex-shrink-0 leading-none">⭐</span>
+                  <div>
+                    <p className="text-xs font-bold text-orange-900 leading-snug">
+                      {ar ? 'الفنيون الذين يضيفون صورة يحصلون على ثقة أعلى من العملاء وفرصة أكبر للتواصل' : 'Technicians with a photo earn more client trust and get more contact requests'}
+                    </p>
+                    <p className="text-[11px] text-orange-500 font-semibold mt-0.5">
+                      {ar ? 'اختياري — لكنه يُحدث فارقاً كبيراً ✓' : 'Optional — but makes a big difference ✓'}
+                    </p>
+                  </div>
+                </div>
                 {(profilePreview || profilePhoto) && (
                   <button type="button" onClick={() => { setProfilePhoto(null); setProfilePreview(null) }}
-                    className="text-xs text-red-400 hover:underline mt-1 block">
+                    className="text-xs text-red-400 hover:underline mt-2 block mx-auto">
                     {ar ? 'إزالة الصورة' : 'Remove photo'}
                   </button>
                 )}

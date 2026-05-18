@@ -361,17 +361,25 @@ export default function JoinCompany() {
                 )}
               </div>
               <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogo} />
-              <div className="text-center">
+              <div className="text-center w-full">
                 <button type="button" onClick={() => logoInputRef.current?.click()}
-                  className="text-sm font-medium text-[#FF7900] hover:underline" disabled={uploading > 0}>
-                  {(logoPreview || companyLogo) ? (ar ? 'تغيير الشعار' : 'Change Logo') : (ar ? 'رفع شعار الشركة' : 'Upload Company Logo')}
+                  className="text-sm font-bold text-[#FF7900] hover:underline" disabled={uploading > 0}>
+                  {(logoPreview || companyLogo) ? (ar ? 'تغيير الشعار' : 'Change Logo') : (ar ? '🏢 أضف شعار شركتك' : '🏢 Add Your Company Logo')}
                 </button>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {ar ? 'إضافة شعار الشركة يساعد العملاء على التعرف على نشاطك بشكل أفضل (اختياري)' : 'A company logo helps clients recognize your business better (optional)'}
-                </p>
+                <div className="mt-2 flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 text-right">
+                  <span className="text-lg flex-shrink-0 leading-none">⭐</span>
+                  <div>
+                    <p className="text-xs font-bold text-orange-900 leading-snug">
+                      {ar ? 'الشركات التي تعرض شعارها تبدو أكثر احترافية وتكسب ثقة العملاء بشكل أسرع' : 'Companies with a logo appear more professional and gain client trust faster'}
+                    </p>
+                    <p className="text-[11px] text-orange-500 font-semibold mt-0.5">
+                      {ar ? 'اختياري — لكنه يُحدث فارقاً كبيراً ✓' : 'Optional — but makes a big difference ✓'}
+                    </p>
+                  </div>
+                </div>
                 {(logoPreview || companyLogo) && (
                   <button type="button" onClick={() => { setCompanyLogo(null); setLogoPreview(null) }}
-                    className="text-xs text-red-400 hover:underline mt-1 block">
+                    className="text-xs text-red-400 hover:underline mt-2 block mx-auto">
                     {ar ? 'إزالة الشعار' : 'Remove logo'}
                   </button>
                 )}
