@@ -5,7 +5,7 @@ const SECTION_SVG = {
 
   /* ── 1. خدمات منزلية: بيت + مفتاح صيانة ────────────────────────────── */
   home_services: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* House body filled */}
       <path d="M3 11L12 3l9 8v9a1 1 0 01-1 1H4a1 1 0 01-1-1v-9z"
         fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
@@ -20,7 +20,7 @@ const SECTION_SVG = {
 
   /* ── 2. خدمات سيارات: سيارة + مفتاح صيانة ──────────────────────────── */
   car_services: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Car body */}
       <path d="M2 14.5v2a1 1 0 001 1h1M20 17.5h1a1 1 0 001-1v-2"
         stroke="white" strokeWidth="2"/>
@@ -39,7 +39,7 @@ const SECTION_SVG = {
 
   /* ── 3. بناء وتشطيب: مجرفة + جدار طوب ───────────────────────────────── */
   construction: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Brick wall — 3 rows */}
       {/* Row 1 */}
       <rect x="2" y="13" width="9" height="3.5" rx="0.6" fill="rgba(255,255,255,0.3)" stroke="white" strokeWidth="1.5"/>
@@ -57,7 +57,7 @@ const SECTION_SVG = {
 
   /* ── 4. تقنية وأمن: درع + قفل ────────────────────────────────────── */
   tech_security: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Shield */}
       <path d="M12 2L4 5.5V11c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V5.5L12 2z"
         fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="1.8"/>
@@ -73,7 +73,7 @@ const SECTION_SVG = {
 
   /* ── 5. نقل وخدمات عامة: شاحنة + صندوق ─────────────────────────────── */
   moving_general: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Truck cargo */}
       <rect x="1" y="6" width="14" height="12" rx="1" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
       {/* Cab */}
@@ -92,7 +92,7 @@ const SECTION_SVG = {
 
   /* ── 6. حدائق ومسابح: ورقة نبات + موجات ماء ─────────────────────────── */
   gardens_pools: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Leaf filled */}
       <path d="M18 3C18 3 12 2 5 6c0 9 7 13 13 11 0 0 1-8-3-12C13 3 18 3 18 3z"
         fill="rgba(255,255,255,0.22)" stroke="white" strokeWidth="2"/>
@@ -109,7 +109,7 @@ const SECTION_SVG = {
 
   /* ── 7. الخدمات التجارية: محل + ترس ─────────────────────────────────── */
   business_services: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Building facade */}
       <path d="M2 21V9l10-7 10 7v12H2z" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="2"/>
       {/* Shop awning */}
@@ -127,7 +127,7 @@ const SECTION_SVG = {
 
   /* ── 8. الطاقة والمولدات: بطارية + برق ──────────────────────────────── */
   energy_generators: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Battery body */}
       <rect x="2" y="7" width="18" height="10" rx="2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2.2"/>
       {/* Battery positive terminal */}
@@ -141,7 +141,7 @@ const SECTION_SVG = {
 
   /* ── 9. المزيد من الخدمات: شبكة مربعات متنوعة ───────────────────────── */
   more_services: (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Row 1 */}
       <rect x="2" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.35)" stroke="white" strokeWidth="1.6"/>
       <rect x="9" y="2" width="6" height="6" rx="1.2" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="1.6"/>
@@ -190,15 +190,15 @@ export default function SectionCard({ section }) {
         <div
           className="flex items-center justify-center shadow-lg"
           style={{
-            width: 76,
-            height: 76,
-            borderRadius: 20,
+            width: 90,
+            height: 90,
+            borderRadius: 24,
             background: `linear-gradient(150deg, ${c1} 0%, ${c2} 100%)`,
           }}
         >
           {svg}
         </div>
-        <p className="font-bold text-[#071B33] text-[13.5px] leading-snug text-center w-[80px] line-clamp-2">
+        <p className="font-bold text-[#071B33] text-[14.5px] leading-snug text-center w-[90px] line-clamp-2">
           {name}
         </p>
       </div>
