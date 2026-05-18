@@ -137,7 +137,7 @@ export default function Join() {
   const [form, setForm] = useState({
     full_name: '', phone: '', whatsapp: '', national_id: '',
     city: '', area: '', address: '',
-    customSpecialty: '', experience: '', type: 'individual',
+    experience: '', type: 'individual',
     description: '', certifications: '',
     price_from: '', price_to: '',
     available_now: 'yes', emergency: 'no',
@@ -147,9 +147,10 @@ export default function Join() {
     terms: false,
   })
   const [selectedCategories, setSelectedCategories] = useState([])
-  const [otherChecked, setOtherChecked] = useState(false)
   const [expandedSections, setExpandedSections] = useState([])
   const [suggestedSpecialties, setSuggestedSpecialties] = useState({})
+  const [newDeptSuggestions, setNewDeptSuggestions] = useState([])
+  const [chipInputValues, setChipInputValues] = useState({})
   const [location, setLocation] = useState(null)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -160,6 +161,21 @@ export default function Join() {
     p.includes(id) ? p.filter(x => x !== id) : [...p, id]
   )
   const toggleDay = (d) => setDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d])
+  const addSuggestedSpec = (sectionId) => {
+    const val = (chipInputValues[sectionId] || '').trim()
+    if (!val) return
+    setSuggestedSpecialties(p => ({ ...p, [sectionId]: [...(p[sectionId] || []), val] }))
+    setChipInputValues(p => ({ ...p, [sectionId]: '' }))
+  }
+  const removeSuggestedSpec = (sectionId, idx) => {
+    setSuggestedSpecialties(p => ({ ...p, [sectionId]: (p[sectionId] || []).filter((_, i) => i !== idx) }))
+  }
+  const addNewDept = () => {
+    const val = (chipInputValues['__new_dept__'] || '').trim()
+    if (!val) return
+    setNewDeptSuggestions(p => [...p, val])
+    setChipInputValues(p => ({ ...p, '__new_dept__': '' }))
+  }
 
   const handleProfilePhoto = async (e) => {
     const file = e.target.files?.[0]
@@ -202,9 +218,11 @@ export default function Join() {
     try {
       const primarySpecialty = selectedCategories[0] || 'more_services'
       const extraSpecialties = selectedCategories.slice(1)
-      const suggestions = Object.entries(suggestedSpecialties)
-        .filter(([, name]) => name.trim())
-        .map(([sectionId, name]) => ({ sectionId, name: name.trim() }))
+      const suggestions = [
+        ...Object.entries(suggestedSpecialties)
+          .flatMap(([sectionId, names]) => (names || []).filter(n => n.trim()).map(name => ({ sectionId, name }))),
+        ...newDeptSuggestions.filter(n => n.trim()).map(name => ({ sectionId: 'new_department', name }))
+      ]
 
       const result = await api.submitTechnicianApplication({
         id:               'jr' + Date.now(),
@@ -217,7 +235,7 @@ export default function Join() {
         address:          form.address,
         specialty:        primarySpecialty,
         extra_specialties: extraSpecialties,
-        custom_specialty: otherChecked ? form.customSpecialty : undefined,
+        custom_specialty: newDeptSuggestions[0] || undefined,
         suggested_specialties: suggestions.length ? suggestions : undefined,
         lat: location?.lat ?? undefined,
         lng: location?.lng ?? undefined,
@@ -448,7 +466,7 @@ export default function Join() {
                   {sections.map((section) => {
                     const isMore = section.id === 'more_services'
                     const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more')
-                    const selectedCount = isMore ? (otherChecked ? 1 : 0) : sectionCats.filter(c => selectedCategories.includes(c.id)).length
+                    const selectedCount = isMore ? newDeptSuggestions.length : sectionCats.filter(c => selectedCategories.includes(c.id)).length
                     const isOpen = expandedSections.includes(section.id)
                     const [c1, c2] = SECTION_GRADIENT[section.id] || ['#6B7280', '#374151']
                     return (
@@ -471,13 +489,28 @@ export default function Join() {
                           <div className="bg-white border-t border-gray-100 divide-y divide-gray-50">
                             {isMore ? (
                               <div className="px-4 py-3 space-y-2">
-                                <label className="flex items-center gap-3 cursor-pointer">
-                                  <input type="checkbox" className="w-4 h-4 accent-[#FF7900] flex-shrink-0" checked={otherChecked} onChange={() => { setOtherChecked(v => !v); if (otherChecked) set('customSpecialty', '') }} />
-                                  <span className="text-sm text-[#071B33] font-medium">{ar ? '✏️ تخصص غير مذكور في القائمة' : '✏️ Specialty not listed above'}</span>
-                                </label>
-                                {otherChecked && (
-                                  <input className={inp} value={form.customSpecialty} onChange={e => set('customSpecialty', e.target.value)} placeholder={ar ? 'مثال: صيانة مولدات كهربائية' : 'e.g., Generator Maintenance'} />
+                                <p className="text-[11px] text-gray-500 font-medium">{ar ? '💡 اقترح قسماً أو تخصصاً جديداً كلياً — اضغط + أو Enter لإضافته (اختياري)' : '💡 Suggest a brand-new department or specialty — press + or Enter to add (optional)'}</p>
+                                {newDeptSuggestions.length > 0 && (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {newDeptSuggestions.map((name, i) => (
+                                      <span key={i} className="flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold px-2.5 py-1 rounded-full">
+                                        {name}
+                                        <button type="button" onClick={() => setNewDeptSuggestions(p => p.filter((_, j) => j !== i))} className="hover:text-red-600 ml-0.5 font-bold leading-none">×</button>
+                                      </span>
+                                    ))}
+                                  </div>
                                 )}
+                                <div className="flex gap-1.5">
+                                  <input
+                                    type="text"
+                                    className={`${inp} flex-1`}
+                                    value={chipInputValues['__new_dept__'] || ''}
+                                    onChange={e => setChipInputValues(p => ({ ...p, '__new_dept__': e.target.value }))}
+                                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addNewDept() } }}
+                                    placeholder={ar ? 'مثال: أنظمة الطاقة الشمسية' : 'e.g., Solar Energy Systems'}
+                                  />
+                                  <button type="button" onClick={addNewDept} className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-colors">+</button>
+                                </div>
                               </div>
                             ) : (
                               <>
@@ -487,17 +520,31 @@ export default function Join() {
                                     <span className="text-sm text-[#071B33] font-medium">{ar ? c.nameAr : c.nameEn}</span>
                                   </label>
                                 ))}
-                                <div className="px-4 py-3 bg-orange-50/60 border-t border-dashed border-orange-200">
-                                  <p className="text-[11px] text-gray-500 mb-1.5 font-medium">
-                                    {ar ? '💡 اقترح تخصصاً غير مذكور في هذا القسم (اختياري)' : '💡 Suggest an unlisted specialty for this section (optional)'}
+                                <div className="px-4 py-3 bg-orange-50/60 border-t border-dashed border-orange-200 space-y-2">
+                                  <p className="text-[11px] text-gray-500 font-medium">
+                                    {ar ? '💡 اقترح تخصصات غير مذكورة — اضغط + أو Enter لإضافة كل واحد (اختياري)' : '💡 Suggest unlisted specialties — press + or Enter to add each one (optional)'}
                                   </p>
-                                  <input
-                                    type="text"
-                                    className={inp}
-                                    value={suggestedSpecialties[section.id] || ''}
-                                    onChange={e => setSuggestedSpecialties(p => ({ ...p, [section.id]: e.target.value }))}
-                                    placeholder={ar ? 'مثال: صيانة خزانات المياه' : 'e.g., Water tank maintenance'}
-                                  />
+                                  {(suggestedSpecialties[section.id] || []).length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {(suggestedSpecialties[section.id] || []).map((name, i) => (
+                                        <span key={i} className="flex items-center gap-1 bg-[#FF7900]/10 text-[#FF7900] border border-[#FF7900]/20 text-xs font-semibold px-2.5 py-1 rounded-full">
+                                          {name}
+                                          <button type="button" onClick={() => removeSuggestedSpec(section.id, i)} className="hover:text-red-500 ml-0.5 font-bold leading-none">×</button>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                  <div className="flex gap-1.5">
+                                    <input
+                                      type="text"
+                                      className={`${inp} flex-1`}
+                                      value={chipInputValues[section.id] || ''}
+                                      onChange={e => setChipInputValues(p => ({ ...p, [section.id]: e.target.value }))}
+                                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSuggestedSpec(section.id) } }}
+                                      placeholder={ar ? 'مثال: صيانة خزانات المياه' : 'e.g., Water tank maintenance'}
+                                    />
+                                    <button type="button" onClick={() => addSuggestedSpec(section.id)} className="bg-[#FF7900] hover:bg-[#e06800] text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-colors">+</button>
+                                  </div>
                                 </div>
                               </>
                             )}
@@ -512,7 +559,7 @@ export default function Join() {
                     {ar ? `✓ تم اختيار ${selectedCategories.length} تخصص` : `✓ ${selectedCategories.length} specialt${selectedCategories.length === 1 ? 'y' : 'ies'} selected`}
                   </p>
                 )}
-                {selectedCategories.length === 0 && !otherChecked && (
+                {selectedCategories.length === 0 && newDeptSuggestions.length === 0 && (
                   <input type="text" className="sr-only" required tabIndex={-1} readOnly value="" aria-hidden />
                 )}
               </div>

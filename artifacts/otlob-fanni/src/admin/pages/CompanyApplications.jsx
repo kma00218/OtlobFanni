@@ -116,6 +116,15 @@ export default function CompanyApplications() {
     } catch { showToast('حدث خطأ', 'error') }
   }
 
+  const createSuggestionCategory = async (s) => {
+    try {
+      const id = 'custom_' + Date.now()
+      const sectionId = s.sectionId === 'new_department' ? 'more_services' : s.sectionId
+      await api.admin.categories.create({ id, name_ar: s.name, name_en: s.name, section_id: sectionId, icon_name: 'more', sort_order: 99 })
+      showToast(`✓ تمت إضافة "${s.name}" كتخصص جديد`)
+    } catch { showToast('حدث خطأ أثناء الإضافة', 'error') }
+  }
+
   const openWhatsApp = (phone, name, status, requestNumber) => {
     const msg = status === 'approved'
       ? `مرحباً ${name}، تهانينا! ✅ تم قبول طلب شركتك على منصة اطلب فني.\nرقم طلبك: ${requestNumber}\nتابع حالتك هنا: https://otlobfanni.ly/status/${requestNumber}`
@@ -441,11 +450,21 @@ export default function CompanyApplications() {
                           <div className="mt-2.5 bg-yellow-50 border border-yellow-200 rounded-xl p-3 space-y-1.5">
                             <p className="text-xs text-yellow-600 font-bold">💡 تخصصات مقترحة ({sugg.length})</p>
                             {sugg.map((s, i) => {
-                              const secLabel = SECTIONS.find(x => x.id === s.sectionId)?.nameAr || s.sectionId
+                              const isNewDept = s.sectionId === 'new_department'
+                              const secLabel = isNewDept ? 'قسم جديد مقترح' : (SECTIONS.find(x => x.id === s.sectionId)?.nameAr || s.sectionId)
                               return (
-                                <div key={i} className="bg-yellow-100 rounded-lg px-2.5 py-1.5">
-                                  <p className="text-[10px] text-yellow-600 mb-0.5">{secLabel}</p>
-                                  <p className="text-sm text-yellow-800 font-semibold">"{s.name}"</p>
+                                <div key={i} className="bg-yellow-100 rounded-lg px-2.5 py-1.5 flex items-center justify-between gap-2">
+                                  <div>
+                                    <p className={`text-[10px] mb-0.5 ${isNewDept ? 'text-amber-600 font-bold' : 'text-yellow-600'}`}>{secLabel}</p>
+                                    <p className="text-sm text-yellow-800 font-semibold">"{s.name}"</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => createSuggestionCategory(s)}
+                                    className="flex-shrink-0 text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500/40 text-amber-700 px-2 py-1 rounded-lg transition-colors"
+                                  >
+                                    + إنشاء
+                                  </button>
                                 </div>
                               )
                             })}
