@@ -172,6 +172,12 @@ export const api = {
       update:  (id, status, opts = {}) => patch(`/admin/supplier-applications/${id}`, { status, ...opts }),
       delete:  (id)                    => del(`/admin/supplier-applications/${id}`),
     },
+    suppliers: {
+      list:      ()          => get('/admin/suppliers'),
+      update:    (id, data)  => patch(`/admin/suppliers/${id}`, data),
+      setStatus: (id, status)=> patch(`/admin/suppliers/${id}`, { status }),
+      delete:    (id)        => del(`/admin/suppliers/${id}`),
+    },
 
   },
 

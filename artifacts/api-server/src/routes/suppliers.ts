@@ -65,6 +65,47 @@ router.get("/supplier-applications/track/:requestNumber", async (req, res): Prom
   res.json(app);
 });
 
+// ── Admin: List all published suppliers (directory) ──────────────────────────
+router.get("/admin/suppliers", async (_req, res): Promise<void> => {
+  const rows = await db
+    .select()
+    .from(supplierApplicationsTable)
+    .where(eq(supplierApplicationsTable.status, "published"))
+    .orderBy(desc(supplierApplicationsTable.createdAt));
+  res.json(rows);
+});
+
+// ── Admin: Update published supplier data ─────────────────────────────────────
+router.patch("/admin/suppliers/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const body = req.body;
+  const updates: Record<string, unknown> = {};
+  if (body.business_name  !== undefined) updates.businessName     = body.business_name;
+  if (body.contact_name   !== undefined) updates.contactName      = body.contact_name;
+  if (body.phone          !== undefined) updates.phone            = body.phone;
+  if (body.whatsapp       !== undefined) updates.whatsapp         = body.whatsapp;
+  if (body.city           !== undefined) updates.city             = body.city;
+  if (body.area           !== undefined) updates.area             = body.area;
+  if (body.address        !== undefined) updates.address          = body.address;
+  if (body.supply_type    !== undefined) updates.supplyType       = body.supply_type;
+  if (body.description    !== undefined) updates.description      = body.description;
+  if (body.logo           !== undefined) updates.logo             = body.logo;
+  if (body.facebook       !== undefined) updates.facebook         = body.facebook;
+  if (body.instagram      !== undefined) updates.instagram        = body.instagram;
+  if (body.tiktok         !== undefined) updates.tiktok           = body.tiktok;
+  if (body.status         !== undefined) updates.status           = body.status;
+  const [row] = await db.update(supplierApplicationsTable).set(updates).where(eq(supplierApplicationsTable.id, raw)).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
+});
+
+// ── Admin: Delete published supplier ─────────────────────────────────────────
+router.delete("/admin/suppliers/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  await db.delete(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, raw));
+  res.sendStatus(204);
+});
+
 // ── Admin: List all supplier applications ────────────────────────────────────
 router.get("/admin/supplier-applications", async (_req, res): Promise<void> => {
   const apps = await db

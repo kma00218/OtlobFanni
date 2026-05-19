@@ -6,6 +6,8 @@ const BREADCRUMBS = {
   '/admin/dashboard':               ['لوحة التحكم'],
   '/admin/technicians':             ['الدليل', 'الفنيون'],
   '/admin/companies':               ['الدليل', 'الشركات'],
+  '/admin/suppliers':               ['الدليل', 'مزودو المستلزمات'],
+  '/admin/supplier-applications':   ['الطلبات', 'طلبات المستلزمات'],
   '/admin/categories':              ['الدليل', 'التخصصات'],
   '/admin/cities':                  ['الدليل', 'المدن'],
   '/admin/technician-applications': ['الطلبات', 'طلبات الفنيين'],
