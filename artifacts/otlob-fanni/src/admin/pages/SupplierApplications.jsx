@@ -273,7 +273,22 @@ export default function SupplierApplications() {
                 </>
               )}
 
-              {(actionMenu.status === 'approved' || actionMenu.status === 'rejected') && actionMenu.requestNumber && (
+              {actionMenu.status === 'published' && (
+                <>
+                  <button onClick={() => { setStatus(actionMenu.id, 'approved'); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">⏸</span>
+                    إلغاء النشر
+                  </button>
+                  <button onClick={() => { setRejectModal({ open: true, id: actionMenu.id, reason: '', isView: false }); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 text-red-300 hover:bg-red-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">✕</span>
+                    رفض الطلب
+                  </button>
+                </>
+              )}
+
+              {(actionMenu.status === 'approved' || actionMenu.status === 'rejected' || actionMenu.status === 'published') && actionMenu.requestNumber && (
                 <button onClick={() => { openWhatsApp(actionMenu.whatsapp || actionMenu.phone, actionMenu.businessName || actionMenu.business_name || '', actionMenu.status, actionMenu.requestNumber); setActionMenu(null) }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/10 text-green-300 hover:bg-green-500/20 transition-colors text-sm font-medium text-right">
                   <MessageCircle className="w-4 h-4 flex-shrink-0" />
