@@ -438,6 +438,15 @@ export default function JoinCompany() {
                 </Field>
               </div>
 
+              <div className="flex gap-2.5 bg-amber-50 border border-amber-300 rounded-xl px-3.5 py-3">
+                <span className="text-amber-500 text-lg leading-none flex-shrink-0 mt-0.5">⚠️</span>
+                <p className="text-amber-800 text-[12.5px] font-semibold leading-relaxed">
+                  {ar
+                    ? 'رقم الواتساب إجباري ويجب أن يكون مفعّلاً على واتساب — لا تُدخل رقم هاتفك العادي إذا لم يكن مسجّلاً في واتساب، لأن التواصل معك سيتم عبر واتساب فقط.'
+                    : 'WhatsApp number is required and must be active on WhatsApp — do not enter a regular phone number that is not registered on WhatsApp, as all communication will be via WhatsApp only.'}
+                </p>
+              </div>
+
               {/* حقل السجل التجاري مخفي مؤقتاً في مرحلة الإطلاق */}
 
               <div className="grid grid-cols-2 gap-3">
