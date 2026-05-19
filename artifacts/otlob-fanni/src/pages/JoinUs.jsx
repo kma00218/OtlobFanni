@@ -120,9 +120,9 @@ export default function JoinUs() {
               </div>
             </div>
 
-            <div className="bg-black/15 px-6 py-2.5 flex items-center gap-2">
-              <Wrench className="w-3.5 h-3.5 text-white/70" />
-              <span className="text-white/70 text-xs">
+            <div className="bg-black/15 px-6 py-3 flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-semibold">
                 {ar ? 'فنيون، كهربائيون، سباكون، نجارون...' : 'Technicians, electricians, plumbers...'}
               </span>
             </div>
@@ -173,9 +173,9 @@ export default function JoinUs() {
               </div>
             </div>
 
-            <div className="bg-black/15 px-6 py-2.5 flex items-center gap-2">
-              <Building2 className="w-3.5 h-3.5 text-white/70" />
-              <span className="text-white/70 text-xs">
+            <div className="bg-black/15 px-6 py-3 flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-semibold">
                 {ar ? 'شركات صيانة، مقاولات، تنظيف، تكييف...' : 'Maintenance, contracting, cleaning companies...'}
               </span>
             </div>
@@ -223,9 +223,9 @@ export default function JoinUs() {
               </div>
             </div>
 
-            <div className="bg-black/15 px-6 py-2.5 flex items-center gap-2">
-              <Package className="w-3.5 h-3.5 text-white/70" />
-              <span className="text-white/70 text-xs">
+            <div className="bg-black/15 px-6 py-3 flex items-center gap-2">
+              <Package className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-semibold">
                 {ar ? 'أدوات، معدات، قطع غيار، مواد بناء، سباكة...' : 'Tools, equipment, spare parts, building materials...'}
               </span>
             </div>

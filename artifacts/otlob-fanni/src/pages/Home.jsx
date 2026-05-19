@@ -243,7 +243,7 @@ export default function Home() {
                       {ar ? 'جديد' : 'NEW'}
                     </span>
                   </div>
-                  <p className="text-white/75 text-[12px] font-medium leading-snug">
+                  <p className="text-white text-sm font-semibold leading-snug">
                     {ar ? 'معدات • أدوات • قطع غيار • مورّدون' : 'Equipment • Tools • Parts • Suppliers'}
                   </p>
                 </div>
