@@ -46,6 +46,8 @@ function CompanyCard({ company, lang, onOpen, distance }) {
   const emergency = company.emergency || false
   const yearsActive = company.years_active || company.yearsActive || ''
   const priceFrom = company.price_from || company.priceFrom || ''
+  const _cd = company.createdAt || company.created_at
+  const comId = `COM-${_cd ? new Date(_cd).getFullYear() : new Date().getFullYear()}-${String(company.id || '').replace(/\D/g, '').slice(-6)}`
 
   return (
     <div
@@ -85,6 +87,7 @@ function CompanyCard({ company, lang, onOpen, distance }) {
           <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
           <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
         </div>
+        <p className="text-[10px] font-mono font-bold text-slate-400 tracking-wider -mt-0.5 mb-0.5">{comId}</p>
 
         {allSpecialtyNames.length > 0 && (
           <p className="text-xs text-[#FF7900] font-medium mb-2 truncate">

@@ -68,6 +68,8 @@ export default function AdminSearch() {
       const opts = reason ? { rejectionReason: reason } : {}
       if (r.accountType === 'technician') {
         await api.admin.technicianApplications.update(r.id, status, opts)
+      } else if (r.accountType === 'supplier') {
+        await api.admin.supplierApplications.update(r.id, status, opts)
       } else {
         await api.admin.companyApplications.update(r.id, status, opts)
       }
@@ -82,6 +84,8 @@ export default function AdminSearch() {
     try {
       if (r.accountType === 'technician') {
         await api.admin.technicianApplications.delete(r.id)
+      } else if (r.accountType === 'supplier') {
+        await api.admin.supplierApplications.delete(r.id)
       } else {
         await api.admin.companyApplications.delete(r.id)
       }
@@ -127,7 +131,7 @@ export default function AdminSearch() {
           <div className="bg-[#0f2236] rounded-2xl w-full max-w-xs shadow-2xl border border-slate-700 overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="px-5 pt-5 pb-3 border-b border-slate-700">
               <div className="flex items-center gap-2">
-                <span className="text-lg">{actionMenu.accountType === 'technician' ? '🔧' : '🏢'}</span>
+                <span className="text-lg">{actionMenu.accountType === 'technician' ? '🔧' : actionMenu.accountType === 'supplier' ? '📦' : '🏢'}</span>
                 <div>
                   <p className="text-white font-bold text-base">{actionMenu.displayName}</p>
                   <p className="text-slate-400 text-xs mt-0.5 font-mono">{actionMenu.requestNumber || actionMenu.id.slice(0, 16) + '…'}</p>
@@ -261,8 +265,8 @@ export default function AdminSearch() {
 
       {/* Header */}
       <div>
-        <h1 className="text-xl font-extrabold text-[#071B33]">بحث عن فني أو شركة</h1>
-        <p className="text-sm text-slate-500 mt-1">ابحث بالاسم، الكود، رقم الهاتف، أو واتساب</p>
+        <h1 className="text-xl font-extrabold text-[#071B33]">بحث عن فني أو شركة أو مورد</h1>
+        <p className="text-sm text-slate-500 mt-1">ابحث بالاسم، الكود (TEC/COM/SUP)، رقم الهاتف، أو واتساب</p>
       </div>
 
       {/* Search Input */}
@@ -272,7 +276,7 @@ export default function AdminSearch() {
           type="text"
           value={q}
           onChange={e => setQ(e.target.value)}
-          placeholder="مثال: محمد أو TEC-2026-612916 أو 0912..."
+          placeholder="مثال: محمد أو TEC-2026-612916 أو SUP-2026-... أو 0912..."
           className="w-full bg-white border-2 border-slate-200 rounded-2xl pr-12 pl-4 py-3.5 text-base text-[#071B33] placeholder-slate-400 focus:outline-none focus:border-[#FF7900] shadow-sm transition-all font-medium"
           autoFocus
         />
@@ -291,6 +295,7 @@ export default function AdminSearch() {
       {/* Results */}
       {!loading && results.map((r) => {
         const isTech     = r.accountType === 'technician'
+        const isSupplier = r.accountType === 'supplier'
         const techLink   = `${base}/join?ref=${r.id}`
         const compLink   = `${base}/join-company?ref=${r.id}`
         const profileUrl = r.requestNumber ? `${base}/status/${r.requestNumber}` : null
@@ -301,15 +306,15 @@ export default function AdminSearch() {
           <div key={r.id} className="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
 
             {/* Coloured top bar */}
-            <div className={`h-1.5 w-full ${isSuspended ? 'bg-slate-400' : isTech ? 'bg-blue-400' : 'bg-purple-400'}`} />
+            <div className={`h-1.5 w-full ${isSuspended ? 'bg-slate-400' : isTech ? 'bg-blue-400' : isSupplier ? 'bg-teal-400' : 'bg-purple-400'}`} />
 
             <div className="p-5 space-y-4">
 
               {/* Header row */}
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${isTech ? 'bg-blue-50' : 'bg-purple-50'}`}>
-                    {isTech ? '🔧' : '🏢'}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${isTech ? 'bg-blue-50' : isSupplier ? 'bg-teal-50' : 'bg-purple-50'}`}>
+                    {isTech ? '🔧' : isSupplier ? '📦' : '🏢'}
                   </div>
                   <div>
                     <p className="font-extrabold text-[#071B33] text-base leading-tight">{r.displayName}</p>
@@ -317,8 +322,8 @@ export default function AdminSearch() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-xs px-3 py-1 rounded-full font-bold border ${isTech ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-purple-50 text-purple-700 border-purple-200'}`}>
-                    {isTech ? 'فني' : 'شركة'}
+                  <span className={`text-xs px-3 py-1 rounded-full font-bold border ${isTech ? 'bg-blue-50 text-blue-700 border-blue-200' : isSupplier ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-purple-50 text-purple-700 border-purple-200'}`}>
+                    {isTech ? 'فني' : isSupplier ? 'مورد' : 'شركة'}
                   </span>
                   <span className={`text-xs px-3 py-1 rounded-full border font-bold ${statusInfo.cls}`}>
                     {statusInfo.label}

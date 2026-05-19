@@ -73,6 +73,17 @@ router.get("/suppliers", async (req, res): Promise<void> => {
   res.json(rows);
 });
 
+// ── Public: Single supplier by ID ────────────────────────────────────────────
+router.get("/suppliers/:id", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const [supplier] = await db
+    .select()
+    .from(supplierApplicationsTable)
+    .where(and(eq(supplierApplicationsTable.id, id), eq(supplierApplicationsTable.status, "published")));
+  if (!supplier) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(supplier);
+});
+
 // ── Public: Track by request number ─────────────────────────────────────────
 router.get("/supplier-applications/track/:requestNumber", async (req, res): Promise<void> => {
   const rn = Array.isArray(req.params.requestNumber) ? req.params.requestNumber[0] : req.params.requestNumber;

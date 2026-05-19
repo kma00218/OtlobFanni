@@ -271,7 +271,11 @@ export default function Suppliers() {
         {/* Supplier Cards */}
         <div className="space-y-3">
           {filtered.map(s => (
-            <div key={s.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div
+              key={s.id}
+              className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer active:scale-[0.98] transition-transform"
+              onClick={() => navigate(`/supplier/${s.id}`)}
+            >
 
               {/* Teal top bar */}
               <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0e5c6d, #1a8fa8)' }} />
@@ -291,6 +295,9 @@ export default function Suppliers() {
                   )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-extrabold text-[#071B33] text-base leading-tight line-clamp-1">{s.businessName}</h3>
+                    {s.requestNumber && (
+                      <p className="text-[10px] font-mono font-bold text-indigo-500 tracking-wider mt-0.5">{s.requestNumber}</p>
+                    )}
                     {s.contactName && (
                       <p className="text-xs text-gray-500 mt-0.5">{s.contactName}</p>
                     )}
@@ -314,7 +321,7 @@ export default function Suppliers() {
                 )}
 
                 {/* Action buttons */}
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
                   {s.whatsapp && (
                     <button
                       onClick={() => openWhatsApp(s.whatsapp)}

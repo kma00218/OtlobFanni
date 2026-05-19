@@ -267,7 +267,7 @@ export default function CityTechnicians() {
                   return (
                     <button
                       key={supplier.id}
-                      onClick={() => navigate(`/suppliers?city=${id}`)}
+                      onClick={() => navigate(`/supplier/${supplier.id}`)}
                       className="w-full flex items-center gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 active:scale-[0.98] transition-all text-start"
                     >
                       <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden bg-teal-100 flex items-center justify-center">

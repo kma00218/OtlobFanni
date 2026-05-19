@@ -16,7 +16,7 @@ function RecentCard({ item, ar }) {
   const photo = getFileUrl(item.photo)
   const isCo   = item.type === 'company'
   const isSupp  = item.type === 'supplier'
-  const href = isCo ? `/company/${item.id}` : isSupp ? `/suppliers` : `/technician/${item.id}`
+  const href = isCo ? `/company/${item.id}` : isSupp ? `/supplier/${item.id}` : `/technician/${item.id}`
   const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
 
   const bgClass   = isSupp ? 'from-teal-700 to-[#071B33]' : 'from-[#071B33] to-[#1a56db]'

@@ -55,6 +55,8 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName, distan
   const priceFrom = tech.priceFrom ?? tech.price_from ?? 0
   const city = (ar ? tech.city_name_ar : tech.city_name_en) || tech.city_name_ar || tech.city_name || tech.city || ''
   const area = tech.area || ''
+  const _td = tech.createdAt || tech.created_at
+  const tecId = `TEC-${_td ? new Date(_td).getFullYear() : new Date().getFullYear()}-${String(tech.id || '').replace(/\D/g, '').slice(-6)}`
 
   return (
     <div
@@ -99,7 +101,8 @@ function TechCard({ tech, lang, onOpen, isFav, onToggleFav, categoryName, distan
       </div>
 
       <div className="p-3.5">
-        <p className="font-bold text-gray-900 text-sm mb-1 leading-tight">{name}</p>
+        <p className="font-bold text-gray-900 text-sm mb-0.5 leading-tight">{name}</p>
+        <p className="text-[10px] font-mono font-bold text-slate-400 tracking-wider mb-1">{tecId}</p>
 
         {categoryName && (
           <div className="flex items-center gap-1.5 mb-2">
@@ -175,6 +178,8 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName, 
   const priceFrom = company.priceFrom || company.price_from || ''
   const city = company.city || ''
   const area = company.area || ''
+  const _ccd = company.createdAt || company.created_at
+  const comId = `COM-${_ccd ? new Date(_ccd).getFullYear() : new Date().getFullYear()}-${String(company.id || '').replace(/\D/g, '').slice(-6)}`
 
   return (
     <div
@@ -222,10 +227,11 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName, 
       </div>
 
       <div className="p-3.5">
-        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
           <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
           <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
         </div>
+        <p className="text-[10px] font-mono font-bold text-slate-400 tracking-wider mb-1">{comId}</p>
 
         {categoryName && (
           <div className="flex items-center gap-1.5 mb-2">

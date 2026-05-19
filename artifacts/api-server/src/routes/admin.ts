@@ -592,12 +592,12 @@ router.get("/search-account", async (req, res): Promise<void> => {
   const q = (Array.isArray(req.query.q) ? req.query.q[0] : (req.query.q as string) || "").trim();
   if (!q || q.length < 2) { res.json([]); return; }
 
-  // If query looks like TEC-YYYY-NNNNNN or COM-YYYY-NNNNNN, extract the 6-digit suffix
-  // and match against IDs whose numeric-only characters end with those digits.
-  const displayCodeMatch = q.match(/^(?:TEC|COM)-\d{4}-(\d{6})$/i);
+  // If query looks like TEC-YYYY-NNNNNN, COM-YYYY-NNNNNN or SUP-YYYY-NNNNNN
+  const displayCodeMatch = q.match(/^(?:TEC|COM|SUP)-\d{4}-(\d+)$/i);
   const digitSuffix = displayCodeMatch ? displayCodeMatch[1] : null;
+  const isSupCode   = /^SUP-/i.test(q);
 
-  const techWhere = digitSuffix
+  const techWhere = (digitSuffix && !isSupCode)
     ? sql`regexp_replace(${technicianApplicationsTable.id}, '[^0-9]', '', 'g') LIKE ${'%' + digitSuffix}`
     : or(
         eq(technicianApplicationsTable.id, q),
@@ -607,7 +607,7 @@ router.get("/search-account", async (req, res): Promise<void> => {
         ilike(technicianApplicationsTable.whatsapp, `%${q}%`),
       );
 
-  const compWhere = digitSuffix
+  const compWhere = (digitSuffix && !isSupCode)
     ? sql`regexp_replace(${companyApplicationsTable.id}, '[^0-9]', '', 'g') LIKE ${'%' + digitSuffix}`
     : or(
         eq(companyApplicationsTable.id, q),
@@ -618,9 +618,21 @@ router.get("/search-account", async (req, res): Promise<void> => {
         ilike(companyApplicationsTable.whatsapp, `%${q}%`),
       );
 
-  const [techRows, compRows] = await Promise.all([
+  const supWhere = isSupCode
+    ? ilike(supplierApplicationsTable.requestNumber, `%${q}%`)
+    : or(
+        eq(supplierApplicationsTable.id, q),
+        ilike(supplierApplicationsTable.requestNumber, `%${q}%`),
+        ilike(supplierApplicationsTable.businessName, `%${q}%`),
+        ilike(supplierApplicationsTable.contactName, `%${q}%`),
+        ilike(supplierApplicationsTable.phone, `%${q}%`),
+        ilike(supplierApplicationsTable.whatsapp, `%${q}%`),
+      );
+
+  const [techRows, compRows, supRows] = await Promise.all([
     db.select().from(technicianApplicationsTable).where(techWhere).limit(10),
     db.select().from(companyApplicationsTable).where(compWhere).limit(10),
+    db.select().from(supplierApplicationsTable).where(supWhere).limit(10),
   ]);
 
   const withStats = async (row: any, type: string) => {
@@ -643,8 +655,8 @@ router.get("/search-account", async (req, res): Promise<void> => {
 
     return {
       ...row,
-      accountType:        type,
-      displayName:        type === "technician" ? row.fullName : row.companyName,
+      accountType:  type,
+      displayName:  type === "technician" ? row.fullName : type === "supplier" ? row.businessName : row.companyName,
       technicianIsActive,
       referralStats: {
         registered: (ts?.registered ?? 0) + (cs?.registered ?? 0),
@@ -656,6 +668,7 @@ router.get("/search-account", async (req, res): Promise<void> => {
   const results = await Promise.all([
     ...techRows.map(r => withStats(r, "technician")),
     ...compRows.map(r => withStats(r, "company")),
+    ...supRows.map(r => withStats(r, "supplier")),
   ]);
 
   res.json(results);

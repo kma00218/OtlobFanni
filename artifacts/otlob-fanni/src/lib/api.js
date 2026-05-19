@@ -222,6 +222,7 @@ export const api = {
   },
 
   suppliers:                    (p)    => get('/suppliers' + (p?.city ? `?city=${encodeURIComponent(p.city)}` : '')),
+  supplier:                     (id)   => get(`/suppliers/${id}`),
   submitSupplierApplication:    (data) => post('/supplier-applications', data),
   trackSupplierApplication:     (rn)   => get(`/supplier-applications/track/${encodeURIComponent(rn)}`),
 }
