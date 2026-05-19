@@ -147,6 +147,19 @@ function isLibyaQuery(q: string): boolean {
 }
 
 // ── Global search: technicians + companies + cities ───────────────────────────
+const SUPPLY_TYPES = [
+  { id: 'workshop_tools',     ar: 'معدات ورش',           en: 'Workshop Tools'     },
+  { id: 'electrical_tools',   ar: 'أدوات كهرباء',         en: 'Electrical Tools'   },
+  { id: 'plumbing_supplies',  ar: 'مواد سباكة',           en: 'Plumbing Supplies'  },
+  { id: 'ac_equipment',       ar: 'معدات تكييف',          en: 'AC Equipment'       },
+  { id: 'security_cameras',   ar: 'كاميرات وأنظمة أمن',   en: 'Security Systems'   },
+  { id: 'auto_parts',         ar: 'قطع غيار سيارات',      en: 'Auto Parts'         },
+  { id: 'auto_tools',         ar: 'أدوات سيارات',         en: 'Auto Tools'         },
+  { id: 'safety_equipment',   ar: 'معدات سلامة',          en: 'Safety Equipment'   },
+  { id: 'building_materials', ar: 'مواد بناء وتشطيب',     en: 'Building Materials' },
+  { id: 'other',              ar: 'أخرى',                en: 'Other'              },
+];
+
 router.get("/search", async (req, res): Promise<void> => {
   const q = String(req.query.q ?? "").trim();
   if (!q) { res.json({ technicians: [], companies: [], cities: [] }); return; }
@@ -177,13 +190,27 @@ router.get("/search", async (req, res): Promise<void> => {
     ilike(citiesTable.nameAr, `%${t}%`),
     ilike(citiesTable.nameEn, `%${t}%`),
   ]);
-  const supplierWhere = terms.flatMap(t => [
-    ilike(supplierApplicationsTable.businessName, `%${t}%`),
-    ilike(supplierApplicationsTable.contactName, `%${t}%`),
-    ilike(supplierApplicationsTable.description, `%${t}%`),
-    ilike(supplierApplicationsTable.supplyType, `%${t}%`),
-    ilike(supplierApplicationsTable.customSupplyType, `%${t}%`),
-  ]);
+  // Find supply type IDs whose Arabic or English label matches any search term
+  const matchedTypeIds = SUPPLY_TYPES
+    .filter(st => terms.some(t =>
+      st.ar.includes(t) || t.includes(st.ar.split(' ')[0]) ||
+      st.en.toLowerCase().includes(t.toLowerCase()) ||
+      t.toLowerCase().includes(st.en.toLowerCase().split(' ')[0])
+    ))
+    .map(st => st.id);
+
+  const supplierWhere = [
+    ...terms.flatMap(t => [
+      ilike(supplierApplicationsTable.businessName, `%${t}%`),
+      ilike(supplierApplicationsTable.contactName, `%${t}%`),
+      ilike(supplierApplicationsTable.description, `%${t}%`),
+      ilike(supplierApplicationsTable.customSupplyType, `%${t}%`),
+      ilike(supplierApplicationsTable.city, `%${t}%`),
+      ilike(supplierApplicationsTable.area, `%${t}%`),
+    ]),
+    // Match by supply type label (Arabic or English)
+    ...(matchedTypeIds.length > 0 ? [inArray(supplierApplicationsTable.supplyType, matchedTypeIds)] : []),
+  ];
 
   const [techRows, companyRows, cityRows, supplierRows] = await Promise.all([
     db.select({
