@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { useRoute } from 'wouter'
-import { MapPin, Phone, Package, Heart, Image as ImageIcon } from 'lucide-react'
+import {
+  MapPin, Phone, Package, Heart, Image as ImageIcon,
+  Star, X, Send,
+} from 'lucide-react'
 import api from '../lib/api'
 import { track } from '../lib/tracker'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../data/suppliers'
@@ -29,6 +32,39 @@ function useFavorites(storageKey) {
   return { isFav: (id) => favs.includes(id), toggle }
 }
 
+function Stars({ rating, count, size = 'md' }) {
+  const sz = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map(i => (
+          <Star key={i} className={`${sz} ${i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}
+            fill={i <= Math.round(rating) ? 'currentColor' : 'none'} />
+        ))}
+      </div>
+      {count > 0 && <span className="text-sm text-gray-500 font-medium">({count})</span>}
+    </div>
+  )
+}
+
+function InteractiveStars({ value, onChange }) {
+  return (
+    <div className="flex items-center gap-2 justify-center">
+      {[1, 2, 3, 4, 5].map(i => (
+        <button key={i} type="button" onClick={() => onChange(i)} className="active:scale-90 transition-transform">
+          <Star
+            className={`w-9 h-9 transition-colors ${i <= value ? 'text-amber-400' : 'text-gray-200'}`}
+            fill={i <= value ? 'currentColor' : 'none'}
+          />
+        </button>
+      ))}
+    </div>
+  )
+}
+
+const RATING_LABELS_AR = { 1: 'سيء', 2: 'مقبول', 3: 'جيد', 4: 'جيد جداً', 5: 'ممتاز' }
+const RATING_LABELS_EN = { 1: 'Poor',  2: 'Fair',  3: 'Good', 4: 'Very Good', 5: 'Excellent' }
+
 export default function SupplierDetails() {
   const { lang } = useLang()
   const ar = lang === 'ar'
@@ -36,27 +72,66 @@ export default function SupplierDetails() {
   const [, params] = useRoute('/supplier/:id')
   const id = params?.id
 
-  const [supplier, setSupplier] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [lightbox, setLightbox] = useState(null)
+  const [supplier,     setSupplier]     = useState(null)
+  const [loading,      setLoading]      = useState(true)
+  const [lightbox,     setLightbox]     = useState(null)
+  const [reviews,      setReviews]      = useState([])
+  const [showReviews,  setShowReviews]  = useState(false)
+  const [reviewModal,  setReviewModal]  = useState(true)
+  const [form,         setForm]         = useState({ name: '', rating: 0, comment: '' })
+  const [submitting,   setSubmitting]   = useState(false)
+  const [submitted,    setSubmitted]    = useState(false)
+  const [showComment,  setShowComment]  = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('favSuppliers')
 
   useEffect(() => {
     if (!id) return
     setLoading(true)
-    api.supplier(id)
-      .then(data => { setSupplier(data); setLoading(false) })
-      .catch(() => setLoading(false))
+    Promise.all([
+      api.supplier(id),
+      api.supplierReviews(id),
+    ]).then(([data, revs]) => {
+      setSupplier(data)
+      setReviews(revs || [])
+      setLoading(false)
+    }).catch(() => setLoading(false))
     track('supplier_view', { id })
   }, [id])
+
+  const handleSubmitReview = async () => {
+    if (!form.name.trim() || form.rating === 0) return
+    setSubmitting(true)
+    try {
+      const newReview = await api.submitSupplierReview(id, {
+        reviewer_name: form.name.trim(),
+        rating:        form.rating,
+        comment:       form.comment.trim() || null,
+      })
+      setReviews(prev => [newReview, ...prev])
+      setSupplier(prev => {
+        const total = (prev.reviewsCount || 0) + 1
+        const avg   = ((prev.rating || 0) * (prev.reviewsCount || 0) + form.rating) / total
+        return { ...prev, rating: Math.round(avg * 10) / 10, reviewsCount: total }
+      })
+      setSubmitted(true)
+      setTimeout(() => {
+        setReviewModal(false)
+        setSubmitted(false)
+        setForm({ name: '', rating: 0, comment: '' })
+        setShowReviews(true)
+      }, 1800)
+    } catch {
+      alert(ar ? 'حدث خطأ، حاول مجدداً' : 'An error occurred, please try again')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (loading) {
     return (
       <div className="bg-[#EEF9F8] min-h-screen" dir={dir}>
         <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
-        <main className="px-4 pt-4">
-          <SkeletonProfileHeader />
-        </main>
+        <main className="px-4 pt-4"><SkeletonProfileHeader /></main>
       </div>
     )
   }
@@ -92,6 +167,8 @@ export default function SupplierDetails() {
   const customSupplyType = supplier.customSupplyType || ''
   const requestNumber    = supplier.requestNumber || ''
   const createdAt        = supplier.createdAt || null
+  const rating           = Number(supplier.rating || 0)
+  const reviewsCount     = Number(supplier.reviewsCount || reviews.length || 0)
 
   const getSupplyEmoji = (type) => SUPPLY_TYPES.find(t => t.id === type)?.emoji || '📦'
   const supplyLabel    = customSupplyType || supplyTypeLabel(supplyType)
@@ -161,6 +238,26 @@ export default function SupplierDetails() {
               </div>
             </div>
 
+            {/* Rating row */}
+            <div className="flex items-center gap-2 mb-3">
+              <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
+                <Stars rating={rating} count={reviewsCount} />
+                {reviewsCount > 0 && (
+                  <span className="text-xs text-[#0e5c6d] font-bold underline underline-offset-2">
+                    {ar ? 'عرض التقييمات' : 'See reviews'}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Location */}
+            {city && (
+              <div className="flex items-center gap-1.5 mb-3">
+                <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                <p className="text-sm text-gray-600">{city}{area ? ` · ${area}` : ''}</p>
+              </div>
+            )}
+
             <div className="flex gap-2 mt-2">
               {(whatsapp || phone) && (
                 <button onClick={openWa}
@@ -178,7 +275,7 @@ export default function SupplierDetails() {
           </div>
         </div>
 
-        {/* ── Info section ── */}
+        {/* ── Basic Info ── */}
         <div className="bg-[#E4F7F6] rounded-2xl border border-teal-200 shadow-sm p-4 space-y-3">
           <p className="text-xs font-bold text-[#0e5c6d] uppercase tracking-wider">
             {ar ? 'المعلومات الأساسية' : 'Basic Info'}
@@ -216,30 +313,45 @@ export default function SupplierDetails() {
           </div>
         )}
 
-        {/* ── Shop images ── */}
-        {shopImages.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <ImageIcon className="w-4 h-4 text-[#0e5c6d]" />
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                {ar ? 'صور النشاط' : 'Shop Photos'}
-              </p>
+        {/* ── Shop Images ── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-50">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#0e5c6d18' }}>
+              <ImageIcon className="w-3.5 h-3.5 text-[#0e5c6d]" />
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {shopImages.map((img, i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in"
-                  onClick={() => setLightbox({ images: shopImages, index: i })}
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+              {ar
+                ? `صور النشاط${shopImages.length > 0 ? ` (${shopImages.length})` : ''}`
+                : `Shop Photos${shopImages.length > 0 ? ` (${shopImages.length})` : ''}`}
+            </p>
           </div>
-        )}
+          <div className="px-4 py-3">
+            {shopImages.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {shopImages.map((img, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in"
+                    onClick={() => setLightbox({ images: shopImages, index: i })}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-6 gap-2">
+                <div className="w-12 h-12 rounded-2xl bg-[#0e5c6d]/10 flex items-center justify-center">
+                  <ImageIcon className="w-6 h-6 text-[#0e5c6d]/50" />
+                </div>
+                <p className="text-sm text-gray-400 font-medium">
+                  {ar ? 'لا توجد صور بعد' : 'No photos yet'}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
-        {/* ── Social media ── */}
+        {/* ── Social Media ── */}
         {(facebook || instagram || tiktok) && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
@@ -247,11 +359,9 @@ export default function SupplierDetails() {
             </p>
             <div className="space-y-2.5">
               {facebook && (
-                <a
-                  href={facebook.startsWith('http') ? facebook : `https://${facebook}`}
+                <a href={facebook.startsWith('http') ? facebook : `https://${facebook}`}
                   target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 active:opacity-70 transition-opacity"
-                >
+                  className="flex items-center gap-3 active:opacity-70 transition-opacity">
                   <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <span className="text-blue-600 font-bold text-sm">f</span>
                   </div>
@@ -259,11 +369,9 @@ export default function SupplierDetails() {
                 </a>
               )}
               {instagram && (
-                <a
-                  href={instagram.startsWith('http') ? instagram : `https://instagram.com/${instagram.replace('@', '')}`}
+                <a href={instagram.startsWith('http') ? instagram : `https://instagram.com/${instagram.replace('@', '')}`}
                   target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 active:opacity-70 transition-opacity"
-                >
+                  className="flex items-center gap-3 active:opacity-70 transition-opacity">
                   <div className="w-9 h-9 bg-pink-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <span className="text-lg">📸</span>
                   </div>
@@ -271,11 +379,9 @@ export default function SupplierDetails() {
                 </a>
               )}
               {tiktok && (
-                <a
-                  href={tiktok.startsWith('http') ? tiktok : `https://tiktok.com/@${tiktok.replace('@', '')}`}
+                <a href={tiktok.startsWith('http') ? tiktok : `https://tiktok.com/@${tiktok.replace('@', '')}`}
                   target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 active:opacity-70 transition-opacity"
-                >
+                  className="flex items-center gap-3 active:opacity-70 transition-opacity">
                   <div className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <span className="text-lg">🎵</span>
                   </div>
@@ -285,6 +391,144 @@ export default function SupplierDetails() {
             </div>
           </div>
         )}
+
+        {/* ── Reviews Section ── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#0e5c6d18' }}>
+                <Star className="w-3.5 h-3.5 text-[#0e5c6d]" />
+              </div>
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                {ar ? 'التقييمات' : 'Reviews'}
+              </p>
+            </div>
+            {reviews.length > 0 && (
+              <button
+                onClick={() => setShowReviews(v => !v)}
+                className="text-xs font-bold text-[#0e5c6d] underline underline-offset-2 active:opacity-70"
+              >
+                {showReviews
+                  ? (ar ? 'إخفاء' : 'Hide')
+                  : (ar ? `عرض الكل (${reviews.length})` : `Show all (${reviews.length})`)}
+              </button>
+            )}
+          </div>
+
+          <div className="px-4 py-4">
+            {/* Summary row */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="text-center">
+                <p className="text-4xl font-black text-[#071B33]">{rating > 0 ? rating.toFixed(1) : '—'}</p>
+                <Stars rating={rating} count={0} size="sm" />
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {reviewsCount} {ar ? 'تقييم' : 'reviews'}
+                </p>
+              </div>
+              <div className="flex-1">
+                {[5,4,3,2,1].map(s => {
+                  const cnt = reviews.filter(r => r.rating === s).length
+                  const pct = reviews.length ? (cnt / reviews.length) * 100 : 0
+                  return (
+                    <div key={s} className="flex items-center gap-2 mb-1">
+                      <span className="text-[11px] text-gray-400 w-3 text-right">{s}</span>
+                      <Star className="w-3 h-3 text-amber-400 flex-shrink-0" fill="currentColor" />
+                      <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="text-[11px] text-gray-400 w-4">{cnt}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Write review prompt */}
+            {reviewModal && !submitted && (
+              <div className="bg-[#EEF9F8] border border-teal-200 rounded-2xl p-4 mb-4">
+                <p className="text-sm font-bold text-[#071B33] mb-3 text-center">
+                  {ar ? `قيّم ${name}` : `Rate ${name}`}
+                </p>
+                <InteractiveStars value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
+                {form.rating > 0 && (
+                  <p className="text-center text-xs font-bold text-amber-500 mt-1">
+                    {ar ? RATING_LABELS_AR[form.rating] : RATING_LABELS_EN[form.rating]}
+                  </p>
+                )}
+                <input
+                  type="text"
+                  placeholder={ar ? 'اسمك (مطلوب)' : 'Your name (required)'}
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  className="mt-3 w-full border border-teal-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0e5c6d]/30"
+                  dir={dir}
+                />
+                {!showComment ? (
+                  <button
+                    onClick={() => setShowComment(true)}
+                    className="mt-2 text-xs text-[#0e5c6d] underline underline-offset-2 w-full text-center active:opacity-70"
+                  >
+                    {ar ? '+ أضف تعليقاً (اختياري)' : '+ Add a comment (optional)'}
+                  </button>
+                ) : (
+                  <textarea
+                    rows={3}
+                    placeholder={ar ? 'تعليقك (اختياري)' : 'Your comment (optional)'}
+                    value={form.comment}
+                    onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
+                    className="mt-2 w-full border border-teal-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0e5c6d]/30 resize-none"
+                    dir={dir}
+                  />
+                )}
+                <button
+                  onClick={handleSubmitReview}
+                  disabled={submitting || !form.name.trim() || form.rating === 0}
+                  className="mt-3 w-full py-2.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50"
+                  style={{ background: '#0e5c6d' }}
+                >
+                  <Send className="w-4 h-4" />
+                  {submitting ? (ar ? 'جارٍ الإرسال...' : 'Sending...') : (ar ? 'إرسال التقييم' : 'Submit Review')}
+                </button>
+              </div>
+            )}
+
+            {/* Success state */}
+            {submitted && (
+              <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4 text-center">
+                <p className="text-2xl mb-1">✅</p>
+                <p className="text-sm font-bold text-green-700">
+                  {ar ? 'شكراً! تم إرسال تقييمك.' : 'Thanks! Your review was submitted.'}
+                </p>
+              </div>
+            )}
+
+            {/* Reviews list */}
+            {showReviews && reviews.length > 0 && (
+              <div className="space-y-3 mt-2">
+                {reviews.map(r => (
+                  <div key={r.id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-bold text-gray-800">{r.reviewerName}</p>
+                      <Stars rating={r.rating} count={0} size="sm" />
+                    </div>
+                    {r.comment && <p className="text-xs text-gray-600 leading-relaxed">{r.comment}</p>}
+                    <p className="text-[10px] text-gray-300 mt-1">
+                      {new Date(r.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-LY', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {reviews.length === 0 && (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-400">
+                  {ar ? 'لا توجد تقييمات بعد. كن أول من يقيّم!' : 'No reviews yet. Be the first to rate!'}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
       </main>
     </div>

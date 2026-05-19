@@ -6,6 +6,7 @@ export const reviewsTable = pgTable("reviews", {
   id:           text("id").primaryKey(),
   technicianId: text("technician_id"),
   companyId:    text("company_id"),
+  supplierId:   text("supplier_id"),
   reviewerName: text("reviewer_name").notNull(),
   rating:       integer("rating").notNull(),
   comment:      text("comment"),

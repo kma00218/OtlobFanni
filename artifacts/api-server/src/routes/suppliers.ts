@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { supplierApplicationsTable, citiesTable } from "@workspace/db/schema";
+import { supplierApplicationsTable, citiesTable, reviewsTable } from "@workspace/db/schema";
 import { eq, desc, and, or, ilike } from "drizzle-orm";
 
 const router: IRouter = Router();
@@ -93,6 +93,48 @@ router.get("/supplier-applications/track/:requestNumber", async (req, res): Prom
     .where(eq(supplierApplicationsTable.requestNumber, rn));
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
   res.json(app);
+});
+
+// ── Public: Supplier reviews ──────────────────────────────────────────────────
+router.get("/suppliers/:id/reviews", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const reviews = await db
+    .select()
+    .from(reviewsTable)
+    .where(eq(reviewsTable.supplierId, id))
+    .orderBy(desc(reviewsTable.createdAt))
+    .limit(30);
+  res.json(reviews);
+});
+
+router.post("/suppliers/:id/reviews", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { reviewer_name, rating, comment } = req.body;
+
+  if (!reviewer_name?.trim() || !rating || Number(rating) < 1 || Number(rating) > 5) {
+    res.status(400).json({ error: "reviewer_name and rating (1-5) are required" }); return;
+  }
+
+  const reviewId = "srev_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+  const [review] = await db.insert(reviewsTable).values({
+    id:           reviewId,
+    supplierId:   id,
+    reviewerName: reviewer_name.trim(),
+    rating:       Number(rating),
+    comment:      comment?.trim() || null,
+  }).returning();
+
+  const allRatings = await db
+    .select({ rating: reviewsTable.rating })
+    .from(reviewsTable)
+    .where(eq(reviewsTable.supplierId, id));
+  const avg = allRatings.reduce((s, r) => s + r.rating, 0) / allRatings.length;
+  await db.update(supplierApplicationsTable).set({
+    rating:       Math.round(avg * 10) / 10,
+    reviewsCount: allRatings.length,
+  }).where(eq(supplierApplicationsTable.id, id));
+
+  res.status(201).json(review);
 });
 
 // ── Admin: List all published suppliers (directory) ──────────────────────────

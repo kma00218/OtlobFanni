@@ -22,6 +22,8 @@ export const supplierApplicationsTable = pgTable("supplier_applications", {
   instagram:         text("instagram"),
   tiktok:            text("tiktok"),
   referredBy:        text("referred_by"),
+  rating:            doublePrecision("rating").default(0),
+  reviewsCount:      doublePrecision("reviews_count").default(0),
   status:            text("status").notNull().default("pending"),
   rejectionReason:   text("rejection_reason"),
   requestNumber:     text("request_number"),
