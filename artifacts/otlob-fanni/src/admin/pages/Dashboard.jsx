@@ -44,6 +44,8 @@ export default function Dashboard() {
   const [requestsByStatus, setRequestsByStatus] = useState([])
   const [storageUsage, setStorageUsage] = useState(null)
   const [lastRefresh, setLastRefresh] = useState(new Date())
+  const [citiesMap, setCitiesMap] = useState({})
+  const [categoriesMap, setCategoriesMap] = useState({})
 
   const load = () => {
     setLoading(true)
@@ -51,7 +53,9 @@ export default function Dashboard() {
       api.admin.stats(),
       api.admin.storageUsage().catch(() => null),
       api.admin.analytics().catch(() => null),
-    ]).then(([s, usage, anl]) => {
+      api.cities().catch(() => []),
+      api.categories().catch(() => []),
+    ]).then(([s, usage, anl, cities, cats]) => {
       setStats(s)
       setAnalytics(anl)
       setRecentRequests(s.recentRequests || [])
@@ -64,6 +68,12 @@ export default function Dashboard() {
       })).filter(d => d.value > 0)
       setRequestsByStatus(pieData)
       if (usage) setStorageUsage(usage)
+      const cMap = {}
+      ;(Array.isArray(cities) ? cities : []).forEach(c => { cMap[c.id] = c.nameAr || c.nameEn || c.id })
+      setCitiesMap(cMap)
+      const catMap = {}
+      ;(Array.isArray(cats) ? cats : []).forEach(c => { catMap[c.id] = c.nameAr || c.nameEn || c.id })
+      setCategoriesMap(catMap)
       setLastRefresh(new Date())
       setLoading(false)
     }).catch(() => setLoading(false))
@@ -444,8 +454,8 @@ export default function Dashboard() {
                 {recentTechs.map((t, i) => (
                   <tr key={t.id || i} className="border-b border-slate-50 hover:bg-orange-50/30 transition-colors">
                     <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{t.nameAr || t.nameEn || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.categoryId || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{t.cityId || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{categoriesMap[t.categoryId] || t.categoryId || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{citiesMap[t.cityId] || t.cityId || '—'}</td>
                     <td className="px-5 py-3.5">
                       {t.isActive && t.isApproved
                         ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● نشط</span>
@@ -493,8 +503,8 @@ export default function Dashboard() {
                 {recentCompanies.map((c, i) => (
                   <tr key={c.id || i} className="border-b border-slate-50 hover:bg-blue-50/30 transition-colors">
                     <td className="px-5 py-3.5 text-[#071B33] font-semibold whitespace-nowrap">{c.companyName || c.nameAr || c.name || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.specialty || c.categoryId || '—'}</td>
-                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{c.city || c.cityId || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{categoriesMap[c.categoryId] || c.specialty || c.categoryId || '—'}</td>
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{citiesMap[c.cityId] || citiesMap[c.city] || c.city || '—'}</td>
                     <td className="px-5 py-3.5">
                       {c.status === 'approved'
                         ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● مقبول</span>
