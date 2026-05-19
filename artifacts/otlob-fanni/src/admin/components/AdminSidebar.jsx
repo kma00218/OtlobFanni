@@ -33,7 +33,7 @@ const NAV_GROUPS = [
       { path: '/admin/search',                   label: 'بحث عن حساب',    icon: Search },
       { path: '/admin/technician-applications', label: 'طلبات الفنيين',   icon: FileCheck,  badgeKey: 'pendingTechApps',    badgeColor: 'orange' },
       { path: '/admin/company-applications',    label: 'طلبات الشركات',   icon: Building2,  badgeKey: 'pendingCompanyApps', badgeColor: 'orange' },
-      { path: '/admin/supplier-applications',   label: 'طلبات المستلزمات', icon: Package,    badgeKey: 'pendingSupplierApps', badgeColor: 'blue', statsKey: 'totalSupplierApps' },
+      { path: '/admin/supplier-applications',   label: 'طلبات المستلزمات', icon: Package,    badgeKey: 'pendingSupplierApps', badgeColor: 'blue', statsKey: 'activeSupplierApps' },
       { path: '/admin/ad-requests',             label: 'طلبات الإعلانات',  icon: Newspaper,  badgeKey: 'pendingAdRequests',  badgeColor: 'purple' },
     ]
   },

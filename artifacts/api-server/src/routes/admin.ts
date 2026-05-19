@@ -5,7 +5,7 @@ import {
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable,
 } from "@workspace/db/schema";
-import { eq, desc, count, and, or, ilike, sql } from "drizzle-orm";
+import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
 
 const router: IRouter = Router();
@@ -27,9 +27,10 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [approvedAdReqs]     = await db.select({ count: count() }).from(adRequestsTable).where(eq(adRequestsTable.status, "approved"));
   const [newReqs]            = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "new"));
   const [completedReqs]      = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "completed"));
-  const [pendingSupplierApps] = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "pending"));
-  const [totalSupplierApps]   = await db.select({ count: count() }).from(supplierApplicationsTable);
-  const [publishedSuppliers]  = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "published"));
+  const [pendingSupplierApps]  = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "pending"));
+  const [totalSupplierApps]    = await db.select({ count: count() }).from(supplierApplicationsTable);
+  const [publishedSuppliers]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "published"));
+  const [activeSupplierApps]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(ne(supplierApplicationsTable.status, "published"));
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
@@ -53,6 +54,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     completedRequests:    Number(completedReqs.count),
     pendingSupplierApps:  Number(pendingSupplierApps.count),
     totalSupplierApps:    Number(totalSupplierApps.count),
+    activeSupplierApps:   Number(activeSupplierApps.count),
     totalSuppliers:       Number(publishedSuppliers.count),
     recentRequests,
     recentTechs,
