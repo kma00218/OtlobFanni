@@ -412,7 +412,7 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
 
 // ── Recently Joined ───────────────────────────────────────────────────────────
 router.get("/recently-joined", async (_req, res): Promise<void> => {
-  const [techRows, companyRows] = await Promise.all([
+  const [techRows, companyRows, supplierRows] = await Promise.all([
     db.select({
       id: techniciansTable.id,
       nameAr: techniciansTable.nameAr,
@@ -440,6 +440,20 @@ router.get("/recently-joined", async (_req, res): Promise<void> => {
     .where(eq(companyApplicationsTable.status, "published"))
     .orderBy(desc(companyApplicationsTable.createdAt))
     .limit(10),
+
+    db.select({
+      id: supplierApplicationsTable.id,
+      businessName: supplierApplicationsTable.businessName,
+      logo: supplierApplicationsTable.logo,
+      city: supplierApplicationsTable.city,
+      supplyType: supplierApplicationsTable.supplyType,
+      customSupplyType: supplierApplicationsTable.customSupplyType,
+      createdAt: supplierApplicationsTable.createdAt,
+    })
+    .from(supplierApplicationsTable)
+    .where(eq(supplierApplicationsTable.status, "published"))
+    .orderBy(desc(supplierApplicationsTable.createdAt))
+    .limit(10),
   ]);
 
   const techs = techRows.map(r => ({
@@ -456,8 +470,16 @@ router.get("/recently-joined", async (_req, res): Promise<void> => {
     cityAr: r.city ?? '', cityEn: r.city ?? '',
     createdAt: r.createdAt,
   }));
+  const suppliers = supplierRows.map(r => ({
+    id: r.id, type: 'supplier',
+    nameAr: r.businessName, nameEn: r.businessName,
+    photo: r.logo,
+    cityAr: r.city ?? '', cityEn: r.city ?? '',
+    supplyType: r.customSupplyType || r.supplyType || '',
+    createdAt: r.createdAt,
+  }));
 
-  const all = [...techs, ...companies]
+  const all = [...techs, ...companies, ...suppliers]
     .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
     .slice(0, 12);
 

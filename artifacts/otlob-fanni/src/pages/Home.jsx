@@ -14,30 +14,39 @@ function RecentCard({ item, ar }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
   const city = ar ? item.cityAr : (item.cityEn || item.cityAr)
   const photo = getFileUrl(item.photo)
-  const isCo = item.type === 'company'
-  const href = isCo ? `/company/${item.id}` : `/technician/${item.id}`
+  const isCo   = item.type === 'company'
+  const isSupp  = item.type === 'supplier'
+  const href = isCo ? `/company/${item.id}` : isSupp ? `/suppliers` : `/technician/${item.id}`
   const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
+
+  const bgClass   = isSupp ? 'from-teal-700 to-[#071B33]' : 'from-[#071B33] to-[#1a56db]'
+  const badgeCls  = isCo   ? 'bg-blue-100 text-blue-700'
+                 : isSupp  ? 'bg-teal-100 text-teal-700'
+                 :           'bg-orange-100 text-[#FF7900]'
+  const badgeTxt  = isCo   ? (ar ? 'شركة'    : 'Company')
+                 : isSupp  ? (ar ? 'مستلزمات' : 'Supplier')
+                 :           (ar ? 'فني'      : 'Tech')
 
   return (
     <Link href={href}>
       <div className="w-36 flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden active:scale-[0.97] transition-transform cursor-pointer">
-        <div className="w-full h-24 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center overflow-hidden">
+        <div className={`w-full h-24 bg-gradient-to-br ${bgClass} flex items-center justify-center overflow-hidden`}>
           {photo
             ? <img src={photo} alt={name} className="w-full h-full object-cover" />
             : isCo
               ? <Building2 className="w-8 h-8 text-white/60" />
-              : <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                  <span className="text-white font-extrabold text-base">{firstWord.charAt(0)}</span>
-                </div>
+              : isSupp
+                ? <Package className="w-8 h-8 text-white/60" />
+                : <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <span className="text-white font-extrabold text-base">{firstWord.charAt(0)}</span>
+                  </div>
           }
         </div>
         <div className="p-2.5">
           <p className="text-xs font-bold text-[#071B33] truncate leading-tight">{name || '—'}</p>
           {city ? <p className="text-[10px] text-[#FF7900] font-medium mt-0.5 truncate">{city}</p> : null}
-          <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-            isCo ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-[#FF7900]'
-          }`}>
-            {isCo ? (ar ? 'شركة' : 'Company') : (ar ? 'فني' : 'Tech')}
+          <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${badgeCls}`}>
+            {badgeTxt}
           </span>
         </div>
       </div>
