@@ -175,28 +175,54 @@ export default function Home() {
           {/* ── كرت مستلزمات العريض ── */}
           <Link href="/section/suppliers">
             <div
-              className="mt-4 flex items-center gap-4 px-5 py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-transform select-none cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, #0e7c8f 0%, #071B33 100%)' }}
+              className="mt-4 relative overflow-hidden rounded-2xl shadow-xl active:scale-[0.98] transition-all duration-200 select-none cursor-pointer"
+              style={{ background: 'linear-gradient(125deg, #0a4e60 0%, #0e7c8f 55%, #1a6b50 100%)' }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center flex-shrink-0">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 8L12 3 3 8v8l9 5 9-5V8z" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="2"/>
-                  <path d="M3 8l9 5 9-5" stroke="white" strokeWidth="1.9"/>
-                  <line x1="12" y1="13" x2="12" y2="21" stroke="white" strokeWidth="1.9"/>
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-white font-extrabold text-base leading-tight">
-                  {ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies'}
-                </p>
-                <p className="text-white/65 text-xs mt-1 font-medium">
-                  {ar ? 'معدات • أدوات • قطع غيار • مورّدون' : 'Equipment • Tools • Parts • Suppliers'}
-                </p>
-              </div>
-              <div className="flex-shrink-0 opacity-70">
-                {dir === 'rtl'
-                  ? <ChevronLeft className="w-5 h-5 text-white" />
-                  : <ChevronRight className="w-5 h-5 text-white" />}
+              {/* Decorative blobs */}
+              <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
+              <div className="absolute -bottom-10 -left-6 w-28 h-28 rounded-full bg-[#FF7900]/10 pointer-events-none" />
+              <div className="absolute top-2 right-16 w-4 h-4 rounded-full bg-white/10 pointer-events-none" />
+
+              <div className="relative flex items-center gap-4 px-5 py-4">
+                {/* Icon */}
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg"
+                  style={{ background: 'rgba(255,255,255,0.15)', border: '1.5px solid rgba(255,255,255,0.2)' }}
+                >
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 8L12 3 3 8v8l9 5 9-5V8z" fill="rgba(255,255,255,0.2)" stroke="white" strokeWidth="1.8"/>
+                    <path d="M3 8l9 5 9-5" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"/>
+                    <line x1="12" y1="13" x2="12" y2="21" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"/>
+                  </svg>
+                </div>
+
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-white font-extrabold text-[17px] leading-tight tracking-tight">
+                      {ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies'}
+                    </p>
+                    <span
+                      className="text-[9px] font-black px-2 py-0.5 rounded-full flex-shrink-0 leading-none"
+                      style={{ background: '#FF7900', color: 'white' }}
+                    >
+                      {ar ? 'جديد' : 'NEW'}
+                    </span>
+                  </div>
+                  <p className="text-white/75 text-[12px] font-medium leading-snug">
+                    {ar ? 'معدات • أدوات • قطع غيار • مورّدون' : 'Equipment • Tools • Parts • Suppliers'}
+                  </p>
+                </div>
+
+                {/* Arrow */}
+                <div
+                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.18)' }}
+                >
+                  {dir === 'rtl'
+                    ? <ChevronLeft className="w-4 h-4 text-white" />
+                    : <ChevronRight className="w-4 h-4 text-white" />}
+                </div>
               </div>
             </div>
           </Link>
