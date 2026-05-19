@@ -3,6 +3,9 @@
 @plugin "@tailwindcss/typography";
 
 @source inline("bg-[#FF7900] min-w-[18px] min-w-[20px] h-[18px] h-[20px] text-[10px] text-[11px] text-[12px] text-[#071B33] max-w-[76px]");
+@source inline("bg-blue-500 bg-purple-500 bg-emerald-500 bg-white/15 text-white/80");
+@source inline("bg-blue-100 text-blue-700 bg-teal-100 text-teal-700 bg-orange-100 bg-teal-600 border-teal-300 text-teal-600");
+@source inline("from-teal-700 from-[#071B33] to-[#071B33] to-[#1a56db]");
 
 @custom-variant dark (&:is(.dark *));
 
