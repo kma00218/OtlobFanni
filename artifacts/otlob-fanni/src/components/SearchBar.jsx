@@ -308,10 +308,46 @@ export default function SearchBar({ onResultSelect } = {}) {
             </div>
           )}
 
+          {/* ── Cities ── */}
+          {cityResults.length > 0 && activeFilter === 'all' && (
+            <>
+              <SectionHeader label={ar ? 'المدن' : 'Cities'} hasBorder={false} />
+              {cityResults.map((city) => {
+                let touchStartY = 0
+                return (
+                  <button
+                    key={`city-${city.id}`}
+                    onMouseDown={e => { e.preventDefault(); handleSelectCity(city) }}
+                    onTouchStart={e => { touchStartY = e.touches[0].clientY }}
+                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectCity(city) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 active:bg-green-100 transition-colors text-start border-t border-gray-50"
+                  >
+                    <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center bg-green-100">
+                      {city.id === 'libya'
+                        ? <Globe className="w-5 h-5 text-green-600" />
+                        : <MapPin className="w-5 h-5 text-green-500" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[#071B33] font-bold text-sm block leading-tight">
+                        {ar ? city.nameAr : city.nameEn}
+                      </span>
+                      <span className="text-gray-400 text-xs">
+                        {city.id === 'libya'
+                          ? (ar ? 'عرض جميع مقدمي الخدمة في ليبيا' : 'Show all providers in Libya')
+                          : (ar ? 'عرض فنيي المدينة' : 'Show city technicians')}
+                      </span>
+                    </div>
+                    <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
+                  </button>
+                )
+              })}
+            </>
+          )}
+
           {/* ── Specialties ── */}
           {specialtyResults.length > 0 && activeFilter === 'all' && (
             <>
-              <SectionHeader label={ar ? 'التخصصات والأقسام' : 'Specialties & Departments'} hasBorder={false} />
+              <SectionHeader label={ar ? 'التخصصات والأقسام' : 'Specialties & Departments'} hasBorder={cityResults.length > 0} />
               {specialtyResults.map((entry) => {
                 const name = ar ? entry.nameAr : entry.nameEn
                 const sectionName = getSectionName(entry)
@@ -443,42 +479,6 @@ export default function SearchBar({ onResultSelect } = {}) {
                       <span className="text-[#071B33] font-bold text-sm block leading-tight">{supplier.businessName}</span>
                       <span className="text-gray-400 text-xs leading-tight">
                         {[supplier.city, supplier.customSupplyType || supplier.supplyType].filter(Boolean).join(' · ')}
-                      </span>
-                    </div>
-                    <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
-                  </button>
-                )
-              })}
-            </>
-          )}
-
-          {/* ── Cities ── */}
-          {cityResults.length > 0 && activeFilter === 'all' && (
-            <>
-              <SectionHeader label={ar ? 'المدن' : 'Cities'} hasBorder={specialtyResults.length > 0 || filteredTechs.length > 0 || filteredCompanies.length > 0} />
-              {cityResults.map((city) => {
-                let touchStartY = 0
-                return (
-                  <button
-                    key={`city-${city.id}`}
-                    onMouseDown={e => { e.preventDefault(); handleSelectCity(city) }}
-                    onTouchStart={e => { touchStartY = e.touches[0].clientY }}
-                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectCity(city) }}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 active:bg-green-100 transition-colors text-start border-t border-gray-50"
-                  >
-                    <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center bg-green-100">
-                      {city.id === 'libya'
-                        ? <Globe className="w-5 h-5 text-green-600" />
-                        : <MapPin className="w-5 h-5 text-green-500" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-[#071B33] font-bold text-sm block leading-tight">
-                        {ar ? city.nameAr : city.nameEn}
-                      </span>
-                      <span className="text-gray-400 text-xs">
-                        {city.id === 'libya'
-                          ? (ar ? 'عرض جميع مقدمي الخدمة في ليبيا' : 'Show all providers in Libya')
-                          : (ar ? 'عرض فنيي المدينة' : 'Show city technicians')}
                       </span>
                     </div>
                     <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
