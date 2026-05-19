@@ -177,8 +177,15 @@ router.get("/search", async (req, res): Promise<void> => {
     ilike(citiesTable.nameAr, `%${t}%`),
     ilike(citiesTable.nameEn, `%${t}%`),
   ]);
+  const supplierWhere = terms.flatMap(t => [
+    ilike(supplierApplicationsTable.businessName, `%${t}%`),
+    ilike(supplierApplicationsTable.contactName, `%${t}%`),
+    ilike(supplierApplicationsTable.description, `%${t}%`),
+    ilike(supplierApplicationsTable.supplyType, `%${t}%`),
+    ilike(supplierApplicationsTable.customSupplyType, `%${t}%`),
+  ]);
 
-  const [techRows, companyRows, cityRows] = await Promise.all([
+  const [techRows, companyRows, cityRows, supplierRows] = await Promise.all([
     db.select({
         tech: techniciansTable,
         cityNameAr: citiesTable.nameAr,
@@ -214,6 +221,21 @@ router.get("/search", async (req, res): Promise<void> => {
       .where(or(...cityWhere))
       .orderBy(citiesTable.sortOrder)
       .limit(5),
+
+    db.select({
+        id: supplierApplicationsTable.id,
+        businessName: supplierApplicationsTable.businessName,
+        city: supplierApplicationsTable.city,
+        supplyType: supplierApplicationsTable.supplyType,
+        customSupplyType: supplierApplicationsTable.customSupplyType,
+        logo: supplierApplicationsTable.logo,
+      })
+      .from(supplierApplicationsTable)
+      .where(and(
+        eq(supplierApplicationsTable.status, "published"),
+        or(...supplierWhere),
+      ))
+      .limit(4),
   ]);
 
   res.json({
@@ -242,6 +264,14 @@ router.get("/search", async (req, res): Promise<void> => {
       id: c.id,
       nameAr: c.nameAr,
       nameEn: c.nameEn,
+    })),
+    suppliers: supplierRows.map(s => ({
+      id: s.id,
+      businessName: s.businessName,
+      city: s.city,
+      supplyType: s.supplyType,
+      customSupplyType: s.customSupplyType,
+      logo: s.logo,
     })),
   });
 });

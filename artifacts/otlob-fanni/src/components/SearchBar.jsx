@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLang } from '../context/LanguageContext'
-import { Search, X, ChevronLeft, User, Building2, MapPin, Globe, Clock, Trash2 } from 'lucide-react'
+import { Search, X, ChevronLeft, User, Building2, MapPin, Globe, Clock, Trash2, Package } from 'lucide-react'
 import { useLocation } from 'wouter'
 import { searchIndex } from '../data/searchIndex'
 import { sections } from '../data/services'
@@ -53,6 +53,7 @@ export default function SearchBar({ onResultSelect } = {}) {
   const [techResults, setTechResults] = useState([])
   const [companyResults, setCompanyResults] = useState([])
   const [cityResults, setCityResults] = useState([])
+  const [supplierResults, setSupplierResults] = useState([])
   const [activeFilter, setActiveFilter] = useState('all')
   const inputRef = useRef(null)
   const containerRef = useRef(null)
@@ -67,7 +68,7 @@ export default function SearchBar({ onResultSelect } = {}) {
 
   useEffect(() => {
     if (debouncedQuery.trim().length < 2) {
-      setTechResults([]); setCompanyResults([]); setCityResults([])
+      setTechResults([]); setCompanyResults([]); setCityResults([]); setSupplierResults([])
       setActiveFilter('all')
       return
     }
@@ -80,16 +81,17 @@ export default function SearchBar({ onResultSelect } = {}) {
           setTechResults(data?.technicians || [])
           setCompanyResults(data?.companies || [])
           setCityResults(data?.cities || [])
+          setSupplierResults(data?.suppliers || [])
           setActiveFilter('all')
         }
       })
       .catch(() => {
-        if (!cancelled) { setTechResults([]); setCompanyResults([]); setCityResults([]) }
+        if (!cancelled) { setTechResults([]); setCompanyResults([]); setCityResults([]); setSupplierResults([]) }
       })
     return () => { cancelled = true }
   }, [debouncedQuery])
 
-  const hasResults = specialtyResults.length > 0 || techResults.length > 0 || companyResults.length > 0 || cityResults.length > 0
+  const hasResults = specialtyResults.length > 0 || techResults.length > 0 || companyResults.length > 0 || cityResults.length > 0 || supplierResults.length > 0
   const showHistory = open && focused && query.trim() === '' && history.length > 0
 
   /* ── Contextual filter chips ── */
@@ -159,6 +161,12 @@ export default function SearchBar({ onResultSelect } = {}) {
     addEntry(ar ? city.nameAr : city.nameEn)
     setQuery(''); setOpen(false); onResultSelect?.()
     navigate(`/city/${city.id}`)
+  }
+
+  const handleSelectSupplier = (supplier) => {
+    addEntry(supplier.businessName || '')
+    setQuery(''); setOpen(false); onResultSelect?.()
+    navigate('/suppliers')
   }
 
   const handleHistorySelect = (q) => {
@@ -398,6 +406,40 @@ export default function SearchBar({ onResultSelect } = {}) {
                       <span className="text-[#071B33] font-bold text-sm block leading-tight">{company.companyName}</span>
                       <span className="text-gray-400 text-xs leading-tight">
                         {[ar ? company.categoryAr : company.categoryEn, company.city].filter(Boolean).join(' · ')}
+                      </span>
+                    </div>
+                    <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
+                  </button>
+                )
+              })}
+            </>
+          )}
+
+          {/* ── Suppliers ── */}
+          {supplierResults.length > 0 && activeFilter === 'all' && (
+            <>
+              <SectionHeader label={ar ? 'مزودو المستلزمات' : 'Suppliers'} hasBorder={specialtyResults.length > 0 || filteredTechs.length > 0 || filteredCompanies.length > 0} />
+              {supplierResults.map((supplier) => {
+                let touchStartY = 0
+                return (
+                  <button
+                    key={`supplier-${supplier.id}`}
+                    onMouseDown={e => { e.preventDefault(); handleSelectSupplier(supplier) }}
+                    onTouchStart={e => { touchStartY = e.touches[0].clientY }}
+                    onTouchEnd={e => { if (Math.abs(e.changedTouches[0].clientY - touchStartY) < 10) handleSelectSupplier(supplier) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-teal-50 active:bg-teal-100 transition-colors text-start border-t border-gray-50"
+                  >
+                    <div className="w-9 h-9 rounded-xl flex-shrink-0 overflow-hidden bg-teal-100 flex items-center justify-center">
+                      {supplier.logo ? (
+                        <img src={getFileUrl(supplier.logo)} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <Package className="w-5 h-5 text-teal-600" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[#071B33] font-bold text-sm block leading-tight">{supplier.businessName}</span>
+                      <span className="text-gray-400 text-xs leading-tight">
+                        {[supplier.city, supplier.customSupplyType || supplier.supplyType].filter(Boolean).join(' · ')}
                       </span>
                     </div>
                     <ChevronLeft className={`w-4 h-4 text-gray-300 flex-shrink-0 ${ar ? '' : 'rotate-180'}`} />
