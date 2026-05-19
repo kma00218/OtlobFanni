@@ -27,6 +27,7 @@ const Join = lazy(() => import("./pages/Join"));
 const JoinCompany = lazy(() => import("./pages/JoinCompany"));
 const JoinSupplier = lazy(() => import("./pages/JoinSupplier"));
 const Suppliers = lazy(() => import("./pages/Suppliers"));
+const SuppliersSection = lazy(() => import("./pages/SuppliersSection"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Orders = lazy(() => import("./pages/Orders"));
 const Favorites = lazy(() => import("./pages/Favorites"));
@@ -197,6 +198,7 @@ function AppContent() {
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/categories" component={Categories} />
+              <Route path="/section/suppliers" component={SuppliersSection} />
               <Route path="/section/:id" component={Section} />
               <Route path="/category/:id" component={CategoryTechnicians} />
               <Route path="/technician/:id" component={TechnicianDetails} />

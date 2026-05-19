@@ -4,9 +4,8 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
-import { SUPPLY_TYPES } from '../data/suppliers'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
@@ -162,48 +161,27 @@ export default function Home() {
                 <SectionCard section={section} />
               </div>
             ))}
-          </div>
-
-          {/* ── مستلزمات اطلب فني ── */}
-          <div className="mt-4 rounded-2xl overflow-hidden shadow-md">
-            {/* Header → /suppliers */}
-            <Link href="/suppliers">
-              <div
-                className="flex items-center gap-3 px-4 py-3.5 active:opacity-90 transition-opacity select-none"
-                style={{ background: 'linear-gradient(135deg, #0e7c8f 0%, #071B33 100%)' }}
-              >
-                <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
-                  <Package className="w-5 h-5 text-white" strokeWidth={2.2} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-extrabold text-sm leading-tight">
-                    {ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies'}
+            {/* بطاقة مستلزمات — نفس شكل SectionCard */}
+            <div className="flex justify-center">
+              <Link href="/section/suppliers">
+                <div className="flex flex-col items-center gap-2 active:scale-[0.88] transition-transform duration-100 cursor-pointer select-none">
+                  <div
+                    className="flex items-center justify-center shadow-lg"
+                    style={{ width: 90, height: 90, borderRadius: 24, background: 'linear-gradient(150deg, #0e7c8f 0%, #071B33 100%)' }}
+                  >
+                    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 8L12 3 3 8v8l9 5 9-5V8z" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+                      <path d="M3 8l9 5 9-5" stroke="white" strokeWidth="1.9"/>
+                      <line x1="12" y1="13" x2="12" y2="21" stroke="white" strokeWidth="1.9"/>
+                      <path d="M7.5 5.5L12 8" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
+                      <path d="M16.5 5.5L12 8" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <p className="font-bold text-[#071B33] text-[14.5px] leading-snug text-center w-[90px] line-clamp-2">
+                    {ar ? 'مستلزمات' : 'Supplies'}
                   </p>
-                  <p className="text-white/65 text-[11px] mt-0.5 font-medium">
-                    {ar ? 'معدات • أدوات • قطع غيار • مورّدون' : 'Equipment • Tools • Parts • Suppliers'}
-                  </p>
                 </div>
-                <div className="flex-shrink-0 opacity-60">
-                  {dir === 'rtl'
-                    ? <ChevronLeft className="w-4 h-4 text-white" />
-                    : <ChevronRight className="w-4 h-4 text-white" />}
-                </div>
-              </div>
-            </Link>
-            {/* Pills grid — each pill → /suppliers?type=id */}
-            <div className="bg-white px-3 pt-3 pb-3.5">
-              <div className="flex flex-wrap gap-2">
-                {SUPPLY_TYPES.map(t => (
-                  <Link key={t.id} href={`/suppliers?type=${t.id}`}>
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 bg-[#F2F2F7] active:bg-teal-50 active:border-[#0e7c8f] transition-colors select-none cursor-pointer">
-                      <span className="text-sm leading-none">{t.emoji}</span>
-                      <span className="text-xs font-semibold text-[#071B33] whitespace-nowrap">
-                        {ar ? t.nameAr : t.nameEn}
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              </Link>
             </div>
           </div>
 
