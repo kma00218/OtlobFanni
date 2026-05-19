@@ -108,7 +108,7 @@ export default function Home() {
             }}
           >
             <p className="text-white font-extrabold text-base leading-tight">
-              {ar ? 'انضم إلينا كفني أو كشركة' : 'Join us as a Technician or Company'}
+              {ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد' : 'Join us as a Technician, Service Company or Supplier'}
             </p>
           </div>
         </Link>
@@ -217,7 +217,7 @@ export default function Home() {
                 }}
               >
                 <p className="text-white font-extrabold text-base leading-tight">
-                  {ar ? 'انضم إلينا كفني أو كشركة' : 'Join us as a Technician or Company'}
+                  {ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد' : 'Join us as a Technician, Service Company or Supplier'}
                 </p>
               </div>
             </Link>
