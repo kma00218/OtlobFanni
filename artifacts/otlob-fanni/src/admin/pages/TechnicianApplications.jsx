@@ -120,7 +120,7 @@ export default function TechnicianApplications() {
       setData(prev => prev.filter(r => r.id !== id))
       if (viewItem?.id === id) setViewItem(null)
       if (app?.phone && app?.requestNumber) {
-        setLastPublished({ name: app.fullName || app.full_name || '', phone: app.phone, requestNumber: app.requestNumber })
+        setLastPublished({ name: app.fullName || app.full_name || '', phone: app.whatsapp || app.phone, requestNumber: app.requestNumber })
       }
       showToast('✓ تم نشر الطلب على المنصة')
     } catch { showToast('حدث خطأ', 'error') }

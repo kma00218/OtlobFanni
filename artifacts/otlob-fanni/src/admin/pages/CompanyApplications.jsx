@@ -110,7 +110,7 @@ export default function CompanyApplications() {
       setData(prev => prev.filter(r => r.id !== id))
       if (viewItem?.id === id) setViewItem(null)
       if (app?.phone && app?.requestNumber) {
-        setLastPublished({ name: app.companyName || app.company_name || '', phone: app.phone, requestNumber: app.requestNumber })
+        setLastPublished({ name: app.companyName || app.company_name || '', phone: app.whatsapp || app.phone, requestNumber: app.requestNumber })
       }
       showToast('✓ تم نشر الشركة على المنصة')
     } catch { showToast('حدث خطأ', 'error') }
