@@ -30,9 +30,10 @@ const Toggle = ({ label, checked, onChange }) => (
 )
 
 export default function PostGenerator() {
-  const [includeTechs, setIncludeTechs] = useState(true)
-  const [includeComps, setIncludeComps] = useState(true)
-  const [cityFilter,   setCityFilter]   = useState('')
+  const [includeTechs,     setIncludeTechs]     = useState(true)
+  const [includeComps,     setIncludeComps]     = useState(true)
+  const [includeSuppliers, setIncludeSuppliers] = useState(true)
+  const [cityFilter,       setCityFilter]       = useState('')
   const [specFilter,   setSpecFilter]   = useState('')
   const [sortBy,       setSortBy]       = useState('recent')
   const [dateFrom,     setDateFrom]     = useState('')
@@ -62,7 +63,7 @@ export default function PostGenerator() {
     setLoading(true)
     setPostText('')
     try {
-      let techItems = [], compItems = []
+      let techItems = [], compItems = [], suppItems = []
 
       const fromMs = dateFrom ? new Date(dateFrom).setHours(0, 0, 0, 0)    : null
       const toMs   = dateTo   ? new Date(dateTo).setHours(23, 59, 59, 999) : null
@@ -85,9 +86,9 @@ export default function PostGenerator() {
           new Date(a.createdAt || a.created_at || 0).getTime()
         )
         techItems = filtered.map(t => ({
-          name:      t.nameAr || t.name_ar || '',
-          city:      t.city_name_ar || '',
-          url:       `${base}/technician/${t.id}`,
+          name: t.nameAr || t.name_ar || '',
+          city: t.city_name_ar || '',
+          url:  `${base}/technician/${t.id}`,
         }))
       }
 
@@ -102,13 +103,29 @@ export default function PostGenerator() {
           new Date(a.createdAt || a.created_at || 0).getTime()
         )
         compItems = filtered.map(c => ({
-          name:      c.companyName || c.company_name || '',
-          city:      c.city || '',
-          url:       `${base}/company/${c.id}`,
+          name: c.companyName || c.company_name || '',
+          city: c.city || '',
+          url:  `${base}/company/${c.id}`,
         }))
       }
 
-      if (techItems.length === 0 && compItems.length === 0) {
+      if (includeSuppliers) {
+        const params = {}
+        if (cityFilter) params.city = cityFilter
+        const raw = await api.suppliers(params)
+        let filtered = (Array.isArray(raw) ? raw : []).filter(s => inRange(s.createdAt || s.created_at))
+        if (sortBy === 'recent') filtered.sort((a, b) =>
+          new Date(b.createdAt || b.created_at || 0).getTime() -
+          new Date(a.createdAt || a.created_at || 0).getTime()
+        )
+        suppItems = filtered.map(s => ({
+          name: s.businessName || s.business_name || '',
+          city: s.city || '',
+          url:  `${base}/supplier/${s.id}`,
+        }))
+      }
+
+      if (techItems.length === 0 && compItems.length === 0 && suppItems.length === 0) {
         setPostText('لا توجد نتائج بهذه الفلاتر.')
         return
       }
@@ -145,6 +162,20 @@ export default function PostGenerator() {
         lines.push('')
       }
 
+      if (suppItems.length > 0) {
+        lines.push('📦 الموردون:')
+        lines.push('─────────────────────')
+        lines.push('')
+        suppItems.forEach((s, i) => {
+          lines.push(`${i + 1}. ${s.name}`)
+          if (s.city) lines.push(`📍 ${s.city}`)
+          lines.push(`🔗 ${s.url}`)
+          lines.push('')
+        })
+        lines.push('─────────────────────')
+        lines.push('')
+      }
+
       lines.push('🌐 www.otlobfanni.ly')
       lines.push('')
       lines.push('📱 سجّل الآن وأضف نشاطك مجاناً')
@@ -156,7 +187,7 @@ export default function PostGenerator() {
     } finally {
       setLoading(false)
     }
-  }, [includeTechs, includeComps, cityFilter, specFilter, sortBy, dateFrom, dateTo, cities, cats, base])
+  }, [includeTechs, includeComps, includeSuppliers, cityFilter, specFilter, sortBy, dateFrom, dateTo, cities, cats, base])
 
   const copyPost = async () => {
     try { await navigator.clipboard.writeText(postText) } catch { }
@@ -175,9 +206,10 @@ export default function PostGenerator() {
       <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
 
         {/* Include toggles */}
-        <div className="grid grid-cols-2 gap-3">
-          <Toggle label="تضمين الفنيين"  checked={includeTechs} onChange={setIncludeTechs} />
-          <Toggle label="تضمين الشركات" checked={includeComps} onChange={setIncludeComps} />
+        <div className="grid grid-cols-3 gap-2">
+          <Toggle label="الفنيون"   checked={includeTechs}     onChange={setIncludeTechs} />
+          <Toggle label="الشركات"   checked={includeComps}     onChange={setIncludeComps} />
+          <Toggle label="الموردون"  checked={includeSuppliers} onChange={setIncludeSuppliers} />
         </div>
 
         {/* City + Specialty */}
@@ -249,7 +281,7 @@ export default function PostGenerator() {
         {/* Generate button */}
         <button
           onClick={generate}
-          disabled={loading || (!includeTechs && !includeComps)}
+          disabled={loading || (!includeTechs && !includeComps && !includeSuppliers)}
           className="w-full py-3 bg-[#071B33] text-white rounded-xl text-sm font-bold hover:bg-[#0f2a4a] transition-colors flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
