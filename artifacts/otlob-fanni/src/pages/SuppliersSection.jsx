@@ -4,6 +4,10 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { SUPPLY_TYPES } from '../data/suppliers'
 import api from '../lib/api'
+import {
+  Wrench, Zap, Droplets, Snowflake, ShieldCheck,
+  Car, Settings2, HardHat, Building2, Package,
+} from 'lucide-react'
 
 const TYPE_COLORS = {
   workshop_tools:     ['#D97706', '#b35500'],
@@ -16,6 +20,19 @@ const TYPE_COLORS = {
   safety_equipment:   ['#059669', '#03704F'],
   building_materials: ['#071B33', '#0a2849'],
   other:              ['#6B7280', '#374151'],
+}
+
+const TYPE_ICONS = {
+  workshop_tools:     Wrench,
+  electrical_tools:   Zap,
+  plumbing_supplies:  Droplets,
+  ac_equipment:       Snowflake,
+  security_cameras:   ShieldCheck,
+  auto_parts:         Car,
+  auto_tools:         Settings2,
+  safety_equipment:   HardHat,
+  building_materials: Building2,
+  other:              Package,
 }
 
 export default function SuppliersSection() {
@@ -56,6 +73,7 @@ export default function SuppliersSection() {
         <div className="grid grid-cols-4 gap-3">
           {SUPPLY_TYPES.map(t => {
             const [c1, c2] = TYPE_COLORS[t.id] || TYPE_COLORS.other
+            const Icon = TYPE_ICONS[t.id] || Package
             const count = counts[t.id] || 0
             return (
               <button
@@ -68,7 +86,7 @@ export default function SuppliersSection() {
                     className="w-[70px] h-[70px] rounded-[18px] flex items-center justify-center shadow-lg"
                     style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
                   >
-                    <span className="text-3xl leading-none">{t.emoji}</span>
+                    <Icon className="w-9 h-9 text-white" strokeWidth={1.6} />
                   </div>
                   {count > 0 && (
                     <span className="absolute -top-1.5 -left-1.5 min-w-[20px] h-[20px] bg-white border-2 border-gray-100 text-[#071B33] text-[10px] font-black rounded-full flex items-center justify-center px-1 shadow-sm">
