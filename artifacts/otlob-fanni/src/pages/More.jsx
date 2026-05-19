@@ -383,9 +383,11 @@ export default function More() {
 
       {/* Notifications Row */}
       <div className="px-4 mb-4">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">
-          {ar ? 'الإشعارات' : 'Notifications'}
-        </p>
+        <div className="px-1 pb-2 pt-1">
+          <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+            {ar ? 'الإشعارات' : 'Notifications'}
+          </span>
+        </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <NotificationSettingsRow ar={ar} />
         </div>

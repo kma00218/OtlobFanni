@@ -211,9 +211,11 @@ export default function CityTechnicians() {
           <>
             {filteredTechs.length > 0 && (
               <div className="space-y-1">
-                <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase px-1 pb-1">
-                  {ar ? 'الفنيون' : 'Technicians'}
-                </p>
+                <div className="px-1 pb-2 pt-1">
+                  <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+                    {ar ? 'الفنيون' : 'Technicians'}
+                  </span>
+                </div>
                 {shownTechs.map(tech => (
                   <TechnicianCard key={tech.id} technician={tech} />
                 ))}
@@ -231,9 +233,11 @@ export default function CityTechnicians() {
             )}
             {filteredCompanies.length > 0 && (
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase px-1 pb-1">
-                  {ar ? 'الشركات' : 'Companies'}
-                </p>
+                <div className="px-1 pb-2 pt-1">
+                  <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+                    {ar ? 'الشركات' : 'Companies'}
+                  </span>
+                </div>
                 {shownCompanies.map(company => (
                   <CompanyRow
                     key={company.id}
@@ -256,9 +260,11 @@ export default function CityTechnicians() {
             )}
             {filteredSuppliers.length > 0 && (
               <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase px-1 pb-1">
-                  {ar ? 'مزودو المستلزمات' : 'Suppliers'}
-                </p>
+                <div className="px-1 pb-2 pt-1">
+                  <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+                    {ar ? 'مزودو المستلزمات' : 'Suppliers'}
+                  </span>
+                </div>
                 {shownSuppliers.map(supplier => {
                   const name = supplier.businessName || supplier.business_name || ''
                   const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'

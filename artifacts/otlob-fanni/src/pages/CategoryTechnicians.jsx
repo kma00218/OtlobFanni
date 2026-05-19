@@ -318,9 +318,11 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
         </button>
 
         {/* Section label */}
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-1">
-          {ar ? 'المدن' : 'Cities'}
-        </p>
+        <div className="px-1 pb-2 pt-1">
+          <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+            {ar ? 'المدن' : 'Cities'}
+          </span>
+        </div>
 
         {/* Cities — 4-column grid, name on card */}
         <div className="grid grid-cols-4 gap-2.5">

@@ -306,9 +306,11 @@ export default function SupplierDetails() {
         {/* ── Description ── */}
         {description && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
-              {ar ? 'عن النشاط' : 'About'}
-            </p>
+            <div className="pb-2">
+              <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+                {ar ? 'عن النشاط' : 'About'}
+              </span>
+            </div>
             <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
           </div>
         )}
@@ -354,9 +356,11 @@ export default function SupplierDetails() {
         {/* ── Social Media ── */}
         {(facebook || instagram || tiktok) && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              {ar ? 'وسائل التواصل' : 'Social Media'}
-            </p>
+            <div className="pb-3">
+              <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
+                {ar ? 'وسائل التواصل' : 'Social Media'}
+              </span>
+            </div>
             <div className="space-y-2.5">
               {facebook && (
                 <a href={facebook.startsWith('http') ? facebook : `https://${facebook}`}
