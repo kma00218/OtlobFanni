@@ -111,13 +111,13 @@ export default function SupplierApplications() {
 
   const openWhatsApp = (phone, name, status, requestNumber) => {
     const msg = status === 'approved'
-      ? `مرحباً ${name}، تهانينا! ✅ تم قبول طلب انضمامكم إلى دليل مزودي المستلزمات على منصة اطلب فني.\nرقم طلبك: ${requestNumber}`
-      : `مرحباً ${name}، نأسف لإبلاغك بأن طلبك على منصة اطلب فني لم يتم قبوله.\nرقم طلبك: ${requestNumber}`
+      ? `مرحباً ${name}، تهانينا! ✅ تم قبول طلب انضمامكم إلى دليل مزودي المستلزمات على منصة اطلب فني.\nرقم طلبك: ${requestNumber}\nتابع حالتك هنا: https://otlobfanni.ly/status/${requestNumber}`
+      : `مرحباً ${name}، نأسف لإبلاغك بأن طلبك على منصة اطلب فني لم يتم قبوله.\nرقم طلبك: ${requestNumber}\nللاستفسار تواصل معنا.`
     window.open(`https://wa.me/${(phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const openPublishedWhatsApp = ({ name, phone, requestNumber }) => {
-    const msg = `مبروك ${name}! 🎉 تم نشر نشاطك الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنك مشاركة نشاطك مع عملائك:\n👉 https://otlobfanni.ly/suppliers`
+    const msg = `مبروك ${name}! 🎉 تم نشر نشاطك الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع عملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}`
     window.open(`https://wa.me/${(phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
