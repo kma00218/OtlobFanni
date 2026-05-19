@@ -89,27 +89,27 @@ export default function Home() {
     <div className="bg-background min-h-screen pt-16 pb-36">
 
       {/* Ticker bar */}
+      <style>{`@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-25%); } }`}</style>
       <Link href="/join-us">
-        <div className="w-full overflow-hidden cursor-pointer select-none" style={{ background: '#071B33', height: '38px', display: 'flex', alignItems: 'center' }}>
-          <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'ticker-scroll 60s linear infinite' }}>
-            {[0, 1].map(i => (
-              <span key={i} className="text-white text-[13px] font-semibold" style={{ padding: '0 2.5rem' }}>
+        <div className="w-full overflow-hidden cursor-pointer select-none" style={{ background: '#071B33', height: '36px', display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'ticker-scroll 80s linear infinite', willChange: 'transform' }}>
+            {[0, 1, 2, 3].map(i => (
+              <span key={i} className="text-white text-[13px] font-semibold inline-flex items-center" style={{ paddingInline: '2.5rem' }}>
                 🇱🇾 يجري الآن بناء أكبر دليل فنيين وشركات خدمات في ليبيا — التسجيل مفتوح مجاناً
-                <span className="mx-4 text-[#FF7900]">✦</span>
+                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
                 🔧 سجّل بياناتك مجاناً وابدأ في استقبال الطلبات
-                <span className="mx-4 text-[#FF7900]">✦</span>
+                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
                 📦 تصفّح مستلزمات ومعدات من أفضل الموردين في ليبيا
-                <span className="mx-4 text-[#FF7900]">✦</span>
+                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
                 ⭐ انضم إلى آلاف الفنيين الموثوقين على المنصة
-                <span className="mx-4 text-[#FF7900]">✦</span>
+                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
                 📍 خدمة متاحة في طرابلس، بنغازي، مصراتة، والمزيد
-                <span className="mx-4 text-[#FF7900]">✦</span>
+                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
                 💼 هل أنت شركة خدمات؟ اعرض خدماتك الآن مجاناً
               </span>
             ))}
           </div>
         </div>
-        <style>{`@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
       </Link>
 
       <main className="px-4 pt-2 pb-4 flex flex-col gap-4">
