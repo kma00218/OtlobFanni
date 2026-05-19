@@ -63,7 +63,7 @@ export default function SupplierApplications() {
   const reload = () => {
     setLoading(true)
     api.admin.supplierApplications.list()
-      .then(rows => { setData(rows); setLoading(false) })
+      .then(rows => { setData(rows.filter(r => r.status !== 'published')); setLoading(false) })
       .catch(() => setLoading(false))
   }
 
@@ -100,12 +100,12 @@ export default function SupplierApplications() {
     try {
       const app = data.find(r => r.id === id)
       await api.admin.supplierApplications.update(id, 'published')
-      setData(prev => prev.map(r => r.id === id ? { ...r, status: 'published' } : r))
-      if (viewItem?.id === id) setViewItem(v => ({ ...v, status: 'published' }))
+      setData(prev => prev.filter(r => r.id !== id))
+      if (viewItem?.id === id) setViewItem(null)
       if (app?.whatsapp || app?.phone) {
         setLastPublished({ name: app.businessName || app.business_name || '', phone: app.whatsapp || app.phone, requestNumber: app.requestNumber })
       }
-      showToast('✓ تم نشر المورّد على المنصة')
+      showToast('✓ تم نشر المورّد على المنصة — انتقل إلى مزودو المستلزمات')
     } catch { showToast('حدث خطأ', 'error') }
   }
 
@@ -273,22 +273,7 @@ export default function SupplierApplications() {
                 </>
               )}
 
-              {actionMenu.status === 'published' && (
-                <>
-                  <button onClick={() => { setStatus(actionMenu.id, 'approved'); setActionMenu(null) }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-colors text-sm font-bold text-right">
-                    <span className="text-base">⏸</span>
-                    إلغاء النشر
-                  </button>
-                  <button onClick={() => { setRejectModal({ open: true, id: actionMenu.id, reason: '', isView: false }); setActionMenu(null) }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 text-red-300 hover:bg-red-500/20 transition-colors text-sm font-bold text-right">
-                    <span className="text-base">✕</span>
-                    رفض الطلب
-                  </button>
-                </>
-              )}
-
-              {(actionMenu.status === 'approved' || actionMenu.status === 'rejected' || actionMenu.status === 'published') && actionMenu.requestNumber && (
+              {(actionMenu.status === 'approved' || actionMenu.status === 'rejected') && actionMenu.requestNumber && (
                 <button onClick={() => { openWhatsApp(actionMenu.whatsapp || actionMenu.phone, actionMenu.businessName || actionMenu.business_name || '', actionMenu.status, actionMenu.requestNumber); setActionMenu(null) }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/10 text-green-300 hover:bg-green-500/20 transition-colors text-sm font-medium text-right">
                   <MessageCircle className="w-4 h-4 flex-shrink-0" />
@@ -331,11 +316,10 @@ export default function SupplierApplications() {
       {/* Tabs */}
       <div className="flex gap-2 mb-4 flex-wrap">
         {[
-          { id: 'all',       label: `الكل (${data.length})` },
-          { id: 'pending',   label: `قيد المراجعة (${data.filter(r => r.status === 'pending').length})` },
-          { id: 'approved',  label: `مقبول (${data.filter(r => r.status === 'approved').length})` },
-          { id: 'published', label: `منشور (${data.filter(r => r.status === 'published').length})` },
-          { id: 'rejected',  label: `مرفوض (${data.filter(r => r.status === 'rejected').length})` },
+          { id: 'all',      label: `الكل (${data.length})` },
+          { id: 'pending',  label: `قيد المراجعة (${data.filter(r => r.status === 'pending').length})` },
+          { id: 'approved', label: `مقبول (${data.filter(r => r.status === 'approved').length})` },
+          { id: 'rejected', label: `مرفوض (${data.filter(r => r.status === 'rejected').length})` },
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${tab === t.id ? 'bg-[#0e5c6d] text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
