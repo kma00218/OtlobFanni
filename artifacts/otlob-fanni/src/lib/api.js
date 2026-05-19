@@ -26,16 +26,55 @@ const post = (path, body)   => request('POST',   path, body)
 const patch = (path, body)  => request('PATCH',  path, body)
 const del  = (path)         => request('DELETE', path)
 
+/**
+ * Compress an image file using Canvas API before upload.
+ * - Resizes to max 1200px on longest side
+ * - Converts to JPEG at 82% quality
+ * - Skips non-image files (PDF, etc.)
+ * Typical reduction: 5 MB photo → ~200 KB
+ */
+async function compressImage(file, { maxPx = 1200, quality = 0.82 } = {}) {
+  if (!file.type.startsWith('image/')) return file
+
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      let { width, height } = img
+      if (width <= maxPx && height <= maxPx) {
+        // Already small enough — still re-encode to JPEG to save space
+      } else {
+        const ratio = Math.min(maxPx / width, maxPx / height)
+        width  = Math.round(width  * ratio)
+        height = Math.round(height * ratio)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width  = width
+      canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      canvas.toBlob(
+        (blob) => resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })),
+        'image/jpeg',
+        quality,
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file) }
+    img.src = url
+  })
+}
+
 export async function uploadFile(file) {
+  const compressed = await compressImage(file)
   const { uploadURL, objectPath } = await request('POST', '/storage/uploads/request-url', {
-    name: file.name,
-    size: file.size,
-    contentType: file.type,
+    name: compressed.name,
+    size: compressed.size,
+    contentType: compressed.type,
   })
   const putRes = await fetch(uploadURL, {
     method: 'PUT',
-    headers: { 'Content-Type': file.type },
-    body: file,
+    headers: { 'Content-Type': compressed.type },
+    body: compressed,
   })
   if (!putRes.ok) throw new Error(`Upload failed: ${putRes.status}`)
   return objectPath
