@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
-import { Phone, MapPin, Package, MessageCircle, Search, ChevronDown } from 'lucide-react'
+import { Phone, MapPin, Package, MessageCircle, Search, ChevronDown, ArrowRight, ArrowLeft } from 'lucide-react'
 import api from '../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../data/suppliers'
-import { useSearch } from 'wouter'
+import { useSearch, useLocation } from 'wouter'
 
 const WaIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0">
@@ -12,19 +12,84 @@ const WaIcon = () => (
   </svg>
 )
 
+// ─── City Picker (matches CategoryTechnicians style exactly) ──────────────────
+function CityPicker({ cities, typeName, typeEmoji, ar, onSelect }) {
+  return (
+    <div className="bg-[#ECEEF2] min-h-screen pb-24" dir={ar ? 'rtl' : 'ltr'}>
+      <BackHeader title={typeName} />
+
+      <main className="px-4 pt-20">
+        {/* Header */}
+        <div className="text-center mb-6 pt-5">
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center bg-[#0e5c6d]/10 text-4xl">
+            {typeEmoji}
+          </div>
+          <h2 className="text-xl font-black text-[#071B33]">
+            {ar ? 'اختر المدينة' : 'Select City'}
+          </h2>
+          <p className="text-sm text-gray-400 mt-1">
+            {ar ? 'اختر مدينتك لعرض المزودين المتاحين' : 'Choose your city to see available suppliers'}
+          </p>
+        </div>
+
+        {/* All Libya button */}
+        <button
+          onClick={() => onSelect('')}
+          className="w-full flex flex-col items-center justify-center bg-blue-600 rounded-2xl px-4 py-5 mb-5 active:scale-[0.98] transition-transform shadow-lg shadow-blue-200"
+        >
+          <p className="font-extrabold text-white text-2xl tracking-wide">🇱🇾 {ar ? 'كل ليبيا' : 'All Libya'}</p>
+          <p className="text-sm text-blue-100 mt-1">{ar ? 'عرض جميع المزودين في البلاد' : 'Show all suppliers across the country'}</p>
+        </button>
+
+        {/* Cities label */}
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-1">
+          {ar ? 'المدن' : 'Cities'}
+        </p>
+
+        {/* 4-col grid of cities */}
+        <div className="grid grid-cols-4 gap-2.5">
+          {cities.map((city) => {
+            const cityName = ar ? (city.name_ar || city.nameAr || '') : (city.name_en || city.nameEn || '')
+            return (
+              <button
+                key={city.id}
+                onClick={() => onSelect(ar ? (city.name_ar || city.nameAr) : (city.name_en || city.nameEn))}
+                className="flex items-center justify-center bg-white border border-gray-100 rounded-2xl active:scale-95 transition-transform shadow-sm aspect-square"
+              >
+                <span className="text-[#071B33] font-extrabold text-[17px] text-center leading-snug w-full px-1.5 line-clamp-2">{cityName}</span>
+              </button>
+            )
+          })}
+        </div>
+      </main>
+    </div>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function Suppliers() {
   const { lang } = useLang()
   const ar = lang === 'ar'
-  const searchParams = new URLSearchParams(useSearch())
+  const searchStr = useSearch()
+  const searchParams = new URLSearchParams(searchStr)
   const typeFromUrl = searchParams.get('type') || ''
+  const cityFromUrl = searchParams.get('city') || ''
+
+  const [, navigate] = useLocation()
 
   const [suppliers, setSuppliers] = useState([])
   const [cities, setCities] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState(typeFromUrl)
-  const [filterCity, setFilterCity] = useState('')
-  const [showFilters, setShowFilters] = useState(!!typeFromUrl)
+  const [filterCity, setFilterCity] = useState(cityFromUrl)
+  const [showFilters, setShowFilters] = useState(false)
+
+  // City picker shown when coming from a supply type and no city chosen yet
+  const [cityChosen, setCityChosen] = useState(
+    !typeFromUrl || !!cityFromUrl
+  )
+  const [selectedCityName, setSelectedCityName] = useState(cityFromUrl)
 
   useEffect(() => {
     Promise.all([
@@ -36,6 +101,32 @@ export default function Suppliers() {
     }).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
+  const typeInfo = SUPPLY_TYPES.find(t => t.id === typeFromUrl)
+  const typeName = typeFromUrl
+    ? (ar ? (typeInfo?.nameAr || typeFromUrl) : (typeInfo?.nameEn || typeFromUrl))
+    : (ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies')
+  const typeEmoji = typeInfo?.emoji || '📦'
+
+  const handleCitySelect = (cityName) => {
+    setFilterCity(cityName)
+    setSelectedCityName(cityName)
+    setCityChosen(true)
+  }
+
+  // ── City Picker step ──────────────────────────────────────────────────────
+  if (!cityChosen) {
+    return (
+      <CityPicker
+        cities={cities}
+        typeName={typeName}
+        typeEmoji={typeEmoji}
+        ar={ar}
+        onSelect={handleCitySelect}
+      />
+    )
+  }
+
+  // ── Suppliers List ────────────────────────────────────────────────────────
   const filtered = suppliers.filter(s => {
     const q = search.toLowerCase()
     const matchSearch = !q ||
@@ -65,11 +156,31 @@ export default function Suppliers() {
     return SUPPLY_TYPES.find(t => t.id === type)?.emoji || '📦'
   }
 
+  const pageTitle = selectedCityName
+    ? `${typeName} — ${selectedCityName}`
+    : typeName
+
   return (
     <div className="min-h-screen bg-[#F2F2F7] pb-28" dir={ar ? 'rtl' : 'ltr'}>
-      <BackHeader title={ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies'} />
+      <BackHeader title={pageTitle} />
 
       <div className="px-4 pt-3 pb-4 space-y-3">
+
+        {/* City breadcrumb — tap to change city */}
+        {typeFromUrl && (
+          <button
+            onClick={() => setCityChosen(false)}
+            className="flex items-center gap-2 bg-white rounded-xl px-3 py-2 border border-gray-200 shadow-sm active:scale-[0.98] transition-transform w-full"
+          >
+            <MapPin className="w-4 h-4 text-[#0e5c6d] flex-shrink-0" />
+            <span className="text-sm font-semibold text-[#071B33] flex-1 text-start">
+              {selectedCityName || (ar ? '🇱🇾 كل ليبيا' : '🇱🇾 All Libya')}
+            </span>
+            <span className="text-xs text-[#FF7900] font-bold">
+              {ar ? 'تغيير' : 'Change'}
+            </span>
+          </button>
+        )}
 
         {/* Search */}
         <div className="relative">
@@ -84,49 +195,53 @@ export default function Suppliers() {
           />
         </div>
 
-        {/* Filter toggle */}
-        <button
-          onClick={() => setShowFilters(f => !f)}
-          className="flex items-center gap-2 text-sm text-[#071B33] font-semibold px-1">
-          <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-          {ar ? 'تصفية النتائج' : 'Filter'}
-          {(filterType || filterCity) && <span className="bg-[#FF7900] text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
-            {[filterType, filterCity].filter(Boolean).length}
-          </span>}
-        </button>
+        {/* Filter toggle — only show when NOT coming from a type URL */}
+        {!typeFromUrl && (
+          <>
+            <button
+              onClick={() => setShowFilters(f => !f)}
+              className="flex items-center gap-2 text-sm text-[#071B33] font-semibold px-1">
+              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+              {ar ? 'تصفية النتائج' : 'Filter'}
+              {(filterType || filterCity) && <span className="bg-[#FF7900] text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                {[filterType, filterCity].filter(Boolean).length}
+              </span>}
+            </button>
 
-        {showFilters && (
-          <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm space-y-3">
-            <div>
-              <p className="text-xs font-bold text-gray-500 mb-2">{ar ? 'نوع المستلزمات' : 'Supply Type'}</p>
-              <div className="flex flex-wrap gap-1.5">
-                <button onClick={() => setFilterType('')}
-                  className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${!filterType ? 'bg-[#071B33] text-white border-[#071B33]' : 'bg-white text-gray-600 border-gray-300'}`}>
-                  {ar ? 'الكل' : 'All'}
-                </button>
-                {SUPPLY_TYPES.filter(t => t.id !== 'other').map(t => (
-                  <button key={t.id} onClick={() => setFilterType(filterType === t.id ? '' : t.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${filterType === t.id ? 'bg-[#0e5c6d] text-white border-[#0e5c6d]' : 'bg-white text-gray-600 border-gray-300'}`}>
-                    {t.emoji} {ar ? t.nameAr : t.nameEn}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {cities.length > 0 && (
-              <div>
-                <p className="text-xs font-bold text-gray-500 mb-2">{ar ? 'المدينة' : 'City'}</p>
-                <select
-                  className="w-full text-sm border border-gray-300 rounded-xl px-3 py-2 text-[#071B33] bg-white focus:outline-none focus:border-[#FF7900]"
-                  value={filterCity}
-                  onChange={e => setFilterCity(e.target.value)}>
-                  <option value="">{ar ? 'كل المدن' : 'All Cities'}</option>
-                  {cities.map(c => (
-                    <option key={c.id} value={ar ? c.nameAr : c.nameEn}>{ar ? c.nameAr : c.nameEn}</option>
-                  ))}
-                </select>
+            {showFilters && (
+              <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm space-y-3">
+                <div>
+                  <p className="text-xs font-bold text-gray-500 mb-2">{ar ? 'نوع المستلزمات' : 'Supply Type'}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button onClick={() => setFilterType('')}
+                      className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${!filterType ? 'bg-[#071B33] text-white border-[#071B33]' : 'bg-white text-gray-600 border-gray-300'}`}>
+                      {ar ? 'الكل' : 'All'}
+                    </button>
+                    {SUPPLY_TYPES.filter(t => t.id !== 'other').map(t => (
+                      <button key={t.id} onClick={() => setFilterType(filterType === t.id ? '' : t.id)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${filterType === t.id ? 'bg-[#0e5c6d] text-white border-[#0e5c6d]' : 'bg-white text-gray-600 border-gray-300'}`}>
+                        {t.emoji} {ar ? t.nameAr : t.nameEn}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {cities.length > 0 && (
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 mb-2">{ar ? 'المدينة' : 'City'}</p>
+                    <select
+                      className="w-full text-sm border border-gray-300 rounded-xl px-3 py-2 text-[#071B33] bg-white focus:outline-none focus:border-[#FF7900]"
+                      value={filterCity}
+                      onChange={e => setFilterCity(e.target.value)}>
+                      <option value="">{ar ? 'كل المدن' : 'All Cities'}</option>
+                      {cities.map(c => (
+                        <option key={c.id} value={ar ? c.nameAr : c.nameEn}>{ar ? c.nameAr : c.nameEn}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Count */}
@@ -167,63 +282,58 @@ export default function Suppliers() {
                   {s.logo ? (
                     <img src={s.logo.startsWith('/objects/') ? `/api/storage${s.logo}` : s.logo}
                       alt={s.businessName}
-                      className="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-gray-200" />
+                      className="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-gray-100" />
                   ) : (
-                    <div className="w-14 h-14 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0 border border-teal-100">
-                      <span className="text-2xl">{getSupplyEmoji(s.supplyType)}</span>
+                    <div className="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center text-2xl"
+                      style={{ background: 'linear-gradient(135deg, #0e7c8f 0%, #071B33 100%)' }}>
+                      {getSupplyEmoji(s.supplyType)}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-extrabold text-[#071B33] text-base leading-tight">{s.businessName}</h3>
-                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span className="text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full">
-                        {getSupplyLabel(s)}
+                    <h3 className="font-extrabold text-[#071B33] text-base leading-tight line-clamp-1">{s.businessName}</h3>
+                    {s.contactName && (
+                      <p className="text-xs text-gray-500 mt-0.5">{s.contactName}</p>
+                    )}
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      <span className="bg-[#0e5c6d]/10 text-[#0e5c6d] text-[11px] font-bold px-2 py-0.5 rounded-full">
+                        {getSupplyEmoji(s.supplyType)} {getSupplyLabel(s)}
                       </span>
-                    </div>
-                    <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
-                      <MapPin className="w-3 h-3 flex-shrink-0" />
-                      <span>{s.city}</span>
+                      {s.city && (
+                        <span className="flex items-center gap-0.5 text-[11px] text-gray-400 font-medium">
+                          <MapPin className="w-3 h-3" />{s.city}
+                          {s.area ? `, ${s.area}` : ''}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Description */}
                 {s.description && (
-                  <p className="text-sm text-gray-600 mt-3 leading-relaxed line-clamp-2">{s.description}</p>
-                )}
-
-                {/* Shop images (max 3) */}
-                {s.shopImages && s.shopImages.length > 0 && (
-                  <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
-                    {s.shopImages.slice(0, 3).map((img, idx) => (
-                      <img key={idx}
-                        src={img.startsWith('/objects/') ? `/api/storage${img}` : img}
-                        alt=""
-                        className="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-gray-200" />
-                    ))}
-                  </div>
+                  <p className="text-xs text-gray-500 mt-3 line-clamp-2 leading-relaxed">{s.description}</p>
                 )}
 
                 {/* Action buttons */}
                 <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => openWhatsApp(s.whatsapp || s.phone)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#25D366] text-white text-sm font-bold transition-colors hover:bg-[#1db954] active:scale-95">
-                    <WaIcon />
-                    {ar ? 'واتساب' : 'WhatsApp'}
-                  </button>
-                  <button
-                    onClick={() => openPhone(s.phone)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#071B33] text-white text-sm font-bold transition-colors hover:bg-[#0f2a4a] active:scale-95">
-                    <Phone className="w-4 h-4" />
-                    {ar ? 'اتصال' : 'Call'}
-                  </button>
+                  {s.whatsapp && (
+                    <button
+                      onClick={() => openWhatsApp(s.whatsapp)}
+                      className="flex-1 bg-green-500 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                      <WaIcon /> {ar ? 'واتساب' : 'WhatsApp'}
+                    </button>
+                  )}
+                  {s.phone && (
+                    <button
+                      onClick={() => openPhone(s.phone)}
+                      className="flex-1 bg-[#071B33] text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                      <Phone className="w-3.5 h-3.5" /> {ar ? 'اتصال' : 'Call'}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
-
       </div>
     </div>
   )
