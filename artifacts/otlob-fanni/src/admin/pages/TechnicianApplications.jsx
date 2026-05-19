@@ -252,7 +252,7 @@ export default function TechnicianApplications() {
       render: (v, row) => (
         <button
           onClick={() => setActionMenu(row)}
-          className="p-2 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors font-bold text-lg leading-none"
+          className="p-2 hover:bg-[#FF7900]/20 text-[#FF7900] rounded-xl transition-colors font-bold text-lg leading-none"
           title="الإجراءات">
           ⋮
         </button>
