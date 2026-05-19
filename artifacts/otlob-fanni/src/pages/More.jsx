@@ -1,5 +1,5 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell } from 'lucide-react';
+import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell, Package } from 'lucide-react';
 import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
 import { track } from '../lib/tracker';
@@ -150,6 +150,13 @@ export default function More() {
   ]
 
   const quickItems = [
+    {
+      labelAr: 'مستلزمات',
+      labelEn: 'Supplies',
+      href: '/suppliers',
+      bg: 'bg-gradient-to-br from-[#0e5c6d] to-[#072a36]',
+      icon: <Package className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
     {
       labelAr: 'أعلن معنا',
       labelEn: 'Advertise',

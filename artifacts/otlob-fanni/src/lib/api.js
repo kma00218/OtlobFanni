@@ -167,7 +167,17 @@ export const api = {
       update:       (id, data)    => patch(`/admin/companies/${id}`, data),
     },
 
+    supplierApplications: {
+      list:    ()                      => get('/admin/supplier-applications'),
+      update:  (id, status, opts = {}) => patch(`/admin/supplier-applications/${id}`, { status, ...opts }),
+      delete:  (id)                    => del(`/admin/supplier-applications/${id}`),
+    },
+
   },
+
+  suppliers:                    ()     => get('/suppliers'),
+  submitSupplierApplication:    (data) => post('/supplier-applications', data),
+  trackSupplierApplication:     (rn)   => get(`/supplier-applications/track/${encodeURIComponent(rn)}`),
 }
 
 export default api

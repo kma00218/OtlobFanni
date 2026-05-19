@@ -19,6 +19,7 @@ import Companies from './pages/Companies'
 import AdRequests from './pages/AdRequests'
 import AdminSearch from './pages/AdminSearch'
 import PostGenerator from './pages/PostGenerator'
+import SupplierApplications from './pages/SupplierApplications'
 import { Shield } from 'lucide-react'
 
 function AccessDenied() {
@@ -52,6 +53,7 @@ function AdminRoutes() {
       <Route path="/admin/technician-applications" component={TechnicianApplications} />
       <Route path="/admin/company-applications"    component={CompanyApplications} />
       <Route path="/admin/ad-requests"             component={AdRequests} />
+      <Route path="/admin/supplier-applications"   component={SupplierApplications} />
       <Route path="/admin/search"                  component={AdminSearch} />
       <Route path="/admin/poster"                  component={PostGenerator} />
       <Route path="/admin/categories">{isSuperAdmin ? <Categories /> : <AccessDenied />}</Route>

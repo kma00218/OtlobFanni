@@ -25,6 +25,8 @@ const Companies = lazy(() => import("./pages/Companies"));
 const CompanyDetails = lazy(() => import("./pages/CompanyDetails"));
 const Join = lazy(() => import("./pages/Join"));
 const JoinCompany = lazy(() => import("./pages/JoinCompany"));
+const JoinSupplier = lazy(() => import("./pages/JoinSupplier"));
+const Suppliers = lazy(() => import("./pages/Suppliers"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Orders = lazy(() => import("./pages/Orders"));
 const Favorites = lazy(() => import("./pages/Favorites"));
@@ -130,7 +132,7 @@ function SearchFAB() {
   const [open, setOpen] = useState(false);
 
   // Hide on home (already has search bar) and on join form pages
-  const hidden = location === '/' || location === '/join' || location === '/join-company' || location.startsWith('/admin');
+  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin');
   if (hidden) return null;
 
   const ar = lang === 'ar';
@@ -202,6 +204,8 @@ function AppContent() {
               <Route path="/company/:id" component={CompanyDetails} />
               <Route path="/join" component={Join} />
               <Route path="/join-company" component={JoinCompany} />
+              <Route path="/join-supplier" component={JoinSupplier} />
+              <Route path="/suppliers" component={Suppliers} />
               <Route path="/contact" component={Contact} />
               <Route path="/orders" component={Orders} />
               <Route path="/favorites" component={Favorites} />

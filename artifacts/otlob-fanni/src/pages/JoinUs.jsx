@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext'
 import { Link, useLocation } from 'wouter'
-import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Share2, ClipboardList, Search } from 'lucide-react'
+import { UserPlus, Building2, ChevronLeft, ChevronRight, Wrench, CheckCircle2, Share2, ClipboardList, Search, Package } from 'lucide-react'
 
 export default function JoinUs() {
   const { lang, toggleLang } = useLang()
@@ -134,6 +134,7 @@ export default function JoinUs() {
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
             style={{ background: 'linear-gradient(135deg, #c45e00 0%, #8a3f00 100%)' }}>
 
+
             <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 -right-6 w-32 h-32 rounded-full bg-black/10" />
 
@@ -176,6 +177,56 @@ export default function JoinUs() {
               <Building2 className="w-3.5 h-3.5 text-white/70" />
               <span className="text-white/70 text-xs">
                 {ar ? 'شركات صيانة، مقاولات، تنظيف، تكييف...' : 'Maintenance, contracting, cleaning companies...'}
+              </span>
+            </div>
+          </div>
+        </Link>
+
+        {/* Supplier Card */}
+        <Link href="/join-supplier">
+          <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
+            style={{ background: 'linear-gradient(135deg, #0e5c6d 0%, #072a36 100%)' }}>
+
+            <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
+            <div className="absolute -bottom-10 -left-6 w-32 h-32 rounded-full bg-black/10" />
+
+            <div className="relative p-6 flex items-center gap-5">
+              <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-teal-900/30 border border-white/20">
+                <Package className="w-12 h-12 text-white" strokeWidth={1.5} />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {ar ? 'محل / مورّد' : 'Shop / Supplier'}
+                  </span>
+                </div>
+                <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
+                  {ar ? 'انضم كمزود مستلزمات' : 'Join as Supplier'}
+                </h2>
+                <p className="text-white font-bold text-base leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+                  {ar
+                    ? 'سجّل محلك أو نشاطك وكن دليلاً للفنيين والشركات'
+                    : 'List your shop and become a reference for technicians & companies'}
+                </p>
+                <div className="flex items-center gap-3 mt-3">
+                  {[ar ? 'مجاناً' : 'Free', ar ? 'دليل' : 'Directory', ar ? 'موثوق' : 'Trusted'].map(tag => (
+                    <span key={tag} className="flex items-center gap-1 text-white text-[10px] font-bold">
+                      <CheckCircle2 className="w-3 h-3" /> {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex-shrink-0">
+                {ar ? <ChevronLeft className="w-6 h-6 text-white/60" /> : <ChevronRight className="w-6 h-6 text-white/60" />}
+              </div>
+            </div>
+
+            <div className="bg-black/15 px-6 py-2.5 flex items-center gap-2">
+              <Package className="w-3.5 h-3.5 text-white/70" />
+              <span className="text-white/70 text-xs">
+                {ar ? 'أدوات، معدات، قطع غيار، مواد بناء، سباكة...' : 'Tools, equipment, spare parts, building materials...'}
               </span>
             </div>
           </div>

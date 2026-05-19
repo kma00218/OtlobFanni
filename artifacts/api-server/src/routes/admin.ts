@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
-  adminsTable, serviceRequestsTable,
+  adminsTable, serviceRequestsTable, supplierApplicationsTable,
 } from "@workspace/db/schema";
 import { eq, desc, count, and, or, ilike, sql } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
@@ -27,27 +27,33 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [approvedAdReqs]     = await db.select({ count: count() }).from(adRequestsTable).where(eq(adRequestsTable.status, "approved"));
   const [newReqs]            = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "new"));
   const [completedReqs]      = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "completed"));
+  const [pendingSupplierApps] = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "pending"));
+  const [totalSupplierApps]   = await db.select({ count: count() }).from(supplierApplicationsTable);
+  const [publishedSuppliers]  = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "published"));
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
   const recentCompanies  = await db.select().from(companyApplicationsTable).orderBy(desc(companyApplicationsTable.createdAt)).limit(5);
 
   res.json({
-    totalTechs:          Number(techCount.count),
-    activeTechs:         Number(activeTechCount.count),
-    totalCities:         Number(cityCount.count),
-    totalCats:           Number(catCount.count),
-    totalCategories:     Number(activeCatCount.count),
-    activeAds:           Number(activeAdsCount.count),
-    pendingTechApps:     Number(pendingTechApps.count),
-    totalTechApps:       Number(totalTechApps.count),
-    totalCompanies:      Number(approvedCompanies.count),
-    pendingCompanyApps:  Number(pendingCompApps.count),
-    totalCompanyApps:    Number(totalCompApps.count),
-    pendingAdRequests:   Number(pendingAdReqs.count),
-    approvedAdRequests:  Number(approvedAdReqs.count),
-    newRequests:         Number(newReqs.count),
-    completedRequests:   Number(completedReqs.count),
+    totalTechs:           Number(techCount.count),
+    activeTechs:          Number(activeTechCount.count),
+    totalCities:          Number(cityCount.count),
+    totalCats:            Number(catCount.count),
+    totalCategories:      Number(activeCatCount.count),
+    activeAds:            Number(activeAdsCount.count),
+    pendingTechApps:      Number(pendingTechApps.count),
+    totalTechApps:        Number(totalTechApps.count),
+    totalCompanies:       Number(approvedCompanies.count),
+    pendingCompanyApps:   Number(pendingCompApps.count),
+    totalCompanyApps:     Number(totalCompApps.count),
+    pendingAdRequests:    Number(pendingAdReqs.count),
+    approvedAdRequests:   Number(approvedAdReqs.count),
+    newRequests:          Number(newReqs.count),
+    completedRequests:    Number(completedReqs.count),
+    pendingSupplierApps:  Number(pendingSupplierApps.count),
+    totalSupplierApps:    Number(totalSupplierApps.count),
+    totalSuppliers:       Number(publishedSuppliers.count),
     recentRequests,
     recentTechs,
     recentCompanies,

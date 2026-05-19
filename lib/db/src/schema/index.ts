@@ -1,5 +1,6 @@
 export * from "./technician_applications";
 export * from "./company_applications";
+export * from "./supplier_applications";
 export * from "./technicians";
 export * from "./cities";
 export * from "./categories";
