@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import TechnicianCard from '../components/TechnicianCard'
-import { MapPin, Globe, Search, Building2, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
+import { MapPin, Globe, Search, Building2, Phone, ChevronLeft, ChevronRight, Package } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
 
@@ -45,10 +45,12 @@ export default function CityTechnicians() {
   const [city, setCity] = useState(null)
   const [techs, setTechs] = useState([])
   const [companies, setCompanies] = useState([])
+  const [suppliers, setSuppliers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [visibleTechs, setVisibleTechs]         = useState(20)
   const [visibleCompanies, setVisibleCompanies] = useState(20)
+  const [visibleSuppliers, setVisibleSuppliers] = useState(20)
 
   const isLibya = id === 'libya'
 
@@ -67,12 +69,14 @@ export default function CityTechnicians() {
     Promise.all([
       api.technicians({ city_id: id }),
       api.companies({ city: id }),
-    ]).then(([techData, compData]) => {
+      isLibya ? api.suppliers() : api.suppliers({ city: id }),
+    ]).then(([techData, compData, suppData]) => {
       setTechs(techData)
       setCompanies(compData)
+      setSuppliers(suppData || [])
       setLoading(false)
     }).catch(() => setLoading(false))
-  }, [id])
+  }, [id, isLibya])
 
   const cityName = city ? (ar ? city.nameAr : city.nameEn) : (ar ? 'المدينة' : 'City')
   const q = search.trim().toLowerCase()
@@ -99,17 +103,32 @@ export default function CityTechnicians() {
     return fields.some(f => f && f.toLowerCase().includes(q))
   }
 
+  const matchesSupplier = (s) => {
+    if (!q) return true
+    const fields = [
+      s.businessName, s.business_name,
+      s.contactName, s.contact_name,
+      s.description,
+      s.supplyType, s.supply_type,
+      s.customSupplyType, s.custom_supply_type,
+    ]
+    return fields.some(f => f && f.toLowerCase().includes(q))
+  }
+
   const filteredTechs     = techs.filter(matchesTech)
   const filteredCompanies = companies.filter(matchesCompany)
-  const total = filteredTechs.length + filteredCompanies.length
+  const filteredSuppliers = suppliers.filter(matchesSupplier)
+  const total = filteredTechs.length + filteredCompanies.length + filteredSuppliers.length
 
   useEffect(() => {
     setVisibleTechs(20)
     setVisibleCompanies(20)
+    setVisibleSuppliers(20)
   }, [search, id])
 
-  const shownTechs     = filteredTechs.slice(0, visibleTechs)
-  const shownCompanies = filteredCompanies.slice(0, visibleCompanies)
+  const shownTechs      = filteredTechs.slice(0, visibleTechs)
+  const shownCompanies  = filteredCompanies.slice(0, visibleCompanies)
+  const shownSuppliers  = filteredSuppliers.slice(0, visibleSuppliers)
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
@@ -228,6 +247,50 @@ export default function CityTechnicians() {
                     {ar
                       ? `تحميل المزيد (${filteredCompanies.length - visibleCompanies})`
                       : `Load More (${filteredCompanies.length - visibleCompanies})`}
+                  </button>
+                )}
+              </div>
+            )}
+            {filteredSuppliers.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase px-1 pb-1">
+                  {ar ? 'مزودو المستلزمات' : 'Suppliers'}
+                </p>
+                {shownSuppliers.map(supplier => {
+                  const name = supplier.businessName || supplier.business_name || ''
+                  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
+                  const logo = getFileUrl(supplier.logo || null)
+                  const supplyLabel = supplier.customSupplyType || supplier.custom_supply_type || supplier.supplyType || supplier.supply_type || ''
+                  return (
+                    <button
+                      key={supplier.id}
+                      onClick={() => navigate(`/suppliers?city=${id}`)}
+                      className="w-full flex items-center gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 active:scale-[0.98] transition-all text-start"
+                    >
+                      <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden bg-teal-100 flex items-center justify-center">
+                        {logo
+                          ? <img src={logo} alt={name} className="w-full h-full object-cover" />
+                          : <div className="w-full h-full bg-teal-100 flex items-center justify-center">
+                              <Package className="w-6 h-6 text-teal-600" />
+                            </div>}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</p>
+                        {supplyLabel && <p className="text-xs text-teal-600 font-medium mt-0.5">{supplyLabel}</p>}
+                        {supplier.city && <p className="text-xs text-gray-400 mt-0.5">{supplier.city}</p>}
+                      </div>
+                      <Package className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                    </button>
+                  )
+                })}
+                {filteredSuppliers.length > visibleSuppliers && (
+                  <button
+                    onClick={() => setVisibleSuppliers(v => v + 20)}
+                    className="w-full mt-2 py-3 rounded-2xl bg-white border border-teal-300 text-teal-600 font-bold text-sm active:scale-[0.98] transition-transform"
+                  >
+                    {ar
+                      ? `تحميل المزيد (${filteredSuppliers.length - visibleSuppliers})`
+                      : `Load More (${filteredSuppliers.length - visibleSuppliers})`}
                   </button>
                 )}
               </div>

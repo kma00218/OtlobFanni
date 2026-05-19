@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { supplierApplicationsTable } from "@workspace/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { supplierApplicationsTable, citiesTable } from "@workspace/db/schema";
+import { eq, desc, and, or, ilike } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -45,11 +45,30 @@ router.post("/supplier-applications", async (req, res): Promise<void> => {
 });
 
 // ── Public: Published suppliers directory ────────────────────────────────────
-router.get("/suppliers", async (_req, res): Promise<void> => {
+router.get("/suppliers", async (req, res): Promise<void> => {
+  const cityParam = String(req.query.city ?? "").trim();
+
+  let cityNames: string[] = [];
+  if (cityParam && cityParam !== 'libya') {
+    const [cityRow] = await db.select().from(citiesTable).where(eq(citiesTable.id, cityParam));
+    if (cityRow) {
+      cityNames = [cityRow.nameAr, cityRow.nameEn, cityRow.id].filter(Boolean) as string[];
+    } else {
+      cityNames = [cityParam];
+    }
+  }
+
+  const whereClause = cityNames.length > 0
+    ? and(
+        eq(supplierApplicationsTable.status, "published"),
+        or(...cityNames.map(n => ilike(supplierApplicationsTable.city, n)))
+      )
+    : eq(supplierApplicationsTable.status, "published");
+
   const rows = await db
     .select()
     .from(supplierApplicationsTable)
-    .where(eq(supplierApplicationsTable.status, "published"))
+    .where(whereClause)
     .orderBy(desc(supplierApplicationsTable.createdAt));
   res.json(rows);
 });
