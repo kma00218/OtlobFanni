@@ -16,6 +16,7 @@ export const supplierApplicationsTable = pgTable("supplier_applications", {
   shopImages:        jsonb("shop_images").$type<string[]>().default([]),
   facebook:          text("facebook"),
   instagram:         text("instagram"),
+  tiktok:            text("tiktok"),
   referredBy:        text("referred_by"),
   status:            text("status").notNull().default("pending"),
   rejectionReason:   text("rejection_reason"),

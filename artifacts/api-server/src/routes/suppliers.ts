@@ -31,6 +31,7 @@ router.post("/supplier-applications", async (req, res): Promise<void> => {
     shopImages:       body.shop_images || [],
     facebook:         body.facebook || null,
     instagram:        body.instagram || null,
+    tiktok:           body.tiktok || null,
     referredBy:       body.referred_by || null,
     status:           "pending",
     requestNumber,

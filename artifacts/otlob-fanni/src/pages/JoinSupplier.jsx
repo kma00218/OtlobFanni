@@ -68,6 +68,7 @@ export default function JoinSupplier() {
     description: '',
     facebook: '',
     instagram: '',
+    tiktok: '',
     terms: false,
   })
 
@@ -142,6 +143,7 @@ export default function JoinSupplier() {
         shop_images:        shopImages,
         facebook:           form.facebook || null,
         instagram:          form.instagram || null,
+        tiktok:             form.tiktok || null,
         referred_by:        refCode || null,
       })
       if (result?.requestNumber) setRequestNumber(result.requestNumber)
@@ -388,6 +390,10 @@ export default function JoinSupplier() {
             <Field label="Instagram">
               <input className={inp} value={form.instagram} onChange={e => set('instagram', e.target.value)}
                 placeholder="https://instagram.com/..." dir="ltr" />
+            </Field>
+            <Field label="TikTok">
+              <input className={inp} value={form.tiktok} onChange={e => set('tiktok', e.target.value)}
+                placeholder="https://tiktok.com/@..." dir="ltr" />
             </Field>
           </div>
         </div>
