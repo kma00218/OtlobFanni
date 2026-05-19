@@ -194,11 +194,14 @@ router.get("/search", async (req, res): Promise<void> => {
     ilike(techniciansTable.nameEn, `%${t}%`),
     ilike(techniciansTable.descriptionAr, `%${t}%`),
     ilike(techniciansTable.descriptionEn, `%${t}%`),
+    ilike(citiesTable.nameAr, `%${t}%`),
+    ilike(citiesTable.nameEn, `%${t}%`),
   ]);
   const companyWhere = terms.flatMap(t => [
     ilike(companyApplicationsTable.companyName, `%${t}%`),
     ilike(companyApplicationsTable.contactName, `%${t}%`),
     ilike(companyApplicationsTable.description, `%${t}%`),
+    ilike(companyApplicationsTable.city, `%${t}%`),
   ]);
   const cityWhere = terms.flatMap(t => [
     ilike(citiesTable.nameAr, `%${t}%`),
