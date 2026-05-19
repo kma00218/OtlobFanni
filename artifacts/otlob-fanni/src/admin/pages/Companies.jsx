@@ -42,7 +42,7 @@ const emptyForm = {
   price_from: '', price_to: '', available_now: false, emergency: false,
   working_days: [],
   hours_from: '', hours_to: '', service_radius: '', facebook: '', instagram: '',
-  company_logo: '',
+  company_logo: '', work_images: [],
 }
 
 export default function Companies() {
@@ -57,6 +57,7 @@ export default function Companies() {
   const [form, setForm]             = useState(emptyForm)
   const [saving, setSaving]         = useState(false)
   const [logoUploading, setLogoUploading] = useState(false)
+  const [galleryUploading, setGalleryUploading] = useState(false)
   const [lightbox, setLightbox]     = useState(null)
   const [categories, setCategories] = useState([])
   const [toast, setToast]           = useState(null)
@@ -127,6 +128,7 @@ export default function Companies() {
       instagram:      row.instagram     || '',
       working_days:   row.workingDays   || [],
       company_logo:   row.companyLogo   || '',
+      work_images:    row.workImages    || [],
     })
     setViewItem(null)
   }
@@ -536,6 +538,56 @@ export default function Companies() {
                 </div>
               </div>
             </div>
+
+            {/* ── معرض صور الأعمال ── */}
+            <div className="sm:col-span-2">
+              <label className="form-label flex items-center gap-1.5">
+                <Image className="w-3.5 h-3.5 text-slate-400" />
+                معرض الأعمال (صور)
+              </label>
+              <div className="mt-2 space-y-3">
+                {(form.work_images || []).length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {(form.work_images || []).map((img, idx) => (
+                      <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                        <img src={getFileUrl(img)} alt="" className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox(getFileUrl(img))} />
+                        <button
+                          type="button"
+                          onClick={() => setForm(f => ({ ...f, work_images: (f.work_images || []).filter((_, i) => i !== idx) }))}
+                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <label className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border border-[#FF7900]/40 text-[#FF7900] text-sm font-medium hover:bg-[#FF7900]/5 transition-colors ${galleryUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <Upload className="w-4 h-4" />
+                    {galleryUploading ? 'جارٍ الرفع...' : 'إضافة صورة'}
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={async e => {
+                      const files = Array.from(e.target.files || [])
+                      if (!files.length) return
+                      setGalleryUploading(true)
+                      try {
+                        const paths = await Promise.all(files.map(f => uploadFile(f)))
+                        setForm(f => ({ ...f, work_images: [...(f.work_images || []), ...paths] }))
+                      } catch { showToast('فشل رفع الصورة', 'error') }
+                      setGalleryUploading(false)
+                      e.target.value = ''
+                    }} />
+                  </label>
+                  {(form.work_images || []).length > 0 && (
+                    <button type="button" onClick={() => setForm(f => ({ ...f, work_images: [] }))}
+                      className="text-xs text-red-400 hover:text-red-500">
+                      حذف جميع الصور
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div>
               <label className="form-label">اسم الشركة *</label>
               <input required value={form.company_name}

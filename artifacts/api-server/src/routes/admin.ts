@@ -242,6 +242,7 @@ router.patch("/companies/:id", async (req, res): Promise<void> => {
   if (b.facebook      !== undefined) updates.facebook      = b.facebook;
   if (b.instagram     !== undefined) updates.instagram     = b.instagram;
   if (b.company_logo  !== undefined) updates.companyLogo   = b.company_logo;
+  if (b.work_images   !== undefined) updates.workImages    = b.work_images;
   const [app] = await db
     .update(companyApplicationsTable)
     .set(updates)

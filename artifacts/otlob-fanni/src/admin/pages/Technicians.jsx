@@ -258,6 +258,7 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
 
 function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, cities, categories, isSuperAdmin, cityId }) {
   const [photoUploading, setPhotoUploading] = useState(false)
+  const [galleryUploading, setGalleryUploading] = useState(false)
   if (!open) return null
 
   const inp = "form-input"
@@ -461,6 +462,49 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
             </div>
           </Section>
 
+          {/* ── صور معرض الأعمال ── */}
+          <Section label="معرض الأعمال (صور)" icon={Image}>
+            <div className="space-y-3">
+              {(form.work_images || []).length > 0 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {(form.work_images || []).map((img, idx) => (
+                    <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                      <img src={getFileUrl(img)} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, work_images: (f.work_images || []).filter((_, i) => i !== idx) }))}
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <label className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border border-[#FF7900]/40 text-[#FF7900] text-sm font-medium hover:bg-[#FF7900]/5 transition-colors ${galleryUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                <Upload className="w-4 h-4" />
+                {galleryUploading ? 'جارٍ الرفع...' : 'إضافة صورة'}
+                <input type="file" accept="image/*" multiple className="hidden" onChange={async e => {
+                  const files = Array.from(e.target.files || [])
+                  if (!files.length) return
+                  setGalleryUploading(true)
+                  try {
+                    const paths = await Promise.all(files.map(f => uploadFile(f)))
+                    setForm(f => ({ ...f, work_images: [...(f.work_images || []), ...paths] }))
+                  } catch { alert('فشل رفع الصورة') }
+                  setGalleryUploading(false)
+                  e.target.value = ''
+                }} />
+              </label>
+              {(form.work_images || []).length > 0 && (
+                <button type="button" onClick={() => setForm(f => ({ ...f, work_images: [] }))}
+                  className="text-xs text-red-400 hover:text-red-500 mr-3">
+                  حذف جميع الصور
+                </button>
+              )}
+            </div>
+          </Section>
+
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={saving} className="flex-1 bg-[#FF7900] hover:bg-[#e86d00] disabled:opacity-50 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors">
               {saving
@@ -598,6 +642,7 @@ export default function Technicians() {
       description_ar:   row.descriptionAr   || row.description_ar   || '',
       description_en:   row.descriptionEn   || row.description_en   || '',
       profile_photo:    row.profilePhoto    || row.profile_photo    || '',
+      work_images:      row.workImages      || row.work_images      || [],
       facebook:         row.facebook        || '',
       instagram:        row.instagram       || '',
       emergency:        row.emergency       ?? false,

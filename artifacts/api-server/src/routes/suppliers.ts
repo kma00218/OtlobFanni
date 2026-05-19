@@ -166,6 +166,8 @@ router.patch("/admin/suppliers/:id", async (req, res): Promise<void> => {
   if (body.instagram      !== undefined) updates.instagram        = body.instagram;
   if (body.tiktok         !== undefined) updates.tiktok           = body.tiktok;
   if (body.status         !== undefined) updates.status           = body.status;
+  if (body.shop_images    !== undefined) updates.shopImages       = body.shop_images;
+  if (body.custom_supply_type !== undefined) updates.customSupplyType = body.custom_supply_type;
   const [row] = await db.update(supplierApplicationsTable).set(updates).where(eq(supplierApplicationsTable.id, raw)).returning();
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
   res.json(row);
