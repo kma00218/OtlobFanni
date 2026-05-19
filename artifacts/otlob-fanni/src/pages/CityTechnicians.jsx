@@ -27,7 +27,10 @@ function CompanyRow({ company, ar, onOpen }) {
             </div>}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</p>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</p>
+          <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
+        </div>
         {category && <p className="text-xs text-[#FF7900] font-medium mt-0.5">{category}</p>}
         {company.city && <p className="text-xs text-gray-400 mt-0.5">{company.city}</p>}
       </div>

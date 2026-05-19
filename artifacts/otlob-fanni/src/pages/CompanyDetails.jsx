@@ -257,9 +257,10 @@ export default function CompanyDetails() {
                 }
               </div>
               <div className="flex-1 min-w-0 mt-10">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <Building2 className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
                   <h1 className="font-bold text-gray-900 text-lg leading-tight">{name}</h1>
+                  <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
                 </div>
                 <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full my-1 tracking-wide shadow-sm">
                   🪪 {ar ? 'رقم التعريف' : 'ID'}: COM-{createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear()}-{String(company.id).replace(/\D/g,'').slice(-6)}

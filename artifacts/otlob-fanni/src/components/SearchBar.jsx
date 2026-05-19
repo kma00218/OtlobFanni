@@ -403,7 +403,10 @@ export default function SearchBar({ onResultSelect } = {}) {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="text-[#071B33] font-bold text-sm block leading-tight">{company.companyName}</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[#071B33] font-bold text-sm leading-tight">{company.companyName}</span>
+                        <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
+                      </div>
                       <span className="text-gray-400 text-xs leading-tight">
                         {[ar ? company.categoryAr : company.categoryEn, company.city].filter(Boolean).join(' · ')}
                       </span>

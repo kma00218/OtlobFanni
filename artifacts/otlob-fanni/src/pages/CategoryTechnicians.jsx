@@ -191,7 +191,7 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName, 
         )}
         <div className="absolute top-2 right-2 flex flex-col gap-1">
           <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
-            <Building2 className="w-2.5 h-2.5" /> {ar ? 'شركة' : 'Company'}
+            <Building2 className="w-2.5 h-2.5" /> {ar ? 'شركة خدمية' : 'Service Co.'}
           </span>
           {isNew && (
             <span className="bg-emerald-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">
@@ -222,7 +222,10 @@ function CompanyCard({ company, lang, onOpen, isFav, onToggleFav, categoryName, 
       </div>
 
       <div className="p-3.5">
-        <p className="font-bold text-gray-900 text-sm mb-1 leading-tight">{name}</p>
+        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+          <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
+          <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
+        </div>
 
         {categoryName && (
           <div className="flex items-center gap-1.5 mb-2">

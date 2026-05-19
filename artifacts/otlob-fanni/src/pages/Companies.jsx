@@ -80,9 +80,10 @@ function CompanyCard({ company, lang, onOpen, distance }) {
       </div>
 
       <div className="p-3.5">
-        <div className="flex items-center gap-1.5 mb-0.5">
+        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
           <Building2 className="w-3.5 h-3.5 text-[#FF7900] flex-shrink-0" />
           <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
+          <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
         </div>
 
         {allSpecialtyNames.length > 0 && (

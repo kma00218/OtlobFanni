@@ -23,7 +23,7 @@ function RecentCard({ item, ar }) {
   const badgeCls  = isCo   ? 'bg-blue-100 text-blue-700'
                  : isSupp  ? 'bg-teal-100 text-teal-700'
                  :           'bg-orange-100 text-[#FF7900]'
-  const badgeTxt  = isCo   ? (ar ? 'شركة'    : 'Company')
+  const badgeTxt  = isCo   ? (ar ? 'شركة خدمية' : 'Service Co.')
                  : isSupp  ? (ar ? 'مستلزمات' : 'Supplier')
                  :           (ar ? 'فني'      : 'Tech')
 

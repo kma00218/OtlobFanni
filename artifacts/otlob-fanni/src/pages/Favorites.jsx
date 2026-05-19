@@ -116,7 +116,10 @@ function CompanyRow({ company, ar, onRemove }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-1">
             <div>
-              <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
+                <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
+              </div>
               {(company.categoryAr || company.categoryEn) && (
                 <div className="flex items-center gap-1.5 mt-0.5 mb-0.5">
                   <div className="w-1 h-4 rounded-full bg-[#FF7900] flex-shrink-0" />
