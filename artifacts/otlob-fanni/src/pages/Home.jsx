@@ -4,8 +4,9 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
+import { SUPPLY_TYPES } from '../data/suppliers'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
@@ -161,6 +162,50 @@ export default function Home() {
                 <SectionCard section={section} />
               </div>
             ))}
+          </div>
+
+          {/* ── مستلزمات اطلب فني ── */}
+          <div className="mt-4 rounded-2xl overflow-hidden shadow-md border border-[#0a3d4a]/20">
+            {/* Header — clicking goes to /suppliers */}
+            <Link href="/suppliers">
+              <div
+                className="flex items-center gap-3 px-4 py-3.5 active:opacity-90 transition-opacity select-none"
+                style={{ background: 'linear-gradient(135deg, #0e5c6d 0%, #071B33 100%)' }}
+              >
+                <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                  <Package className="w-5 h-5 text-white" strokeWidth={2.2} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-extrabold text-sm leading-tight">
+                    {ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies'}
+                  </p>
+                  <p className="text-white/65 text-[11px] mt-0.5 font-medium">
+                    {ar ? 'معدات • أدوات • قطع غيار • مورّدون' : 'Equipment • Tools • Parts • Suppliers'}
+                  </p>
+                </div>
+                <div className="flex-shrink-0 text-white/50">
+                  {dir === 'rtl'
+                    ? <ChevronLeft className="w-4 h-4" />
+                    : <ChevronRight className="w-4 h-4" />}
+                </div>
+              </div>
+            </Link>
+
+            {/* Supply type pills */}
+            <div className="bg-white px-3 pt-3 pb-3.5">
+              <div className="flex flex-wrap gap-2">
+                {SUPPLY_TYPES.map(t => (
+                  <Link key={t.id} href={`/suppliers?type=${t.id}`}>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 bg-[#F2F2F7] active:bg-teal-50 active:border-[#0e5c6d] transition-colors select-none cursor-pointer">
+                      <span className="text-sm leading-none">{t.emoji}</span>
+                      <span className="text-xs font-semibold text-[#071B33] whitespace-nowrap">
+                        {ar ? t.nameAr : t.nameEn}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* بطاقة الانطلاق */}

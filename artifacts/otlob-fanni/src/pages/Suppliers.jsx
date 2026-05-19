@@ -4,6 +4,7 @@ import BackHeader from '../components/BackHeader'
 import { Phone, MapPin, Package, MessageCircle, Search, ChevronDown } from 'lucide-react'
 import api from '../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../data/suppliers'
+import { useSearch } from 'wouter'
 
 const WaIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0">
@@ -14,14 +15,16 @@ const WaIcon = () => (
 export default function Suppliers() {
   const { lang } = useLang()
   const ar = lang === 'ar'
+  const searchParams = new URLSearchParams(useSearch())
+  const typeFromUrl = searchParams.get('type') || ''
 
   const [suppliers, setSuppliers] = useState([])
   const [cities, setCities] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [filterType, setFilterType] = useState('')
+  const [filterType, setFilterType] = useState(typeFromUrl)
   const [filterCity, setFilterCity] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(!!typeFromUrl)
 
   useEffect(() => {
     Promise.all([
