@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
+@source inline("bg-[#FF7900] min-w-[18px] min-w-[20px] h-[18px] h-[20px] text-[10px] text-[11px] text-[12px] text-[#071B33] max-w-[76px]");
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
