@@ -362,3 +362,14 @@
     inset: -1px;
   }
 }
+/* ── Nice card borders – applies to all white rounded cards across all sections ── */
+@layer utilities {
+  .bg-white.rounded-2xl.border,
+  .bg-white.rounded-xl.border {
+    border-width: 1.5px !important;
+    border-color: rgba(255, 121, 0, 0.18) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 121, 0, 0.07),
+      0 2px 12px rgba(7, 27, 51, 0.07) !important;
+  }
+}
