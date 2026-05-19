@@ -43,6 +43,7 @@ export default function CompanyApplications() {
   const [categories, setCategories]           = useState([])
   const [rejectModal, setRejectModal]         = useState({ open: false, id: null, reason: '', isView: false })
   const [tab, setTab]                         = useState('all')
+  const [actionMenu, setActionMenu]           = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -243,60 +244,12 @@ export default function CompanyApplications() {
     {
       key: 'id', label: 'إجراءات',
       render: (v, row) => (
-        <div className="flex gap-1 flex-wrap">
-          <button onClick={() => setViewItem(row)}
-            className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors" title="عرض التفاصيل">
-            <Eye className="w-3.5 h-3.5" />
-          </button>
-          {row.status === 'pending' && (
-            <>
-              <button onClick={() => setStatus(row.id, 'approved')}
-                className="px-2 py-1 text-xs bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg font-medium transition-colors">
-                قبول
-              </button>
-              <button onClick={() => setRejectModal({ open: true, id: row.id, reason: '', isView: false })}
-                className="px-2 py-1 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg font-medium transition-colors">
-                رفض
-              </button>
-            </>
-          )}
-          {row.status === 'approved' && (
-            <>
-              <button onClick={() => handlePublish(row.id)}
-                className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 rounded-lg font-medium transition-colors">
-                نشر
-              </button>
-              <button onClick={() => setRejectModal({ open: true, id: row.id, reason: '', isView: false })}
-                className="px-2 py-1 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg font-medium transition-colors">
-                رفض
-              </button>
-            </>
-          )}
-          {row.status === 'rejected' && (
-            <>
-              <button onClick={() => setStatus(row.id, 'approved')}
-                className="px-2 py-1 text-xs bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg font-medium transition-colors">
-                قبول
-              </button>
-              <button onClick={() => setStatus(row.id, 'pending')}
-                className="px-2 py-1 text-xs bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 rounded-lg font-medium transition-colors">
-                إعادة
-              </button>
-            </>
-          )}
-          {(row.status === 'approved' || row.status === 'rejected') && row.phone && row.requestNumber && (
-            <button
-              onClick={() => openWhatsApp(row.whatsapp || row.phone, row.companyName || row.company_name || '', row.status, row.requestNumber)}
-              className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
-              title="إشعار واتساب">
-              <MessageCircle className="w-3.5 h-3.5" />
-            </button>
-          )}
-          <button onClick={() => handleDelete(row.id)}
-            className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="حذف">
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <button
+          onClick={() => setActionMenu(row)}
+          className="p-2 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors font-bold text-lg leading-none"
+          title="الإجراءات">
+          ⋮
+        </button>
       ),
     },
   ]
@@ -307,6 +260,85 @@ export default function CompanyApplications() {
       {toast && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl text-white text-sm shadow-lg ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
           {toast.msg}
+        </div>
+      )}
+
+      {/* Action Menu Modal */}
+      {actionMenu && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setActionMenu(null)}>
+          <div className="bg-[#0f2236] rounded-2xl w-full max-w-xs shadow-2xl border border-slate-700 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="px-5 pt-5 pb-3 border-b border-slate-700">
+              <p className="text-white font-bold text-base text-right">{actionMenu.companyName || actionMenu.company_name || ''}</p>
+              <p className="text-slate-400 text-xs text-right mt-0.5">{actionMenu.requestNumber}</p>
+            </div>
+            <div className="p-3 flex flex-col gap-2">
+              <button onClick={() => { setViewItem(actionMenu); setActionMenu(null) }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-colors text-sm font-medium text-right">
+                <Eye className="w-4 h-4 flex-shrink-0" />
+                عرض التفاصيل
+              </button>
+              {actionMenu.status === 'pending' && (
+                <>
+                  <button onClick={() => { setStatus(actionMenu.id, 'approved'); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">✓</span>
+                    قبول الطلب
+                  </button>
+                  <button onClick={() => { setRejectModal({ open: true, id: actionMenu.id, reason: '', isView: false }); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 text-red-300 hover:bg-red-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">✕</span>
+                    رفض الطلب
+                  </button>
+                </>
+              )}
+              {actionMenu.status === 'approved' && (
+                <>
+                  <button onClick={() => { handlePublish(actionMenu.id); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-orange-500/10 text-orange-300 hover:bg-orange-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">📢</span>
+                    نشر على المنصة
+                  </button>
+                  <button onClick={() => { setRejectModal({ open: true, id: actionMenu.id, reason: '', isView: false }); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 text-red-300 hover:bg-red-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">✕</span>
+                    رفض الطلب
+                  </button>
+                </>
+              )}
+              {actionMenu.status === 'rejected' && (
+                <>
+                  <button onClick={() => { setStatus(actionMenu.id, 'approved'); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">✓</span>
+                    قبول الطلب
+                  </button>
+                  <button onClick={() => { setStatus(actionMenu.id, 'pending'); setActionMenu(null) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-colors text-sm font-bold text-right">
+                    <span className="text-base">↩</span>
+                    إعادة للمراجعة
+                  </button>
+                </>
+              )}
+              {(actionMenu.status === 'approved' || actionMenu.status === 'rejected') && actionMenu.requestNumber && (
+                <button onClick={() => { openWhatsApp(actionMenu.whatsapp || actionMenu.phone, actionMenu.companyName || actionMenu.company_name || '', actionMenu.status, actionMenu.requestNumber); setActionMenu(null) }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/10 text-green-300 hover:bg-green-500/20 transition-colors text-sm font-medium text-right">
+                  <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                  إرسال واتساب
+                </button>
+              )}
+              <button onClick={() => { handleDelete(actionMenu.id); setActionMenu(null) }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/5 text-red-400 hover:bg-red-500/15 transition-colors text-sm font-medium text-right border border-red-500/20">
+                <Trash2 className="w-4 h-4 flex-shrink-0" />
+                حذف الطلب
+              </button>
+            </div>
+            <div className="px-3 pb-3">
+              <button onClick={() => setActionMenu(null)}
+                className="w-full py-3 rounded-xl border border-slate-600 text-slate-400 hover:bg-slate-700 text-sm transition-colors">
+                إلغاء
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
