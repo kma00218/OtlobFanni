@@ -262,7 +262,7 @@ export default function AdminSuppliers() {
 
       {/* ── View Modal ────────────────────────────────────── */}
       {viewItem && (
-        <FormModal title={viewItem.businessName || 'تفاصيل المزود'} onClose={() => setViewItem(null)} size="lg">
+        <FormModal open title={viewItem.businessName || 'تفاصيل المزود'} onClose={() => setViewItem(null)} size="lg" hideFooter>
           <div className="space-y-5">
             {/* Logo + name */}
             <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
@@ -356,8 +356,8 @@ export default function AdminSuppliers() {
 
       {/* ── Edit Modal ────────────────────────────────────── */}
       {editItem && (
-        <FormModal title={`تعديل: ${editItem.businessName}`} onClose={() => setEditItem(null)} size="lg">
-          <form onSubmit={handleSave} className="space-y-4">
+        <FormModal open title={`تعديل: ${editItem.businessName}`} onClose={() => setEditItem(null)} size="lg" onSubmit={handleSave} loading={saving} submitLabel={saving ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}>
+          <div className="space-y-4">
             {/* Logo upload */}
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-200 flex-shrink-0 cursor-pointer relative"
@@ -440,17 +440,7 @@ export default function AdminSuppliers() {
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <button type="submit" disabled={saving}
-                className="flex-1 py-2.5 rounded-xl bg-[#FF7900] text-white text-sm font-bold hover:bg-[#e06800] transition-colors disabled:opacity-60">
-                {saving ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}
-              </button>
-              <button type="button" onClick={() => setEditItem(null)}
-                className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition-colors">
-                إلغاء
-              </button>
-            </div>
-          </form>
+          </div>
         </FormModal>
       )}
 
