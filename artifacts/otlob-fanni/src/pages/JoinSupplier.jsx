@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
+import LocationPicker from '../components/LocationPicker'
 import { SUPPLY_TYPES } from '../data/suppliers'
-import { CheckCircle, Camera, X, Upload, Building2, Phone, FileText, Facebook, Copy, Check, Package } from 'lucide-react'
+import { CheckCircle, Camera, X, Upload, Building2, Phone, FileText, Facebook, Copy, Check, Package, MapPin as MapPinIcon } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-800 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
@@ -52,6 +53,7 @@ export default function JoinSupplier() {
   const [copied, setCopied] = useState(false)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(0)
+  const [location, setLocation] = useState(null)
   const [logo, setLogo] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
   const [shopImages, setShopImages] = useState([])
@@ -63,6 +65,8 @@ export default function JoinSupplier() {
     phone: '',
     whatsapp: '',
     city: '',
+    area: '',
+    address: '',
     supply_type: '',
     custom_supply_type: '',
     description: '',
@@ -136,6 +140,10 @@ export default function JoinSupplier() {
         phone:              form.phone,
         whatsapp:           form.whatsapp,
         city:               form.city,
+        area:               form.area || null,
+        address:            form.address || null,
+        lat:                location?.lat ?? undefined,
+        lng:                location?.lng ?? undefined,
         supply_type:        form.supply_type,
         custom_supply_type: isOther ? form.custom_supply_type.trim() : null,
         description:        form.description || null,
@@ -296,13 +304,25 @@ export default function JoinSupplier() {
                   : 'WhatsApp number is required and must be active — all communication will be via WhatsApp only.'}
               </p>
             </div>
-            <Field label={ar ? 'المدينة' : 'City'} required>
-              <select className={sel} required value={form.city} onChange={e => set('city', e.target.value)}>
-                <option value="">{ar ? 'اختر المدينة...' : 'Select city...'}</option>
-                {cities.map(c => (
-                  <option key={c.id} value={ar ? c.nameAr : c.nameEn}>{ar ? c.nameAr : c.nameEn}</option>
-                ))}
-              </select>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label={ar ? 'المدينة' : 'City'} required>
+                <select className={sel} required value={form.city} onChange={e => set('city', e.target.value)}>
+                  <option value="">{ar ? 'اختر...' : 'Select...'}</option>
+                  {cities.map(c => (
+                    <option key={c.id} value={ar ? c.nameAr : c.nameEn}>{ar ? c.nameAr : c.nameEn}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={ar ? 'المنطقة / الحي' : 'Area / District'}>
+                <input className={inp} value={form.area}
+                  onChange={e => set('area', e.target.value)}
+                  placeholder={ar ? 'حي الأندلس' : 'Andalus district'} />
+              </Field>
+            </div>
+            <Field label={ar ? 'العنوان التفصيلي' : 'Detailed Address'}>
+              <input className={inp} value={form.address}
+                onChange={e => set('address', e.target.value)}
+                placeholder={ar ? 'الشارع، البناية، رقم المحل...' : 'Street, building, shop number...'} />
             </Field>
           </div>
         </div>
@@ -396,6 +416,23 @@ export default function JoinSupplier() {
                 placeholder="https://tiktok.com/@..." dir="ltr" />
             </Field>
           </div>
+        </div>
+
+        {/* ── الموقع على الخريطة ───────────────────────────────── */}
+        <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+          <div className="flex items-center gap-2 mb-1">
+            <MapPinIcon className="w-5 h-5 text-[#FF7900]" />
+            <h3 className="font-bold text-[#071B33] text-base">
+              {ar ? 'موقع النشاط على الخريطة' : 'Business Location on Map'}
+              <span className="text-gray-400 text-xs font-normal mr-1.5">{ar ? '(اختياري)' : '(optional)'}</span>
+            </h3>
+          </div>
+          <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+            {ar
+              ? 'يساعد تحديد الموقع الفنيين والشركات القريبة منك في إيجادك بسرعة أكبر عبر ميزة "الأقرب إليّ".'
+              : 'Pinning your location helps nearby technicians and companies find you faster via the "Near Me" feature.'}
+          </p>
+          <LocationPicker value={location} onChange={setLocation} ar={ar} />
         </div>
 
         {/* ── الإقرار والإرسال ─────────────────────────────────── */}

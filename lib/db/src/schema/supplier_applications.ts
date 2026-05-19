@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, jsonb, doublePrecision } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -11,6 +11,10 @@ export const supplierApplicationsTable = pgTable("supplier_applications", {
   city:              text("city").notNull(),
   supplyType:        text("supply_type").notNull(),
   customSupplyType:  text("custom_supply_type"),
+  area:              text("area"),
+  address:           text("address"),
+  lat:               doublePrecision("lat"),
+  lng:               doublePrecision("lng"),
   description:       text("description"),
   logo:              text("logo"),
   shopImages:        jsonb("shop_images").$type<string[]>().default([]),
