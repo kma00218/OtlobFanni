@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { SUPPLY_TYPES } from '../data/suppliers'
-import { CheckCircle, X, Upload, Building2, Phone, FileText, Image, Facebook, Copy, Check, Package } from 'lucide-react'
+import { CheckCircle, Camera, X, Upload, Building2, Phone, FileText, Facebook, Copy, Check, Package } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-800 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
@@ -40,6 +40,7 @@ function Field({ label, required, hint, children }) {
 export default function JoinSupplier() {
   const { lang } = useLang()
   const ar = lang === 'ar'
+  const logoInputRef = useRef(null)
 
   const [cities, setCities] = useState([])
   useEffect(() => { api.cities().then(setCities).catch(() => {}) }, [])
@@ -73,7 +74,10 @@ export default function JoinSupplier() {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const isOther = form.supply_type === 'other'
 
-  const handleLogoUpload = async (e) => {
+  // First word of business name for logo placeholder
+  const firstWord = (form.business_name || '').trim().split(' ')[0] || '📦'
+
+  const handleLogo = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     const preview = URL.createObjectURL(file)
@@ -181,7 +185,8 @@ export default function JoinSupplier() {
             </div>
           )}
           <button onClick={() => window.history.back()}
-            className="w-full bg-[#071B33] text-white font-bold py-3.5 rounded-2xl text-sm hover:bg-[#0f2a4a] transition-colors active:scale-95">
+            className="w-full text-white font-bold py-3.5 rounded-2xl text-sm transition-colors active:scale-95"
+            style={{ background: 'linear-gradient(135deg, #0e5c6d 0%, #072a36 100%)' }}>
             {ar ? 'العودة' : 'Go Back'}
           </button>
         </div>
@@ -195,9 +200,66 @@ export default function JoinSupplier() {
 
       <form onSubmit={handleSubmit} className="px-4 pt-4 space-y-4 max-w-[600px] mx-auto">
 
-        {/* ── 1. معلومات النشاط ─────────────────────────────────── */}
+        {/* ── 1. شعار النشاط ────────────────────────────────────── */}
         <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-          <SectionTitle icon={Building2} step={1}>{ar ? 'معلومات النشاط' : 'Business Information'}</SectionTitle>
+          <SectionTitle icon={Camera} step={1}>{ar ? 'شعار النشاط' : 'Business Logo'}</SectionTitle>
+          <div className="flex flex-col items-center gap-3">
+            <div
+              className="relative w-28 h-28 rounded-2xl border-4 border-[#FF7900]/20 flex items-center justify-center cursor-pointer overflow-hidden bg-gray-100"
+              onClick={() => !uploading && logoInputRef.current?.click()}
+            >
+              {(logoPreview || logo) ? (
+                <img src={logoPreview || getFileUrl(logo)} alt="logo" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-[#0e5c6d] to-[#072a36] flex items-center justify-center rounded-2xl">
+                  <span className="text-white font-bold text-base text-center px-2 leading-tight">{firstWord}</span>
+                </div>
+              )}
+              {uploading > 0 && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-2xl">
+                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              {!uploading && (
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-2xl">
+                  <Camera className="w-6 h-6 text-white" />
+                </div>
+              )}
+            </div>
+            <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogo} />
+            <div className="text-center w-full">
+              <button type="button" onClick={() => logoInputRef.current?.click()}
+                className="text-sm font-bold text-[#FF7900] hover:underline" disabled={uploading > 0}>
+                {(logoPreview || logo)
+                  ? (ar ? 'تغيير الشعار' : 'Change Logo')
+                  : (ar ? '🏪 أضف شعار نشاطك' : '🏪 Add Your Business Logo')}
+              </button>
+              <div className="mt-2 flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 text-right">
+                <span className="text-lg flex-shrink-0 leading-none">⭐</span>
+                <div>
+                  <p className="text-xs font-bold text-orange-900 leading-snug">
+                    {ar
+                      ? 'الأنشطة التي تعرض شعارها تبدو أكثر احترافية وتكسب ثقة الفنيين والشركات بشكل أسرع'
+                      : 'Businesses with a logo appear more professional and gain trust from technicians & companies faster'}
+                  </p>
+                  <p className="text-[11px] text-orange-500 font-semibold mt-0.5">
+                    {ar ? 'اختياري — لكنه يُحدث فارقاً كبيراً ✓' : 'Optional — but makes a big difference ✓'}
+                  </p>
+                </div>
+              </div>
+              {(logoPreview || logo) && (
+                <button type="button" onClick={() => { setLogo(null); setLogoPreview(null) }}
+                  className="text-xs text-red-400 hover:underline mt-2 block mx-auto">
+                  {ar ? 'إزالة الشعار' : 'Remove logo'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── 2. معلومات النشاط ─────────────────────────────────── */}
+        <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
+          <SectionTitle icon={Building2} step={2}>{ar ? 'معلومات النشاط' : 'Business Information'}</SectionTitle>
           <div className="space-y-4">
             <Field label={ar ? 'اسم النشاط / المحل' : 'Business / Shop Name'} required>
               <input className={inp} required value={form.business_name}
@@ -212,9 +274,9 @@ export default function JoinSupplier() {
           </div>
         </div>
 
-        {/* ── 2. بيانات التواصل ─────────────────────────────────── */}
+        {/* ── 3. بيانات التواصل ─────────────────────────────────── */}
         <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-          <SectionTitle icon={Phone} step={2}>{ar ? 'بيانات التواصل' : 'Contact Details'}</SectionTitle>
+          <SectionTitle icon={Phone} step={3}>{ar ? 'بيانات التواصل' : 'Contact Details'}</SectionTitle>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <Field label={ar ? 'رقم الهاتف' : 'Phone'} required>
@@ -243,9 +305,9 @@ export default function JoinSupplier() {
           </div>
         </div>
 
-        {/* ── 3. نوع المستلزمات ─────────────────────────────────── */}
+        {/* ── 4. نوع المستلزمات ─────────────────────────────────── */}
         <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-          <SectionTitle icon={Package} step={3}>{ar ? 'نوع المستلزمات' : 'Supply Type'}</SectionTitle>
+          <SectionTitle icon={Package} step={4}>{ar ? 'نوع المستلزمات' : 'Supply Type'}</SectionTitle>
           <div className="space-y-4">
             <p className="text-[13px] text-gray-500 -mt-2">
               {ar ? 'اختر التصنيف الأقرب لنشاطك' : 'Select the category that best matches your business'}
@@ -266,7 +328,6 @@ export default function JoinSupplier() {
                 </button>
               ))}
             </div>
-
             {isOther && (
               <Field label={ar ? 'اكتب نوع المستلزمات' : 'Specify Supply Type'} required>
                 <input className={inp}
@@ -281,9 +342,9 @@ export default function JoinSupplier() {
           </div>
         </div>
 
-        {/* ── 4. عن النشاط ─────────────────────────────────────── */}
+        {/* ── 5. عن النشاط ─────────────────────────────────────── */}
         <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-          <SectionTitle icon={FileText} step={4}>{ar ? 'عن النشاط' : 'About Your Business'}</SectionTitle>
+          <SectionTitle icon={FileText} step={5}>{ar ? 'عن النشاط' : 'About Your Business'}</SectionTitle>
           <div className="space-y-4">
             <Field label={ar ? 'وصف النشاط' : 'Business Description'}
               hint={ar ? 'اذكر المنتجات الرئيسية التي تبيعها والعلامات التجارية إن وجدت' : 'Mention your main products and brands if any'}>
@@ -292,38 +353,8 @@ export default function JoinSupplier() {
                 placeholder={ar ? 'مثال: نبيع أدوات كهربائية من ماركات Bosch وMakita ومعدات ورش متنوعة...' : 'e.g., We sell Bosch and Makita electrical tools and various workshop equipment...'} />
             </Field>
 
-            {/* Logo */}
-            <Field label={ar ? 'شعار النشاط (اختياري)' : 'Business Logo (Optional)'}>
-              {logoPreview ? (
-                <div className="relative rounded-xl overflow-hidden border border-gray-200 h-28 w-28">
-                  <img src={logoPreview} alt="" className="w-full h-full object-cover" />
-                  {uploading > 0 ? (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  ) : (
-                    <>
-                      <button type="button" onClick={() => { setLogo(null); setLogoPreview(null) }}
-                        className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center">
-                        <X className="w-3.5 h-3.5 text-white" />
-                      </button>
-                      <div className="absolute bottom-0 left-0 right-0 bg-green-500/90 text-white text-xs text-center py-1 font-medium">
-                        {ar ? '✓ تم الرفع' : '✓ Uploaded'}
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <label className="flex flex-col items-center justify-center h-28 w-28 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#FF7900]/50 hover:bg-[#FF7900]/5 transition-colors">
-                  <Upload className="w-5 h-5 text-gray-400 mb-1" />
-                  <span className="text-xs text-gray-500 text-center px-2">{ar ? 'رفع الشعار' : 'Upload Logo'}</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-                </label>
-              )}
-            </Field>
-
             {/* Shop images — max 3 */}
-            <Field label={ar ? `صور المحل أو المنتجات (اختياري — حتى 3 صور)` : 'Shop / Product Photos (Optional — max 3)'}>
+            <Field label={ar ? 'صور المحل أو المنتجات (اختياري — حتى 3 صور)' : 'Shop / Product Photos (Optional — max 3)'}>
               <div className="flex gap-2 flex-wrap">
                 {shopPreviews.map((src, idx) => (
                   <div key={idx} className="relative rounded-xl overflow-hidden border border-gray-200 w-24 h-24 flex-shrink-0">
@@ -346,9 +377,9 @@ export default function JoinSupplier() {
           </div>
         </div>
 
-        {/* ── 5. التواصل الاجتماعي (اختياري) ─────────────────── */}
+        {/* ── 6. التواصل الاجتماعي (اختياري) ─────────────────── */}
         <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
-          <SectionTitle icon={Facebook} step={5}>{ar ? 'التواصل الاجتماعي (اختياري)' : 'Social Media (Optional)'}</SectionTitle>
+          <SectionTitle icon={Facebook} step={6}>{ar ? 'التواصل الاجتماعي (اختياري)' : 'Social Media (Optional)'}</SectionTitle>
           <div className="space-y-4">
             <Field label="Facebook">
               <input className={inp} value={form.facebook} onChange={e => set('facebook', e.target.value)}
@@ -369,7 +400,7 @@ export default function JoinSupplier() {
             <span className="text-sm text-gray-600 leading-relaxed">
               {ar
                 ? 'أقر بصحة جميع البيانات المدخلة، وأوافق على شروط الاستخدام وسياسة الخصوصية لمنصة اطلب فني.'
-                : 'I confirm all entered information is accurate and agree to Otlob Fanni\'s Terms of Service and Privacy Policy.'}
+                : "I confirm all entered information is accurate and agree to Otlob Fanni's Terms of Service and Privacy Policy."}
             </span>
           </label>
 
