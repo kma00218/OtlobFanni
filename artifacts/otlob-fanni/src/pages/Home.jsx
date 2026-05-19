@@ -96,6 +96,8 @@ export default function Home() {
         }
         .ticker-track {
           display: flex;
+          flex-direction: row;
+          direction: ltr;
           width: max-content;
           animation: ticker-scroll 70s linear infinite;
           will-change: transform;
@@ -106,9 +108,9 @@ export default function Home() {
           font-size: 13px;
           font-weight: 600;
           color: white;
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 0;
+          direction: rtl;
         }
         .ticker-sep { margin: 0 1rem; color: #FF7900; }
       `}</style>
