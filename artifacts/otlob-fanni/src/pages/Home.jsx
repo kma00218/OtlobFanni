@@ -4,7 +4,7 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
@@ -161,29 +161,36 @@ export default function Home() {
                 <SectionCard section={section} />
               </div>
             ))}
-            {/* بطاقة مستلزمات — نفس شكل SectionCard */}
-            <div className="flex justify-center">
-              <Link href="/section/suppliers">
-                <div className="flex flex-col items-center gap-2 active:scale-[0.88] transition-transform duration-100 cursor-pointer select-none">
-                  <div
-                    className="flex items-center justify-center shadow-lg"
-                    style={{ width: 90, height: 90, borderRadius: 24, background: 'linear-gradient(150deg, #0e7c8f 0%, #071B33 100%)' }}
-                  >
-                    <svg width="58" height="58" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 8L12 3 3 8v8l9 5 9-5V8z" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
-                      <path d="M3 8l9 5 9-5" stroke="white" strokeWidth="1.9"/>
-                      <line x1="12" y1="13" x2="12" y2="21" stroke="white" strokeWidth="1.9"/>
-                      <path d="M7.5 5.5L12 8" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
-                      <path d="M16.5 5.5L12 8" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                  <p className="font-bold text-[#071B33] text-[14.5px] leading-snug text-center w-[90px] line-clamp-2">
-                    {ar ? 'مستلزمات' : 'Supplies'}
-                  </p>
-                </div>
-              </Link>
-            </div>
           </div>
+
+          {/* ── كرت مستلزمات العريض ── */}
+          <Link href="/section/suppliers">
+            <div
+              className="mt-4 flex items-center gap-4 px-5 py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-transform select-none cursor-pointer"
+              style={{ background: 'linear-gradient(135deg, #0e7c8f 0%, #071B33 100%)' }}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 8L12 3 3 8v8l9 5 9-5V8z" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="2"/>
+                  <path d="M3 8l9 5 9-5" stroke="white" strokeWidth="1.9"/>
+                  <line x1="12" y1="13" x2="12" y2="21" stroke="white" strokeWidth="1.9"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-extrabold text-base leading-tight">
+                  {ar ? 'مستلزمات اطلب فني' : 'Otlob Fanni Supplies'}
+                </p>
+                <p className="text-white/65 text-xs mt-1 font-medium">
+                  {ar ? 'معدات • أدوات • قطع غيار • مورّدون' : 'Equipment • Tools • Parts • Suppliers'}
+                </p>
+              </div>
+              <div className="flex-shrink-0 opacity-70">
+                {dir === 'rtl'
+                  ? <ChevronLeft className="w-5 h-5 text-white" />
+                  : <ChevronRight className="w-5 h-5 text-white" />}
+              </div>
+            </div>
+          </Link>
 
           {/* بطاقة الانطلاق */}
           <div
