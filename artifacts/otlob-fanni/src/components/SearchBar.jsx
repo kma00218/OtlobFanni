@@ -202,8 +202,10 @@ export default function SearchBar({ onResultSelect } = {}) {
   }
 
   const SectionHeader = ({ label, hasBorder }) => (
-    <div className={`px-4 pb-1 ${hasBorder ? 'pt-3 border-t border-gray-100 mt-1' : 'pt-3'}`}>
-      <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">{label}</span>
+    <div className={`px-4 pb-2 ${hasBorder ? 'pt-3 border-t-2 border-gray-100 mt-1' : 'pt-3'}`}>
+      <span className="inline-flex items-center gap-1.5 bg-[#071B33] text-white text-[11px] font-black tracking-wide px-3 py-1 rounded-full">
+        {label}
+      </span>
     </div>
   )
 
