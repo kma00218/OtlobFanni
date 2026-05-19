@@ -66,10 +66,13 @@ export default function StatusTracking() {
 
   const buildShareMsg = (r) => {
     const specialty = getSpecialtyLabel(r.specialty, r.customSpecialty)
-    const city = r.cityName || ''
+    const city = r.cityName || r.city || ''
     const platform = 'https://otlobfanni.ly'
     if (r.type === 'technician') {
       return `تم انضمامي الآن إلى منصة اطلب فني 🇱🇾\n\nيمكنكم التواصل معي عبر المنصة لخدمات:\n🔧 ${specialty}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}`
+    }
+    if (r.type === 'supplier') {
+      return `تم إدراج نشاطنا في دليل مزودي المستلزمات على منصة اطلب فني 🇱🇾\n\n📦 ${r.fullName}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}/suppliers`
     }
     return `تم اعتماد شركتنا الآن في منصة اطلب فني 🇱🇾\n\nنقدم خدمات:\n🏢 ${r.fullName}\n🔧 ${specialty}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}`
   }
@@ -257,7 +260,7 @@ export default function StatusTracking() {
                   <div className="flex-1 min-w-0 text-right" dir={ar ? 'rtl' : 'ltr'}>
                     <p className="font-bold text-[#071B33] text-sm truncate">{r.fullName}</p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {r.requestNumber} · {r.type === 'technician' ? (ar ? 'فني' : 'Technician') : (ar ? 'شركة' : 'Company')}
+                      {r.requestNumber} · {r.type === 'technician' ? (ar ? 'فني' : 'Technician') : r.type === 'supplier' ? (ar ? 'مزود مستلزمات' : 'Supplier') : (ar ? 'شركة' : 'Company')}
                     </p>
                   </div>
                   <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 ${si.bg} ${si.color} border ${si.border}`}>
@@ -315,6 +318,8 @@ export default function StatusTracking() {
                   {(() => {
                     const profilePath = result.type === 'technician'
                       ? (result.technicianId ? `/technician/${result.technicianId}` : null)
+                      : result.type === 'supplier'
+                      ? (result.status === 'published' ? '/suppliers' : null)
                       : `/company/${result.id}`
                     if (!profilePath) return null
                     return (
@@ -418,7 +423,7 @@ export default function StatusTracking() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-gray-500 mb-0.5">
-                    {result.type === 'technician' ? (ar ? 'فني / حرفي' : 'Technician') : (ar ? 'شركة / مؤسسة' : 'Company')}
+                    {result.type === 'technician' ? (ar ? 'فني / حرفي' : 'Technician') : result.type === 'supplier' ? (ar ? 'مزود مستلزمات' : 'Supplier') : (ar ? 'شركة / مؤسسة' : 'Company')}
                   </p>
                   <p className="font-bold text-[#071B33] text-base leading-tight mb-1 truncate">{result.fullName}</p>
                   <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${info.bg} ${info.color} border ${info.border}`}>

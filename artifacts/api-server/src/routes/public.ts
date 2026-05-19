@@ -4,6 +4,7 @@ import {
   techniciansTable, citiesTable, categoriesTable,
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
+  supplierApplicationsTable,
 } from "@workspace/db/schema";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
@@ -612,6 +613,26 @@ router.get("/status/:requestNumber", async (req, res): Promise<void> => {
     return;
   }
 
+  const [supApp] = await db
+    .select({
+      id: supplierApplicationsTable.id,
+      status: supplierApplicationsTable.status,
+      businessName: supplierApplicationsTable.businessName,
+      createdAt: supplierApplicationsTable.createdAt,
+      requestNumber: supplierApplicationsTable.requestNumber,
+      supplyType: supplierApplicationsTable.supplyType,
+      customSupplyType: supplierApplicationsTable.customSupplyType,
+      city: supplierApplicationsTable.city,
+      rejectionReason: supplierApplicationsTable.rejectionReason,
+    })
+    .from(supplierApplicationsTable)
+    .where(eq(supplierApplicationsTable.requestNumber, reqNum));
+
+  if (supApp) {
+    res.json({ type: "supplier", fullName: supApp.businessName, ...supApp });
+    return;
+  }
+
   res.status(404).json({ error: "Request not found" });
 });
 
@@ -655,9 +676,22 @@ router.get("/status-by-phone/:phone", async (req, res): Promise<void> => {
     : [];
   const techIdMap = Object.fromEntries(techRecords.map(t => [t.applicationId, t.id]));
 
+  const supApps = await db
+    .select({
+      id: supplierApplicationsTable.id,
+      status: supplierApplicationsTable.status,
+      businessName: supplierApplicationsTable.businessName,
+      createdAt: supplierApplicationsTable.createdAt,
+      requestNumber: supplierApplicationsTable.requestNumber,
+    })
+    .from(supplierApplicationsTable)
+    .where(ilike(supplierApplicationsTable.phone, `%${phone.slice(-9)}%`))
+    .orderBy(desc(supplierApplicationsTable.createdAt));
+
   const results = [
-    ...techApps.map(r => ({ type: "technician", fullName: r.fullName, ...r, technicianId: techIdMap[r.id] || null })),
-    ...compApps.map(r => ({ type: "company",    fullName: r.companyName, ...r })),
+    ...techApps.map(r => ({ type: "technician", fullName: r.fullName,       ...r, technicianId: techIdMap[r.id] || null })),
+    ...compApps.map(r => ({ type: "company",    fullName: r.companyName,     ...r })),
+    ...supApps.map(r  => ({ type: "supplier",   fullName: r.businessName,    ...r })),
   ].sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
 
   if (results.length === 0) {
