@@ -89,24 +89,46 @@ export default function Home() {
     <div className="bg-background min-h-screen pt-16 pb-36">
 
       {/* Ticker bar */}
-      <style>{`@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-25%); } }`}</style>
+      <style>{`
+        @keyframes ticker-scroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        .ticker-track {
+          display: flex;
+          width: max-content;
+          animation: ticker-scroll 70s linear infinite;
+          will-change: transform;
+        }
+        .ticker-item {
+          white-space: nowrap;
+          padding: 0 3rem;
+          font-size: 13px;
+          font-weight: 600;
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 0;
+        }
+        .ticker-sep { margin: 0 1rem; color: #FF7900; }
+      `}</style>
       <Link href="/join-us">
-        <div className="w-full overflow-hidden cursor-pointer select-none" style={{ background: '#071B33', height: '36px', display: 'flex', alignItems: 'center' }}>
-          <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'ticker-scroll 80s linear infinite', willChange: 'transform' }}>
-            {[0, 1, 2, 3].map(i => (
-              <span key={i} className="text-white text-[13px] font-semibold inline-flex items-center" style={{ paddingInline: '2.5rem' }}>
+        <div style={{ background: '#071B33', height: '36px', overflow: 'hidden', position: 'relative', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center' }}>
+          <div className="ticker-track">
+            {[0, 1].map(i => (
+              <div key={i} className="ticker-item">
                 🇱🇾 يجري الآن بناء أكبر دليل فنيين وشركات خدمات في ليبيا — التسجيل مفتوح مجاناً
-                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
+                <span className="ticker-sep">✦</span>
                 🔧 سجّل بياناتك مجاناً وابدأ في استقبال الطلبات
-                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
+                <span className="ticker-sep">✦</span>
                 📦 تصفّح مستلزمات ومعدات من أفضل الموردين في ليبيا
-                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
+                <span className="ticker-sep">✦</span>
                 ⭐ انضم إلى آلاف الفنيين الموثوقين على المنصة
-                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
+                <span className="ticker-sep">✦</span>
                 📍 خدمة متاحة في طرابلس، بنغازي، مصراتة، والمزيد
-                <span style={{ margin: '0 1rem', color: '#FF7900' }}>✦</span>
+                <span className="ticker-sep">✦</span>
                 💼 هل أنت شركة خدمات؟ اعرض خدماتك الآن مجاناً
-              </span>
+              </div>
             ))}
           </div>
         </div>
