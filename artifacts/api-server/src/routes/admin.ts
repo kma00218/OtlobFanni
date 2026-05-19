@@ -624,10 +624,20 @@ router.get("/search-account", async (req, res): Promise<void> => {
       registered: sql<number>`count(*)::int`,
       accepted:   sql<number>`(count(*) filter (where ${companyApplicationsTable.status} in ('approved','published')))::int`,
     }).from(companyApplicationsTable).where(eq(companyApplicationsTable.referredBy, row.id));
+
+    let technicianIsActive: boolean | null = null;
+    if (type === "technician" && row.status === "published") {
+      const [tech] = await db.select({ isActive: techniciansTable.isActive })
+        .from(techniciansTable)
+        .where(eq(techniciansTable.applicationId, row.id));
+      technicianIsActive = tech?.isActive ?? null;
+    }
+
     return {
       ...row,
-      accountType:   type,
-      displayName:   type === "technician" ? row.fullName : row.companyName,
+      accountType:        type,
+      displayName:        type === "technician" ? row.fullName : row.companyName,
+      technicianIsActive,
       referralStats: {
         registered: (ts?.registered ?? 0) + (cs?.registered ?? 0),
         accepted:   (ts?.accepted   ?? 0) + (cs?.accepted   ?? 0),
