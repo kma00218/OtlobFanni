@@ -1,16 +1,22 @@
 import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import BackHeader from '../components/BackHeader'
 import CategoryCard from '../components/CategoryCard'
 import { sections, categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
+import api from '../lib/api'
 
 export default function Section() {
   const { id } = useParams()
   const { lang } = useLang()
   const ar = lang === 'ar'
   const [, navigate] = useLocation()
+  const [counts, setCounts] = useState({})
+
+  useEffect(() => {
+    api.categoryCounts().then(setCounts).catch(() => {})
+  }, [])
 
   const section = sections.find(s => s.id === id)
   const sectionCats = categories.filter(c => c.sectionId === id)
@@ -50,7 +56,7 @@ export default function Section() {
         ) : (
           <div className="grid grid-cols-4 gap-3">
             {sectionCats.map(category => (
-              <CategoryCard key={category.id} category={category} />
+              <CategoryCard key={category.id} category={category} count={counts[category.id] || 0} />
             ))}
           </div>
         )}

@@ -135,7 +135,7 @@ function getColors(category) {
   return COLORS[category.id] || COLORS.maintenance
 }
 
-export default function CategoryCard({ category }) {
+export default function CategoryCard({ category, count = 0 }) {
   const { lang } = useLang()
   const name   = lang === 'ar' ? category.nameAr : category.nameEn
   const href   = category.id === 'more' ? '/category/more_services' : `/category/${category.id}`
@@ -145,18 +145,25 @@ export default function CategoryCard({ category }) {
   return (
     <Link href={href} onClick={() => track('category_click', category.id)}>
       <div className="flex flex-col items-center gap-1.5 select-none cursor-pointer active:scale-90 transition-transform duration-150">
-        <div
-          className="w-[70px] h-[70px] rounded-[18px] flex items-center justify-center shadow-lg overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-        >
-          <img
-            src={iconSrc}
-            alt=""
-            className="w-12 h-12 object-contain"
-            loading="lazy"
-            draggable="false"
-            onError={(e) => { e.currentTarget.src = '/icons/services/maintenance.svg' }}
-          />
+        <div className="relative">
+          <div
+            className="w-[70px] h-[70px] rounded-[18px] flex items-center justify-center shadow-lg overflow-hidden"
+            style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+          >
+            <img
+              src={iconSrc}
+              alt=""
+              className="w-12 h-12 object-contain"
+              loading="lazy"
+              draggable="false"
+              onError={(e) => { e.currentTarget.src = '/icons/services/maintenance.svg' }}
+            />
+          </div>
+          {count > 0 && (
+            <span className="absolute -top-1.5 -left-1.5 min-w-[20px] h-[20px] bg-white border-2 border-gray-100 text-[#071B33] text-[10px] font-black rounded-full flex items-center justify-center px-1 shadow-sm">
+              {count}
+            </span>
+          )}
         </div>
         <span className="text-[12px] font-bold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[76px]">
           {name}

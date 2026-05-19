@@ -25,6 +25,20 @@ router.get("/categories", async (_req, res): Promise<void> => {
   res.json(categories);
 });
 
+// ── Category counts (active technicians per category) ────────────────────────
+router.get("/category-counts", async (_req, res): Promise<void> => {
+  const rows = await db
+    .select({ categoryId: techniciansTable.categoryId, cnt: count() })
+    .from(techniciansTable)
+    .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)))
+    .groupBy(techniciansTable.categoryId);
+
+  const map: Record<string, number> = {};
+  rows.forEach(r => { if (r.categoryId) map[r.categoryId] = Number(r.cnt); });
+  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=120");
+  res.json(map);
+});
+
 // ── Technicians (public directory) ───────────────────────────────────────────
 router.get("/technicians", async (req, res): Promise<void> => {
   const { category, city_id } = req.query as Record<string, string>;

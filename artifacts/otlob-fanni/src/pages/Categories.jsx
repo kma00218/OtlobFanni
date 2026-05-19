@@ -1,12 +1,19 @@
+import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import CategoryCard from '../components/CategoryCard'
 import { sections, categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
+import api from '../lib/api'
 
 export default function Categories() {
   const { lang } = useLang()
   const ar = lang === 'ar'
+  const [counts, setCounts] = useState({})
+
+  useEffect(() => {
+    api.categoryCounts().then(setCounts).catch(() => {})
+  }, [])
 
   return (
     <div className="bg-background min-h-screen pt-20 pb-6">
@@ -29,7 +36,7 @@ export default function Categories() {
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {sectionCats.map(category => (
-                  <CategoryCard key={category.id} category={category} />
+                  <CategoryCard key={category.id} category={category} count={counts[category.id] || 0} />
                 ))}
               </div>
             </div>

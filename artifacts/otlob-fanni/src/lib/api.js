@@ -89,8 +89,9 @@ export function getFileUrl(path) {
 
 // ── Public ───────────────────────────────────────────────────────────────────
 export const api = {
-  cities:     () => get('/cities'),
-  categories: () => get('/categories'),
+  cities:          () => get('/cities'),
+  categories:      () => get('/categories'),
+  categoryCounts:  () => get('/category-counts'),
   technicians: (params = {}) => {
     const qs = new URLSearchParams(Object.fromEntries(
       Object.entries(params).filter(([, v]) => v != null && v !== '')

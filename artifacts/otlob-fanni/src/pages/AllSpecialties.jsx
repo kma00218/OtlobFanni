@@ -1,12 +1,19 @@
+import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import CategoryCard from '../components/CategoryCard'
 import { sections, categories } from '../data/services'
 import AdBanner from '../components/AdBanner'
 import BackHeader from '../components/BackHeader'
+import api from '../lib/api'
 
 export default function AllSpecialties() {
   const { lang } = useLang()
   const ar = lang === 'ar'
+  const [counts, setCounts] = useState({})
+
+  useEffect(() => {
+    api.categoryCounts().then(setCounts).catch(() => {})
+  }, [])
 
   return (
     <div className="bg-background min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
@@ -39,7 +46,7 @@ export default function AllSpecialties() {
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {sectionCats.map(category => (
-                  <CategoryCard key={category.id} category={category} />
+                  <CategoryCard key={category.id} category={category} count={counts[category.id] || 0} />
                 ))}
               </div>
             </div>
