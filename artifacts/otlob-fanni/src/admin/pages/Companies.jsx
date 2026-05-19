@@ -4,7 +4,8 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
-  Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X
+  Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
+  Plus, Trash2
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
@@ -133,13 +134,33 @@ export default function Companies() {
     setViewItem(null)
   }
 
+  const openAdd = () => {
+    setForm(emptyForm)
+    setEditItem({ id: null })
+  }
+
+  const handleDelete = async (id) => {
+    if (!confirm('هل أنت متأكد من حذف هذه الشركة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) return
+    try {
+      await api.admin.companies.delete(id)
+      setData(prev => prev.filter(r => r.id !== id))
+      showToast('تم حذف الشركة بنجاح')
+    } catch { showToast('حدث خطأ أثناء الحذف', 'error') }
+  }
+
   const handleSave = async (e) => {
     e.preventDefault()
     setSaving(true)
     try {
-      const updated = await api.admin.companies.update(editItem.id, form)
-      setData(prev => prev.map(r => r.id === editItem.id ? { ...r, ...updated } : r))
-      showToast('تم حفظ التغييرات بنجاح')
+      if (editItem.id === null) {
+        const created = await api.admin.companies.create(form)
+        setData(prev => [created, ...prev])
+        showToast('تم إضافة الشركة بنجاح')
+      } else {
+        const updated = await api.admin.companies.update(editItem.id, form)
+        setData(prev => prev.map(r => r.id === editItem.id ? { ...r, ...updated } : r))
+        showToast('تم حفظ التغييرات بنجاح')
+      }
       setEditItem(null)
     } catch { showToast('حدث خطأ', 'error') }
     setSaving(false)
@@ -234,6 +255,12 @@ export default function Companies() {
             className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="إلغاء الموافقة">
             <XCircle className="w-3.5 h-3.5" />
           </button>
+          {isSuperAdmin && (
+            <button onClick={() => handleDelete(row.id)}
+              className="p-1.5 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors" title="حذف نهائي">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       ),
     },
@@ -267,6 +294,9 @@ export default function Companies() {
         searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة أو رقم التعريف..."
         actions={
           <div className="flex gap-2">
+            <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+              <Plus className="w-4 h-4" /> إضافة شركة
+            </button>
             <select value={filterCity} onChange={e => setFilterCity(e.target.value)}
               className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-slate-50">
               <option value="">كل المدن</option>
@@ -496,8 +526,8 @@ export default function Companies() {
       <FormModal
         open={!!editItem}
         onClose={() => setEditItem(null)}
-        title={`تعديل بيانات: ${editItem?.companyName || ''}`}
-        submitLabel="حفظ التغييرات"
+        title={editItem?.id === null ? 'إضافة شركة جديدة' : `تعديل بيانات: ${editItem?.companyName || ''}`}
+        submitLabel={saving ? 'جارٍ الحفظ...' : editItem?.id === null ? 'إضافة الشركة' : 'حفظ التغييرات'}
         onSubmit={handleSave}
         loading={saving}
         size="lg"

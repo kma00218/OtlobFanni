@@ -205,8 +205,10 @@ export const api = {
 
     companies: {
       list:         ()             => get('/admin/companies'),
+      create:       (data)        => post('/admin/companies', data),
       setStatus:    (id, status)  => patch(`/admin/companies/${id}/status`, { status }),
       update:       (id, data)    => patch(`/admin/companies/${id}`, data),
+      delete:       (id)          => del(`/admin/companies/${id}`),
     },
 
     supplierApplications: {
@@ -216,6 +218,7 @@ export const api = {
     },
     suppliers: {
       list:      ()          => get('/admin/suppliers'),
+      create:    (data)      => post('/admin/suppliers', data),
       update:    (id, data)  => patch(`/admin/suppliers/${id}`, data),
       setStatus: (id, status)=> patch(`/admin/suppliers/${id}`, { status }),
       delete:    (id)        => del(`/admin/suppliers/${id}`),

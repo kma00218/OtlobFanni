@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
 
@@ -118,13 +118,24 @@ export default function AdminSuppliers() {
     setViewItem(null)
   }
 
+  const openAdd = () => {
+    setForm(emptyForm)
+    setEditItem({ id: null })
+  }
+
   const handleSave = async (e) => {
     e.preventDefault()
     setSaving(true)
     try {
-      const updated = await api.admin.suppliers.update(editItem.id, form)
-      setData(prev => prev.map(r => r.id === editItem.id ? { ...r, ...updated } : r))
-      showToast('تم حفظ التغييرات بنجاح')
+      if (editItem.id === null) {
+        const created = await api.admin.suppliers.create(form)
+        setData(prev => [created, ...prev])
+        showToast('تم إضافة المزود بنجاح')
+      } else {
+        const updated = await api.admin.suppliers.update(editItem.id, form)
+        setData(prev => prev.map(r => r.id === editItem.id ? { ...r, ...updated } : r))
+        showToast('تم حفظ التغييرات بنجاح')
+      }
       setEditItem(null)
     } catch { showToast('حدث خطأ', 'error') }
     setSaving(false)
@@ -230,10 +241,15 @@ export default function AdminSuppliers() {
           <h1 className="text-xl font-bold text-[#071B33]">مزودو المستلزمات</h1>
           <p className="text-slate-500 text-sm mt-0.5">هؤلاء المزودون تمت الموافقة عليهم وأصبحوا جزءاً من الدليل.</p>
         </div>
-        <div className="flex items-center gap-2 bg-[#0e5c6d]/10 border border-[#0e5c6d]/20 rounded-2xl px-4 py-2">
-          <Package className="w-4 h-4 text-[#0e5c6d]" />
-          <span className="text-[#0e5c6d] font-black text-lg">{data.length}</span>
-          <span className="text-[#0e5c6d]/70 text-xs font-medium">مزود</span>
+        <div className="flex items-center gap-3">
+          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">
+            <Plus className="w-4 h-4" /> إضافة مزود
+          </button>
+          <div className="flex items-center gap-2 bg-[#0e5c6d]/10 border border-[#0e5c6d]/20 rounded-2xl px-4 py-2">
+            <Package className="w-4 h-4 text-[#0e5c6d]" />
+            <span className="text-[#0e5c6d] font-black text-lg">{data.length}</span>
+            <span className="text-[#0e5c6d]/70 text-xs font-medium">مزود</span>
+          </div>
         </div>
       </div>
 
@@ -358,7 +374,7 @@ export default function AdminSuppliers() {
 
       {/* ── Edit Modal ────────────────────────────────────── */}
       {editItem && (
-        <FormModal open title={`تعديل: ${editItem.businessName}`} onClose={() => setEditItem(null)} size="lg" onSubmit={handleSave} loading={saving} submitLabel={saving ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}>
+        <FormModal open title={editItem.id === null ? 'إضافة مزود جديد' : `تعديل: ${editItem.businessName || ''}`} onClose={() => setEditItem(null)} size="lg" onSubmit={handleSave} loading={saving} submitLabel={saving ? 'جارٍ الحفظ...' : (editItem.id === null ? 'إضافة المزود' : 'حفظ التغييرات')}>
           <div className="space-y-4">
             {/* Logo upload */}
             <div className="flex items-center gap-4">

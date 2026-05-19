@@ -306,6 +306,48 @@ router.delete("/company-applications/:id", async (req, res): Promise<void> => {
   res.sendStatus(204);
 });
 
+// ── Companies: direct admin create & delete ───────────────────────────────────
+router.post("/companies", async (req, res): Promise<void> => {
+  const b = req.body;
+  if (!b.company_name || !b.phone) {
+    res.status(400).json({ error: "company_name and phone are required" }); return;
+  }
+  const [row] = await db.insert(companyApplicationsTable).values({
+    companyName:    b.company_name,
+    contactName:    b.contact_name    || '',
+    phone:          b.phone,
+    whatsapp:       b.whatsapp        || b.phone,
+    commercialReg:  b.commercial_reg  || '',
+    city:           b.city            || '',
+    area:           b.area            || '',
+    address:        b.address         || '',
+    specialty:      b.specialty       || '',
+    yearsActive:    b.years_active    || '',
+    description:    b.description     || '',
+    certifications: b.certifications  || '',
+    priceFrom:      b.price_from      ?? 0,
+    priceTo:        b.price_to        ?? 0,
+    availableNow:   b.available_now   ?? false,
+    emergency:      b.emergency       ?? false,
+    workingDays:    b.working_days     || [],
+    hoursFrom:      b.hours_from      || '',
+    hoursTo:        b.hours_to        || '',
+    serviceRadius:  b.service_radius  || '',
+    facebook:       b.facebook        || '',
+    instagram:      b.instagram       || '',
+    companyLogo:    b.company_logo    || '',
+    workImages:     b.work_images     || [],
+    status:         'approved',
+  }).returning();
+  res.status(201).json(row);
+});
+
+router.delete("/companies/:id", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  await db.delete(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
+  res.sendStatus(204);
+});
+
 // ── Technicians (admin CRUD) ──────────────────────────────────────────────────
 router.get("/technicians", async (_req, res): Promise<void> => {
   const techs = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt));

@@ -147,6 +147,33 @@ router.get("/admin/suppliers", async (_req, res): Promise<void> => {
   res.json(rows);
 });
 
+// ── Admin: Create supplier directly ──────────────────────────────────────────
+router.post("/admin/suppliers", async (req, res): Promise<void> => {
+  const b = req.body;
+  if (!b.business_name || !b.phone) {
+    res.status(400).json({ error: "business_name and phone are required" }); return;
+  }
+  const [row] = await db.insert(supplierApplicationsTable).values({
+    businessName:    b.business_name,
+    contactName:     b.contact_name    || '',
+    phone:           b.phone,
+    whatsapp:        b.whatsapp        || b.phone,
+    city:            b.city            || '',
+    area:            b.area            || '',
+    address:         b.address         || '',
+    supplyType:      b.supply_type     || '',
+    customSupplyType:b.custom_supply_type || '',
+    description:     b.description     || '',
+    logo:            b.logo            || '',
+    shopImages:      b.shop_images     || [],
+    facebook:        b.facebook        || '',
+    instagram:       b.instagram       || '',
+    tiktok:          b.tiktok          || '',
+    status:          'published',
+  }).returning();
+  res.status(201).json(row);
+});
+
 // ── Admin: Update published supplier data ─────────────────────────────────────
 router.patch("/admin/suppliers/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
