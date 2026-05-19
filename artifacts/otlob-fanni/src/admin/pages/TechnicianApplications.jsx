@@ -274,7 +274,7 @@ export default function TechnicianApplications() {
           )}
           {(row.status === 'approved' || row.status === 'rejected') && row.phone && row.requestNumber && (
             <button
-              onClick={() => openWhatsApp(row.phone, row.fullName || row.full_name || '', row.status, row.requestNumber)}
+              onClick={() => openWhatsApp(row.whatsapp || row.phone, row.fullName || row.full_name || '', row.status, row.requestNumber)}
               className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
               title="إشعار واتساب">
               <MessageCircle className="w-3.5 h-3.5" />
