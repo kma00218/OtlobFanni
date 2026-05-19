@@ -388,7 +388,7 @@ export default function SupplierApplications() {
 
       {/* Detail Modal */}
       {viewItem && (
-        <FormModal title={viewItem.businessName || viewItem.business_name || 'طلب مورّد'} onClose={() => setViewItem(null)} size="lg">
+        <FormModal open title={viewItem.businessName || viewItem.business_name || 'طلب مورّد'} onClose={() => setViewItem(null)} size="lg" hideFooter>
           <div className="space-y-5 text-sm">
 
             {/* Status badge */}

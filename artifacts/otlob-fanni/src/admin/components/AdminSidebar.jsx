@@ -33,7 +33,7 @@ const NAV_GROUPS = [
       { path: '/admin/search',                   label: 'بحث عن حساب',    icon: Search },
       { path: '/admin/technician-applications', label: 'طلبات الفنيين',   icon: FileCheck,  badgeKey: 'pendingTechApps',    badgeColor: 'orange' },
       { path: '/admin/company-applications',    label: 'طلبات الشركات',   icon: Building2,  badgeKey: 'pendingCompanyApps', badgeColor: 'orange' },
-      { path: '/admin/supplier-applications',   label: 'طلبات المستلزمات', icon: Package,    badgeKey: 'pendingSupplierApps', badgeColor: 'blue' },
+      { path: '/admin/supplier-applications',   label: 'طلبات المستلزمات', icon: Package,    badgeKey: 'pendingSupplierApps', badgeColor: 'blue', statsKey: 'totalSupplierApps' },
       { path: '/admin/ad-requests',             label: 'طلبات الإعلانات',  icon: Newspaper,  badgeKey: 'pendingAdRequests',  badgeColor: 'purple' },
     ]
   },
@@ -82,8 +82,9 @@ function NavItem({ item, location, stats, onClose, isSuperAdmin }) {
   if (item.superOnly && !isSuperAdmin) return null
 
   const isActive = location === item.path || location.startsWith(item.path + '/')
-  const badge = item.badgeKey ? stats[item.badgeKey] : (item.statsKey ? stats[item.statsKey] : null)
-  const showBadge = item.badgeKey && badge > 0
+  const badgeCount = item.badgeKey ? (stats[item.badgeKey] ?? 0) : null
+  const grayCount  = item.statsKey ? (stats[item.statsKey] ?? 0) : null
+  const showBadge  = item.badgeKey && badgeCount > 0
 
   return (
     <Link
@@ -99,9 +100,9 @@ function NavItem({ item, location, stats, onClose, isSuperAdmin }) {
     >
       <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-white' : 'text-white/50 group-hover:text-white'}`} />
       <span className="flex-1 truncate">{item.label}</span>
-      {showBadge && <NavBadge count={badge} color={item.badgeColor} />}
-      {item.statsKey && badge > 0 && !showBadge && (
-        <span className="text-[10px] font-bold bg-white/15 text-white/80 px-1.5 py-0.5 rounded-full">{badge}</span>
+      {showBadge && <NavBadge count={badgeCount} color={item.badgeColor} />}
+      {!showBadge && grayCount > 0 && (
+        <span className="text-[10px] font-bold bg-white/15 text-white/80 px-1.5 py-0.5 rounded-full">{grayCount > 99 ? '99+' : grayCount}</span>
       )}
     </Link>
   )
