@@ -4,7 +4,7 @@ import {
   Wrench, Users, MapPin, ClipboardList, Tag, Megaphone,
   CheckCircle, Clock, ShieldCheck, Building2, FileCheck,
   HardDrive, TrendingUp, AlertCircle, BarChart3, RefreshCw,
-  Smartphone, Star, UserCheck, Home, Newspaper, Activity,
+  Smartphone, Star, UserCheck, Home, Newspaper, Activity, Package,
 } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -261,17 +261,17 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="إجمالي الفنيين"    value={stats.totalTechs}        icon={Wrench}       gradient="green"  loading={loading} subtitle={`نشط: ${stats.activeTechs ?? 0}`} />
         <StatCard title="إجمالي الشركات"    value={stats.totalCompanies}     icon={Building2}    gradient="indigo" loading={loading} />
-        <StatCard title="الطلبات المكتملة"  value={stats.completedRequests}  icon={CheckCircle}  gradient="teal"   loading={loading} subtitle={`جديدة: ${stats.newRequests ?? 0}`} />
+        <StatCard title="مزودو المستلزمات"  value={stats.totalSuppliers}     icon={Package}      gradient="teal"   loading={loading} subtitle={`إجمالي الطلبات: ${stats.totalSupplierApps ?? 0}`} />
         <StatCard title="الإعلانات النشطة"  value={stats.activeAds}          icon={Megaphone}    gradient="rose"   loading={loading} />
       </div>
 
       {/* ── PENDING STATS ─────────────────────────────────── */}
       <SectionLabel icon={ClipboardList} label="الطلبات المعلّقة" color="text-amber-600" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="طلبات فنيين معلّقة"  value={stats.pendingTechApps}    icon={FileCheck}  gradient="orange" loading={loading} subtitle={`إجمالي: ${stats.totalTechApps ?? 0}`} />
-        <StatCard title="طلبات شركات معلّقة"  value={stats.pendingCompanyApps} icon={Building2}  gradient="rose"   loading={loading} subtitle={`إجمالي: ${stats.totalCompanyApps ?? 0}`} />
-        <StatCard title="طلبات إعلان معلّقة"  value={stats.pendingAdRequests}  icon={Newspaper}  gradient="purple" loading={loading} subtitle={`مقبولة: ${stats.approvedAdRequests ?? 0}`} />
-        <StatCard title="الطلبات الجديدة"     value={stats.newRequests}         icon={Clock}      gradient="blue"   loading={loading} />
+        <StatCard title="طلبات فنيين معلّقة"      value={stats.pendingTechApps}      icon={FileCheck}  gradient="orange" loading={loading} subtitle={`إجمالي: ${stats.totalTechApps ?? 0}`} />
+        <StatCard title="طلبات شركات معلّقة"      value={stats.pendingCompanyApps}   icon={Building2}  gradient="rose"   loading={loading} subtitle={`إجمالي: ${stats.totalCompanyApps ?? 0}`} />
+        <StatCard title="طلبات مستلزمات معلّقة"   value={stats.pendingSupplierApps}  icon={Package}    gradient="teal"   loading={loading} subtitle={`إجمالي: ${stats.totalSupplierApps ?? 0}`} />
+        <StatCard title="طلبات إعلان معلّقة"      value={stats.pendingAdRequests}    icon={Newspaper}  gradient="purple" loading={loading} subtitle={`مقبولة: ${stats.approvedAdRequests ?? 0}`} />
       </div>
 
       {/* ── CHARTS ROW ───────────────────────────────────── */}
