@@ -267,10 +267,28 @@ export default function TechnicianApplications() {
             </>
           )}
           {row.status === 'approved' && (
-            <button onClick={() => handlePublish(row.id)}
-              className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 rounded-lg font-medium transition-colors">
-              نشر
-            </button>
+            <>
+              <button onClick={() => handlePublish(row.id)}
+                className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 rounded-lg font-medium transition-colors">
+                نشر
+              </button>
+              <button onClick={() => setRejectModal({ open: true, id: row.id, reason: '', isView: false })}
+                className="px-2 py-1 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg font-medium transition-colors">
+                رفض
+              </button>
+            </>
+          )}
+          {row.status === 'rejected' && (
+            <>
+              <button onClick={() => setStatus(row.id, 'approved')}
+                className="px-2 py-1 text-xs bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg font-medium transition-colors">
+                قبول
+              </button>
+              <button onClick={() => setStatus(row.id, 'pending')}
+                className="px-2 py-1 text-xs bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 rounded-lg font-medium transition-colors">
+                إعادة
+              </button>
+            </>
           )}
           {(row.status === 'approved' || row.status === 'rejected') && row.phone && row.requestNumber && (
             <button
@@ -701,13 +719,34 @@ export default function TechnicianApplications() {
                 )}
               </Sec>
 
-              {/* Reject */}
+              {/* Actions based on status */}
               {viewItem.status === 'pending' && (
                 <button
                   onClick={() => setRejectModal({ open: true, id: viewItem.id, reason: '', isView: true })}
                   className="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 font-medium py-2.5 rounded-xl text-sm transition-colors">
                   رفض الطلب
                 </button>
+              )}
+              {viewItem.status === 'approved' && (
+                <button
+                  onClick={() => setRejectModal({ open: true, id: viewItem.id, reason: '', isView: true })}
+                  className="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                  رفض الطلب
+                </button>
+              )}
+              {viewItem.status === 'rejected' && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => { await setStatus(viewItem.id, 'approved') }}
+                    className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                    قبول الطلب ✓
+                  </button>
+                  <button
+                    onClick={async () => { await setStatus(viewItem.id, 'pending') }}
+                    className="flex-1 border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 font-medium py-2.5 rounded-xl text-sm transition-colors">
+                    إعادة للمراجعة
+                  </button>
+                </div>
               )}
             </div>
           )
