@@ -243,7 +243,7 @@ router.get("/search", async (req, res): Promise<void> => {
         or(...techWhere),
       ))
       .orderBy(desc(techniciansTable.isFeatured), desc(techniciansTable.rating))
-      .limit(4),
+      .limit(50),
 
     db.select({
         company: companyApplicationsTable,
@@ -256,12 +256,12 @@ router.get("/search", async (req, res): Promise<void> => {
         eq(companyApplicationsTable.status, "published"),
         or(...companyWhere),
       ))
-      .limit(4),
+      .limit(50),
 
     db.select().from(citiesTable)
       .where(or(...cityWhere))
       .orderBy(citiesTable.sortOrder)
-      .limit(5),
+      .limit(20),
 
     db.select({
         id: supplierApplicationsTable.id,
@@ -276,7 +276,7 @@ router.get("/search", async (req, res): Promise<void> => {
         eq(supplierApplicationsTable.status, "published"),
         or(...supplierWhere),
       ))
-      .limit(4),
+      .limit(50),
   ]);
 
   res.json({
