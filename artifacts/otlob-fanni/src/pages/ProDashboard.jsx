@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
-import { Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft, Receipt, Clock } from 'lucide-react'
+import { Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft, Receipt } from 'lucide-react'
 
 const TOOLS = [
   {
@@ -49,12 +49,8 @@ const TYPE_LABEL = {
 export default function ProDashboard() {
   const [, navigate] = useLocation()
   const [session, setSession] = useState(null)
-  const [soonToast, setSoonToast] = useState(false)
 
-  const showSoon = () => {
-    setSoonToast(true)
-    setTimeout(() => setSoonToast(false), 2000)
-  }
+  const goSoon = () => navigate('/pro/soon')
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -78,13 +74,6 @@ export default function ProDashboard() {
 
   return (
     <div className="min-h-[100dvh] bg-[#F2F2F7] flex flex-col max-w-[480px] mx-auto" dir="rtl">
-
-      {soonToast && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#071B33] text-white text-sm font-bold px-6 py-3.5 rounded-2xl shadow-xl whitespace-nowrap">
-          <Clock className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
-          هذه الميزة قريباً ✦
-        </div>
-      )}
 
       <div className="bg-[#071B33] px-5 pt-14 pb-8">
         <div className="flex items-start justify-between mb-4">
@@ -120,7 +109,7 @@ export default function ProDashboard() {
             <button
               key={tool.id}
               type="button"
-              onClick={showSoon}
+              onClick={goSoon}
               className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col items-center gap-3 cursor-pointer select-none"
               style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0.05)' }}
             >
@@ -139,7 +128,7 @@ export default function ProDashboard() {
         {TOOLS[4] && (
           <button
             type="button"
-            onClick={showSoon}
+            onClick={goSoon}
             className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5 flex items-center gap-5 cursor-pointer select-none"
             style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0.05)' }}
           >
