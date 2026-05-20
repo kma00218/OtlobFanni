@@ -521,7 +521,7 @@ export default function Home() {
                 className={`flex-1 py-2 px-1 rounded-xl text-center border-2 transition-all flex flex-col items-center gap-0.5 ${
                   referralForm.type === t.key
                     ? 'border-[#FF7900] bg-orange-50 text-[#FF7900]'
-                    : 'border-gray-200 text-gray-400 hover:border-gray-300'
+                    : 'border-gray-400 text-gray-500 hover:border-gray-500'
                 }`}
               >
                 <span className="text-[11px] font-extrabold leading-tight">{t.label}</span>
