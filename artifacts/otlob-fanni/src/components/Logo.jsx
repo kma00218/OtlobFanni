@@ -4,7 +4,7 @@ export default function Logo() {
       <img
         src="/logo.png"
         alt="اطلب فني"
-        style={{ maxWidth: '260px', width: '100%' }}
+        style={{ maxWidth: '180px', width: '100%' }}
         className="h-auto object-contain"
         draggable={false}
       />
