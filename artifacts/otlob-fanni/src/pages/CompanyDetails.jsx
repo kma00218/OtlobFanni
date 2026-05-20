@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { useRoute } from 'wouter'
+import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, MessageSquare, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, Building2,
@@ -112,6 +113,24 @@ export default function CompanyDetails() {
   const [showShare,  setShowShare]  = useState(false)
   const [showReport, setShowReport] = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_companies')
+
+  const _seoCoName  = company?.company_name || company?.companyName || ''
+  const _seoCoCatAr = company ? (CAT_LABEL[company.specialty] || company.specialty || '') : ''
+  const _seoCoCatEn = company ? (CAT_LABEL_EN[company.specialty] || company.specialty || '') : ''
+  const _seoCoCityAr = company?.city_ar || company?.city || ''
+  const _seoCoCityEn = company?.city_en || company?.city || ''
+  useSeoMeta({
+    title: _seoCoName
+      ? (ar
+        ? `${_seoCoName}${_seoCoCatAr ? ` - ${_seoCoCatAr}` : ''}${_seoCoCityAr ? ` في ${_seoCoCityAr}` : ''}`
+        : `${_seoCoName}${_seoCoCatEn ? ` - ${_seoCoCatEn}` : ''}${_seoCoCityEn ? ` in ${_seoCoCityEn}` : ''}`)
+      : null,
+    description: _seoCoName
+      ? (ar
+        ? `تعرّف على ${_seoCoName}${_seoCoCatAr ? `، ${_seoCoCatAr}` : ''}${_seoCoCityAr ? ` في ${_seoCoCityAr}` : ''} — اطلب فني`
+        : `Discover ${_seoCoName}${_seoCoCatEn ? `, ${_seoCoCatEn}` : ''}${_seoCoCityEn ? ` in ${_seoCoCityEn}` : ''} on Otlob Fanni`)
+      : null,
+  })
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }

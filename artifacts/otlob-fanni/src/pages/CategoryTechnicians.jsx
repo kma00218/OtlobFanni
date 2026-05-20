@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
+import { useSeoMeta } from '../hooks/useSeoMeta'
 import BackHeader from '../components/BackHeader'
 import ServiceImageIcon from '../components/ServiceImageIcon'
 import { categories } from '../data/services'
@@ -378,6 +379,20 @@ export default function CategoryTechnicians() {
   )
   const [cities, setCities]             = useState([])
   const [selectedCityName, setSelectedCityName] = useState('')
+
+  useSeoMeta({
+    title: categoryName
+      ? (selectedCityName
+        ? (ar ? `${categoryName} في ${selectedCityName}` : `${categoryName} in ${selectedCityName}`)
+        : categoryName)
+      : null,
+    description: categoryName
+      ? (ar
+        ? `اعثر على أفضل ${categoryName}${selectedCityName ? ` في ${selectedCityName}` : ''} عبر منصة اطلب فني في ليبيا`
+        : `Find top ${categoryName}${selectedCityName ? ` in ${selectedCityName}` : ''} on Otlob Fanni Libya`)
+      : null,
+  })
+
   const [techs, setTechs]               = useState([])
   const [companies, setCompanies]       = useState([])
   const [search, setSearch]             = useState('')

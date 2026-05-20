@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { useRoute } from 'wouter'
+import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, MessageSquare, Star, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, CheckCircle,
@@ -147,6 +148,24 @@ export default function TechnicianDetails() {
   const [showShare,   setShowShare]   = useState(false)
   const [showReport,  setShowReport]  = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_technicians')
+
+  const _seoName = tech?.name || ''
+  const _seoCatAr = tech?.allCategoryNamesAr?.[0] || ''
+  const _seoCatEn = tech?.allCategoryNamesEn?.[0] || ''
+  const _seoCityAr = tech?.cityAr || ''
+  const _seoCityEn = tech?.cityEn || ''
+  useSeoMeta({
+    title: _seoName
+      ? (ar
+        ? `${_seoName}${_seoCatAr ? ` - ${_seoCatAr}` : ''}${_seoCityAr ? ` في ${_seoCityAr}` : ''}`
+        : `${_seoName}${_seoCatEn ? ` - ${_seoCatEn}` : ''}${_seoCityEn ? ` in ${_seoCityEn}` : ''}`)
+      : null,
+    description: _seoName
+      ? (ar
+        ? `تواصل مع ${_seoName}${_seoCatAr ? `، ${_seoCatAr}` : ''}${_seoCityAr ? ` في ${_seoCityAr}` : ''} عبر اطلب فني`
+        : `Contact ${_seoName}${_seoCatEn ? `, ${_seoCatEn}` : ''}${_seoCityEn ? ` in ${_seoCityEn}` : ''} on Otlob Fanni`)
+      : null,
+  })
 
   useEffect(() => {
     if (!id) { setNotFound(true); return }

@@ -7,6 +7,11 @@ import { existsSync } from "fs";
 import http from "http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { db } from "@workspace/db";
+import {
+  techniciansTable, citiesTable, categoriesTable, companyApplicationsTable,
+} from "@workspace/db/schema";
+import { eq, and } from "drizzle-orm";
 
 const app: Express = express();
 
@@ -33,6 +38,41 @@ app.use(
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// ── Sitemap (root-level for SEO crawlers) ────────────────────────────────────
+app.get("/sitemap.xml", async (_req: Request, res: Response): Promise<void> => {
+  const BASE = "https://www.otlobfanni.ly";
+  const today = new Date().toISOString().split("T")[0];
+  try {
+    const [cities, cats, techs, companies] = await Promise.all([
+      db.select({ id: citiesTable.id }).from(citiesTable),
+      db.select({ id: categoriesTable.id }).from(categoriesTable),
+      db.select({ id: techniciansTable.id }).from(techniciansTable)
+        .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true))),
+      db.select({ id: companyApplicationsTable.id }).from(companyApplicationsTable)
+        .where(eq(companyApplicationsTable.status, "published")),
+    ]);
+    const staticPages = ["/", "/categories", "/companies", "/suppliers", "/join", "/join-company", "/join-supplier", "/about", "/terms", "/privacy"];
+    const urls: string[] = [
+      ...staticPages.map(p => `${BASE}${p}`),
+      `${BASE}/city/libya`,
+      ...cities.map(c => `${BASE}/city/${c.id}`),
+      ...cats.map(c => `${BASE}/category/${c.id}`),
+      ...cities.flatMap(city => cats.map(cat => `${BASE}/category/${cat.id}?city=${city.id}`)),
+      ...techs.map(t => `${BASE}/technician/${t.id}`),
+      ...companies.map(c => `${BASE}/company/${c.id}`),
+    ];
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
+      urls.map(u => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")
+    }\n</urlset>`;
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=7200");
+    res.send(xml);
+  } catch (err) {
+    logger.error({ err }, "Failed to generate sitemap");
+    res.status(500).send("Sitemap generation failed");
+  }
+});
 
 app.use("/api", router);
 

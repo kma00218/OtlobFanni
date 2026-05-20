@@ -66,6 +66,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api-server/, ""),
       },
+      "/sitemap.xml": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
     },
   },
   preview: {

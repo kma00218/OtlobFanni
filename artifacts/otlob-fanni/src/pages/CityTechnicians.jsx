@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
+import { useSeoMeta } from '../hooks/useSeoMeta'
 import BackHeader from '../components/BackHeader'
 import TechnicianCard from '../components/TechnicianCard'
 import { MapPin, Globe, Search, Building2, Phone, ChevronLeft, ChevronRight, Package } from 'lucide-react'
@@ -82,6 +83,16 @@ export default function CityTechnicians() {
   }, [id, isLibya])
 
   const cityName = city ? (ar ? city.nameAr : city.nameEn) : (ar ? 'المدينة' : 'City')
+
+  useSeoMeta({
+    title: city ? (ar ? `فنيو ${cityName}` : `Technicians in ${cityName}`) : null,
+    description: city
+      ? (ar
+        ? `اعثر على أفضل الفنيين والشركات والموردين في ${cityName} — اطلب فني`
+        : `Find top technicians and companies in ${cityName} on Otlob Fanni`)
+      : null,
+  })
+
   const q = search.trim().toLowerCase()
 
   const matchesTech = (t) => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import { useRoute } from 'wouter'
+import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, Package, Heart, Image as ImageIcon,
   Star, X, Send,
@@ -85,6 +86,21 @@ export default function SupplierDetails() {
   const [showComment,  setShowComment]  = useState(false)
   const [showReport,   setShowReport]   = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('favSuppliers')
+
+  const _seoSupName = supplier?.businessName || supplier?.business_name || ''
+  const _seoSupCity = supplier?.city || ''
+  useSeoMeta({
+    title: _seoSupName
+      ? (ar
+        ? `${_seoSupName}${_seoSupCity ? ` في ${_seoSupCity}` : ''}`
+        : `${_seoSupName}${_seoSupCity ? ` in ${_seoSupCity}` : ''}`)
+      : null,
+    description: _seoSupName
+      ? (ar
+        ? `تعرّف على ${_seoSupName}${_seoSupCity ? ` في ${_seoSupCity}` : ''} — مورد مواد وأدوات في ليبيا | اطلب فني`
+        : `Discover ${_seoSupName}${_seoSupCity ? ` in ${_seoSupCity}` : ''} — supplier in Libya | Otlob Fanni`)
+      : null,
+  })
 
   useEffect(() => {
     if (!id) return
