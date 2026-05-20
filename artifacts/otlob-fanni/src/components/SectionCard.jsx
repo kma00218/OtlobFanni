@@ -166,15 +166,15 @@ const SECTION_SVG = {
 }
 
 const SECTION_GRADIENT = {
-  home_services:     ['#FF7900', '#e85e00'],
-  car_services:      ['#1E40AF', '#0f2472'],
-  construction:      ['#D97706', '#b35500'],
-  tech_security:     ['#6366F1', '#4338CA'],
-  moving_general:    ['#8B5CF6', '#6D28D9'],
-  gardens_pools:     ['#10B981', '#047857'],
-  energy_generators: ['#F59E0B', '#D97706'],
-  business_services: ['#0EA5E9', '#0369A1'],
-  more_services:     ['#6B7280', '#374151'],
+  home_services:     ['#FF7900', '#c45500'],
+  car_services:      ['#0f2d52', '#071B33'],
+  construction:      ['#7c3a0e', '#4a1f07'],
+  tech_security:     ['#1e3a6e', '#0d1f42'],
+  moving_general:    ['#2d3748', '#1a202c'],
+  gardens_pools:     ['#065f46', '#033d2c'],
+  energy_generators: ['#92400e', '#5c2508'],
+  business_services: ['#0c3460', '#071B33'],
+  more_services:     ['#3d4a5c', '#1f2937'],
 }
 
 export default function SectionCard({ section }) {
