@@ -9,6 +9,7 @@ import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
+import LibyaPhoneInput from '../components/LibyaPhoneInput'
 
 function RecentCard({ item, ar }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
@@ -525,13 +526,10 @@ export default function Home() {
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
               dir="rtl"
             />
-            <input
-              type="tel"
-              placeholder={ar ? 'رقم هاتفه *' : 'Phone number *'}
+            <LibyaPhoneInput
+              required
               value={referralForm.phone}
-              onChange={e => setReferralForm(f => ({ ...f, phone: e.target.value }))}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
-              dir="ltr"
+              onChange={v => setReferralForm(f => ({ ...f, phone: v }))}
             />
             <input
               type="text"
