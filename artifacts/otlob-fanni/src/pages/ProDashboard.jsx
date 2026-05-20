@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
-import { Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft, Receipt } from 'lucide-react'
+import { Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft, Receipt, Clock } from 'lucide-react'
 
 const TOOLS = [
   {
@@ -49,6 +49,12 @@ const TYPE_LABEL = {
 export default function ProDashboard() {
   const [, navigate] = useLocation()
   const [session, setSession] = useState(null)
+  const [soonToast, setSoonToast] = useState(false)
+
+  const showSoon = () => {
+    setSoonToast(true)
+    setTimeout(() => setSoonToast(false), 2000)
+  }
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -72,6 +78,13 @@ export default function ProDashboard() {
 
   return (
     <div className="min-h-[100dvh] bg-[#F2F2F7] flex flex-col max-w-[480px] mx-auto" dir="rtl">
+
+      {soonToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#071B33] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-lg">
+          <Clock className="w-4 h-4 text-[#FF7900]" />
+          هذه الميزة قيد التطوير، ترقبها قريباً
+        </div>
+      )}
 
       <div className="bg-[#071B33] px-5 pt-14 pb-8">
         <div className="flex items-start justify-between mb-4">
@@ -104,8 +117,8 @@ export default function ProDashboard() {
           {TOOLS.map(tool => (
             <div key={tool.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <button
-                disabled={tool.soon}
-                className="w-full flex items-center gap-4 px-4 py-4 active:bg-slate-50 transition-colors disabled:cursor-not-allowed"
+                onClick={tool.soon ? showSoon : undefined}
+                className="w-full flex items-center gap-4 px-4 py-4 active:bg-slate-50 transition-colors"
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${tool.bg}`}>
                   {tool.icon}
