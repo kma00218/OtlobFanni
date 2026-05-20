@@ -377,7 +377,7 @@ export default function Home() {
             <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 text-lg">💡</div>
             <div className="flex-1 text-right">
               <p className="text-white font-extrabold text-sm leading-tight">
-                {ar ? 'رشّح فنياً تعرفه' : 'Recommend a Technician'}
+                {ar ? 'رشّح فنياً أو شركة خدمية أو مورداً' : 'Suggest a Technician, Company or Supplier'}
               </p>
               <p className="text-white/70 text-xs font-medium mt-0.5">
                 {ar ? 'ساعدنا في توسيع الدليل' : 'Help us grow the directory'}
