@@ -166,7 +166,7 @@ export default function SearchBar({ onResultSelect } = {}) {
   const handleSelectSupplier = (supplier) => {
     addEntry(supplier.businessName || '')
     setQuery(''); setOpen(false); onResultSelect?.()
-    navigate('/suppliers')
+    navigate(`/supplier/${supplier.id}`)
   }
 
   const handleHistorySelect = (q) => {
@@ -500,11 +500,29 @@ export default function SearchBar({ onResultSelect } = {}) {
       )}
 
       {open && debouncedQuery.trim().length >= 2 && !hasResults && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 px-4 py-5 z-50 text-center">
-          <p className="text-gray-400 text-sm">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 px-4 py-4 z-50">
+          <p className="text-gray-400 text-sm text-center mb-3">
             {ar ? 'لا توجد نتائج لـ' : 'No results for'}{' '}
             <span className="text-[#071B33] font-bold">"{query}"</span>
           </p>
+          <p className="text-xs font-bold text-gray-400 mb-2 text-center">
+            {ar ? 'جرّب البحث بـ:' : 'Try searching for:'}
+          </p>
+          <div className="flex flex-wrap gap-1.5 justify-center">
+            {(ar
+              ? ['كهرباء', 'سباكة', 'تكييف', 'نجارة', 'دهان', 'ميكانيكي', 'كاميرات', 'تنظيف']
+              : ['electrician', 'plumber', 'AC', 'carpenter', 'painter', 'mechanic', 'CCTV', 'cleaning']
+            ).map(s => (
+              <button
+                key={s}
+                onMouseDown={e => e.preventDefault()}
+                onClick={() => { setQuery(s); setOpen(true); inputRef.current?.focus() }}
+                className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#FF7900]/10 text-[#FF7900] hover:bg-[#FF7900]/20 transition-colors"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

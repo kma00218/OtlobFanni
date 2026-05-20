@@ -268,12 +268,20 @@ router.get("/search", async (req, res): Promise<void> => {
     ilike(techniciansTable.descriptionEn, `%${t}%`),
     ilike(citiesTable.nameAr, `%${t}%`),
     ilike(citiesTable.nameEn, `%${t}%`),
+    // ← FIX: also match the technician's registered category name
+    ilike(categoriesTable.nameAr, `%${t}%`),
+    ilike(categoriesTable.nameEn, `%${t}%`),
+    // ← FIX: also match extra specialties (stored as JSON array of category IDs)
+    sql`CAST(${techniciansTable.extraSpecialties} AS text) ILIKE ${'%' + t + '%'}`,
   ]);
   const companyWhere = terms.flatMap(t => [
     ilike(companyApplicationsTable.companyName, `%${t}%`),
     ilike(companyApplicationsTable.contactName, `%${t}%`),
     ilike(companyApplicationsTable.description, `%${t}%`),
     ilike(companyApplicationsTable.city, `%${t}%`),
+    // ← FIX: also match the company's registered category name
+    ilike(categoriesTable.nameAr, `%${t}%`),
+    ilike(categoriesTable.nameEn, `%${t}%`),
   ]);
   const cityWhere = terms.flatMap(t => [
     ilike(citiesTable.nameAr, `%${t}%`),
@@ -404,6 +412,9 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
     ilike(techniciansTable.nameEn, `%${t}%`),
     ilike(techniciansTable.descriptionAr, `%${t}%`),
     ilike(techniciansTable.descriptionEn, `%${t}%`),
+    ilike(categoriesTable.nameAr, `%${t}%`),
+    ilike(categoriesTable.nameEn, `%${t}%`),
+    sql`CAST(${techniciansTable.extraSpecialties} AS text) ILIKE ${'%' + t + '%'}`,
   ]);
 
   const rows = await db
