@@ -64,6 +64,9 @@ export default function Home() {
   const [recentLoading, setRecentLoading] = useState(true)
   const [stats, setStats] = useState(null)
   const [citiesForFilter, setCitiesForFilter] = useState([])
+  const [topCategories, setTopCategories] = useState([])
+  const [showReferral, setShowReferral] = useState(false)
+  const [referralForm, setReferralForm] = useState({ name: '', phone: '', specialty: '', city: '' })
 
 
   const handleLogoClick = () => {
@@ -93,6 +96,13 @@ export default function Home() {
       .then(data => {
         if (!Array.isArray(data)) return
         setCitiesForFilter(data)
+      })
+      .catch(() => {})
+
+    api.categories()
+      .then(data => {
+        if (!Array.isArray(data)) return
+        setTopCategories(data.slice(0, 12))
       })
       .catch(() => {})
   }, [])
@@ -214,6 +224,25 @@ export default function Home() {
               >
                 <span style={{ fontSize: '11px' }}>📍</span>
                 {ar ? city.nameAr : (city.nameEn || city.nameAr)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── أبرز التخصصات ── */}
+        {topCategories.length > 0 && (
+          <div
+            className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {topCategories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => navigate(`/category/${cat.id}`)}
+                className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors active:scale-95"
+                style={{ background: '#FF7900', color: 'white' }}
+              >
+                {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
               </button>
             ))}
           </div>
@@ -348,6 +377,24 @@ export default function Home() {
             </div>
           </div>
 
+          {/* ── رشّح فني ── */}
+          <button
+            onClick={() => setShowReferral(true)}
+            className="mt-4 w-full flex items-center gap-3 rounded-2xl px-5 py-3.5 active:scale-[0.98] transition-transform select-none"
+            style={{ background: 'linear-gradient(90deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}
+          >
+            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 text-lg">💡</div>
+            <div className="flex-1 text-right">
+              <p className="text-white font-extrabold text-sm leading-tight">
+                {ar ? 'رشّح فنياً تعرفه' : 'Recommend a Technician'}
+              </p>
+              <p className="text-white/70 text-xs font-medium mt-0.5">
+                {ar ? 'ساعدنا في توسيع الدليل' : 'Help us grow the directory'}
+              </p>
+            </div>
+            <span className="text-white/50 text-lg flex-shrink-0">›</span>
+          </button>
+
           {/* ── قناة تيليغرام ── */}
           <a
             href="https://t.me/otlobfanni"
@@ -450,6 +497,75 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+    {/* ── Modal: رشّح فني ── */}
+    {showReferral && (
+      <div
+        className="fixed inset-0 z-50 flex items-end justify-center"
+        style={{ background: 'rgba(0,0,0,0.5)' }}
+        onClick={() => setShowReferral(false)}
+      >
+        <div
+          className="w-full max-w-[480px] bg-white rounded-t-3xl p-6 pb-10"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="w-10 h-1 rounded-full bg-gray-200 mx-auto mb-5" />
+          <h3 className="text-lg font-extrabold text-[#071B33] mb-1 text-center">
+            {ar ? '💡 رشّح فنياً تعرفه' : '💡 Recommend a Technician'}
+          </h3>
+          <p className="text-xs text-gray-400 text-center mb-5">
+            {ar ? 'أدخل بياناته وسنتواصل معه للانضمام' : 'Enter their info and we\'ll reach out'}
+          </p>
+          <div className="flex flex-col gap-3">
+            <input
+              type="text"
+              placeholder={ar ? 'اسم الفني *' : 'Technician name *'}
+              value={referralForm.name}
+              onChange={e => setReferralForm(f => ({ ...f, name: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="rtl"
+            />
+            <input
+              type="tel"
+              placeholder={ar ? 'رقم هاتفه *' : 'Phone number *'}
+              value={referralForm.phone}
+              onChange={e => setReferralForm(f => ({ ...f, phone: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="ltr"
+            />
+            <input
+              type="text"
+              placeholder={ar ? 'تخصصه (اختياري)' : 'Specialty (optional)'}
+              value={referralForm.specialty}
+              onChange={e => setReferralForm(f => ({ ...f, specialty: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="rtl"
+            />
+            <input
+              type="text"
+              placeholder={ar ? 'مدينته (اختياري)' : 'City (optional)'}
+              value={referralForm.city}
+              onChange={e => setReferralForm(f => ({ ...f, city: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="rtl"
+            />
+            <button
+              disabled={!referralForm.name.trim() || !referralForm.phone.trim()}
+              onClick={() => {
+                const msg = `ترشيح فني للانضمام لاطلب فني:\nالاسم: ${referralForm.name}\nالهاتف: ${referralForm.phone}${referralForm.specialty ? `\nالتخصص: ${referralForm.specialty}` : ''}${referralForm.city ? `\nالمدينة: ${referralForm.city}` : ''}`
+                window.open(`https://wa.me/19297186991?text=${encodeURIComponent(msg)}`, '_blank')
+                setShowReferral(false)
+                setReferralForm({ name: '', phone: '', specialty: '', city: '' })
+              }}
+              className="w-full rounded-xl py-3.5 text-sm font-extrabold text-white transition-opacity disabled:opacity-40"
+              style={{ background: 'linear-gradient(90deg, #FF7900 0%, #c45e00 100%)' }}
+            >
+              {ar ? 'إرسال الترشيح عبر واتساب' : 'Send via WhatsApp'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   )
 }
