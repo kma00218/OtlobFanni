@@ -728,10 +728,18 @@ router.post("/pro-credentials/:entityType/:entityId", async (req, res): Promise<
   let displayName = "";
 
   if (entityType === "technician") {
-    const [row] = await db.select().from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, entityId));
-    if (!row) { res.status(404).json({ error: "Not found" }); return; }
-    whatsapp = row.whatsapp || row.phone || "";
-    displayName = row.fullName || "";
+    // Try application table first (for technicians registered via form)
+    const [appRow] = await db.select().from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, entityId));
+    if (appRow) {
+      whatsapp = appRow.whatsapp || appRow.phone || "";
+      displayName = appRow.fullName || "";
+    } else {
+      // Fallback: look up directly from technicians table (manually added technicians)
+      const [techRow] = await db.select().from(techniciansTable).where(eq(techniciansTable.id, entityId));
+      if (!techRow) { res.status(404).json({ error: "Not found" }); return; }
+      whatsapp = techRow.whatsapp || techRow.phone || "";
+      displayName = techRow.nameAr || techRow.nameEn || "";
+    }
   } else if (entityType === "company") {
     const [row] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, entityId));
     if (!row) { res.status(404).json({ error: "Not found" }); return; }

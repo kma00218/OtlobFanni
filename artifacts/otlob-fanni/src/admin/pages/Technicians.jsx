@@ -566,7 +566,7 @@ export default function Technicians() {
   const sendCredentials = async (row) => {
     setCredsSending(row.id)
     try {
-      const data = await api.pro.generateCredentials('technician', row.id)
+      const data = await api.pro.generateCredentials('technician', row.applicationId || row.id)
       const phone = (data.whatsapp || '').replace(/\D/g, '')
       const msg =
         `تم تفعيل حسابك المهني على منصة اطلب فني 🎉\n\n` +
