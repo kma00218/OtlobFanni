@@ -63,9 +63,28 @@ export default function AdminSuppliers() {
   const [galleryUploading, setGalleryUploading] = useState(false)
   const [lightbox, setLightbox]     = useState(null)
   const [toast, setToast]           = useState(null)
+  const [credsSending, setCredsSending] = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  const sendCredentials = async (row) => {
+    setCredsSending(row.id)
+    try {
+      const data = await api.pro.generateCredentials('supplier', row.id)
+      const phone = (data.whatsapp || '').replace(/\D/g, '')
+      const msg =
+        `تم تفعيل حسابك المهني على منصة اطلب فني 🎉\n\n` +
+        `يمكنك الآن الدخول إلى أدوات العمل والفواتير عبر منصة:\n` +
+        `🌐 otlobfanni.ly\n\n` +
+        `من صفحة:\nالمزيد ← دخول الحسابات المهنية\n\n` +
+        `اسم المستخدم:\n${data.whatsapp}\n\n` +
+        `كلمة المرور:\n${data.password}`
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
+      showToast('✓ تم إرسال بيانات الدخول')
+    } catch { showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error') }
+    finally { setCredsSending(null) }
   }
 
   const reload = () => {
@@ -220,6 +239,19 @@ export default function AdminSuppliers() {
             className="px-2.5 py-1.5 text-xs font-semibold bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors">
             تعديل
           </button>
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => sendCredentials(row)}
+              disabled={credsSending === row.id}
+              className="px-2.5 py-1.5 text-xs font-semibold bg-orange-50 text-orange-500 rounded-lg hover:bg-orange-100 transition-colors disabled:opacity-50 flex items-center gap-1"
+              title="إرسال بيانات الدخول">
+              {credsSending === row.id
+                ? <span className="w-3 h-3 border-2 border-orange-500 border-t-transparent rounded-full animate-spin inline-block" />
+                : <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+              }
+              إرسال
+            </button>
+          )}
           <button onClick={() => handleRevoke(row.id)}
             className="px-2.5 py-1.5 text-xs font-semibold bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors">
             إلغاء النشر

@@ -62,9 +62,28 @@ export default function Companies() {
   const [lightbox, setLightbox]     = useState(null)
   const [categories, setCategories] = useState([])
   const [toast, setToast]           = useState(null)
+  const [credsSending, setCredsSending] = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  const sendCredentials = async (row) => {
+    setCredsSending(row.id)
+    try {
+      const data = await api.pro.generateCredentials('company', row.id)
+      const phone = (data.whatsapp || '').replace(/\D/g, '')
+      const msg =
+        `تم تفعيل حسابك المهني على منصة اطلب فني 🎉\n\n` +
+        `يمكنك الآن الدخول إلى أدوات العمل والفواتير عبر منصة:\n` +
+        `🌐 otlobfanni.ly\n\n` +
+        `من صفحة:\nالمزيد ← دخول الحسابات المهنية\n\n` +
+        `اسم المستخدم:\n${data.whatsapp}\n\n` +
+        `كلمة المرور:\n${data.password}`
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
+      showToast('✓ تم إرسال بيانات الدخول')
+    } catch { showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error') }
+    finally { setCredsSending(null) }
   }
 
   const catLabel = (id) => {
@@ -260,6 +279,18 @@ export default function Companies() {
             className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
             <Pencil className="w-3.5 h-3.5" />
           </button>
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => sendCredentials(row)}
+              disabled={credsSending === row.id}
+              className="p-1.5 hover:bg-orange-500/10 text-orange-400 rounded-lg transition-colors disabled:opacity-50"
+              title="إرسال بيانات الدخول">
+              {credsSending === row.id
+                ? <span className="w-3.5 h-3.5 border-2 border-orange-400 border-t-transparent rounded-full animate-spin inline-block" />
+                : <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+              }
+            </button>
+          )}
           <button onClick={() => handleRevoke(row.id)}
             className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors" title="إلغاء الموافقة">
             <XCircle className="w-3.5 h-3.5" />
