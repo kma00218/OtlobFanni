@@ -307,9 +307,16 @@ export default function TechnicianDetails() {
             {/* Name */}
             <h1 className="font-extrabold text-[#071B33] text-xl leading-tight mb-1">{tech.name}</h1>
             {/* Reference ID */}
-            <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full mb-2 tracking-wide shadow-sm">
-              🪪 {ar ? 'رقم التعريف' : 'ID'}: TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
-            </span>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full tracking-wide shadow-sm">
+                🪪 {ar ? 'رقم التعريف' : 'ID'}: TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
+              </span>
+              {tech.createdAt && (
+                <span className="inline-flex items-center gap-1.5 bg-[#FF7900] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+                  📅 {ar ? 'نشر في' : 'Since'}: {new Date(tech.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </span>
+              )}
+            </div>
 
             {/* Specialty badges */}
             {allCatNames.length > 0 && (

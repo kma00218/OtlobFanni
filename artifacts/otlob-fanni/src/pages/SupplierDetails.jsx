@@ -246,9 +246,16 @@ export default function SupplierDetails() {
                   <Package className="w-4 h-4 text-[#0e5c6d] flex-shrink-0" />
                   <h1 className="font-bold text-gray-900 text-lg leading-tight">{name}</h1>
                 </div>
-                <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full my-1 tracking-wide shadow-sm">
-                  🪪 {ar ? 'رقم التعريف' : 'ID'}: {idBadge}
-                </span>
+                <div className="flex flex-wrap items-center gap-2 my-1">
+                  <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full tracking-wide shadow-sm">
+                    🪪 {ar ? 'رقم التعريف' : 'ID'}: {idBadge}
+                  </span>
+                  {createdAt && (
+                    <span className="inline-flex items-center gap-1.5 bg-[#0e7c8f] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+                      📅 {ar ? 'نشر في' : 'Since'}: {new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </span>
+                  )}
+                </div>
                 {supplyLabel && (
                   <p className="text-sm text-[#0e5c6d] font-medium">{supplyEmoji} {supplyLabel}</p>
                 )}
