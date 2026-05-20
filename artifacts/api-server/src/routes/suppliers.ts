@@ -33,6 +33,7 @@ router.post("/supplier-applications", async (req, res): Promise<void> => {
     description:      body.description || null,
     logo:             body.logo || null,
     shopImages:       body.shop_images || [],
+    email:            body.email || null,
     facebook:         body.facebook || null,
     instagram:        body.instagram || null,
     tiktok:           body.tiktok || null,

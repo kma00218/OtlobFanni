@@ -430,6 +430,7 @@ export default function Companies() {
                       </a>
                     )}
                   </div>
+                  <IC label="البريد الإلكتروني"   value={viewItem.email || '—'} />
                   <IC label="السجل التجاري"     value={commReg || '—'} />
                   <IC label="المدينة"           value={viewItem.city} />
                   <IC label="المنطقة / الحي"    value={viewItem.area || '—'} />

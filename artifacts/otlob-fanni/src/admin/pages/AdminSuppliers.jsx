@@ -350,6 +350,15 @@ export default function AdminSuppliers() {
               <InfoBlock icon={MapPin} label="المدينة" value={viewItem.city} />
               <InfoBlock icon={MapPin} label="المنطقة / الحي" value={viewItem.area || '—'} />
             </div>
+            {viewItem.email && (
+              <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <FileText className="w-3.5 h-3.5 text-slate-400" />
+                  <p className="text-xs text-slate-400 font-medium">البريد الإلكتروني</p>
+                </div>
+                <a href={`mailto:${viewItem.email}`} className="text-sm text-blue-500 font-semibold hover:underline" dir="ltr">{viewItem.email}</a>
+              </div>
+            )}
             {viewItem.address && <InfoBlock icon={MapPin} label="العنوان التفصيلي" value={viewItem.address} />}
             {viewItem.description && <InfoBlock icon={FileText} label="وصف النشاط" value={viewItem.description} multiline />}
 

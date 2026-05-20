@@ -18,6 +18,7 @@ export const supplierApplicationsTable = pgTable("supplier_applications", {
   description:       text("description"),
   logo:              text("logo"),
   shopImages:        jsonb("shop_images").$type<string[]>().default([]),
+  email:             text("email"),
   facebook:          text("facebook"),
   instagram:         text("instagram"),
   tiktok:            text("tiktok"),

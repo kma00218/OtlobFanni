@@ -36,6 +36,7 @@ export const technicianApplicationsTable = pgTable("technician_applications", {
   idDocFront:       text("id_doc_front"),
   idDocBack:        text("id_doc_back"),
   workLicense:      text("work_license"),
+  email:            text("email"),
   referredBy:       text("referred_by"),
   referredByName:   text("referred_by_name"),
   referredByType:   text("referred_by_type"),

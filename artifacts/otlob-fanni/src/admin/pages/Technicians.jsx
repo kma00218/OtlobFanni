@@ -174,6 +174,12 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
                 )}
               </div>
             </Grid2>
+            {(tech.email) && (
+              <div className="mt-2 bg-slate-50 rounded-xl p-3">
+                <p className="text-xs text-slate-500 mb-0.5">البريد الإلكتروني</p>
+                <a href={`mailto:${tech.email}`} className="font-medium text-blue-500 text-sm hover:underline" dir="ltr">{tech.email}</a>
+              </div>
+            )}
           </FieldGroup>
 
           <FieldGroup title="الموقع والخدمة" icon={MapPin}>

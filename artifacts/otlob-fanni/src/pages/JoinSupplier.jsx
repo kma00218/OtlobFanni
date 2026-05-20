@@ -64,6 +64,7 @@ export default function JoinSupplier() {
     contact_name: '',
     phone: '',
     whatsapp: '',
+    email: '',
     city: '',
     area: '',
     address: '',
@@ -149,6 +150,7 @@ export default function JoinSupplier() {
         description:        form.description || null,
         logo:               logo || null,
         shop_images:        shopImages,
+        email:              form.email || null,
         facebook:           form.facebook || null,
         instagram:          form.instagram || null,
         tiktok:             form.tiktok || null,
@@ -304,6 +306,11 @@ export default function JoinSupplier() {
                   : 'WhatsApp number is required and must be active — all communication will be via WhatsApp only.'}
               </p>
             </div>
+            <Field label={ar ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}>
+              <input className={inp} type="email" value={form.email}
+                onChange={e => set('email', e.target.value)}
+                placeholder="example@email.com" dir="ltr" />
+            </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label={ar ? 'المدينة' : 'City'} required>
                 <select className={sel} required value={form.city} onChange={e => set('city', e.target.value)}>

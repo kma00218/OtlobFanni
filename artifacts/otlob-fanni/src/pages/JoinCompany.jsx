@@ -136,6 +136,7 @@ export default function JoinCompany() {
     contact_name: '',
     phone: '',
     whatsapp: '',
+    email: '',
     commercial_reg: '',
     city: '',
     area: '',
@@ -259,6 +260,7 @@ export default function JoinCompany() {
         hours_to:       form.hours_to,
         emergency:      form.emergency === 'yes',
         service_radius: form.service_radius,
+        email:          form.email || null,
         facebook:       form.facebook,
         instagram:      form.instagram,
         tiktok:         form.tiktok,
@@ -446,6 +448,12 @@ export default function JoinCompany() {
                     : 'WhatsApp number is required and must be active on WhatsApp — do not enter a regular phone number that is not registered on WhatsApp, as all communication will be via WhatsApp only.'}
                 </p>
               </div>
+
+              <Field label={ar ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}>
+                <input className={inp} type="email" value={form.email}
+                  onChange={e => set('email', e.target.value)}
+                  placeholder="example@email.com" dir="ltr" />
+              </Field>
 
               {/* حقل السجل التجاري مخفي مؤقتاً في مرحلة الإطلاق */}
 

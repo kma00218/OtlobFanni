@@ -135,7 +135,7 @@ export default function Join() {
   const [days, setDays] = useState([])
 
   const [form, setForm] = useState({
-    full_name: '', phone: '', whatsapp: '', national_id: '',
+    full_name: '', phone: '', whatsapp: '', email: '', national_id: '',
     city: '', area: '', address: '',
     experience: '', type: 'individual',
     description: '', certifications: '',
@@ -251,6 +251,7 @@ export default function Join() {
         hours_to:        form.hours_to,
         emergency:       form.emergency === 'yes',
         service_radius:  form.service_radius,
+        email:           form.email || null,
         facebook:        form.facebook,
         instagram:       form.instagram,
         tiktok:          form.tiktok,
@@ -429,6 +430,12 @@ export default function Join() {
                     : 'WhatsApp number is required and must be active on WhatsApp — do not enter a regular phone number that is not registered on WhatsApp, as all communication will be via WhatsApp only.'}
                 </p>
               </div>
+
+              <Field label={ar ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}>
+                <input className={inp} type="email" value={form.email}
+                  onChange={e => set('email', e.target.value)}
+                  placeholder="example@email.com" dir="ltr" />
+              </Field>
 
               {/* حقل الرقم الوطني مخفي مؤقتاً في مرحلة الإطلاق */}
 

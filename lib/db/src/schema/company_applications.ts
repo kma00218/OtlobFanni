@@ -35,6 +35,7 @@ export const companyApplicationsTable = pgTable("company_applications", {
   workImages:     jsonb("work_images").$type<string[]>().default([]),
   commercialDoc:  text("commercial_doc"),
   workLicense:    text("work_license"),
+  email:          text("email"),
   referredBy:     text("referred_by"),
   referredByName: text("referred_by_name"),
   referredByType: text("referred_by_type"),
