@@ -1,9 +1,11 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell, Briefcase } from 'lucide-react';
+import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell, Briefcase, UserPlus } from 'lucide-react';
 import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
 import { track } from '../lib/tracker';
 import { NotificationSettingsRow } from '../components/NotificationPrompt';
+import LibyaPhoneInput from '../components/LibyaPhoneInput';
+import * as api from '../lib/api';
 
 const IOS_STEPS_AR = [
   { n: '1', text: 'افتح التطبيق في متصفح Safari' },
@@ -82,6 +84,8 @@ export default function More() {
   const [installTab, setInstallTab] = useState('ios')
   const [installPrompt, setInstallPrompt] = useState(null)
   const [installed, setInstalled] = useState(false)
+  const [showReferral, setShowReferral] = useState(false)
+  const [referralForm, setReferralForm] = useState({ type: 'technician', name: '', phone: '', specialty: '', city: '', submitting: false })
 
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e) }
@@ -214,6 +218,7 @@ export default function More() {
   ]
 
   return (
+    <>
     <div className="bg-[#F2F2F7] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
       {/* Fixed header — Share | Icon | Lang */}
@@ -414,6 +419,54 @@ export default function More() {
         </a>
       </div>
 
+      {/* Referral Card */}
+      <div className="px-4 mb-3">
+        <button
+          onClick={() => setShowReferral(true)}
+          className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl active:scale-[0.98] transition-transform shadow-sm"
+          style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}
+        >
+          <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+            <UserPlus className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1 text-right">
+            <p className="text-white font-extrabold text-sm leading-tight">
+              {ar ? 'رشّح فنياً أو شركة خدمية أو مورد مستلزمات' : 'Suggest a Technician or Business'}
+            </p>
+            <p className="text-white/70 text-xs mt-0.5 font-medium">
+              {ar ? 'ساعدنا في توسيع الدليل' : 'Help us grow the directory'}
+            </p>
+          </div>
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white/50 flex-shrink-0 rotate-180" style={{ transform: 'rotate(180deg)' }}>
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Share Card */}
+      <div className="px-4 mb-4">
+        <button
+          onClick={handleShare}
+          className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl active:scale-[0.98] transition-transform shadow-sm"
+          style={{ background: 'linear-gradient(135deg, #6B21A8 0%, #4c1578 100%)', boxShadow: '0 4px 16px rgba(107,33,168,0.3)' }}
+        >
+          <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+            <Share2 className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1 text-right">
+            <p className="text-white font-extrabold text-sm leading-tight">
+              {ar ? 'شارك التطبيق مع أصدقائك' : 'Share App with Friends'}
+            </p>
+            <p className="text-white/70 text-xs mt-0.5 font-medium">
+              {ar ? 'ساعد في نشر اطلب فني في ليبيا' : 'Help spread Otlob Fanni in Libya'}
+            </p>
+          </div>
+          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white/50 flex-shrink-0" style={{ transform: 'rotate(180deg)' }}>
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/>
+          </svg>
+        </button>
+      </div>
+
       {/* Section: تابعنا / Follow Us */}
       <IconGrid
         ar={ar}
@@ -446,5 +499,122 @@ export default function More() {
         <p className="text-gray-400 text-xs">Otlob Fanni v1.0.0</p>
       </div>
     </div>
+
+    {/* Referral Modal */}
+    {showReferral && (
+      <div
+        className="fixed inset-0 z-50 flex items-end justify-center"
+        style={{ background: 'rgba(0,0,0,0.5)' }}
+        onClick={() => setShowReferral(false)}
+      >
+        <div
+          className="w-full max-w-[480px] bg-white rounded-t-3xl p-6 pb-28"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="w-10 h-1 rounded-full bg-gray-200 mx-auto mb-5" />
+          <h3 className="text-lg font-extrabold text-[#071B33] mb-1 text-center">
+            {ar ? '💡 رشّح شخصاً تعرفه' : '💡 Recommend Someone'}
+          </h3>
+          <p className="text-xs text-gray-400 text-center mb-5">
+            {ar ? 'أدخل بياناته وسنتواصل معه للانضمام' : "Enter their info and we'll reach out"}
+          </p>
+
+          <div className="flex gap-2 mb-1">
+            {[
+              { key: 'technician', label: ar ? '👷 فني'            : '👷 Technician',      sub: ar ? 'كهربائي، سباك، نجار...'  : 'Electrician, plumber...' },
+              { key: 'company',    label: ar ? '🏢 شركة خدمية'     : '🏢 Service Company', sub: ar ? 'صيانة، تكييف، نظافة...'  : 'Maintenance, HVAC...' },
+              { key: 'supplier',   label: ar ? '📦 مورّد مستلزمات' : '📦 Parts Supplier',  sub: ar ? 'قطع غيار، مواد بناء...' : 'Spare parts, materials...' },
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setReferralForm(f => ({ ...f, type: t.key }))}
+                className={`flex-1 py-2 px-1 rounded-xl text-center border-2 transition-all flex flex-col items-center gap-0.5 ${
+                  referralForm.type === t.key
+                    ? 'border-[#FF7900] bg-orange-50 text-[#FF7900]'
+                    : 'border-gray-400 text-gray-500 hover:border-gray-500'
+                }`}
+              >
+                <span className="text-[11px] font-extrabold leading-tight">{t.label}</span>
+                <span className="text-[9px] opacity-70 leading-tight">{t.sub}</span>
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-gray-400 text-center mb-3">
+            {ar ? '* التطبيق مخصص للخدمات الفنية والحرفية فقط' : '* App is for technical & craft services only'}
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <input
+              type="text"
+              placeholder={ar ? 'الاسم *' : 'Full name *'}
+              value={referralForm.name}
+              onChange={e => setReferralForm(f => ({ ...f, name: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="rtl"
+            />
+            <div>
+              <p className="text-xs font-bold text-gray-500 mb-1 px-1">
+                {ar ? 'رقم واتساب *' : 'WhatsApp number *'}
+              </p>
+              <LibyaPhoneInput
+                required
+                value={referralForm.phone}
+                onChange={v => setReferralForm(f => ({ ...f, phone: v }))}
+              />
+            </div>
+            <input
+              type="text"
+              placeholder={
+                referralForm.type === 'technician'
+                  ? (ar ? 'التخصص (اختياري)' : 'Specialty (optional)')
+                  : referralForm.type === 'company'
+                  ? (ar ? 'نوع الخدمة (اختياري)' : 'Service type (optional)')
+                  : (ar ? 'نوع المستلزمات (اختياري)' : 'Product type (optional)')
+              }
+              value={referralForm.specialty}
+              onChange={e => setReferralForm(f => ({ ...f, specialty: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="rtl"
+            />
+            <input
+              type="text"
+              placeholder={ar ? 'المدينة (اختياري)' : 'City (optional)'}
+              value={referralForm.city}
+              onChange={e => setReferralForm(f => ({ ...f, city: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
+              dir="rtl"
+            />
+            <button
+              disabled={referralForm.submitting || !referralForm.name.trim() || !referralForm.phone.trim()}
+              onClick={async () => {
+                setReferralForm(f => ({ ...f, submitting: true }))
+                try {
+                  await api.submitReferral({
+                    type:      referralForm.type,
+                    name:      referralForm.name.trim(),
+                    phone:     referralForm.phone.trim(),
+                    specialty: referralForm.specialty.trim() || null,
+                    city:      referralForm.city.trim() || null,
+                  })
+                  setShowReferral(false)
+                  setReferralForm({ type: 'technician', name: '', phone: '', specialty: '', city: '', submitting: false })
+                  alert(ar ? '✅ شكراً! تم إرسال الترشيح بنجاح' : '✅ Thanks! Referral submitted.')
+                } catch {
+                  alert(ar ? 'حدث خطأ، حاول مرة أخرى' : 'Error, please try again.')
+                  setReferralForm(f => ({ ...f, submitting: false }))
+                }
+              }}
+              className="w-full rounded-xl py-3.5 text-sm font-extrabold text-white transition-opacity disabled:opacity-40 flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(90deg, #FF7900 0%, #c45e00 100%)' }}
+            >
+              {referralForm.submitting
+                ? (ar ? 'جاري الإرسال...' : 'Sending...')
+                : (ar ? '✅ إرسال الترشيح' : '✅ Submit Referral')}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
