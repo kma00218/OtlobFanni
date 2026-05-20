@@ -119,17 +119,17 @@ export default function ProDashboard() {
           {TOOLS.slice(0, 4).map(tool => (
             <button
               key={tool.id}
-              onClick={tool.soon ? showSoon : undefined}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col items-center gap-3 active:scale-95 transition-transform"
+              type="button"
+              onClick={showSoon}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col items-center gap-3 cursor-pointer select-none"
+              style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0.05)' }}
             >
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${tool.bg}`}>
                 {tool.icon}
               </div>
               <div className="text-center">
                 <p className="font-bold text-[#071B33] text-sm leading-tight">{tool.labelAr}</p>
-                {tool.soon && (
-                  <p className="text-xs text-slate-400 font-medium mt-0.5">قريباً</p>
-                )}
+                <p className="text-xs text-[#FF7900] font-semibold mt-0.5">قريباً</p>
               </div>
             </button>
           ))}
@@ -138,17 +138,17 @@ export default function ProDashboard() {
         {/* 5th — wide card */}
         {TOOLS[4] && (
           <button
-            onClick={TOOLS[4].soon ? showSoon : undefined}
-            className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5 flex items-center gap-5 active:scale-[0.98] transition-transform"
+            type="button"
+            onClick={showSoon}
+            className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5 flex items-center gap-5 cursor-pointer select-none"
+            style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0.05)' }}
           >
             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${TOOLS[4].bg}`}>
               {TOOLS[4].icon}
             </div>
             <div className="flex-1 text-right">
               <p className="font-extrabold text-[#071B33] text-base">{TOOLS[4].labelAr}</p>
-              {TOOLS[4].soon && (
-                <p className="text-xs text-slate-400 font-medium mt-0.5">قريباً</p>
-              )}
+              <p className="text-xs text-[#FF7900] font-semibold mt-0.5">قريباً</p>
             </div>
             <ChevronLeft className="w-5 h-5 text-slate-300 flex-shrink-0" />
           </button>
