@@ -62,6 +62,10 @@ export default function Home() {
   const logoClickTimer = useRef(null)
   const [recent, setRecent] = useState([])
   const [recentLoading, setRecentLoading] = useState(true)
+  const [stats, setStats] = useState(null)
+  const [citiesForFilter, setCitiesForFilter] = useState([])
+
+  const CITY_NAMES = ['طرابلس', 'بنغازي', 'مصراتة', 'الزاوية', 'زليتن', 'الخمس', 'سبها']
 
   const handleLogoClick = () => {
     logoClickCount.current += 1
@@ -81,6 +85,20 @@ export default function Home() {
       .then(data => setRecent(Array.isArray(data) ? data : []))
       .catch(() => setRecent([]))
       .finally(() => setRecentLoading(false))
+
+    api.publicStats()
+      .then(data => setStats(data))
+      .catch(() => {})
+
+    api.cities()
+      .then(data => {
+        if (!Array.isArray(data)) return
+        const filtered = CITY_NAMES
+          .map(name => data.find(c => c.nameAr === name))
+          .filter(Boolean)
+        setCitiesForFilter(filtered)
+      })
+      .catch(() => {})
   }, [])
 
   const activeSections = sections.filter(s => s.isActive)
@@ -141,6 +159,29 @@ export default function Home() {
           <Logo />
         </div>
 
+        {/* ── شريط الإحصاءات ── */}
+        {stats && (stats.technicians > 0 || stats.companies > 0 || stats.suppliers > 0) && (
+          <div
+            className="flex items-center justify-center gap-0 rounded-2xl overflow-hidden"
+            style={{ background: 'rgba(7,27,51,0.05)', border: '1px solid rgba(7,27,51,0.08)' }}
+          >
+            <div className="flex-1 flex flex-col items-center py-3 px-2">
+              <span className="text-xl font-black text-[#FF7900] leading-none">+{stats.technicians}</span>
+              <span className="text-[10px] font-semibold text-[#071B33]/70 mt-0.5">{ar ? 'فني' : 'Technician'}</span>
+            </div>
+            <div className="w-px self-stretch bg-[#071B33]/10" />
+            <div className="flex-1 flex flex-col items-center py-3 px-2">
+              <span className="text-xl font-black text-[#071B33] leading-none">+{stats.companies}</span>
+              <span className="text-[10px] font-semibold text-[#071B33]/70 mt-0.5">{ar ? 'شركة' : 'Company'}</span>
+            </div>
+            <div className="w-px self-stretch bg-[#071B33]/10" />
+            <div className="flex-1 flex flex-col items-center py-3 px-2">
+              <span className="text-xl font-black text-teal-600 leading-none">+{stats.suppliers}</span>
+              <span className="text-[10px] font-semibold text-[#071B33]/70 mt-0.5">{ar ? 'مورّد' : 'Supplier'}</span>
+            </div>
+          </div>
+        )}
+
         {/* زر الانضمام */}
         <Link href="/join-us">
           <div
@@ -157,6 +198,30 @@ export default function Home() {
         </Link>
 
         <SearchBar />
+
+        {/* ── أزرار المدن السريعة ── */}
+        {citiesForFilter.length > 0 && (
+          <div
+            className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {citiesForFilter.map(city => (
+              <button
+                key={city.id}
+                onClick={() => navigate(`/city/${city.id}`)}
+                className="flex-shrink-0 flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold border transition-colors active:scale-95"
+                style={{
+                  background: 'white',
+                  border: '1.5px solid #E2E8F0',
+                  color: '#071B33',
+                }}
+              >
+                <span style={{ fontSize: '11px' }}>📍</span>
+                {ar ? city.nameAr : (city.nameEn || city.nameAr)}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* إعلان أعلى الصفحة */}
         <AdBanner placement="home_top" dismissible />
@@ -260,6 +325,32 @@ export default function Home() {
               </div>
             </div>
           </Link>
+
+          {/* ── كيف يعمل التطبيق ── */}
+          <div
+            className="mt-4 rounded-2xl px-5 py-4"
+            style={{ background: 'rgba(7,27,51,0.04)', border: '1px solid rgba(7,27,51,0.07)' }}
+          >
+            <p className="text-center text-xs font-bold text-[#071B33]/50 mb-3 tracking-wider uppercase">
+              {ar ? 'كيف يعمل' : 'How it works'}
+            </p>
+            <div className="flex items-center justify-between gap-1">
+              <div className="flex-1 flex flex-col items-center gap-1.5 text-center">
+                <span className="text-2xl">🔍</span>
+                <span className="text-xs font-bold text-[#071B33]">{ar ? 'ابحث' : 'Search'}</span>
+              </div>
+              <div className="text-[#FF7900]/40 font-black text-lg pb-4">›</div>
+              <div className="flex-1 flex flex-col items-center gap-1.5 text-center">
+                <span className="text-2xl">📞</span>
+                <span className="text-xs font-bold text-[#071B33]">{ar ? 'تواصل' : 'Contact'}</span>
+              </div>
+              <div className="text-[#FF7900]/40 font-black text-lg pb-4">›</div>
+              <div className="flex-1 flex flex-col items-center gap-1.5 text-center">
+                <span className="text-2xl">✅</span>
+                <span className="text-xs font-bold text-[#071B33]">{ar ? 'احصل على الخدمة' : 'Get Service'}</span>
+              </div>
+            </div>
+          </div>
 
           {/* بطاقة الانطلاق */}
           <div

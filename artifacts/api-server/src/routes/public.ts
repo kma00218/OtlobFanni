@@ -26,6 +26,31 @@ router.get("/categories", async (_req, res): Promise<void> => {
   res.json(categories);
 });
 
+// ── Public directory stats ───────────────────────────────────────────────────
+router.get("/stats", async (_req, res): Promise<void> => {
+  const [techs] = await db
+    .select({ count: count() })
+    .from(techniciansTable)
+    .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)));
+
+  const [companies] = await db
+    .select({ count: count() })
+    .from(companyApplicationsTable)
+    .where(eq(companyApplicationsTable.status, 'approved'));
+
+  const [suppliers] = await db
+    .select({ count: count() })
+    .from(supplierApplicationsTable)
+    .where(eq(supplierApplicationsTable.status, 'published'));
+
+  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=120");
+  res.json({
+    technicians: Number(techs.count),
+    companies:   Number(companies.count),
+    suppliers:   Number(suppliers.count),
+  });
+});
+
 // ── Category counts (active technicians per category) ────────────────────────
 router.get("/category-counts", async (_req, res): Promise<void> => {
   const rows = await db
