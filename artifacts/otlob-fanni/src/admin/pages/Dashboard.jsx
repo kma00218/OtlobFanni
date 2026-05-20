@@ -205,9 +205,9 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── TOP TECHNICIANS + TOP COMPANIES ────────────────── */}
-      {analytics && (analytics.topTechs?.length > 0 || analytics.topCompanies?.length > 0) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* ── TOP TECHNICIANS + TOP COMPANIES + TOP SUPPLIERS ────────────────── */}
+      {analytics && (analytics.topTechs?.length > 0 || analytics.topCompanies?.length > 0 || analytics.topSuppliers?.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
           {analytics.topTechs?.length > 0 && (
             <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
               <ChartHeader icon={Wrench} iconBg="bg-orange-50" iconColor="text-[#FF7900]"
@@ -239,6 +239,24 @@ export default function Dashboard() {
                       {c.name || <span className="text-slate-400 font-mono text-xs">{c.id}</span>}
                     </span>
                     <span className="font-black text-indigo-600 flex-shrink-0">{c.count}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          {analytics.topSuppliers?.length > 0 && (
+            <div className="bg-white rounded-2xl p-5" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+              <ChartHeader icon={Package} iconBg="bg-teal-50" iconColor="text-teal-600"
+                title="الموردون الأكثر مشاهدة" sub="آخر 30 يوم" />
+              <div className="space-y-1.5">
+                {analytics.topSuppliers.map((s, i) => (
+                  <a key={s.id} href={`/admin/suppliers?id=${s.id}`}
+                    className="flex items-center gap-3 text-sm px-2 py-1.5 rounded-xl hover:bg-teal-50 transition-colors cursor-pointer group">
+                    <span className="w-5 text-slate-400 text-xs font-bold text-center flex-shrink-0">{i + 1}</span>
+                    <span className="flex-1 text-slate-700 font-semibold truncate group-hover:text-teal-600 transition-colors">
+                      {s.name || <span className="text-slate-400 font-mono text-xs">{s.id}</span>}
+                    </span>
+                    <span className="font-black text-teal-600 flex-shrink-0">{s.count}</span>
                   </a>
                 ))}
               </div>

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { analyticsEventsTable, techniciansTable, companyApplicationsTable } from "@workspace/db/schema";
+import { analyticsEventsTable, techniciansTable, companyApplicationsTable, supplierApplicationsTable } from "@workspace/db/schema";
 import { eq, gte, sql, desc, count, inArray } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
@@ -99,6 +99,25 @@ router.get("/admin/analytics", async (_req, res): Promise<void> => {
     const companyNameMap: Record<string, string> =
       Object.fromEntries(companyRows.map(c => [c.id, c.companyName]));
 
+    // Top supplier profiles viewed (30d)
+    const topSuppliers = await db
+      .select({ ref: analyticsEventsTable.ref, cnt: count() })
+      .from(analyticsEventsTable)
+      .where(sql`${analyticsEventsTable.event} = 'supplier_view' AND ${analyticsEventsTable.createdAt} >= ${d30} AND ${analyticsEventsTable.ref} IS NOT NULL`)
+      .groupBy(analyticsEventsTable.ref)
+      .orderBy(desc(count()))
+      .limit(10);
+
+    // Resolve supplier names
+    const topSupplierIds = topSuppliers.map(s => s.ref).filter(Boolean) as string[];
+    const supplierRows = topSupplierIds.length > 0
+      ? await db.select({ id: supplierApplicationsTable.id, businessName: supplierApplicationsTable.businessName })
+          .from(supplierApplicationsTable)
+          .where(inArray(supplierApplicationsTable.id, topSupplierIds))
+      : [];
+    const supplierNameMap: Record<string, string> =
+      Object.fromEntries(supplierRows.map(s => [s.id, s.businessName]));
+
     // Top searches (30d)
     const topSearches = await db
       .select({ ref: analyticsEventsTable.ref, cnt: count() })
@@ -145,6 +164,7 @@ router.get("/admin/analytics", async (_req, res): Promise<void> => {
       devices: devices.map(d => ({ device: d.device, count: Number(d.cnt) })),
       topTechs: topTechs.map(t => ({ id: t.ref, name: techNameMap[t.ref!]?.nameAr || null, count: Number(t.cnt) })),
       topCompanies: topCompanies.map(c => ({ id: c.ref, name: companyNameMap[c.ref!] || null, count: Number(c.cnt) })),
+      topSuppliers: topSuppliers.map(s => ({ id: s.ref, name: supplierNameMap[s.ref!] || null, count: Number(s.cnt) })),
       topSearches: topSearches.map(s => ({ query: s.ref, count: Number(s.cnt) })),
       topCategories: topCategories.map(c => ({ id: c.ref, count: Number(c.cnt) })),
       dailyVisits: dailyVisits.map(d => ({ day: d.day, count: Number(d.cnt) })),
