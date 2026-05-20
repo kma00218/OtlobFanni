@@ -4,7 +4,7 @@ import {
   techniciansTable, citiesTable, categoriesTable,
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
-  supplierApplicationsTable,
+  supplierApplicationsTable, updateReportsTable,
 } from "@workspace/db/schema";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
@@ -933,6 +933,37 @@ router.get("/referral-stats/:referrerId", async (req, res): Promise<void> => {
     registered: (techStats?.registered ?? 0) + (compStats?.registered ?? 0),
     accepted:   (techStats?.accepted   ?? 0) + (compStats?.accepted   ?? 0),
   });
+});
+
+// ── Update / Report (Public POST) ─────────────────────────────────────────────
+router.post("/update-reports", async (req, res): Promise<void> => {
+  const {
+    entity_type, entity_id, entity_name, city,
+    requester_name, requester_phone, request_type, notes, photos,
+  } = req.body;
+
+  if (!entity_type || !entity_id || !request_type) {
+    res.status(400).json({ error: "entity_type, entity_id, request_type are required" });
+    return;
+  }
+
+  const id = `rpt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+
+  await db.insert(updateReportsTable).values({
+    id,
+    entityType:     entity_type,
+    entityId:       String(entity_id),
+    entityName:     entity_name || "",
+    city:           city || "",
+    requesterName:  requester_name || null,
+    requesterPhone: requester_phone || null,
+    requestType:    request_type,
+    notes:          notes || null,
+    photos:         Array.isArray(photos) ? photos : [],
+    status:         "new",
+  });
+
+  res.status(201).json({ ok: true, id });
 });
 
 export default router;

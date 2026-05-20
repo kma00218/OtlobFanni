@@ -11,6 +11,7 @@ import { track } from '../lib/tracker'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../data/suppliers'
 import ImageLightbox from '../components/ImageLightbox'
 import { SkeletonProfileHeader } from '../components/Skeleton'
+import ReportModal from '../components/ReportModal'
 
 const WaIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0">
@@ -82,6 +83,7 @@ export default function SupplierDetails() {
   const [submitting,   setSubmitting]   = useState(false)
   const [submitted,    setSubmitted]    = useState(false)
   const [showComment,  setShowComment]  = useState(false)
+  const [showReport,   setShowReport]   = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('favSuppliers')
 
   useEffect(() => {
@@ -272,6 +274,12 @@ export default function SupplierDetails() {
                 </button>
               )}
             </div>
+            <button
+              onClick={() => setShowReport(true)}
+              className="w-full flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold py-2 rounded-xl active:scale-95 transition-all mt-1">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+              {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
+            </button>
           </div>
         </div>
 
@@ -535,6 +543,15 @@ export default function SupplierDetails() {
         </div>
 
       </main>
+      <ReportModal
+        open={showReport}
+        onClose={() => setShowReport(false)}
+        entityType="supplier"
+        entityId={String(id)}
+        entityName={name}
+        city={city}
+        ar={ar}
+      />
     </div>
   )
 }

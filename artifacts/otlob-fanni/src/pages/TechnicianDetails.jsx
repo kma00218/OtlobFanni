@@ -12,6 +12,7 @@ import { track } from '../lib/tracker'
 import ImageLightbox from '../components/ImageLightbox'
 import ShareSheet from '../components/ShareSheet'
 import { SkeletonProfileHeader } from '../components/Skeleton'
+import ReportModal from '../components/ReportModal'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -144,6 +145,7 @@ export default function TechnicianDetails() {
   const [submitted,   setSubmitted]   = useState(false)
   const [showComment, setShowComment] = useState(false)
   const [showShare,   setShowShare]   = useState(false)
+  const [showReport,  setShowReport]  = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_technicians')
 
   useEffect(() => {
@@ -356,6 +358,12 @@ export default function TechnicianDetails() {
               className="w-full mt-1 flex items-center justify-center gap-2 bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-2xl active:scale-[0.98] transition-transform shadow-sm shadow-[#FF7900]/30">
               <Send className="w-4 h-4" />
               {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
+            </button>
+            <button
+              onClick={() => setShowReport(true)}
+              className="w-full mt-1 flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold py-2 rounded-xl active:scale-[0.98] transition-all">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+              {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
             </button>
           </div>
         </div>
@@ -657,6 +665,15 @@ export default function TechnicianDetails() {
           onClose={() => setShowShare(false)}
         />
       )}
+      <ReportModal
+        open={showReport}
+        onClose={() => setShowReport(false)}
+        entityType="technician"
+        entityId={String(id)}
+        entityName={tech?.name || ''}
+        city={tech?.city || ''}
+        ar={ar}
+      />
     </div>
   )
 }

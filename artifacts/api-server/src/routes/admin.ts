@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
-  adminsTable, serviceRequestsTable, supplierApplicationsTable,
+  adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
 } from "@workspace/db/schema";
 import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
@@ -31,6 +31,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [totalSupplierApps]    = await db.select({ count: count() }).from(supplierApplicationsTable);
   const [publishedSuppliers]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "published"));
   const [activeSupplierApps]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(ne(supplierApplicationsTable.status, "published"));
+  const [pendingUpdateRpts]    = await db.select({ count: count() }).from(updateReportsTable).where(eq(updateReportsTable.status, "new"));
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
@@ -56,6 +57,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     totalSupplierApps:    Number(totalSupplierApps.count),
     activeSupplierApps:   Number(activeSupplierApps.count),
     totalSuppliers:       Number(publishedSuppliers.count),
+    pendingUpdateReports: Number(pendingUpdateRpts.count),
     recentRequests,
     recentTechs,
     recentCompanies,
@@ -715,6 +717,26 @@ router.get("/search-account", async (req, res): Promise<void> => {
   ]);
 
   res.json(results);
+});
+
+// ── Update Reports (Admin) ─────────────────────────────────────────────────────
+router.get("/update-reports", async (_req, res): Promise<void> => {
+  const rows = await db.select().from(updateReportsTable).orderBy(desc(updateReportsTable.createdAt));
+  res.json(rows);
+});
+
+router.patch("/update-reports/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { status } = req.body;
+  if (!status) { res.status(400).json({ error: "status required" }); return; }
+  await db.update(updateReportsTable).set({ status }).where(eq(updateReportsTable.id, id));
+  res.json({ ok: true });
+});
+
+router.delete("/update-reports/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  await db.delete(updateReportsTable).where(eq(updateReportsTable.id, id));
+  res.json({ ok: true });
 });
 
 export default router;

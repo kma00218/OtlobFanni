@@ -203,6 +203,12 @@ export const api = {
     storageUsage: () => get('/admin/storage-usage'),
     analytics: () => get('/admin/analytics'),
 
+    updateReports: {
+      list:       ()          => get('/admin/update-reports'),
+      setStatus:  (id, status)=> patch(`/admin/update-reports/${id}`, { status }),
+      delete:     (id)        => del(`/admin/update-reports/${id}`),
+    },
+
     companies: {
       list:         ()             => get('/admin/companies'),
       create:       (data)        => post('/admin/companies', data),
