@@ -1,10 +1,25 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
-import { Phone, MapPin, Package, MessageCircle, Search, ChevronDown, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Phone, MapPin, Package, MessageCircle, Search, ChevronDown, ArrowRight, ArrowLeft, Heart } from 'lucide-react'
 import api from '../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../data/suppliers'
 import { useSearch, useLocation } from 'wouter'
+
+function useFavorites(storageKey) {
+  const [favs, setFavs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch { return [] }
+  })
+  const toggle = (id) => {
+    setFavs(prev => {
+      const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+      localStorage.setItem(storageKey, JSON.stringify(next))
+      return next
+    })
+  }
+  return { isFav: (id) => favs.includes(id), toggle }
+}
+
 
 const WaIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0">
@@ -78,6 +93,7 @@ export default function Suppliers() {
   const cityFromUrl = searchParams.get('city') || ''
 
   const [, navigate] = useLocation()
+  const { isFav, toggle: toggleFav } = useFavorites('favSuppliers')
 
   const [suppliers, setSuppliers] = useState([])
   const [cities, setCities] = useState([])
@@ -296,7 +312,20 @@ export default function Suppliers() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-extrabold text-[#071B33] text-base leading-tight line-clamp-1">{s.businessName}</h3>
+                    <div className="flex items-start justify-between gap-1">
+                      <h3 className="font-extrabold text-[#071B33] text-base leading-tight line-clamp-1">{s.businessName}</h3>
+                      <button
+                        onClick={e => { e.stopPropagation(); toggleFav(s.id) }}
+                        className="p-1.5 rounded-full hover:bg-rose-50 transition-colors flex-shrink-0 -mt-0.5"
+                        aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
+                      >
+                        <Heart
+                          className="w-4 h-4 transition-colors"
+                          fill={isFav(s.id) ? '#f43f5e' : 'none'}
+                          stroke={isFav(s.id) ? '#f43f5e' : '#9ca3af'}
+                        />
+                      </button>
+                    </div>
                     {s.requestNumber && (
                       <p className="text-[10px] font-mono font-bold text-indigo-500 tracking-wider mt-0.5">{s.requestNumber}</p>
                     )}

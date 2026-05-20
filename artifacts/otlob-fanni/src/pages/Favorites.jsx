@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
-import { Heart, MapPin, Phone, MessageSquare, Star, Zap, Building2 } from 'lucide-react'
+import { Heart, MapPin, Phone, MessageSquare, Star, Zap, Building2, Package } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import api, { getFileUrl } from '../lib/api'
+import { supplyTypeLabel, SUPPLY_TYPES } from '../data/suppliers'
 
 function Stars({ rating }) {
   return (
@@ -166,39 +167,94 @@ function CompanyRow({ company, ar, onRemove }) {
   )
 }
 
+function SupplierRow({ supplier, ar, onRemove }) {
+  const [, navigate] = useLocation()
+  const name      = supplier.businessName || ''
+  const logo      = supplier.logo
+    ? (supplier.logo.startsWith('/objects/') ? `/api/storage${supplier.logo}` : supplier.logo)
+    : null
+  const city      = supplier.city || ''
+  const supType   = supplier.supplyType || ''
+  const supLabel  = supplier.customSupplyType || supplyTypeLabel(supType)
+  const supEmoji  = SUPPLY_TYPES.find(t => t.id === supType)?.emoji || '📦'
+
+  return (
+    <div
+      className="bg-[#E4F7F6] rounded-2xl border border-teal-200 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+      onClick={() => navigate(`/supplier/${supplier.id}`)}
+    >
+      <div className="flex gap-3 p-3">
+        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #0e7c8f 0%, #071B33 100%)' }}>
+          {logo
+            ? <img src={logo} alt={name} className="w-full h-full object-cover" />
+            : <span className="text-2xl">{supEmoji}</span>
+          }
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-1">
+            <p className="font-bold text-gray-900 text-sm leading-tight">{name}</p>
+            <button onClick={e => { e.stopPropagation(); onRemove(supplier.id) }}
+              className="p-1 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+              <Heart className="w-4 h-4 text-rose-500" fill="currentColor" />
+            </button>
+          </div>
+          {supLabel && (
+            <span className="text-[11px] font-bold text-[#0e5c6d] bg-[#0e5c6d]/10 px-2 py-0.5 rounded-full inline-block mt-1">
+              {supEmoji} {supLabel}
+            </span>
+          )}
+          {city && (
+            <div className="flex items-center gap-1 mt-1">
+              <MapPin className="w-3 h-3 text-gray-400" />
+              <p className="text-xs text-gray-400">{city}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Favorites() {
   const { lang } = useLang()
   const ar = lang === 'ar'
 
   const [favTechIds, setFavTechIds]         = useState([])
   const [favCompanyIds, setFavCompanyIds]   = useState([])
+  const [favSupplierIds, setFavSupplierIds] = useState([])
   const [techs, setTechs]                   = useState([])
   const [companies, setCompanies]           = useState([])
+  const [suppliers, setSuppliers]           = useState([])
   const [loading, setLoading]               = useState(true)
 
   useEffect(() => {
     try {
       setFavTechIds(JSON.parse(localStorage.getItem('fav_technicians') || '[]'))
       setFavCompanyIds(JSON.parse(localStorage.getItem('fav_companies') || '[]'))
+      setFavSupplierIds(JSON.parse(localStorage.getItem('favSuppliers') || '[]'))
     } catch {}
   }, [])
 
   useEffect(() => {
     const hasTechs     = favTechIds.length > 0
     const hasCompanies = favCompanyIds.length > 0
-    if (!hasTechs && !hasCompanies) { setLoading(false); return }
+    const hasSuppliers = favSupplierIds.length > 0
+    if (!hasTechs && !hasCompanies && !hasSuppliers) { setLoading(false); return }
 
-    const techPromise    = hasTechs     ? api.technicians() : Promise.resolve([])
-    const companyPromise = hasCompanies ? api.companies()   : Promise.resolve([])
+    const techPromise     = hasTechs     ? api.technicians() : Promise.resolve([])
+    const companyPromise  = hasCompanies ? api.companies()   : Promise.resolve([])
+    const supplierPromise = hasSuppliers ? api.suppliers()   : Promise.resolve([])
 
-    Promise.all([techPromise, companyPromise])
-      .then(([allTechs, allCompanies]) => {
+    Promise.all([techPromise, companyPromise, supplierPromise])
+      .then(([allTechs, allCompanies, allSuppliers]) => {
         setTechs(allTechs.filter(t => favTechIds.includes(t.id)))
         setCompanies(allCompanies.filter(c => favCompanyIds.includes(c.id)))
+        setSuppliers(allSuppliers.filter(s => favSupplierIds.includes(s.id)))
         setLoading(false)
       })
       .catch(() => setLoading(false))
-  }, [favTechIds, favCompanyIds])
+  }, [favTechIds, favCompanyIds, favSupplierIds])
 
   const removeTech = (id) => {
     const next = favTechIds.filter(f => f !== id)
@@ -214,7 +270,14 @@ export default function Favorites() {
     localStorage.setItem('fav_companies', JSON.stringify(next))
   }
 
-  const totalCount = techs.length + companies.length
+  const removeSupplier = (id) => {
+    const next = favSupplierIds.filter(f => f !== id)
+    setFavSupplierIds(next)
+    setSuppliers(prev => prev.filter(s => s.id !== id))
+    localStorage.setItem('favSuppliers', JSON.stringify(next))
+  }
+
+  const totalCount = techs.length + companies.length + suppliers.length
 
   return (
     <div className="bg-[#F2F2F7] min-h-screen pt-20 pb-24" dir={ar ? 'rtl' : 'ltr'}>
@@ -235,8 +298,8 @@ export default function Favorites() {
             </h2>
             <p className="text-sm text-gray-400 mb-6 max-w-[240px] leading-relaxed">
               {ar
-                ? 'اضغط على أيقونة القلب على بطاقة أي فني أو شركة لإضافتها للمفضلة'
-                : 'Tap the heart icon on any technician or company card to save them here'}
+                ? 'اضغط على أيقونة القلب على بطاقة أي فني أو شركة أو مورّد لإضافتها للمفضلة'
+                : 'Tap the heart icon on any technician, company, or supplier card to save them here'}
             </p>
             <Link href="/">
               <button className="bg-[#FF7900] text-white font-bold px-8 py-3 rounded-2xl text-sm">
@@ -276,6 +339,21 @@ export default function Favorites() {
                 </div>
                 {companies.map(company => (
                   <CompanyRow key={company.id} company={company} ar={ar} onRemove={removeCompany} />
+                ))}
+              </div>
+            )}
+
+            {/* موردون */}
+            {suppliers.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 px-3 py-2 bg-[#0e5c6d] rounded-xl">
+                  <span className="text-base leading-none">📦</span>
+                  <p className="text-sm font-bold text-white">
+                    {ar ? `موردون (${suppliers.length})` : `Suppliers (${suppliers.length})`}
+                  </p>
+                </div>
+                {suppliers.map(sup => (
+                  <SupplierRow key={sup.id} supplier={sup} ar={ar} onRemove={removeSupplier} />
                 ))}
               </div>
             )}

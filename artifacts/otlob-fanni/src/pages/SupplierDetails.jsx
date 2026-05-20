@@ -201,14 +201,13 @@ export default function SupplierDetails() {
           <div className="bg-gradient-to-r from-[#0e5c6d] to-[#1a8fa8] px-4 pt-4 pb-6 flex items-start justify-end">
             <button
               onClick={() => toggleFav(id)}
-              className="w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-transform"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
+              className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform bg-white/90 shadow"
               aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
             >
               <Heart
-                className="w-4 h-4 transition-colors"
+                className="w-5 h-5 transition-colors"
                 fill={isFav(id) ? '#f43f5e' : 'none'}
-                stroke={isFav(id) ? '#f43f5e' : 'white'}
+                stroke={isFav(id) ? '#f43f5e' : '#374151'}
               />
             </button>
           </div>
