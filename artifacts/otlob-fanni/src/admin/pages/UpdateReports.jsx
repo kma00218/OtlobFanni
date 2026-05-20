@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye } from 'lucide-react'
+import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink } from 'lucide-react'
 import api from '../../lib/api'
 
 const STATUS_CONFIG = {
@@ -22,6 +22,13 @@ const ENTITY_TYPE_LABELS = {
   technician: 'فني',
   company:    'شركة',
   supplier:   'مورد',
+}
+
+const entityPath = (type, id) => {
+  if (type === 'technician') return `/technician/${id}`
+  if (type === 'company')    return `/company/${id}`
+  if (type === 'supplier')   return `/supplier/${id}`
+  return null
 }
 
 export default function UpdateReports() {
@@ -139,6 +146,18 @@ export default function UpdateReports() {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 font-medium">
                         {REQUEST_TYPE_LABELS[r.requestType] || r.requestType}
                       </span>
+                      {entityPath(r.entityType, r.entityId) && (
+                        <a
+                          href={entityPath(r.entityType, r.entityId)}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#071B33]/8 text-[#071B33] hover:bg-[#071B33]/15 font-medium transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          فتح الصفحة
+                        </a>
+                      )}
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">
                       {r.city && <span className="ml-2">{r.city}</span>}
