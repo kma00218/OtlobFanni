@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
@@ -574,6 +574,15 @@ export default function Technicians() {
     api.admin.cities.list().then(setCities).catch(() => {})
     api.admin.categories.list().then(setCategories).catch(() => {})
   }, [reloadTechs])
+
+  const autoOpened = useRef(false)
+  useEffect(() => {
+    if (loading || autoOpened.current || !allTechs.length) return
+    const editId = new URLSearchParams(window.location.search).get('edit')
+    if (!editId) return
+    const row = allTechs.find(t => String(t.id) === String(editId))
+    if (row) { openEdit(row); autoOpened.current = true }
+  }, [loading, allTechs])
 
   useEffect(() => {
     let rows = [...allTechs]

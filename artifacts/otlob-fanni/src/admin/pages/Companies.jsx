@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
@@ -92,6 +92,15 @@ export default function Companies() {
     reload()
     api.categories().then(setCategories).catch(() => {})
   }, [])
+
+  const autoOpened = useRef(false)
+  useEffect(() => {
+    if (loading || autoOpened.current || !data.length) return
+    const editId = new URLSearchParams(window.location.search).get('edit')
+    if (!editId) return
+    const row = data.find(r => String(r.id) === String(editId))
+    if (row) { openEdit(row); autoOpened.current = true }
+  }, [loading, data])
 
   const handleRevoke = async (id) => {
     if (!confirm('هل تريد إلغاء الموافقة على هذه الشركة؟ ستعود إلى قائمة الطلبات.')) return

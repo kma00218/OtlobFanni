@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink } from 'lucide-react'
+import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink, Pencil } from 'lucide-react'
 import api from '../../lib/api'
 
 const STATUS_CONFIG = {
@@ -28,6 +28,13 @@ const entityPath = (type, id) => {
   if (type === 'technician') return `/technician/${id}`
   if (type === 'company')    return `/company/${id}`
   if (type === 'supplier')   return `/supplier/${id}`
+  return null
+}
+
+const adminEditPath = (type, id) => {
+  if (type === 'technician') return `/admin/technicians?edit=${id}`
+  if (type === 'company')    return `/admin/companies?edit=${id}`
+  if (type === 'supplier')   return `/admin/suppliers?edit=${id}`
   return null
 }
 
@@ -152,10 +159,20 @@ export default function UpdateReports() {
                           target="_blank"
                           rel="noreferrer"
                           onClick={e => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#071B33]/8 text-[#071B33] hover:bg-[#071B33]/15 font-medium transition-colors"
+                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium transition-colors"
                         >
                           <ExternalLink className="w-3 h-3" />
-                          فتح الصفحة
+                          عرض
+                        </a>
+                      )}
+                      {adminEditPath(r.entityType, r.entityId) && (
+                        <a
+                          href={adminEditPath(r.entityType, r.entityId)}
+                          onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#FF7900]/10 text-[#FF7900] hover:bg-[#FF7900]/20 font-medium transition-colors"
+                        >
+                          <Pencil className="w-3 h-3" />
+                          تعديل
                         </a>
                       )}
                     </div>
