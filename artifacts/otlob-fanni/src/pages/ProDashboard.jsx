@@ -113,29 +113,46 @@ export default function ProDashboard() {
 
       <div className="flex-1 px-4 pt-6 pb-10">
         <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 px-1">أدوات العمل</p>
-        <div className="space-y-3">
-          {TOOLS.map(tool => (
-            <div key={tool.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <button
-                onClick={tool.soon ? showSoon : undefined}
-                className="w-full flex items-center gap-4 px-4 py-4 active:bg-slate-50 transition-colors"
-              >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${tool.bg}`}>
-                  {tool.icon}
-                </div>
-                <div className="flex-1 text-right">
-                  <p className="font-bold text-[#071B33] text-base">{tool.labelAr}</p>
-                  {tool.soon && (
-                    <p className="text-xs text-slate-400 font-medium mt-0.5">قريباً</p>
-                  )}
-                </div>
-                {!tool.soon && (
-                  <ChevronLeft className="w-5 h-5 text-slate-300 flex-shrink-0" />
+
+        {/* 2×2 grid */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          {TOOLS.slice(0, 4).map(tool => (
+            <button
+              key={tool.id}
+              onClick={tool.soon ? showSoon : undefined}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col items-center gap-3 active:scale-95 transition-transform"
+            >
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${tool.bg}`}>
+                {tool.icon}
+              </div>
+              <div className="text-center">
+                <p className="font-bold text-[#071B33] text-sm leading-tight">{tool.labelAr}</p>
+                {tool.soon && (
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">قريباً</p>
                 )}
-              </button>
-            </div>
+              </div>
+            </button>
           ))}
         </div>
+
+        {/* 5th — wide card */}
+        {TOOLS[4] && (
+          <button
+            onClick={TOOLS[4].soon ? showSoon : undefined}
+            className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5 flex items-center gap-5 active:scale-[0.98] transition-transform"
+          >
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${TOOLS[4].bg}`}>
+              {TOOLS[4].icon}
+            </div>
+            <div className="flex-1 text-right">
+              <p className="font-extrabold text-[#071B33] text-base">{TOOLS[4].labelAr}</p>
+              {TOOLS[4].soon && (
+                <p className="text-xs text-slate-400 font-medium mt-0.5">قريباً</p>
+              )}
+            </div>
+            <ChevronLeft className="w-5 h-5 text-slate-300 flex-shrink-0" />
+          </button>
+        )}
       </div>
 
     </div>
