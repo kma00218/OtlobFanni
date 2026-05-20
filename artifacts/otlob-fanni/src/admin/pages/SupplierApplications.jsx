@@ -196,7 +196,7 @@ export default function SupplierApplications() {
       render: (_, row) => (
         <button
           onClick={e => { e.stopPropagation(); setActionMenu(row) }}
-          className="w-7 h-7 rounded-lg bg-[#FF7900]/20 hover:bg-[#FF7900]/40 flex items-center justify-center text-[#FF7900] text-base font-bold transition-colors">
+          className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-800 text-base font-bold transition-colors">
           ⋮
         </button>
       ),
