@@ -4,7 +4,7 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2 } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
@@ -347,6 +347,38 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          {/* ── شارك التطبيق ── */}
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'اطلب فني – Otlob Fanni',
+                  text: ar
+                    ? 'دليل الفنيين والشركات والموردين في ليبيا – اطلب فني'
+                    : "Libya's technician & company directory – Otlob Fanni",
+                  url: 'https://otlobfanni.ly',
+                })
+              } else {
+                navigator.clipboard?.writeText('https://otlobfanni.ly')
+              }
+            }}
+            className="mt-4 w-full flex items-center gap-3 rounded-2xl px-5 py-3.5 active:scale-[0.98] transition-transform select-none"
+            style={{ background: 'linear-gradient(90deg, #7B2FBE 0%, #5a1fa0 100%)', boxShadow: '0 4px 16px rgba(123,47,190,0.3)' }}
+          >
+            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Share2 className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 text-right">
+              <p className="text-white font-extrabold text-sm leading-tight">
+                {ar ? 'شارك التطبيق مع أصدقائك' : 'Share the app with friends'}
+              </p>
+              <p className="text-white/70 text-xs font-medium mt-0.5">
+                {ar ? 'ساعد في نشر اطلب فني في ليبيا' : 'Help spread Otlob Fanni in Libya'}
+              </p>
+            </div>
+            <Share2 className="w-4 h-4 text-white/50 flex-shrink-0" />
+          </button>
 
           {/* بطاقة الانطلاق */}
           <div
