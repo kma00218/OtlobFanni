@@ -244,6 +244,7 @@ export const api = {
     generateCredentials: (entityType, entityId) => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
   },
 
+  popularCategories: () => get('/categories/popular'),
   submitReferral: (data) => post('/referrals', data),
 
   suppliers:                    (p)    => get('/suppliers' + (p?.city ? `?city=${encodeURIComponent(p.city)}` : '')),

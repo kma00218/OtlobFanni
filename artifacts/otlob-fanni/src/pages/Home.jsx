@@ -100,10 +100,10 @@ export default function Home() {
       })
       .catch(() => {})
 
-    api.categories()
+    api.popularCategories()
       .then(data => {
         if (!Array.isArray(data)) return
-        setTopCategories(data.slice(0, 12))
+        setTopCategories(data)
       })
       .catch(() => {})
   }, [])
@@ -230,22 +230,38 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── أبرز التخصصات ── */}
+        {/* ── التخصصات الأكثر طلباً ── */}
         {topCategories.length > 0 && (
-          <div
-            className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {topCategories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => navigate(`/category/${cat.id}`)}
-                className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors active:scale-95"
-                style={{ background: '#FF7900', color: 'white' }}
-              >
-                {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
-              </button>
-            ))}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-extrabold text-[#071B33]">
+                  {ar ? '🔥 الأكثر طلباً' : '🔥 Most Requested'}
+                </span>
+                <span className="text-[10px] text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                  {ar ? 'من أصل كل التخصصات' : 'from all specialties'}
+                </span>
+              </div>
+              <Link href="/categories" className="text-[11px] font-bold text-[#FF7900] flex items-center gap-0.5">
+                {ar ? 'عرض الكل' : 'View all'}
+                {ar ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              </Link>
+            </div>
+            <div
+              className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {topCategories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => navigate(`/category/${cat.id}`)}
+                  className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors active:scale-95"
+                  style={{ background: '#FF7900', color: 'white' }}
+                >
+                  {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

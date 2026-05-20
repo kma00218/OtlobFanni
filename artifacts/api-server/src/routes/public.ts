@@ -5,7 +5,7 @@ import {
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
-  referralsTable,
+  referralsTable, analyticsEventsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
@@ -25,6 +25,51 @@ router.get("/categories", async (_req, res): Promise<void> => {
   const categories = await db.select().from(categoriesTable).orderBy(categoriesTable.sortOrder);
   res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
   res.json(categories);
+});
+
+// ── Popular categories (sorted by real demand: clicks + technician count) ─────
+router.get("/categories/popular", async (_req, res): Promise<void> => {
+  const limit = 14;
+
+  // Get click counts per category from analytics (last 30 days)
+  const d30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const clicks = await db
+    .select({ ref: sql<string>`${analyticsEventsTable.ref}`, cnt: count() })
+    .from(analyticsEventsTable)
+    .where(sql`${analyticsEventsTable.event} = 'category_click' AND ${analyticsEventsTable.createdAt} >= ${d30} AND ${analyticsEventsTable.ref} IS NOT NULL`)
+    .groupBy(analyticsEventsTable.ref);
+
+  // Get technician count per category
+  const techCounts = await db
+    .select({ categoryId: techniciansTable.categoryId, cnt: count() })
+    .from(techniciansTable)
+    .where(and(eq(techniciansTable.isActive, true), eq(techniciansTable.isApproved, true)))
+    .groupBy(techniciansTable.categoryId);
+
+  const clickMap: Record<string, number> = {};
+  clicks.forEach(r => { if (r.ref) clickMap[r.ref] = Number(r.cnt); });
+
+  const techMap: Record<string, number> = {};
+  techCounts.forEach(r => { if (r.categoryId) techMap[r.categoryId] = Number(r.cnt); });
+
+  const categories = await db
+    .select()
+    .from(categoriesTable)
+    .where(eq(categoriesTable.isActive, true))
+    .orderBy(categoriesTable.sortOrder);
+
+  // Score: clicks × 3 + technician count × 1, then sortOrder as tiebreaker
+  const scored = categories
+    .map(c => ({
+      ...c,
+      _score: (clickMap[c.id] ?? 0) * 3 + (techMap[c.id] ?? 0),
+    }))
+    .sort((a, b) => b._score - a._score || a.sortOrder - b.sortOrder)
+    .slice(0, limit)
+    .map(({ _score, ...c }) => c);
+
+  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=120");
+  res.json(scored);
 });
 
 // ── Public directory stats ───────────────────────────────────────────────────
