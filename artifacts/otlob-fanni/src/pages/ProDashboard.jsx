@@ -80,9 +80,9 @@ export default function ProDashboard() {
     <div className="min-h-[100dvh] bg-[#F2F2F7] flex flex-col max-w-[480px] mx-auto" dir="rtl">
 
       {soonToast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#071B33] text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-lg">
-          <Clock className="w-4 h-4 text-[#FF7900]" />
-          هذه الميزة قيد التطوير، ترقبها قريباً
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#071B33] text-white text-sm font-bold px-6 py-3.5 rounded-2xl shadow-xl whitespace-nowrap">
+          <Clock className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
+          هذه الميزة قريباً ✦
         </div>
       )}
 
