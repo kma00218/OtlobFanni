@@ -65,7 +65,6 @@ export default function Home() {
   const [stats, setStats] = useState(null)
   const [citiesForFilter, setCitiesForFilter] = useState([])
 
-  const CITY_NAMES = ['طرابلس', 'بنغازي', 'مصراتة', 'الزاوية', 'زليتن', 'الخمس', 'سبها']
 
   const handleLogoClick = () => {
     logoClickCount.current += 1
@@ -93,10 +92,7 @@ export default function Home() {
     api.cities()
       .then(data => {
         if (!Array.isArray(data)) return
-        const filtered = CITY_NAMES
-          .map(name => data.find(c => c.nameAr === name))
-          .filter(Boolean)
-        setCitiesForFilter(filtered)
+        setCitiesForFilter(data)
       })
       .catch(() => {})
   }, [])
