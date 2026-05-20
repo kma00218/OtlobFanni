@@ -471,7 +471,7 @@ export default function AdminSearch() {
               </div>
 
               {/* Edit + Profile links */}
-              {(editAdminPath(r) || profileUrl) && (
+              {(editAdminPath(r) || profileUrl || r.status === 'published') && (
                 <div className="flex items-center gap-3 flex-wrap pt-1">
                   {editAdminPath(r) && (
                     <a href={editAdminPath(r)}
@@ -479,6 +479,18 @@ export default function AdminSearch() {
                       <Pencil className="w-4 h-4" />
                       تعديل البيانات
                     </a>
+                  )}
+                  {r.status === 'published' && (r.whatsapp || r.phone) && (
+                    <button
+                      onClick={() => sendCredentials(r)}
+                      disabled={credsSending === r.id}
+                      className="inline-flex items-center gap-2 bg-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-emerald-600 transition-colors shadow-sm disabled:opacity-60">
+                      {credsSending === r.id
+                        ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        : <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+                      }
+                      {credsSending === r.id ? 'جارٍ الإرسال…' : 'إرسال بيانات الدخول'}
+                    </button>
                   )}
                   {profileUrl && (
                     <a href={profileUrl} target="_blank" rel="noopener noreferrer"
