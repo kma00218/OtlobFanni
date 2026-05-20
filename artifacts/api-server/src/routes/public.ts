@@ -5,6 +5,7 @@ import {
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
+  referralsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
@@ -1004,6 +1005,22 @@ router.post("/pro/login", async (req, res): Promise<void> => {
   const hash = crypto.createHash("sha256").update(String(password)).digest("hex");
   if (hash !== cred.passwordHash) { res.status(401).json({ error: "Invalid credentials" }); return; }
   res.json({ entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });
+});
+
+// ── Submit Referral (public) ─────────────────────────────────────────────────
+router.post("/referrals", async (req, res): Promise<void> => {
+  const { type, name, phone, specialty, city, notes } = req.body;
+  const validTypes = ["technician", "company", "supplier"];
+  if (!type || !validTypes.includes(type)) { res.status(400).json({ error: "invalid type" }); return; }
+  if (!name || !name.trim()) { res.status(400).json({ error: "name required" }); return; }
+  if (!phone || !phone.trim()) { res.status(400).json({ error: "phone required" }); return; }
+  const [row] = await db.insert(referralsTable).values({
+    type, name: name.trim(), phone: phone.trim(),
+    specialty: specialty?.trim() || null,
+    city: city?.trim() || null,
+    notes: notes?.trim() || null,
+  }).returning();
+  res.json(row);
 });
 
 export default router;

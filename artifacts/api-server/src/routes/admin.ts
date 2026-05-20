@@ -4,7 +4,7 @@ import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
-  proCredentialsTable,
+  proCredentialsTable, referralsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
@@ -34,6 +34,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [publishedSuppliers]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "published"));
   const [activeSupplierApps]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(ne(supplierApplicationsTable.status, "published"));
   const [pendingUpdateRpts]    = await db.select({ count: count() }).from(updateReportsTable).where(eq(updateReportsTable.status, "new"));
+  const [pendingReferrals]     = await db.select({ count: count() }).from(referralsTable).where(eq(referralsTable.status, "new"));
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
@@ -60,6 +61,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     activeSupplierApps:   Number(activeSupplierApps.count),
     totalSuppliers:       Number(publishedSuppliers.count),
     pendingUpdateReports: Number(pendingUpdateRpts.count),
+    pendingReferrals:     Number(pendingReferrals.count),
     recentRequests,
     recentTechs,
     recentCompanies,
@@ -789,6 +791,29 @@ router.patch("/update-reports/:id", async (req, res): Promise<void> => {
 router.delete("/update-reports/:id", async (req, res): Promise<void> => {
   const { id } = req.params;
   await db.delete(updateReportsTable).where(eq(updateReportsTable.id, id));
+  res.json({ ok: true });
+});
+
+// ── Referrals ─────────────────────────────────────────────────────────────────
+router.get("/referrals", async (_req, res): Promise<void> => {
+  const rows = await db.select().from(referralsTable).orderBy(desc(referralsTable.createdAt));
+  res.json(rows);
+});
+
+router.patch("/referrals/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { status, notes } = req.body;
+  const updates: Record<string, unknown> = {};
+  if (status) updates.status = status;
+  if (notes !== undefined) updates.notes = notes;
+  if (Object.keys(updates).length === 0) { res.status(400).json({ error: "nothing to update" }); return; }
+  await db.update(referralsTable).set(updates).where(eq(referralsTable.id, Number(id)));
+  res.json({ ok: true });
+});
+
+router.delete("/referrals/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  await db.delete(referralsTable).where(eq(referralsTable.id, Number(id)));
   res.json({ ok: true });
 });
 

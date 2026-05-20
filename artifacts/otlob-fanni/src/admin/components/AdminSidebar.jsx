@@ -4,7 +4,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   LayoutDashboard, Wrench, Building2, Tag, MapPin, FileCheck,
   Megaphone, Users, Settings, Activity, LogOut, X, Shield, Newspaper, Search,
-  Image as ImageIcon, Package, Flag,
+  Image as ImageIcon, Package, Flag, UserPlus,
 } from 'lucide-react'
 import api from '../../lib/api'
 
@@ -36,6 +36,7 @@ const NAV_GROUPS = [
       { path: '/admin/supplier-applications',   label: 'طلبات المستلزمات', icon: Package,    badgeKey: 'pendingSupplierApps', badgeColor: 'blue', statsKey: 'activeSupplierApps' },
       { path: '/admin/ad-requests',             label: 'طلبات الإعلانات',  icon: Newspaper,  badgeKey: 'pendingAdRequests',  badgeColor: 'purple' },
       { path: '/admin/update-reports',          label: 'بلاغات التحديث',   icon: Flag,       badgeKey: 'pendingUpdateReports', badgeColor: 'red' },
+      { path: '/admin/referrals',               label: 'الترشيحات',         icon: UserPlus,   badgeKey: 'pendingReferrals',     badgeColor: 'green' },
     ]
   },
   {

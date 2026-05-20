@@ -210,6 +210,12 @@ export const api = {
       delete:     (id)        => del(`/admin/update-reports/${id}`),
     },
 
+    referrals: {
+      list:      ()              => get('/admin/referrals'),
+      setStatus: (id, status)   => patch(`/admin/referrals/${id}`, { status }),
+      delete:    (id)            => del(`/admin/referrals/${id}`),
+    },
+
     companies: {
       list:         ()             => get('/admin/companies'),
       create:       (data)        => post('/admin/companies', data),
@@ -237,6 +243,8 @@ export const api = {
     login: (whatsapp, password) => post('/pro/login', { whatsapp, password }),
     generateCredentials: (entityType, entityId) => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
   },
+
+  submitReferral: (data) => post('/referrals', data),
 
   suppliers:                    (p)    => get('/suppliers' + (p?.city ? `?city=${encodeURIComponent(p.city)}` : '')),
   supplier:                     (id)   => get(`/suppliers/${id}`),

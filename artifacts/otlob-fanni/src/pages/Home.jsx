@@ -67,7 +67,7 @@ export default function Home() {
   const [citiesForFilter, setCitiesForFilter] = useState([])
   const [topCategories, setTopCategories] = useState([])
   const [showReferral, setShowReferral] = useState(false)
-  const [referralForm, setReferralForm] = useState({ name: '', phone: '', specialty: '', city: '' })
+  const [referralForm, setReferralForm] = useState({ type: 'technician', name: '', phone: '', specialty: '', city: '', submitting: false })
 
 
   const handleLogoClick = () => {
@@ -499,7 +499,7 @@ export default function Home() {
         </div>
       </main>
 
-    {/* ── Modal: رشّح فني ── */}
+    {/* ── Modal: رشّح / اقترح ── */}
     {showReferral && (
       <div
         className="fixed inset-0 z-50 flex items-end justify-center"
@@ -512,15 +512,37 @@ export default function Home() {
         >
           <div className="w-10 h-1 rounded-full bg-gray-200 mx-auto mb-5" />
           <h3 className="text-lg font-extrabold text-[#071B33] mb-1 text-center">
-            {ar ? '💡 رشّح فنياً تعرفه' : '💡 Recommend a Technician'}
+            {ar ? '💡 رشّح شخصاً تعرفه' : '💡 Recommend Someone'}
           </h3>
           <p className="text-xs text-gray-400 text-center mb-5">
             {ar ? 'أدخل بياناته وسنتواصل معه للانضمام' : 'Enter their info and we\'ll reach out'}
           </p>
+
+          {/* اختيار النوع */}
+          <div className="flex gap-2 mb-4">
+            {[
+              { key: 'technician', label: ar ? '👷 فني' : '👷 Technician' },
+              { key: 'company',    label: ar ? '🏢 شركة' : '🏢 Company' },
+              { key: 'supplier',   label: ar ? '📦 مورّد' : '📦 Supplier' },
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setReferralForm(f => ({ ...f, type: t.key }))}
+                className={`flex-1 py-2 rounded-xl text-xs font-extrabold border-2 transition-all ${
+                  referralForm.type === t.key
+                    ? 'border-[#FF7900] bg-orange-50 text-[#FF7900]'
+                    : 'border-gray-200 text-gray-400 hover:border-gray-300'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
           <div className="flex flex-col gap-3">
             <input
               type="text"
-              placeholder={ar ? 'اسم الفني *' : 'Technician name *'}
+              placeholder={ar ? 'الاسم *' : 'Full name *'}
               value={referralForm.name}
               onChange={e => setReferralForm(f => ({ ...f, name: e.target.value }))}
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
@@ -528,7 +550,7 @@ export default function Home() {
             />
             <div>
               <p className="text-xs font-bold text-gray-500 mb-1 px-1">
-                {ar ? 'رقم واتساب الفني *' : 'WhatsApp number *'}
+                {ar ? 'رقم واتساب *' : 'WhatsApp number *'}
               </p>
               <LibyaPhoneInput
                 required
@@ -538,7 +560,13 @@ export default function Home() {
             </div>
             <input
               type="text"
-              placeholder={ar ? 'تخصصه (اختياري)' : 'Specialty (optional)'}
+              placeholder={
+                referralForm.type === 'technician'
+                  ? (ar ? 'التخصص (اختياري)' : 'Specialty (optional)')
+                  : referralForm.type === 'company'
+                  ? (ar ? 'نوع الخدمة (اختياري)' : 'Service type (optional)')
+                  : (ar ? 'نوع المستلزمات (اختياري)' : 'Product type (optional)')
+              }
               value={referralForm.specialty}
               onChange={e => setReferralForm(f => ({ ...f, specialty: e.target.value }))}
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
@@ -546,24 +574,38 @@ export default function Home() {
             />
             <input
               type="text"
-              placeholder={ar ? 'مدينته (اختياري)' : 'City (optional)'}
+              placeholder={ar ? 'المدينة (اختياري)' : 'City (optional)'}
               value={referralForm.city}
               onChange={e => setReferralForm(f => ({ ...f, city: e.target.value }))}
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
               dir="rtl"
             />
             <button
-              disabled={!referralForm.name.trim() || !referralForm.phone.trim()}
-              onClick={() => {
-                const msg = `ترشيح فني للانضمام لاطلب فني:\nالاسم: ${referralForm.name}\nالهاتف: ${referralForm.phone}${referralForm.specialty ? `\nالتخصص: ${referralForm.specialty}` : ''}${referralForm.city ? `\nالمدينة: ${referralForm.city}` : ''}`
-                window.open(`https://wa.me/19297186991?text=${encodeURIComponent(msg)}`, '_blank')
-                setShowReferral(false)
-                setReferralForm({ name: '', phone: '', specialty: '', city: '' })
+              disabled={referralForm.submitting || !referralForm.name.trim() || !referralForm.phone.trim()}
+              onClick={async () => {
+                setReferralForm(f => ({ ...f, submitting: true }))
+                try {
+                  await api.submitReferral({
+                    type:      referralForm.type,
+                    name:      referralForm.name.trim(),
+                    phone:     referralForm.phone.trim(),
+                    specialty: referralForm.specialty.trim() || null,
+                    city:      referralForm.city.trim() || null,
+                  })
+                  setShowReferral(false)
+                  setReferralForm({ type: 'technician', name: '', phone: '', specialty: '', city: '', submitting: false })
+                  alert(ar ? '✅ شكراً! تم إرسال الترشيح بنجاح' : '✅ Thanks! Referral submitted.')
+                } catch {
+                  alert(ar ? 'حدث خطأ، حاول مرة أخرى' : 'Error, please try again.')
+                  setReferralForm(f => ({ ...f, submitting: false }))
+                }
               }}
-              className="w-full rounded-xl py-3.5 text-sm font-extrabold text-white transition-opacity disabled:opacity-40"
+              className="w-full rounded-xl py-3.5 text-sm font-extrabold text-white transition-opacity disabled:opacity-40 flex items-center justify-center gap-2"
               style={{ background: 'linear-gradient(90deg, #FF7900 0%, #c45e00 100%)' }}
             >
-              {ar ? 'إرسال الترشيح عبر واتساب' : 'Send via WhatsApp'}
+              {referralForm.submitting
+                ? (ar ? 'جاري الإرسال...' : 'Sending...')
+                : (ar ? '✅ إرسال الترشيح' : '✅ Submit Referral')}
             </button>
           </div>
         </div>
