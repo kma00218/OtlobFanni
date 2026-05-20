@@ -4,7 +4,7 @@ import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
@@ -374,7 +374,9 @@ export default function Home() {
             className="mt-4 w-full flex items-center gap-3 rounded-2xl px-5 py-3.5 active:scale-[0.98] transition-transform select-none"
             style={{ background: 'linear-gradient(90deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}
           >
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 text-lg">💡</div>
+            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <UserPlus className="w-5 h-5 text-white" />
+            </div>
             <div className="flex-1 text-right">
               <p className="text-white font-extrabold text-sm leading-tight">
                 {ar ? 'رشّح فنياً أو شركة خدمية أو مورد مستلزمات' : 'Suggest a Technician, Service Company or Parts Supplier'}
@@ -383,7 +385,7 @@ export default function Home() {
                 {ar ? 'ساعدنا في توسيع الدليل' : 'Help us grow the directory'}
               </p>
             </div>
-            <span className="text-white/50 text-lg flex-shrink-0">›</span>
+            <UserPlus className="w-4 h-4 text-white/40 flex-shrink-0" />
           </button>
 
           {/* ── قناة تيليغرام ── */}
@@ -425,7 +427,7 @@ export default function Home() {
             style={{ background: 'linear-gradient(90deg, #7B2FBE 0%, #5a1fa0 100%)', boxShadow: '0 4px 16px rgba(123,47,190,0.3)' }}
           >
             <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <Share2 className="w-4 h-4 text-white" />
+              <Share2 className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 text-right">
               <p className="text-white font-extrabold text-sm leading-tight">
@@ -435,7 +437,7 @@ export default function Home() {
                 {ar ? 'ساعد في نشر اطلب فني في ليبيا' : 'Help spread Otlob Fanni in Libya'}
               </p>
             </div>
-            <Share2 className="w-4 h-4 text-white/50 flex-shrink-0" />
+            <Share2 className="w-4 h-4 text-white/40 flex-shrink-0" />
           </button>
 
           {/* بطاقة الانطلاق */}
