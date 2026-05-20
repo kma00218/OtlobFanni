@@ -4,7 +4,9 @@ import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
+  proCredentialsTable,
 } from "@workspace/db/schema";
+import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
 
@@ -717,6 +719,49 @@ router.get("/search-account", async (req, res): Promise<void> => {
   ]);
 
   res.json(results);
+});
+
+// ── Pro Credentials (Admin) ───────────────────────────────────────────────────
+router.post("/pro-credentials/:entityType/:entityId", async (req, res): Promise<void> => {
+  const { entityType, entityId } = req.params;
+  let whatsapp = "";
+  let displayName = "";
+
+  if (entityType === "technician") {
+    const [row] = await db.select().from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, entityId));
+    if (!row) { res.status(404).json({ error: "Not found" }); return; }
+    whatsapp = row.whatsapp || row.phone || "";
+    displayName = row.fullName || "";
+  } else if (entityType === "company") {
+    const [row] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, entityId));
+    if (!row) { res.status(404).json({ error: "Not found" }); return; }
+    whatsapp = row.whatsapp || row.phone || "";
+    displayName = row.companyName || "";
+  } else if (entityType === "supplier") {
+    const [row] = await db.select().from(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, entityId));
+    if (!row) { res.status(404).json({ error: "Not found" }); return; }
+    whatsapp = row.whatsapp || row.phone || "";
+    displayName = row.businessName || "";
+  } else {
+    res.status(400).json({ error: "Invalid entity type" }); return;
+  }
+
+  const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = crypto.randomBytes(6);
+  let password = "";
+  for (let i = 0; i < 6; i++) password += CHARS[bytes[i] % CHARS.length];
+
+  const passwordHash = crypto.createHash("sha256").update(password).digest("hex");
+  const id = crypto.randomUUID();
+
+  await db.insert(proCredentialsTable).values({
+    id, entityType, entityId, whatsapp, displayName, passwordHash,
+  }).onConflictDoUpdate({
+    target: proCredentialsTable.entityId,
+    set: { whatsapp, displayName, passwordHash, updatedAt: new Date() },
+  });
+
+  res.json({ password, whatsapp, displayName });
 });
 
 // ── Update Reports (Admin) ─────────────────────────────────────────────────────

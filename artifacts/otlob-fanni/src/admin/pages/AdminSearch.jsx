@@ -18,6 +18,7 @@ export default function AdminSearch() {
   const [copied, setCopied]     = useState(null)
   const [actionMenu, setActionMenu] = useState(null)
   const [toast, setToast]           = useState(null)
+  const [credsSending, setCredsSending] = useState(null)
   const [rejectModal, setRejectModal] = useState({ open: false, row: null, reason: '' })
   const timerRef = useRef(null)
 
@@ -104,6 +105,28 @@ export default function AdminSearch() {
     } catch { showToast('حدث خطأ', 'error') }
   }
 
+  const sendCredentials = async (r) => {
+    setCredsSending(r.id)
+    try {
+      const data = await api.pro.generateCredentials(r.accountType, r.id)
+      const phone = (data.whatsapp || '').replace(/\D/g, '')
+      const platformUrl = 'otlobfanni.ly'
+      const msg =
+        `تم تفعيل حسابك المهني على منصة اطلب فني 🎉\n\n` +
+        `يمكنك الآن الدخول إلى أدوات العمل والفواتير عبر منصة:\n` +
+        `🌐 ${platformUrl}\n\n` +
+        `من صفحة:\nالمزيد ← دخول الحسابات المهنية\n\n` +
+        `اسم المستخدم:\n${data.whatsapp}\n\n` +
+        `كلمة المرور:\n${data.password}`
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
+      showToast('✓ تم إرسال بيانات الدخول')
+    } catch {
+      showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error')
+    } finally {
+      setCredsSending(null)
+    }
+  }
+
   const openWhatsApp = (r) => {
     const phone = r.whatsapp || r.phone
     const name = r.displayName
@@ -150,6 +173,16 @@ export default function AdminSearch() {
             </div>
 
             <div className="p-3 flex flex-col gap-2">
+              {/* Send credentials */}
+              {actionMenu.status === 'published' && (
+                <button
+                  onClick={async () => { await sendCredentials(actionMenu); setActionMenu(null) }}
+                  disabled={credsSending === actionMenu.id}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors text-sm font-bold disabled:opacity-50">
+                  <span>📨</span>
+                  {credsSending === actionMenu.id ? 'جارٍ الإرسال…' : 'إرسال بيانات الدخول'}
+                </button>
+              )}
               {/* Edit in admin */}
               {editAdminPath(actionMenu) && (
                 <a href={editAdminPath(actionMenu)}

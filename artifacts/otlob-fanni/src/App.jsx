@@ -44,6 +44,8 @@ const AllSpecialties = lazy(() => import("./pages/AllSpecialties"));
 const CityTechnicians = lazy(() => import("./pages/CityTechnicians"));
 import StatusTracking from "./pages/StatusTracking";
 const NotFound = lazy(() => import("./pages/not-found"));
+const ProLogin = lazy(() => import("./pages/ProLogin"));
+const ProDashboard = lazy(() => import("./pages/ProDashboard"));
 
 // Admin — lazy loaded as a separate chunk
 const AdminLogin = lazy(() => import("./admin/AdminLogin"));
@@ -101,7 +103,7 @@ function InstallFAB() {
   }, []);
 
   if (isInstalled) return null;
-  if (location === '/more') return null;
+  if (location === '/more' || location === '/pro-login' || location === '/pro') return null;
 
   const handleClick = async () => {
     if (installPrompt) { track('install'); installPrompt.prompt(); return; }
@@ -134,7 +136,7 @@ function SearchFAB() {
   const [open, setOpen] = useState(false);
 
   // Hide on home (already has search bar) and on join form pages
-  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin');
+  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin') || location === '/pro-login' || location === '/pro';
   if (hidden) return null;
 
   const ar = lang === 'ar';
@@ -186,7 +188,7 @@ function AppContent() {
     );
   }
 
-  const hasOwnHeader = location === '/join-us' || location === '/more';
+  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro';
 
   return (
     <LanguageProvider>
@@ -222,6 +224,8 @@ function AppContent() {
               <Route path="/city/:id" component={CityTechnicians} />
               <Route path="/status/:id" component={StatusTracking} />
               <Route path="/status" component={StatusTracking} />
+              <Route path="/pro-login" component={ProLogin} />
+              <Route path="/pro" component={ProDashboard} />
               <Route path="/about" component={About} />
               <Route path="/terms" component={Terms} />
               <Route path="/privacy" component={Privacy} />
@@ -229,7 +233,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           </ErrorBoundary>
-          <BottomNav />
+          {location !== '/pro-login' && location !== '/pro' && <BottomNav />}
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />

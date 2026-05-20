@@ -11,3 +11,4 @@ export * from "./service_requests";
 export * from "./analytics";
 export * from "./reviews";
 export * from "./update_reports";
+export * from "./pro_credentials";

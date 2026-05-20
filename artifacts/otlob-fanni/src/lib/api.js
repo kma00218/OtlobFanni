@@ -232,6 +232,11 @@ export const api = {
 
   },
 
+  pro: {
+    login: (whatsapp, password) => post('/pro/login', { whatsapp, password }),
+    generateCredentials: (entityType, entityId) => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
+  },
+
   suppliers:                    (p)    => get('/suppliers' + (p?.city ? `?city=${encodeURIComponent(p.city)}` : '')),
   supplier:                     (id)   => get(`/suppliers/${id}`),
   submitSupplierApplication:    (data) => post('/supplier-applications', data),

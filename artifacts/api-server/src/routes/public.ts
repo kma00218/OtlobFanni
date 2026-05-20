@@ -4,8 +4,9 @@ import {
   techniciansTable, citiesTable, categoriesTable,
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
-  supplierApplicationsTable, updateReportsTable,
+  supplierApplicationsTable, updateReportsTable, proCredentialsTable,
 } from "@workspace/db/schema";
+import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
 
@@ -964,6 +965,18 @@ router.post("/update-reports", async (req, res): Promise<void> => {
   });
 
   res.status(201).json({ ok: true, id });
+});
+
+// ── Pro Account Login ─────────────────────────────────────────────────────────
+router.post("/pro/login", async (req, res): Promise<void> => {
+  const { whatsapp, password } = req.body;
+  if (!whatsapp || !password) { res.status(400).json({ error: "whatsapp and password required" }); return; }
+  const normalised = whatsapp.replace(/\s/g, "");
+  const [cred] = await db.select().from(proCredentialsTable).where(eq(proCredentialsTable.whatsapp, normalised));
+  if (!cred) { res.status(401).json({ error: "Invalid credentials" }); return; }
+  const hash = crypto.createHash("sha256").update(String(password)).digest("hex");
+  if (hash !== cred.passwordHash) { res.status(401).json({ error: "Invalid credentials" }); return; }
+  res.json({ entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });
 });
 
 export default router;
