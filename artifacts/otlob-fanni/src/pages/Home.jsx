@@ -352,32 +352,6 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* ── كيف يعمل التطبيق ── */}
-          <div
-            className="mt-4 rounded-2xl px-5 py-4"
-            style={{ background: 'rgba(7,27,51,0.04)', border: '1px solid rgba(7,27,51,0.07)' }}
-          >
-            <p className="text-center text-xs font-bold text-[#071B33]/50 mb-3 tracking-wider uppercase">
-              {ar ? 'كيف يعمل' : 'How it works'}
-            </p>
-            <div className="flex items-center justify-between gap-1">
-              <div className="flex-1 flex flex-col items-center gap-1.5 text-center">
-                <span className="text-2xl">🔍</span>
-                <span className="text-xs font-bold text-[#071B33]">{ar ? 'ابحث' : 'Search'}</span>
-              </div>
-              <div className="text-[#FF7900]/40 font-black text-lg pb-4">›</div>
-              <div className="flex-1 flex flex-col items-center gap-1.5 text-center">
-                <span className="text-2xl">📞</span>
-                <span className="text-xs font-bold text-[#071B33]">{ar ? 'تواصل' : 'Contact'}</span>
-              </div>
-              <div className="text-[#FF7900]/40 font-black text-lg pb-4">›</div>
-              <div className="flex-1 flex flex-col items-center gap-1.5 text-center">
-                <span className="text-2xl">✅</span>
-                <span className="text-xs font-bold text-[#071B33]">{ar ? 'احصل على الخدمة' : 'Get Service'}</span>
-              </div>
-            </div>
-          </div>
-
           {/* ── رشّح فني ── */}
           <button
             onClick={() => setShowReferral(true)}
