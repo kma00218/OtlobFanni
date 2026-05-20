@@ -519,25 +519,29 @@ export default function Home() {
           </p>
 
           {/* اختيار النوع */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-1">
             {[
-              { key: 'technician', label: ar ? '👷 فني' : '👷 Technician' },
-              { key: 'company',    label: ar ? '🏢 شركة' : '🏢 Company' },
-              { key: 'supplier',   label: ar ? '📦 مورّد' : '📦 Supplier' },
+              { key: 'technician', label: ar ? '👷 فني'            : '👷 Technician',        sub: ar ? 'كهربائي، سباك، نجار...'        : 'Electrician, plumber...' },
+              { key: 'company',    label: ar ? '🏢 شركة خدمية'     : '🏢 Service Company',   sub: ar ? 'صيانة، تكييف، نظافة...'        : 'Maintenance, HVAC...' },
+              { key: 'supplier',   label: ar ? '📦 مورّد مستلزمات' : '📦 Parts Supplier',    sub: ar ? 'قطع غيار، مواد بناء...'        : 'Spare parts, materials...' },
             ].map(t => (
               <button
                 key={t.key}
                 onClick={() => setReferralForm(f => ({ ...f, type: t.key }))}
-                className={`flex-1 py-2 rounded-xl text-xs font-extrabold border-2 transition-all ${
+                className={`flex-1 py-2 px-1 rounded-xl text-center border-2 transition-all flex flex-col items-center gap-0.5 ${
                   referralForm.type === t.key
                     ? 'border-[#FF7900] bg-orange-50 text-[#FF7900]'
                     : 'border-gray-200 text-gray-400 hover:border-gray-300'
                 }`}
               >
-                {t.label}
+                <span className="text-[11px] font-extrabold leading-tight">{t.label}</span>
+                <span className="text-[9px] opacity-70 leading-tight">{t.sub}</span>
               </button>
             ))}
           </div>
+          <p className="text-[10px] text-gray-400 text-center mb-3">
+            {ar ? '* التطبيق مخصص للخدمات الفنية والحرفية فقط' : '* App is for technical & craft services only'}
+          </p>
 
           <div className="flex flex-col gap-3">
             <input
