@@ -117,7 +117,7 @@ export default function SupplierApplications() {
   }
 
   const openPublishedWhatsApp = ({ name, phone, requestNumber }) => {
-    const msg = `مبروك ${name}! 🎉 تم نشر نشاطك الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع عملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}`
+    const msg = `مبروك ${name}! 🎉 تم نشر نشاطك الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع عملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`
     window.open(`https://wa.me/${(phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
