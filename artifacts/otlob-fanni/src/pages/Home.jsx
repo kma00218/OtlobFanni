@@ -507,7 +507,7 @@ export default function Home() {
         onClick={() => setShowReferral(false)}
       >
         <div
-          className="w-full max-w-[480px] bg-white rounded-t-3xl p-6 pb-10"
+          className="w-full max-w-[480px] bg-white rounded-t-3xl p-6 pb-28"
           onClick={e => e.stopPropagation()}
         >
           <div className="w-10 h-1 rounded-full bg-gray-200 mx-auto mb-5" />
@@ -526,11 +526,16 @@ export default function Home() {
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-[#071B33] outline-none focus:border-[#FF7900]"
               dir="rtl"
             />
-            <LibyaPhoneInput
-              required
-              value={referralForm.phone}
-              onChange={v => setReferralForm(f => ({ ...f, phone: v }))}
-            />
+            <div>
+              <p className="text-xs font-bold text-gray-500 mb-1 px-1">
+                {ar ? 'رقم واتساب الفني *' : 'WhatsApp number *'}
+              </p>
+              <LibyaPhoneInput
+                required
+                value={referralForm.phone}
+                onChange={v => setReferralForm(f => ({ ...f, phone: v }))}
+              />
+            </div>
             <input
               type="text"
               placeholder={ar ? 'تخصصه (اختياري)' : 'Specialty (optional)'}
