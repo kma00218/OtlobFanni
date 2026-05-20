@@ -14,6 +14,7 @@ import LocationPrompt from "./components/LocationPrompt";
 import BottomNav from "./components/BottomNav";
 import Header from "./components/Header";
 import SearchOverlay from "./components/SearchOverlay";
+import InstallGuideModal from "./components/InstallGuideModal";
 
 // Public Pages — lazy loaded
 const Home = lazy(() => import("./pages/Home"));
@@ -89,6 +90,7 @@ function InstallFAB() {
     return window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;
   });
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
@@ -106,28 +108,39 @@ function InstallFAB() {
   if (isInstalled) return null;
   if (location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon') return null;
 
-  const handleClick = async () => {
-    if (installPrompt) { track('install'); installPrompt.prompt(); return; }
-    navigate('/more');
-    setTimeout(() => {
-      document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
-    }, 300);
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    track('install');
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') { setIsInstalled(true); setInstallPrompt(null); setShowModal(false); }
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className="fixed bottom-24 z-50 flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform font-bold text-white text-sm"
-      style={{
-        background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        boxShadow: '0 4px 20px rgba(255,121,0,0.4)',
-      }}
-    >
-      <Download className="w-4 h-4" />
-      {lang === 'ar' ? 'ثبّت التطبيق' : 'Install App'}
-    </button>
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="fixed bottom-24 z-50 flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform font-bold text-white text-sm"
+        style={{
+          background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          boxShadow: '0 4px 20px rgba(255,121,0,0.4)',
+        }}
+      >
+        <Download className="w-4 h-4" />
+        {lang === 'ar' ? 'ثبّت التطبيق' : 'Install App'}
+      </button>
+
+      {showModal && (
+        <InstallGuideModal
+          ar={lang === 'ar'}
+          onClose={() => setShowModal(false)}
+          installPrompt={installPrompt}
+          onInstall={handleInstall}
+        />
+      )}
+    </>
   );
 }
 
