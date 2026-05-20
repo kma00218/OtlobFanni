@@ -156,7 +156,7 @@ export default function Home() {
         </div>
 
         {/* ── شريط الإحصاءات ── */}
-        {stats && (stats.technicians > 0 || stats.companies > 0 || stats.suppliers > 0) && (
+        {stats && stats.technicians >= 100 && stats.companies >= 20 && stats.suppliers >= 10 && (
           <div
             className="flex items-center justify-center gap-0 rounded-2xl overflow-hidden"
             style={{ background: 'rgba(7,27,51,0.05)', border: '1px solid rgba(7,27,51,0.08)' }}
