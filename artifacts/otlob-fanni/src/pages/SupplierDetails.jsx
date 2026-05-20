@@ -147,7 +147,7 @@ export default function SupplierDetails() {
 
   if (loading) {
     return (
-      <div className="bg-[#EEF9F8] min-h-screen" dir={dir}>
+      <div className="bg-[#EEF9F8] min-h-screen pt-20" dir={dir}>
         <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
         <main className="px-4 pt-4"><SkeletonProfileHeader /></main>
       </div>
@@ -156,7 +156,7 @@ export default function SupplierDetails() {
 
   if (!supplier) {
     return (
-      <div className="bg-[#EEF9F8] min-h-screen flex flex-col" dir={dir}>
+      <div className="bg-[#EEF9F8] min-h-screen pt-20 flex flex-col" dir={dir}>
         <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-400 text-sm">{ar ? 'لم يتم العثور على المورد' : 'Supplier not found'}</p>
@@ -199,7 +199,7 @@ export default function SupplierDetails() {
   const openPhone = () => window.open(`tel:${phone}`, '_self')
 
   return (
-    <div className="bg-[#EEF9F8] min-h-screen pb-28" dir={dir}>
+    <div className="bg-[#EEF9F8] min-h-screen pt-20 pb-28" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
 
       {lightbox && (
