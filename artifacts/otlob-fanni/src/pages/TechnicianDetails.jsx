@@ -123,6 +123,7 @@ function normalizeTech(t, cities = [], categories = []) {
     instagram:      t.instagram || '',
     isFeatured:     t.is_featured || t.isFeatured || false,
     createdAt:      t.created_at  || t.createdAt  || null,
+    referralSource: t.referral_source || t.referralSource || null,
   }
 }
 
@@ -319,6 +320,18 @@ export default function TechnicianDetails() {
                     {name}
                   </span>
                 ))}
+              </div>
+            )}
+
+            {/* Referral trust badge */}
+            {tech.referralSource === 'technician' && (
+              <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-bold px-3 py-1 rounded-full mb-3">
+                ⭐ {ar ? 'تم ترشيحه من فني معتمد على المنصة' : 'Referred by a verified technician'}
+              </div>
+            )}
+            {tech.referralSource === 'company' && (
+              <div className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold px-3 py-1 rounded-full mb-3">
+                🤝 {ar ? 'تم ترشيحه من شركة معتمدة على المنصة' : 'Referred by a verified company'}
               </div>
             )}
 

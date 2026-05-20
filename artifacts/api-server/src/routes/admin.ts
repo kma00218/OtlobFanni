@@ -149,6 +149,7 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
           isActive: true,
           isApproved: true,
           status: app.availableNow ? "available" : "busy",
+          referralSource: app.referredByType ?? null,
         })
         .where(eq(techniciansTable.applicationId, app.id));
     } else {
@@ -185,6 +186,7 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
         lat: app.lat ?? null,
         lng: app.lng ?? null,
         applicationId: app.id,
+        referralSource: app.referredByType ?? null,
       }).onConflictDoNothing();
     }
   }

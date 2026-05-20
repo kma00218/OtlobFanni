@@ -32,6 +32,7 @@ export const techniciansTable = pgTable("technicians", {
   facebook:        text("facebook"),
   instagram:       text("instagram"),
   applicationId:   text("application_id"),
+  referralSource:  text("referral_source"),
   createdAt:       timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
