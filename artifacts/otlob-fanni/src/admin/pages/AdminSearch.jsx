@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, Copy, Check, ExternalLink, Phone, MapPin, Calendar, MessageCircle, Trash2, Eye } from 'lucide-react'
+import { Search, Copy, Check, ExternalLink, Phone, MapPin, Calendar, MessageCircle, Trash2, Eye, Pencil } from 'lucide-react'
 import api from '../../lib/api'
 import { categories as SERVICES_CATS } from '../../data/services'
 
@@ -115,6 +115,16 @@ export default function AdminSearch() {
 
   const base = window.location.origin + (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
 
+  const editAdminPath = (r) => {
+    if (r.accountType === 'technician' && r.status === 'published')
+      return `/admin/technicians?edit=tech_${r.id}`
+    if (r.accountType === 'company' && (r.status === 'approved' || r.status === 'published'))
+      return `/admin/companies?edit=${r.id}`
+    if (r.accountType === 'supplier' && (r.status === 'approved' || r.status === 'published'))
+      return `/admin/suppliers?edit=${r.id}`
+    return null
+  }
+
   return (
     <div className="space-y-4">
 
@@ -140,6 +150,15 @@ export default function AdminSearch() {
             </div>
 
             <div className="p-3 flex flex-col gap-2">
+              {/* Edit in admin */}
+              {editAdminPath(actionMenu) && (
+                <a href={editAdminPath(actionMenu)}
+                  onClick={() => setActionMenu(null)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-[#FF7900]/10 text-[#FF7900] hover:bg-[#FF7900]/20 transition-colors text-sm font-bold">
+                  <Pencil className="w-4 h-4 flex-shrink-0" />
+                  تعديل البيانات
+                </a>
+              )}
               {/* View profile */}
               {actionMenu.requestNumber && (
                 <a href={`${base}/status/${actionMenu.requestNumber}`} target="_blank" rel="noopener noreferrer"
@@ -418,13 +437,24 @@ export default function AdminSearch() {
                 ))}
               </div>
 
-              {/* Profile link */}
-              {profileUrl && (
-                <a href={profileUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#FF7900] text-sm font-bold hover:underline">
-                  <ExternalLink className="w-4 h-4" />
-                  عرض الملف في المنصة
-                </a>
+              {/* Edit + Profile links */}
+              {(editAdminPath(r) || profileUrl) && (
+                <div className="flex items-center gap-3 flex-wrap pt-1">
+                  {editAdminPath(r) && (
+                    <a href={editAdminPath(r)}
+                      className="inline-flex items-center gap-2 bg-[#FF7900] text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-[#e06d00] transition-colors shadow-sm">
+                      <Pencil className="w-4 h-4" />
+                      تعديل البيانات
+                    </a>
+                  )}
+                  {profileUrl && (
+                    <a href={profileUrl} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-slate-500 text-sm font-medium hover:text-[#071B33] transition-colors">
+                      <ExternalLink className="w-4 h-4" />
+                      عرض الملف
+                    </a>
+                  )}
+                </div>
               )}
 
             </div>
