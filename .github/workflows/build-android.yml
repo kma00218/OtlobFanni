@@ -46,12 +46,18 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      # ── 5b. Pre-configure Bubblewrap paths (non-interactive) ─────────────
+      # ── 5b. Pre-configure Bubblewrap paths (write config directly) ───────
       - name: Configure Bubblewrap JDK and SDK paths
         run: |
-          printf 'n\n%s\n' "$JAVA_HOME" | bubblewrap updateConfig \
-            --jdkPath "$JAVA_HOME" \
-            --androidSdkPath "$ANDROID_SDK_ROOT"
+          mkdir -p "$HOME/.bubblewrap"
+          cat > "$HOME/.bubblewrap/config.json" <<EOF
+          {
+            "jdkPath": "$JAVA_HOME",
+            "androidSdkPath": "$ANDROID_SDK_ROOT"
+          }
+          EOF
+          echo "✅ Bubblewrap config written:"
+          cat "$HOME/.bubblewrap/config.json"
 
       # ── 6a. Generate NEW keystore (first-time only, when input is true) ───
       - name: Generate new release keystore
