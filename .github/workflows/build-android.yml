@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       generate_keystore:
-        description: 'Generate NEW keystore (first time only — do NOT use if keystore already exists in secrets)'
+        description: 'Generate NEW keystore (first time only)'
         required: false
         default: 'false'
         type: boolean
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 24
 
-      - name: Set up Java 17
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -42,24 +42,19 @@ jobs:
 
       - name: Generate new release keystore
         if: ${{ inputs.generate_keystore == true }}
+        working-directory: android-twa
         run: |
-          cd android-twa
           keytool -genkey -v \
             -keystore release.keystore \
             -alias otlobfanni-release \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
+            -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" \
             -keypass  "${{ secrets.KEY_PASS     || 'changeme_key'   }}" \
             -dname "CN=OtlobFanni, OU=Mobile, O=OtlobFanni, L=Tripoli, S=Tripoli, C=LY"
-          echo "════ SHA-256 FINGERPRINT (for assetlinks.json) ════"
-          keytool -list -v \
-            -keystore release.keystore \
-            -alias otlobfanni-release \
-            -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" \
-            2>/dev/null | grep "SHA256:"
-          echo "════ KEYSTORE_BASE64 (copy to GitHub Secrets) ════"
+          echo "=== SHA-256 (for assetlinks.json) ==="
+          keytool -list -v -keystore release.keystore -alias otlobfanni-release \
+            -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" 2>/dev/null | grep "SHA256:"
+          echo "=== KEYSTORE_BASE64 (copy to GitHub Secrets) ==="
           base64 -w 0 release.keystore
 
       - name: Restore keystore from secret
@@ -72,7 +67,6 @@ jobs:
             exit 1
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > android-twa/release.keystore
-          echo "Keystore restored."
 
       - name: Install dependencies
         working-directory: android-twa
@@ -92,7 +86,7 @@ jobs:
           path: android-twa/app-release.aab
           retention-days: 30
 
-      - name: Upload generated keystore (first-time setup only)
+      - name: Upload generated keystore (first-time only)
         if: ${{ inputs.generate_keystore == true }}
         uses: actions/upload-artifact@v4
         with:
