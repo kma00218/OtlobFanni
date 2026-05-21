@@ -113,20 +113,10 @@ jobs:
         working-directory: android-twa
         run: |
           if [ ! -d "android" ]; then
-            echo "▶ Initializing TWA project (non-interactive via core API)..."
-            node - <<'JSEOF'
-const { TwaGenerator, TwaManifest, Config } = require('@bubblewrap/core');
-const path = require('path');
-(async () => {
-  const manifest = await TwaManifest.fromFile(path.resolve('./twa-manifest.json'));
-  const config = new Config(process.env.JAVA_HOME, process.env.ANDROID_SDK_ROOT);
-  const generator = new TwaGenerator();
-  await generator.createTwaProject(path.resolve('./android'), manifest, config);
-  console.log('✅ TWA project initialized successfully');
-})().catch(e => { console.error(e.message || e); process.exit(1); });
-JSEOF
+            echo "Initializing TWA project (non-interactive via core API)..."
+            node init-twa.js
           else
-            echo "▶ TWA project already initialized, skipping init."
+            echo "TWA project already initialized, skipping init."
           fi
 
       # ── 8. Build release AAB ──────────────────────────────────────────────
