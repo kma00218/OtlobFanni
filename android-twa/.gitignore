@@ -1,0 +1,7 @@
+release.keystore
+*.jks
+*.keystore
+android/
+node_modules/
+*.aab
+*.apk

@@ -39,6 +39,29 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// ── Digital Asset Links (required for TWA / Google Play verification) ─────────
+// SHA-256 fingerprint is set via ASSETLINKS_SHA256 env var.
+// After uploading to Google Play: Console → Setup → App signing → copy SHA-256
+app.get("/.well-known/assetlinks.json", (req: Request, res: Response): void => {
+  const sha256 = process.env.ASSETLINKS_SHA256;
+  const fingerprints: string[] = sha256
+    ? sha256.split(",").map((s: string) => s.trim()).filter(Boolean)
+    : [];
+  const payload = [
+    {
+      relation: ["delegate_permission/common.handle_all_urls"],
+      target: {
+        namespace: "android_app",
+        package_name: "com.otlobfanni.app",
+        sha256_cert_fingerprints: fingerprints,
+      },
+    },
+  ];
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.json(payload);
+});
+
 // ── Sitemap (root-level for SEO crawlers) ────────────────────────────────────
 app.get("/sitemap.xml", async (_req: Request, res: Response): Promise<void> => {
   const BASE = "https://www.otlobfanni.ly";

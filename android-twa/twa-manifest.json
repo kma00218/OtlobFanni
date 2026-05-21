@@ -1,0 +1,48 @@
+{
+  "packageId": "com.otlobfanni.app",
+  "host": "otlobfanni.ly",
+  "name": "اطلب فني - Otlob Fanni",
+  "launcherName": "اطلب فني",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#FF7900",
+  "themeColorDark": "#FF7900",
+  "navigationColor": "#071B33",
+  "navigationColorDark": "#071B33",
+  "navigationDividerColor": "#071B33",
+  "navigationDividerColorDark": "#071B33",
+  "backgroundColor": "#ffffff",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://otlobfanni.ly/icon-512.png",
+  "maskableIconUrl": "https://otlobfanni.ly/icon-512.png",
+  "monochromeIconUrl": "https://otlobfanni.ly/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./release.keystore",
+    "alias": "otlobfanni-release"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://otlobfanni.ly/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://otlobfanni.ly/",
+  "minSdkVersion": 21,
+  "targetSdkVersion": 34
+}
