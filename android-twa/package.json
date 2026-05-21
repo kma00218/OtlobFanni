@@ -1,0 +1,10 @@
+{
+  "name": "otlob-fanni-android",
+  "version": "1.0.0",
+  "scripts": {
+    "build:android": "node build-android.js"
+  },
+  "dependencies": {
+    "@bubblewrap/core": "*"
+  }
+}

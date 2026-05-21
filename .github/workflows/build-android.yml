@@ -9,59 +9,39 @@ on:
         default: 'false'
         type: boolean
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
-      # ── 1. Checkout ───────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Java 17 ────────────────────────────────────────────────────────
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # ── 3. Node.js 20 ─────────────────────────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 24
 
-      # ── 4. Android SDK ────────────────────────────────────────────────────
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-          cmdline-tools-version: 11076708
           packages: >
             platform-tools
             platforms;android-34
             build-tools;34.0.0
 
-      # ── 5. Install Bubblewrap ─────────────────────────────────────────────
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      # ── 5b. Pre-configure Bubblewrap paths (write config directly) ───────
-      - name: Configure Bubblewrap JDK and SDK paths
-        run: |
-          mkdir -p "$HOME/.bubblewrap"
-          cat > "$HOME/.bubblewrap/config.json" <<EOF
-          {
-            "jdkPath": "$JAVA_HOME",
-            "androidSdkPath": "$ANDROID_SDK_ROOT"
-          }
-          EOF
-          echo "✅ Bubblewrap config written:"
-          cat "$HOME/.bubblewrap/config.json"
-
-      # ── 6a. Generate NEW keystore (first-time only, when input is true) ───
       - name: Generate new release keystore
-        if: ${{ inputs.generate_keystore == 'true' }}
+        if: ${{ inputs.generate_keystore == true }}
         run: |
           cd android-twa
           keytool -genkey -v \
@@ -73,28 +53,15 @@ jobs:
             -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" \
             -keypass  "${{ secrets.KEY_PASS     || 'changeme_key'   }}" \
             -dname "CN=OtlobFanni, OU=Mobile, O=OtlobFanni, L=Tripoli, S=Tripoli, C=LY"
-
-          echo ""
-          echo "════════════════════════════════════════════════"
-          echo "  SHA-256 FINGERPRINT (for assetlinks.json)"
-          echo "════════════════════════════════════════════════"
+          echo "════ SHA-256 FINGERPRINT (for assetlinks.json) ════"
           keytool -list -v \
             -keystore release.keystore \
             -alias otlobfanni-release \
             -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" \
-            2>/dev/null | grep "SHA256:" | awk '{print $2}'
-          echo ""
-          echo "  Set ASSETLINKS_SHA256 in Replit Secrets with the value above."
-          echo ""
-          echo "════════════════════════════════════════════════"
-          echo "  KEYSTORE_BASE64 for GitHub Secrets"
-          echo "════════════════════════════════════════════════"
+            2>/dev/null | grep "SHA256:"
+          echo "════ KEYSTORE_BASE64 (copy to GitHub Secrets) ════"
           base64 -w 0 release.keystore
-          echo ""
-          echo "  Copy the line above → GitHub → Settings → Secrets → KEYSTORE_BASE64"
-          echo "════════════════════════════════════════════════"
 
-      # ── 6b. Restore existing keystore from GitHub Secret ─────────────────
       - name: Restore keystore from secret
         if: ${{ inputs.generate_keystore != true }}
         env:
@@ -102,53 +69,22 @@ jobs:
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
             echo "ERROR: KEYSTORE_BASE64 secret is not set."
-            echo "Run this workflow with 'generate_keystore = true' first to create one."
             exit 1
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > android-twa/release.keystore
-          echo "✅ Keystore restored successfully."
+          echo "Keystore restored."
 
-      # ── 7. Initialize TWA project via @bubblewrap/core API (no prompts) ────
-      - name: Initialize TWA project
+      - name: Install dependencies
         working-directory: android-twa
-        run: |
-          if [ ! -d "android" ]; then
-            echo "Installing @bubblewrap/core locally..."
-            npm install @bubblewrap/core --no-save
-            echo "Initializing TWA project (non-interactive via core API)..."
-            node init-twa.js
-          else
-            echo "TWA project already initialized, skipping init."
-          fi
+        run: npm install
 
-      # ── 8. Build release AAB ──────────────────────────────────────────────
-      - name: Build release AAB
+      - name: Build Android AAB
         working-directory: android-twa
         env:
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
           KEY_PASS: ${{ secrets.KEY_PASS }}
-        run: |
-          bubblewrap build \
-            --skipPwaValidation \
-            --ks ./release.keystore \
-            --ksAlias otlobfanni-release \
-            --ksPass "${KEYSTORE_PASS:-changeme_store}" \
-            --keyPass "${KEY_PASS:-changeme_key}"
+        run: npm run build:android
 
-      # ── 9. Verify AAB was produced ────────────────────────────────────────
-      - name: Verify output
-        working-directory: android-twa
-        run: |
-          if [ -f "app-release.aab" ]; then
-            SIZE=$(du -sh app-release.aab | cut -f1)
-            echo "✅ app-release.aab built successfully (${SIZE})"
-          else
-            echo "❌ app-release.aab not found — check build logs above"
-            find . -name "*.aab" 2>/dev/null || echo "No .aab files found anywhere"
-            exit 1
-          fi
-
-      # ── 10. Upload AAB as downloadable artifact ───────────────────────────
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
@@ -156,9 +92,8 @@ jobs:
           path: android-twa/app-release.aab
           retention-days: 30
 
-      # ── 11. Also upload keystore if newly generated ───────────────────────
       - name: Upload generated keystore (first-time setup only)
-        if: ${{ inputs.generate_keystore == 'true' }}
+        if: ${{ inputs.generate_keystore == true }}
         uses: actions/upload-artifact@v4
         with:
           name: release-keystore-STORE-SAFELY
