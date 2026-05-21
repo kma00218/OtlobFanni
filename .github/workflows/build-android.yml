@@ -108,15 +108,23 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > android-twa/release.keystore
           echo "✅ Keystore restored successfully."
 
-      # ── 7. Initialize TWA project (if not already done) ───────────────────
+      # ── 7. Initialize TWA project via @bubblewrap/core API (no prompts) ────
       - name: Initialize TWA project
         working-directory: android-twa
         run: |
           if [ ! -d "android" ]; then
-            echo "▶ Initializing TWA project from manifest..."
-            yes '' | bubblewrap init \
-              --manifest=./twa-manifest.json \
-              --directory=./android
+            echo "▶ Initializing TWA project (non-interactive via core API)..."
+            node - <<'JSEOF'
+const { TwaGenerator, TwaManifest, Config } = require('@bubblewrap/core');
+const path = require('path');
+(async () => {
+  const manifest = await TwaManifest.fromFile(path.resolve('./twa-manifest.json'));
+  const config = new Config(process.env.JAVA_HOME, process.env.ANDROID_SDK_ROOT);
+  const generator = new TwaGenerator();
+  await generator.createTwaProject(path.resolve('./android'), manifest, config);
+  console.log('✅ TWA project initialized successfully');
+})().catch(e => { console.error(e.message || e); process.exit(1); });
+JSEOF
           else
             echo "▶ TWA project already initialized, skipping init."
           fi
