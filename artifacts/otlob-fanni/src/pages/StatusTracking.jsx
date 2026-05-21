@@ -72,7 +72,7 @@ export default function StatusTracking() {
       return `تم انضمامي الآن إلى منصة اطلب فني 🇱🇾\n\nيمكنكم التواصل معي عبر المنصة لخدمات:\n🔧 ${specialty}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}`
     }
     if (r.type === 'supplier') {
-      return `تم إدراج نشاطنا في دليل مزودي المستلزمات على منصة اطلب فني 🇱🇾\n\n📦 ${r.fullName}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}/suppliers`
+      return `تم إدراج نشاطنا في دليل مزودي المستلزمات على منصة اطلب فني 🇱🇾\n\n📦 ${r.fullName}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}/supplier/${r.id}`
     }
     return `تم اعتماد شركتنا الآن في منصة اطلب فني 🇱🇾\n\nنقدم خدمات:\n🏢 ${r.fullName}\n🔧 ${specialty}${city ? `\n📍 ${city}` : ''}\n\n🌐 ${platform}`
   }
@@ -319,7 +319,7 @@ export default function StatusTracking() {
                     const profilePath = result.type === 'technician'
                       ? (result.technicianId ? `/technician/${result.technicianId}` : null)
                       : result.type === 'supplier'
-                      ? (result.status === 'published' ? '/suppliers' : null)
+                      ? (result.status === 'published' ? `/supplier/${result.id}` : null)
                       : `/company/${result.id}`
                     if (!profilePath) return null
                     return (
