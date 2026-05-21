@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, Upload, AlertCircle, CheckCircle } from 'lucide-react'
 import { uploadFile } from '../lib/api'
+import LibyaPhoneInput from './LibyaPhoneInput'
 
 const REQUEST_TYPES = [
   { id: 'data_update',        ar: 'تحديث بيانات',        en: 'Data Update' },
@@ -12,7 +13,7 @@ const REQUEST_TYPES = [
 ]
 
 export default function ReportModal({ open, onClose, entityType, entityId, entityName, city, ar = true }) {
-  const [form, setForm]           = useState({ name: '', phone: '', requestType: '', notes: '' })
+  const [form, setForm]           = useState({ name: '', whatsapp: '', requestType: '', notes: '' })
   const [photos, setPhotos]       = useState([])
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -38,6 +39,7 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.requestType) { setError(ar ? 'اختر نوع الطلب' : 'Select request type'); return }
+    if (!form.whatsapp || form.whatsapp === '+218') { setError(ar ? 'رقم الواتساب مطلوب' : 'WhatsApp number is required'); return }
     setError('')
     setSubmitting(true)
     try {
@@ -50,7 +52,7 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
           entity_name:     entityName,
           city:            city || '',
           requester_name:  form.name || null,
-          requester_phone: form.phone || null,
+          requester_phone: form.whatsapp || null,
           request_type:    form.requestType,
           notes:           form.notes || null,
           photos,
@@ -63,7 +65,7 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
   }
 
   const close = () => {
-    setForm({ name: '', phone: '', requestType: '', notes: '' })
+    setForm({ name: '', whatsapp: '', requestType: '', notes: '' })
     setPhotos([])
     setDone(false)
     setError('')
@@ -143,14 +145,16 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
                 placeholder={ar ? 'اسمك' : 'Your name'} />
             </div>
 
-            {/* الهاتف */}
+            {/* الواتساب */}
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                {ar ? 'رقم هاتفك (اختياري)' : 'Your Phone (optional)'}
+                {ar ? 'رقم واتساب *' : 'WhatsApp Number *'}
               </label>
-              <input className={inp} value={form.phone} dir="ltr"
-                onChange={e => set('phone', e.target.value)}
-                placeholder="0912345678" />
+              <LibyaPhoneInput
+                value={form.whatsapp}
+                onChange={v => set('whatsapp', v)}
+                required
+              />
             </div>
 
             {/* الملاحظات */}
