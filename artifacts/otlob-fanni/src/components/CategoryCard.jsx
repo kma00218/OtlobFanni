@@ -10,12 +10,12 @@ export default function CategoryCard({ category, count = 0 }) {
 
   return (
     <Link href={href} onClick={() => track('category_click', category.id)}>
-      <div className="flex flex-col items-center gap-1.5 select-none cursor-pointer active:scale-90 transition-transform duration-150">
+      <div className="flex flex-col items-center gap-2 select-none cursor-pointer active:scale-90 transition-transform duration-150">
         <div className="relative">
           <img
             src={iconSrc}
             alt={name}
-            className="w-[70px] h-[70px] rounded-[18px] object-cover"
+            className="w-[80px] h-[80px] rounded-[20px] object-cover"
             style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.10)' }}
             loading="lazy"
             draggable="false"
@@ -27,7 +27,7 @@ export default function CategoryCard({ category, count = 0 }) {
             </span>
           )}
         </div>
-        <span className="text-[12px] font-bold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5 max-w-[76px]">
+        <span className="text-[13px] font-bold text-center text-[#071B33] leading-snug line-clamp-2 w-full px-0.5 max-w-[86px]">
           {name}
         </span>
       </div>
