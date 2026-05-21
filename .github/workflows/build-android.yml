@@ -46,6 +46,13 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
+      # ── 5b. Pre-configure Bubblewrap paths (non-interactive) ─────────────
+      - name: Configure Bubblewrap JDK and SDK paths
+        run: |
+          bubblewrap updateConfig \
+            --jdkPath "$JAVA_HOME" \
+            --androidSdkPath "$ANDROID_SDK_ROOT"
+
       # ── 6a. Generate NEW keystore (first-time only, when input is true) ───
       - name: Generate new release keystore
         if: ${{ inputs.generate_keystore == 'true' }}
@@ -101,7 +108,7 @@ jobs:
         run: |
           if [ ! -d "android" ]; then
             echo "▶ Initializing TWA project from manifest..."
-            bubblewrap init \
+            printf 'No\n' | bubblewrap init \
               --manifest=./twa-manifest.json \
               --directory=./android
           else
