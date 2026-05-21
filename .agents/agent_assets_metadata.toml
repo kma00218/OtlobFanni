@@ -576,6 +576,12 @@ uri = "file://artifacts/otlob-fanni/public/icons/supplies/other.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "Dvofhc3b0muLSUYE_5vJm"
+uri = "file://artifacts/otlob-fanni/public/icons/sections/car_services.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"
