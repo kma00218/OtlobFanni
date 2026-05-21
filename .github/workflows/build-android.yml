@@ -113,10 +113,8 @@ jobs:
         working-directory: android-twa
         run: |
           if [ ! -d "android" ]; then
-            echo "▶ Pre-creating android directory..."
-            mkdir -p android
             echo "▶ Initializing TWA project from manifest..."
-            bubblewrap init \
+            yes '' | bubblewrap init \
               --manifest=./twa-manifest.json \
               --directory=./android
           else
