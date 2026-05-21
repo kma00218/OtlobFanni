@@ -83,7 +83,7 @@ jobs:
 
       # ── 6b. Restore existing keystore from GitHub Secret ─────────────────
       - name: Restore keystore from secret
-        if: ${{ inputs.generate_keystore != 'true' }}
+        if: ${{ inputs.generate_keystore != true }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
