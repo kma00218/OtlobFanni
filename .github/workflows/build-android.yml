@@ -114,6 +114,7 @@ jobs:
         run: |
           if [ ! -d "android" ]; then
             echo "Initializing TWA project (non-interactive via core API)..."
+            export NODE_PATH=$(npm root -g)
             node init-twa.js
           else
             echo "TWA project already initialized, skipping init."
