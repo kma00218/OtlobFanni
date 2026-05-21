@@ -108,8 +108,9 @@ router.get("/admin/analytics", async (_req, res): Promise<void> => {
       .orderBy(desc(count()))
       .limit(10);
 
-    // Resolve supplier names
-    const topSupplierIds = topSuppliers.map(s => s.ref).filter(Boolean) as string[];
+    // Resolve supplier names (filter out any malformed refs like "[object Object]")
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const topSupplierIds = topSuppliers.map(s => s.ref).filter((r): r is string => !!r && uuidRe.test(r));
     const supplierRows = topSupplierIds.length > 0
       ? await db.select({ id: supplierApplicationsTable.id, businessName: supplierApplicationsTable.businessName })
           .from(supplierApplicationsTable)
@@ -164,7 +165,7 @@ router.get("/admin/analytics", async (_req, res): Promise<void> => {
       devices: devices.map(d => ({ device: d.device, count: Number(d.cnt) })),
       topTechs: topTechs.map(t => ({ id: t.ref, name: techNameMap[t.ref!]?.nameAr || null, count: Number(t.cnt) })),
       topCompanies: topCompanies.map(c => ({ id: c.ref, name: companyNameMap[c.ref!] || null, count: Number(c.cnt) })),
-      topSuppliers: topSuppliers.map(s => ({ id: s.ref, name: supplierNameMap[s.ref!] || null, count: Number(s.cnt) })),
+      topSuppliers: topSuppliers.filter(s => s.ref && uuidRe.test(s.ref)).map(s => ({ id: s.ref, name: supplierNameMap[s.ref!] || null, count: Number(s.cnt) })),
       topSearches: topSearches.map(s => ({ query: s.ref, count: Number(s.cnt) })),
       topCategories: topCategories.map(c => ({ id: c.ref, count: Number(c.cnt) })),
       dailyVisits: dailyVisits.map(d => ({ day: d.day, count: Number(d.cnt) })),
