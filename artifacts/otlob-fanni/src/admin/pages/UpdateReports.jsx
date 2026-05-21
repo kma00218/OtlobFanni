@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink, Pencil } from 'lucide-react'
+import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink, Pencil, MessageCircle } from 'lucide-react'
 import api from '../../lib/api'
 
 const STATUS_CONFIG = {
-  new:      { label: 'جديد',    labelEn: 'New',      color: 'bg-blue-100 text-blue-700',    icon: Clock },
-  reviewed: { label: 'تمت المراجعة', labelEn: 'Reviewed', color: 'bg-amber-100 text-amber-700', icon: Eye },
-  resolved: { label: 'تم الحل',  labelEn: 'Resolved', color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
-  rejected: { label: 'مرفوض',   labelEn: 'Rejected', color: 'bg-red-100 text-red-700',     icon: XCircle },
+  new:      { label: 'جديد',          color: 'bg-blue-100 text-blue-700',     icon: Clock },
+  reviewed: { label: 'قيد المراجعة',  color: 'bg-amber-100 text-amber-700',   icon: Eye },
+  resolved: { label: 'تم الحل',       color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
+  rejected: { label: 'مرفوض',         color: 'bg-red-100 text-red-700',       icon: XCircle },
 }
 
 const REQUEST_TYPE_LABELS = {
@@ -24,6 +24,42 @@ const ENTITY_TYPE_LABELS = {
   supplier:   'مورد',
 }
 
+const WA_MESSAGES = {
+  resolved: (name, reqType) =>
+    `السلام عليكم 👋\nبخصوص طلبك *${REQUEST_TYPE_LABELS[reqType] || reqType}* المتعلق بـ *${name}* على منصة اطلب فني،\n\nيسعدنا إعلامك بأنه تمت مراجعة طلبك ✅ وتم اتخاذ الإجراء اللازم بنجاح.\n\nشكراً لتواصلك معنا 🙏\nفريق اطلب فني`,
+
+  resolved_change: (name, reqType) =>
+    `السلام عليكم 👋\nبخصوص طلبك *${REQUEST_TYPE_LABELS[reqType] || reqType}* المتعلق بـ *${name}* على منصة اطلب فني،\n\nنُعلمك بأنه تم تنفيذ التعديل المطلوب ✅ وتم تحديث البيانات على المنصة.\n\nشكراً لمساعدتك في تحسين الدليل 🙏\nفريق اطلب فني`,
+
+  reviewed: (name, reqType) =>
+    `السلام عليكم 👋\nبخصوص طلبك *${REQUEST_TYPE_LABELS[reqType] || reqType}* المتعلق بـ *${name}* على منصة اطلب فني،\n\nنُعلمك بأن طلبك قيد المراجعة حالياً من قِبل فريقنا 🔍 وسنتواصل معك بمجرد الانتهاء.\n\nشكراً لصبرك 🙏\nفريق اطلب فني`,
+
+  rejected: (name, reqType) =>
+    `السلام عليكم 👋\nبخصوص طلبك *${REQUEST_TYPE_LABELS[reqType] || reqType}* المتعلق بـ *${name}* على منصة اطلب فني،\n\nبعد المراجعة، لم نتمكن من قبول هذا الطلب في الوقت الحالي ❌\n\nإن كان لديك استفسار يمكنك التواصل معنا مجدداً.\nشكراً 🙏\nفريق اطلب فني`,
+}
+
+const WA_ACTIONS = [
+  { key: 'resolved',        label: 'تم الحل',        cls: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200' },
+  { key: 'resolved_change', label: 'تم التعديل',     cls: 'bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200' },
+  { key: 'reviewed',        label: 'قيد المراجعة',   cls: 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' },
+  { key: 'rejected',        label: 'مرفوض',          cls: 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200' },
+]
+
+function buildWaUrl(phone, actionKey, entityName, requestType) {
+  const clean = phone.replace(/\D/g, '')
+  const num = clean.startsWith('218') ? clean : clean.startsWith('0') ? '218' + clean.slice(1) : '218' + clean
+  const msgFn = WA_MESSAGES[actionKey]
+  if (!msgFn) return null
+  const msg = msgFn(entityName || '—', requestType)
+  return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`
+}
+
+const WaIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+)
+
 const entityPath = (type, id) => {
   if (type === 'technician') return `/technician/${id}`
   if (type === 'company')    return `/company/${id}`
@@ -39,18 +75,18 @@ const adminEditPath = (type, id) => {
 }
 
 export default function UpdateReports() {
-  const [reports, setReports]       = useState([])
-  const [loading, setLoading]       = useState(true)
-  const [filter, setFilter]         = useState('all')
-  const [expanded, setExpanded]     = useState(null)
-  const [updating, setUpdating]     = useState(null)
+  const [reports, setReports]   = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [filter, setFilter]     = useState('all')
+  const [expanded, setExpanded] = useState(null)
+  const [updating, setUpdating] = useState(null)
 
   const load = async () => {
     setLoading(true)
     try {
       const data = await api.admin.updateReports.list()
       setReports(data)
-    } catch { /* ignore */ }
+    } catch { }
     setLoading(false)
   }
 
@@ -61,7 +97,7 @@ export default function UpdateReports() {
     try {
       await api.admin.updateReports.setStatus(id, status)
       setReports(prev => prev.map(r => r.id === id ? { ...r, status } : r))
-    } catch { /* ignore */ }
+    } catch { }
     setUpdating(null)
   }
 
@@ -71,7 +107,7 @@ export default function UpdateReports() {
       await api.admin.updateReports.delete(id)
       setReports(prev => prev.filter(r => r.id !== id))
       if (expanded === id) setExpanded(null)
-    } catch { /* ignore */ }
+    } catch { }
   }
 
   const filtered = filter === 'all' ? reports : reports.filter(r => r.status === filter)
@@ -143,7 +179,6 @@ export default function UpdateReports() {
                 {/* Row header */}
                 <div className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-50/50 transition-colors"
                   onClick={() => setExpanded(isExpanded ? null : r.id)}>
-
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-bold text-[#071B33] text-sm truncate">{r.entityName || r.entityId}</span>
@@ -154,25 +189,16 @@ export default function UpdateReports() {
                         {REQUEST_TYPE_LABELS[r.requestType] || r.requestType}
                       </span>
                       {entityPath(r.entityType, r.entityId) && (
-                        <a
-                          href={entityPath(r.entityType, r.entityId)}
-                          target="_blank"
-                          rel="noreferrer"
+                        <a href={entityPath(r.entityType, r.entityId)} target="_blank" rel="noreferrer"
                           onClick={e => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium transition-colors"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          عرض
+                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium transition-colors">
+                          <ExternalLink className="w-3 h-3" /> عرض
                         </a>
                       )}
                       {adminEditPath(r.entityType, r.entityId) && (
-                        <a
-                          href={adminEditPath(r.entityType, r.entityId)}
-                          onClick={e => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#FF7900]/10 text-[#FF7900] hover:bg-[#FF7900]/20 font-medium transition-colors"
-                        >
-                          <Pencil className="w-3 h-3" />
-                          تعديل
+                        <a href={adminEditPath(r.entityType, r.entityId)} onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#FF7900]/10 text-[#FF7900] hover:bg-[#FF7900]/20 font-medium transition-colors">
+                          <Pencil className="w-3 h-3" /> تعديل
                         </a>
                       )}
                     </div>
@@ -181,7 +207,6 @@ export default function UpdateReports() {
                       {new Date(r.createdAt).toLocaleDateString('ar-LY', { day:'numeric', month:'short', year:'numeric' })}
                     </p>
                   </div>
-
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${statusCfg.color}`}>
                       <StatusIcon className="w-3 h-3" />
@@ -194,6 +219,7 @@ export default function UpdateReports() {
                 {/* Expanded details */}
                 {isExpanded && (
                   <div className="border-t border-slate-100 p-4 space-y-4 bg-slate-50/50">
+
                     {/* Details grid */}
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {r.requesterName && (
@@ -204,8 +230,8 @@ export default function UpdateReports() {
                       )}
                       {r.requesterPhone && (
                         <div className="bg-white rounded-xl p-3 border border-slate-100">
-                          <p className="text-xs text-slate-400 mb-0.5">رقم الهاتف</p>
-                          <p className="font-medium text-slate-700 dir-ltr text-right">{r.requesterPhone}</p>
+                          <p className="text-xs text-slate-400 mb-0.5">رقم الواتساب</p>
+                          <p className="font-medium text-slate-700 dir-ltr text-right" dir="ltr">{r.requesterPhone}</p>
                         </div>
                       )}
                     </div>
@@ -225,8 +251,7 @@ export default function UpdateReports() {
                             <a key={i} href={p.startsWith('/objects/') ? `/api/storage${p}` : p}
                               target="_blank" rel="noreferrer"
                               className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:opacity-80 transition-opacity bg-slate-100 flex items-center justify-center">
-                              <img src={p.startsWith('/objects/') ? `/api/storage${p}` : p}
-                                alt="" className="w-full h-full object-cover" />
+                              <img src={p.startsWith('/objects/') ? `/api/storage${p}` : p} alt="" className="w-full h-full object-cover" />
                             </a>
                           ))}
                         </div>
@@ -249,6 +274,30 @@ export default function UpdateReports() {
                         حذف
                       </button>
                     </div>
+
+                    {/* WhatsApp notify — only if requester left a number */}
+                    {r.requesterPhone && (
+                      <div className="border-t border-slate-100 pt-3 space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
+                          <span className="text-xs font-semibold text-slate-600">إشعار مقدّم الطلب عبر واتساب:</span>
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          {WA_ACTIONS.map(action => {
+                            const url = buildWaUrl(r.requesterPhone, action.key, r.entityName || r.entityId, r.requestType)
+                            if (!url) return null
+                            return (
+                              <a key={action.key} href={url} target="_blank" rel="noreferrer"
+                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-95 ${action.cls}`}>
+                                <WaIcon />
+                                {action.label}
+                              </a>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
