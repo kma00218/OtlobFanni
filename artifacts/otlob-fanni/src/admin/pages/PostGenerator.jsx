@@ -131,7 +131,30 @@ export default function PostGenerator() {
       }
 
       const lines = []
-      lines.push('📢 انضم حديثاً إلى منصة اطلب فني 🇱🇾')
+
+      const fmt = (iso) => {
+        const d = new Date(iso)
+        return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`
+      }
+      const todayStr = new Date().toISOString().slice(0, 10)
+      let headline
+      if (dateFrom && dateTo) {
+        if (dateFrom === dateTo) {
+          headline = dateFrom === todayStr
+            ? '📢 انضموا إلينا اليوم على منصة اطلب فني 🇱🇾'
+            : `📢 انضموا إلينا بتاريخ ${fmt(dateFrom)} على منصة اطلب فني 🇱🇾`
+        } else {
+          headline = `📢 انضموا إلينا في الفترة من ${fmt(dateFrom)} إلى ${fmt(dateTo)} على منصة اطلب فني 🇱🇾`
+        }
+      } else if (dateFrom) {
+        headline = dateFrom === todayStr
+          ? '📢 انضموا إلينا اليوم على منصة اطلب فني 🇱🇾'
+          : `📢 انضموا إلينا بتاريخ ${fmt(dateFrom)} على منصة اطلب فني 🇱🇾`
+      } else {
+        headline = '📢 انضموا حديثاً إلى منصة اطلب فني 🇱🇾'
+      }
+
+      lines.push(headline)
       lines.push('')
 
       if (techItems.length > 0) {
