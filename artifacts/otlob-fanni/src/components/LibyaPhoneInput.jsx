@@ -9,7 +9,7 @@ function stripLocal(fullNumber) {
   return s
 }
 
-export default function LibyaPhoneInput({ value, onChange, required, className }) {
+export default function LibyaPhoneInput({ value, onChange, onBlur, required, className }) {
   const { lang } = useLang()
   const ar = lang === 'ar'
 
@@ -36,6 +36,7 @@ export default function LibyaPhoneInput({ value, onChange, required, className }
           required={required}
           value={localValue}
           onChange={handleChange}
+          onBlur={onBlur}
           placeholder="91 0000000"
           inputMode="numeric"
           maxLength={9}

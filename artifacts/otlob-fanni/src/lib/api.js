@@ -113,6 +113,7 @@ export const api = {
 
   updateServiceRequest: (id, status) => patch(`/service-requests/${id}/status`, { status }),
 
+  checkWhatsapp: (number) => get(`/check-whatsapp?number=${encodeURIComponent(number)}`),
   submitTechnicianApplication: (data) => post('/technician-applications', data),
   submitCompanyApplication:    (data) => post('/company-applications',    data),
   trackRequest:                (reqNum) => get(`/status/${encodeURIComponent(reqNum)}`),

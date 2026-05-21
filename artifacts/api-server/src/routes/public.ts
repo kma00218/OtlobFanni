@@ -27,6 +27,35 @@ router.get("/categories", async (_req, res): Promise<void> => {
   res.json(categories);
 });
 
+// ── Check if WhatsApp number already registered ──────────────────────────────
+router.get("/check-whatsapp", async (req, res): Promise<void> => {
+  const raw = String(req.query.number || "").replace(/\D/g, "");
+  if (raw.length < 7) { res.json({ available: true }); return; }
+
+  const suffix = raw.slice(-9);
+
+  const [inTechs] = await db
+    .select({ id: techniciansTable.id })
+    .from(techniciansTable)
+    .where(sql`regexp_replace(${techniciansTable.whatsapp}, '[^0-9]', '', 'g') LIKE ${'%' + suffix}`)
+    .limit(1);
+
+  if (inTechs) { res.json({ available: false }); return; }
+
+  const [inApps] = await db
+    .select({ id: technicianApplicationsTable.id })
+    .from(technicianApplicationsTable)
+    .where(
+      and(
+        sql`regexp_replace(${technicianApplicationsTable.whatsapp}, '[^0-9]', '', 'g') LIKE ${'%' + suffix}`,
+        sql`${technicianApplicationsTable.status} NOT IN ('rejected', 'deleted')`
+      )
+    )
+    .limit(1);
+
+  res.json({ available: !inApps });
+});
+
 // ── Popular categories (sorted by real demand: clicks + technician count) ─────
 router.get("/categories/popular", async (_req, res): Promise<void> => {
   const limit = 14;
