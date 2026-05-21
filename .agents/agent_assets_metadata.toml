@@ -588,6 +588,12 @@ uri = "file://artifacts/otlob-fanni/public/icons/sections/gardens_pools.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "MsH7lR-il3fbhdPAPwW1Y"
+uri = "file://artifacts/otlob-fanni/public/icons/sections/moving_general.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"
