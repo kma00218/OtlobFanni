@@ -113,8 +113,9 @@ jobs:
         working-directory: android-twa
         run: |
           if [ ! -d "android" ]; then
+            echo "Installing @bubblewrap/core locally..."
+            npm install @bubblewrap/core --no-save
             echo "Initializing TWA project (non-interactive via core API)..."
-            export NODE_PATH=$(npm root -g)
             node init-twa.js
           else
             echo "TWA project already initialized, skipping init."
