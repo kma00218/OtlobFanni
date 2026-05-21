@@ -6,8 +6,104 @@ uri = "file://attached_assets/icon_home_services_example.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "gXeYXjdFZ-oeMrq60PlPO"
+uri = "file://attached_assets/icon_car_services.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Nmb1rZJxrEg1Wx36ckMUo"
+uri = "file://attached_assets/icon_construction.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "884qeyXBesZXnq73-UPnU"
+uri = "file://attached_assets/icon_tech_security.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "KD1lEuEt2FK7YuZdifrE1"
+uri = "file://attached_assets/icon_moving_general.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dznzEfCl3RCfPu-U-Dps5"
+uri = "file://attached_assets/icon_gardens_pools.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "47vUgvC4564C8QqSX4HRp"
+uri = "file://attached_assets/icon_energy_generators.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "iG56hTdF8-b5bMWMNdbvh"
+uri = "file://attached_assets/icon_business_services.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Mdc-7ttTmB0BaT0-kgMx3"
+uri = "file://attached_assets/icon_more_services.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"
 type = "image"
 title = "مثال أيقونة — خدمات منزلية"
+
+[[outputs]]
+id = "5Jx6TABPB5UEmN8ZVACoL"
+uri = "file://attached_assets/icon_car_services.png"
+type = "image"
+title = "خدمات سيارات"
+
+[[outputs]]
+id = "fs3Vi0F9IaPgNIl8Lm96E"
+uri = "file://attached_assets/icon_construction.png"
+type = "image"
+title = "بناء وتشطيب"
+
+[[outputs]]
+id = "JWVj6yQo8wsPFts_vGI9c"
+uri = "file://attached_assets/icon_tech_security.png"
+type = "image"
+title = "تقنية وأمن"
+
+[[outputs]]
+id = "gi4oEnYAhFS8rvT5UOhQq"
+uri = "file://attached_assets/icon_moving_general.png"
+type = "image"
+title = "نقل وخدمات عامة"
+
+[[outputs]]
+id = "NcEiDZ6uRQOXznW4zc_ND"
+uri = "file://attached_assets/icon_gardens_pools.png"
+type = "image"
+title = "حدائق ومسابح"
+
+[[outputs]]
+id = "uic_ChxbHGC0N29Rk8sw-"
+uri = "file://attached_assets/icon_energy_generators.png"
+type = "image"
+title = "الطاقة والمولدات"
+
+[[outputs]]
+id = "rH5FMshoa2iFZYvgmBHyA"
+uri = "file://attached_assets/icon_business_services.png"
+type = "image"
+title = "الخدمات التجارية"
+
+[[outputs]]
+id = "QvizJcGXAES8EaqwIws4k"
+uri = "file://attached_assets/icon_more_services.png"
+type = "image"
+title = "المزيد من الخدمات"
