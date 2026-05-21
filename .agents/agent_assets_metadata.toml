@@ -54,6 +54,12 @@ uri = "file://attached_assets/icon_more_services.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "0UBPUIARpm1SYLv9e56q2"
+uri = "file://attached_assets/icon_cat_example_electricity.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"
@@ -107,3 +113,9 @@ id = "QvizJcGXAES8EaqwIws4k"
 uri = "file://attached_assets/icon_more_services.png"
 type = "image"
 title = "المزيد من الخدمات"
+
+[[outputs]]
+id = "RwH9uuDREBvUOif004P4O"
+uri = "file://attached_assets/icon_cat_example_electricity.png"
+type = "image"
+title = "مثال — كهرباء"
