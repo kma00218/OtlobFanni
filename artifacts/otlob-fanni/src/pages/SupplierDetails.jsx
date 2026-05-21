@@ -113,7 +113,7 @@ export default function SupplierDetails() {
       setReviews(revs || [])
       setLoading(false)
     }).catch(() => setLoading(false))
-    track('supplier_view', { id })
+    track('supplier_view', id)
   }, [id])
 
   const handleSubmitReview = async () => {
