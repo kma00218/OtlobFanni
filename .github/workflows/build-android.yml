@@ -49,7 +49,7 @@ jobs:
       # ── 5b. Pre-configure Bubblewrap paths (non-interactive) ─────────────
       - name: Configure Bubblewrap JDK and SDK paths
         run: |
-          printf 'n\n' | bubblewrap updateConfig \
+          printf 'n\n%s\n' "$JAVA_HOME" | bubblewrap updateConfig \
             --jdkPath "$JAVA_HOME" \
             --androidSdkPath "$ANDROID_SDK_ROOT"
 
