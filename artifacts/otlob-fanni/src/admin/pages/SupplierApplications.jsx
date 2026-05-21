@@ -42,6 +42,7 @@ export default function SupplierApplications() {
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
   const [viewItem, setViewItem]   = useState(null)
+  const [waDup, setWaDup]         = useState(null)
   const [lightbox, setLightbox]   = useState(null)
   const [toast, setToast]         = useState(null)
   const [lastPublished, setLastPublished] = useState(null)
@@ -72,6 +73,14 @@ export default function SupplierApplications() {
   useEffect(() => {
     setSpecialtyAction('none')
     setLinkTypeId('')
+  }, [viewItem?.id])
+
+  useEffect(() => {
+    if (!viewItem?.whatsapp) { setWaDup(null); return }
+    setWaDup(null)
+    api.checkWhatsapp(viewItem.whatsapp, { excludeId: viewItem.id, excludeType: 'supplier_app' })
+      .then(({ available }) => setWaDup(!available))
+      .catch(() => setWaDup(null))
   }, [viewItem?.id])
 
   const setStatus = async (id, status, rejectionReason = null) => {
@@ -412,6 +421,9 @@ export default function SupplierApplications() {
                 <div className="flex items-center gap-3">
                   <MessageCircle className="w-4 h-4 text-slate-400 flex-shrink-0" />
                   <span className="text-white font-mono text-sm" dir="ltr">{viewItem.whatsapp}</span>
+                  {waDup === true && (
+                    <span className="bg-red-500/20 text-red-400 text-[11px] font-bold px-2 py-0.5 rounded-full border border-red-500/30 mr-auto">⚠️ مكرر</span>
+                  )}
                 </div>
               )}
               {viewItem.facebook && (

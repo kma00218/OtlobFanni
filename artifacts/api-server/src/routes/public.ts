@@ -42,29 +42,36 @@ router.get("/check-whatsapp", async (req, res): Promise<void> => {
 
   if (inTechs) { res.json({ available: false }); return; }
 
+  const excludeId   = String(req.query.excludeId   || "");
+  const excludeType = String(req.query.excludeType || "");
+
   const notRejected = (col: any) =>
     sql`${col} NOT IN ('rejected', 'deleted')`;
   const matchWa = (col: any) =>
     sql`regexp_replace(${col}, '[^0-9]', '', 'g') LIKE ${'%' + suffix}`;
+  const notSelf = (col: any, type: string) =>
+    excludeId && excludeType === type
+      ? sql`${col} != ${excludeId}`
+      : sql`1=1`;
 
   const [inTechApps] = await db
     .select({ id: technicianApplicationsTable.id })
     .from(technicianApplicationsTable)
-    .where(and(matchWa(technicianApplicationsTable.whatsapp), notRejected(technicianApplicationsTable.status)))
+    .where(and(matchWa(technicianApplicationsTable.whatsapp), notRejected(technicianApplicationsTable.status), notSelf(technicianApplicationsTable.id, 'tech_app')))
     .limit(1);
   if (inTechApps) { res.json({ available: false }); return; }
 
   const [inCompApps] = await db
     .select({ id: companyApplicationsTable.id })
     .from(companyApplicationsTable)
-    .where(and(matchWa(companyApplicationsTable.whatsapp), notRejected(companyApplicationsTable.status)))
+    .where(and(matchWa(companyApplicationsTable.whatsapp), notRejected(companyApplicationsTable.status), notSelf(companyApplicationsTable.id, 'company_app')))
     .limit(1);
   if (inCompApps) { res.json({ available: false }); return; }
 
   const [inSuppliers] = await db
     .select({ id: supplierApplicationsTable.id })
     .from(supplierApplicationsTable)
-    .where(and(matchWa(supplierApplicationsTable.whatsapp), notRejected(supplierApplicationsTable.status)))
+    .where(and(matchWa(supplierApplicationsTable.whatsapp), notRejected(supplierApplicationsTable.status), notSelf(supplierApplicationsTable.id, 'supplier_app')))
     .limit(1);
 
   res.json({ available: !inSuppliers });

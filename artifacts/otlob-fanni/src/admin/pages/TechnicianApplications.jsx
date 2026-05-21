@@ -42,6 +42,7 @@ export default function TechnicianApplications() {
   const [search, setSearch]     = useState('')
   const [filter, setFilter]     = useState('')
   const [viewItem, setViewItem]           = useState(null)
+  const [waDup, setWaDup]                 = useState(null)
   const [lightbox, setLightbox]           = useState(null)
   const [toast, setToast]                 = useState(null)
   const [lastPublished, setLastPublished] = useState(null)
@@ -89,6 +90,14 @@ export default function TechnicianApplications() {
   useEffect(() => {
     setSpecialtyAction('none')
     setLinkCatId('')
+  }, [viewItem?.id])
+
+  useEffect(() => {
+    if (!viewItem?.whatsapp) { setWaDup(null); return }
+    setWaDup(null)
+    api.checkWhatsapp(viewItem.whatsapp, { excludeId: viewItem.id, excludeType: 'tech_app' })
+      .then(({ available }) => setWaDup(!available))
+      .catch(() => setWaDup(null))
   }, [viewItem?.id])
 
   const setStatus = async (id, status, rejectionReason = null) => {
@@ -542,7 +551,12 @@ export default function TechnicianApplications() {
                   <IC label="رقم الهاتف"     value={viewItem.phone}     dir="ltr" />
                   <div className="bg-slate-50 rounded-xl p-3">
                     <p className="text-xs text-slate-500 mb-0.5">واتساب</p>
-                    <p className="font-medium text-[#071B33] text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-[#071B33] text-sm" dir="ltr">{viewItem.whatsapp || '—'}</p>
+                      {waDup === true && (
+                        <span className="bg-red-100 text-red-600 text-[11px] font-bold px-2 py-0.5 rounded-full border border-red-200">⚠️ مكرر</span>
+                      )}
+                    </div>
                     {viewItem.whatsapp && (
                       <a href={`https://wa.me/${viewItem.whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
                          className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-green-400 hover:text-green-300 transition-colors">

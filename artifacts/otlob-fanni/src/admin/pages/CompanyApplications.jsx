@@ -34,6 +34,7 @@ export default function CompanyApplications() {
   const [search, setSearch]     = useState('')
   const [filter, setFilter]     = useState('')
   const [viewItem, setViewItem]               = useState(null)
+  const [waDup, setWaDup]                     = useState(null)
   const [lightbox, setLightbox]               = useState(null)
   const [toast, setToast]                     = useState(null)
   const [lastPublished, setLastPublished]     = useState(null)
@@ -80,6 +81,14 @@ export default function CompanyApplications() {
   useEffect(() => {
     setSpecialtyAction('none')
     setLinkCatId('')
+  }, [viewItem?.id])
+
+  useEffect(() => {
+    if (!viewItem?.whatsapp) { setWaDup(null); return }
+    setWaDup(null)
+    api.checkWhatsapp(viewItem.whatsapp, { excludeId: viewItem.id, excludeType: 'company_app' })
+      .then(({ available }) => setWaDup(!available))
+      .catch(() => setWaDup(null))
   }, [viewItem?.id])
 
   const setStatus = async (id, status, rejectionReason = null) => {
@@ -555,6 +564,11 @@ export default function CompanyApplications() {
               </div>
 
               {/* ── أزرار التواصل ── */}
+              {waDup === true && (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                  <span className="text-red-600 text-[12px] font-bold">⚠️ رقم الواتساب مكرر — مسجّل في طلب آخر على المنصة</span>
+                </div>
+              )}
               <div className="flex gap-2">
                 {whatsapp && (
                   <a href={`https://wa.me/${whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noreferrer"

@@ -113,7 +113,12 @@ export const api = {
 
   updateServiceRequest: (id, status) => patch(`/service-requests/${id}/status`, { status }),
 
-  checkWhatsapp: (number) => get(`/check-whatsapp?number=${encodeURIComponent(number)}`),
+  checkWhatsapp: (number, opts = {}) => {
+    const p = new URLSearchParams({ number })
+    if (opts.excludeId)   p.set('excludeId',   opts.excludeId)
+    if (opts.excludeType) p.set('excludeType', opts.excludeType)
+    return get(`/check-whatsapp?${p}`)
+  },
   submitTechnicianApplication: (data) => post('/technician-applications', data),
   submitCompanyApplication:    (data) => post('/company-applications',    data),
   trackRequest:                (reqNum) => get(`/status/${encodeURIComponent(reqNum)}`),
