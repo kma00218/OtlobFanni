@@ -208,25 +208,39 @@ export default function Home() {
 
         {/* ── أزرار المدن السريعة ── */}
         {citiesForFilter.length > 0 && (
-          <div
-            className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {citiesForFilter.map(city => (
-              <button
-                key={city.id}
-                onClick={() => navigate(`/city/${city.id}`)}
-                className="flex-shrink-0 flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold border transition-colors active:scale-95"
-                style={{
-                  background: 'white',
-                  border: '1.5px solid #E2E8F0',
-                  color: '#071B33',
-                }}
-              >
-                <span style={{ fontSize: '11px' }}>📍</span>
-                {ar ? city.nameAr : (city.nameEn || city.nameAr)}
-              </button>
-            ))}
+          <div className="relative -mx-1">
+            <div
+              className="flex gap-2 overflow-x-auto pb-0.5 px-1"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {citiesForFilter.map(city => (
+                <button
+                  key={city.id}
+                  onClick={() => navigate(`/city/${city.id}`)}
+                  className="flex-shrink-0 flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold border transition-colors active:scale-95"
+                  style={{
+                    background: 'white',
+                    border: '1.5px solid #E2E8F0',
+                    color: '#071B33',
+                  }}
+                >
+                  <span style={{ fontSize: '11px' }}>📍</span>
+                  {ar ? city.nameAr : (city.nameEn || city.nameAr)}
+                </button>
+              ))}
+              {/* extra right padding so last pill doesn't touch the fade */}
+              <div className="flex-shrink-0 w-6" />
+            </div>
+            {/* fade on the left (trailing edge in RTL) */}
+            <div
+              className="pointer-events-none absolute top-0 bottom-0 left-0 w-10"
+              style={{ background: 'linear-gradient(to right, #F8FAFC 40%, transparent)' }}
+            />
+            {/* subtle fade on the right (leading edge in RTL) */}
+            <div
+              className="pointer-events-none absolute top-0 bottom-0 right-0 w-10"
+              style={{ background: 'linear-gradient(to left, #F8FAFC 40%, transparent)' }}
+            />
           </div>
         )}
 
