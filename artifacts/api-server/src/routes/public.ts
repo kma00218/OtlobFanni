@@ -42,18 +42,32 @@ router.get("/check-whatsapp", async (req, res): Promise<void> => {
 
   if (inTechs) { res.json({ available: false }); return; }
 
-  const [inApps] = await db
+  const notRejected = (col: any) =>
+    sql`${col} NOT IN ('rejected', 'deleted')`;
+  const matchWa = (col: any) =>
+    sql`regexp_replace(${col}, '[^0-9]', '', 'g') LIKE ${'%' + suffix}`;
+
+  const [inTechApps] = await db
     .select({ id: technicianApplicationsTable.id })
     .from(technicianApplicationsTable)
-    .where(
-      and(
-        sql`regexp_replace(${technicianApplicationsTable.whatsapp}, '[^0-9]', '', 'g') LIKE ${'%' + suffix}`,
-        sql`${technicianApplicationsTable.status} NOT IN ('rejected', 'deleted')`
-      )
-    )
+    .where(and(matchWa(technicianApplicationsTable.whatsapp), notRejected(technicianApplicationsTable.status)))
+    .limit(1);
+  if (inTechApps) { res.json({ available: false }); return; }
+
+  const [inCompApps] = await db
+    .select({ id: companyApplicationsTable.id })
+    .from(companyApplicationsTable)
+    .where(and(matchWa(companyApplicationsTable.whatsapp), notRejected(companyApplicationsTable.status)))
+    .limit(1);
+  if (inCompApps) { res.json({ available: false }); return; }
+
+  const [inSuppliers] = await db
+    .select({ id: supplierApplicationsTable.id })
+    .from(supplierApplicationsTable)
+    .where(and(matchWa(supplierApplicationsTable.whatsapp), notRejected(supplierApplicationsTable.status)))
     .limit(1);
 
-  res.json({ available: !inApps });
+  res.json({ available: !inSuppliers });
 });
 
 // ── Popular categories (sorted by real demand: clicks + technician count) ─────

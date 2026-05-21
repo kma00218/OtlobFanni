@@ -52,6 +52,7 @@ export default function JoinSupplier() {
   const [requestNumber, setRequestNumber] = useState(null)
   const [copied, setCopied] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [whatsappStatus, setWhatsappStatus] = useState('idle')
   const [uploading, setUploading] = useState(0)
   const [location, setLocation] = useState(null)
   const [logo, setLogo] = useState(null)
@@ -78,6 +79,19 @@ export default function JoinSupplier() {
   })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleWhatsappBlur = async () => {
+    const num = form.whatsapp.replace(/\D/g, '')
+    if (num.length < 10) { setWhatsappStatus('idle'); return }
+    setWhatsappStatus('checking')
+    try {
+      const { available } = await api.checkWhatsapp(form.whatsapp)
+      setWhatsappStatus(available ? 'available' : 'taken')
+    } catch {
+      setWhatsappStatus('idle')
+    }
+  }
+
   const isOther = form.supply_type === 'other'
 
   // First word of business name for logo placeholder
@@ -125,6 +139,10 @@ export default function JoinSupplier() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (whatsappStatus === 'taken') {
+      alert(ar ? 'رقم الواتساب مسجّل مسبقاً. يرجى استخدام رقم آخر.' : 'This WhatsApp number is already registered. Please use a different number.')
+      return
+    }
     if (!form.supply_type) {
       alert(ar ? 'يرجى اختيار نوع المستلزمات' : 'Please select a supply type')
       return
@@ -295,7 +313,24 @@ export default function JoinSupplier() {
                 <LibyaPhoneInput required value={form.phone} onChange={v => set('phone', v)} />
               </Field>
               <Field label={ar ? 'واتساب' : 'WhatsApp'} required>
-                <LibyaPhoneInput required value={form.whatsapp} onChange={v => set('whatsapp', v)} />
+                <LibyaPhoneInput
+                  required
+                  value={form.whatsapp}
+                  onChange={v => { set('whatsapp', v); setWhatsappStatus('idle') }}
+                  onBlur={handleWhatsappBlur}
+                />
+                {whatsappStatus === 'checking' && (
+                  <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                    <span className="inline-block w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                    {ar ? 'جاري التحقق...' : 'Checking...'}
+                  </p>
+                )}
+                {whatsappStatus === 'available' && (
+                  <p className="text-xs text-green-600 font-semibold mt-1">✅ {ar ? 'الرقم متاح، يمكنك المتابعة' : 'Number is available'}</p>
+                )}
+                {whatsappStatus === 'taken' && (
+                  <p className="text-xs text-red-600 font-semibold mt-1">⚠️ {ar ? 'هذا الرقم مسجّل مسبقاً في المنصة' : 'This number is already registered'}</p>
+                )}
               </Field>
             </div>
             <div className="flex gap-2.5 bg-amber-50 border border-amber-300 rounded-xl px-3.5 py-3">

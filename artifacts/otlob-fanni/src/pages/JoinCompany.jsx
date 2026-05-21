@@ -124,6 +124,7 @@ export default function JoinCompany() {
   const [requestNumber, setRequestNumber] = useState(null)
   const [copied, setCopied] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [whatsappStatus, setWhatsappStatus] = useState('idle')
   const [uploading, setUploading] = useState(0)
   const [companyLogo, setCompanyLogo] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
@@ -163,6 +164,19 @@ export default function JoinCompany() {
   const [location, setLocation] = useState(null)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleWhatsappBlur = async () => {
+    const num = form.whatsapp.replace(/\D/g, '')
+    if (num.length < 10) { setWhatsappStatus('idle'); return }
+    setWhatsappStatus('checking')
+    try {
+      const { available } = await api.checkWhatsapp(form.whatsapp)
+      setWhatsappStatus(available ? 'available' : 'taken')
+    } catch {
+      setWhatsappStatus('idle')
+    }
+  }
+
   const toggleCategory = (id) => setSelectedCategories(p =>
     p.includes(id) ? p.filter(x => x !== id) : [...p, id]
   )
@@ -223,6 +237,10 @@ export default function JoinCompany() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (whatsappStatus === 'taken') {
+      alert(ar ? 'رقم الواتساب مسجّل مسبقاً. يرجى استخدام رقم آخر.' : 'This WhatsApp number is already registered. Please use a different number.')
+      return
+    }
     setSaving(true)
     try {
       const primarySpecialty = selectedCategories[0] || 'more_services'
@@ -436,7 +454,24 @@ export default function JoinCompany() {
                   <LibyaPhoneInput required value={form.phone} onChange={v => set('phone', v)} />
                 </Field>
                 <Field label={ar ? 'واتساب' : 'WhatsApp'} required>
-                  <LibyaPhoneInput required value={form.whatsapp} onChange={v => set('whatsapp', v)} />
+                  <LibyaPhoneInput
+                    required
+                    value={form.whatsapp}
+                    onChange={v => { set('whatsapp', v); setWhatsappStatus('idle') }}
+                    onBlur={handleWhatsappBlur}
+                  />
+                  {whatsappStatus === 'checking' && (
+                    <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                      <span className="inline-block w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                      {ar ? 'جاري التحقق...' : 'Checking...'}
+                    </p>
+                  )}
+                  {whatsappStatus === 'available' && (
+                    <p className="text-xs text-green-600 font-semibold mt-1">✅ {ar ? 'الرقم متاح، يمكنك المتابعة' : 'Number is available'}</p>
+                  )}
+                  {whatsappStatus === 'taken' && (
+                    <p className="text-xs text-red-600 font-semibold mt-1">⚠️ {ar ? 'هذا الرقم مسجّل مسبقاً في المنصة' : 'This number is already registered'}</p>
+                  )}
                 </Field>
               </div>
 
