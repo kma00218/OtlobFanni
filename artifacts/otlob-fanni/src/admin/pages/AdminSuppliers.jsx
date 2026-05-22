@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
 
@@ -260,54 +260,55 @@ export default function AdminSuppliers() {
     {
       key: 'actions', label: '',
       render: (_, row) => (
-        <div className="flex items-center gap-1.5 justify-end">
+        <div className="flex items-center gap-1 justify-end">
           <button onClick={() => setViewItem(row)}
-            className="px-2.5 py-1.5 text-xs font-semibold bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
-            عرض
+            className="p-1.5 hover:bg-blue-500/10 text-blue-500 rounded-lg transition-colors"
+            title="عرض">
+            <Eye className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => openEdit(row)}
-            className="px-2.5 py-1.5 text-xs font-semibold bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors">
-            تعديل
+            className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors"
+            title="تعديل">
+            <Pencil className="w-3.5 h-3.5" />
           </button>
           {(row.whatsapp || row.phone) && (
             <button
               onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً ${row.businessName || row.business_name || ''}، شكراً لانضمامكم لمنصة اطلب فني\nنتمنى منكم مشاركة المنصة مع عملائكم وشركائكم حتى يستفيد الجميع 👇\nhttps://otlobfanni.ly`)}`, '_blank')}
-              className="px-2.5 py-1.5 text-xs font-semibold bg-violet-50 text-violet-500 rounded-lg hover:bg-violet-100 transition-colors flex items-center gap-1"
+              className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
               title="طلب المشاركة">
-              <Share2 className="w-3 h-3" />
-              شارك
+              <Share2 className="w-3.5 h-3.5" />
             </button>
           )}
           {(row.whatsapp || row.phone) && (!row.logo || !(row.shopImages || []).length) && (
             <button
               onClick={() => sendNudgeSupplier(row)}
-              className="px-2.5 py-1.5 text-xs font-semibold bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-1"
+              className="p-1.5 hover:bg-amber-500/10 text-amber-500 rounded-lg transition-colors"
               title="نج لإكمال الملف">
-              <AlertTriangle className="w-3 h-3" />
-              تحسين
+              <AlertTriangle className="w-3.5 h-3.5" />
             </button>
           )}
           {(row.whatsapp || row.phone) && (
             <button
               onClick={() => sendCredentials(row)}
               disabled={credsSending === row.id}
-              className="px-2.5 py-1.5 text-xs font-semibold bg-orange-50 text-orange-500 rounded-lg hover:bg-orange-100 transition-colors disabled:opacity-50 flex items-center gap-1"
+              className="p-1.5 hover:bg-orange-500/10 text-orange-400 rounded-lg transition-colors disabled:opacity-50"
               title="إرسال بيانات الدخول">
               {credsSending === row.id
-                ? <span className="w-3 h-3 border-2 border-orange-500 border-t-transparent rounded-full animate-spin inline-block" />
-                : <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+                ? <span className="w-3.5 h-3.5 border-2 border-orange-400 border-t-transparent rounded-full animate-spin inline-block" />
+                : <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
               }
-              إرسال
             </button>
           )}
           <button onClick={() => handleRevoke(row.id)}
-            className="px-2.5 py-1.5 text-xs font-semibold bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors">
-            إلغاء النشر
+            className="p-1.5 hover:bg-amber-500/10 text-amber-500 rounded-lg transition-colors"
+            title="إلغاء النشر">
+            <EyeOff className="w-3.5 h-3.5" />
           </button>
           {isSuperAdmin && (
             <button onClick={() => handleDelete(row.id)}
-              className="px-2.5 py-1.5 text-xs font-semibold bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors">
-              حذف
+              className="p-1.5 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"
+              title="حذف">
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
