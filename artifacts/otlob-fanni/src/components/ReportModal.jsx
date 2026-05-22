@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import { X, Upload, AlertCircle, CheckCircle, User, Images, Plus } from 'lucide-react'
+import { X, AlertCircle, CheckCircle, User, Images, Plus, Camera, Send, FileText, Phone } from 'lucide-react'
 import { uploadFile, getFileUrl } from '../lib/api'
 import LibyaPhoneInput from './LibyaPhoneInput'
 
 const REQUEST_TYPES = [
-  { id: 'data_update',         ar: 'تحديث بيانات',        en: 'Data Update' },
-  { id: 'wrong_number',        ar: 'رقم هاتف غير صحيح',   en: 'Wrong Number' },
-  { id: 'not_available',       ar: 'النشاط غير متوفر',     en: 'Not Available' },
-  { id: 'city_correction',     ar: 'تصحيح المدينة',        en: 'City Correction' },
-  { id: 'specialty_correction', ar: 'تصحيح التخصص',       en: 'Specialty Correction' },
-  { id: 'other',               ar: 'أخرى',                 en: 'Other' },
+  { id: 'data_update',          ar: 'تحديث بيانات',        icon: '✏️' },
+  { id: 'wrong_number',         ar: 'رقم غير صحيح',        icon: '📵' },
+  { id: 'not_available',        ar: 'النشاط متوقف',         icon: '🚫' },
+  { id: 'city_correction',      ar: 'تصحيح المدينة',        icon: '📍' },
+  { id: 'specialty_correction', ar: 'تصحيح التخصص',        icon: '🔧' },
+  { id: 'other',                ar: 'أخرى',                 icon: '💬' },
 ]
 
 export default function ReportModal({ open, onClose, entityType, entityId, entityName, city, ar = true }) {
@@ -89,203 +89,263 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
     onClose()
   }
 
-  const inp = 'w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors placeholder:text-slate-400'
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50" onClick={close}>
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm" onClick={close}>
       <div
-        className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full sm:max-w-md bg-white rounded-t-[2rem] sm:rounded-3xl shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="font-bold text-[#071B33] text-base">
-              {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[220px]">{entityName}</p>
+        {/* ── Header with gradient accent ── */}
+        <div className="relative overflow-hidden bg-gradient-to-l from-[#FF7900] to-[#ff9a3c] px-5 pt-5 pb-4">
+          <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
+          <div className="absolute -bottom-8 left-10 w-16 h-16 rounded-full bg-white/10" />
+          <div className="relative flex items-center justify-between">
+            <div>
+              <h3 className="font-black text-white text-lg leading-tight tracking-tight">
+                {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
+              </h3>
+              <p className="text-white/70 text-xs mt-0.5 truncate max-w-[200px] font-medium">{entityName}</p>
+            </div>
+            <button onClick={close}
+              className="w-9 h-9 rounded-2xl bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors backdrop-blur-sm">
+              <X className="w-4 h-4 text-white" />
+            </button>
           </div>
-          <button onClick={close} className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
-            <X className="w-4 h-4 text-slate-500" />
-          </button>
         </div>
 
         {done ? (
-          <div className="flex flex-col items-center justify-center py-10 px-6 gap-3">
-            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-emerald-500" />
+          <div className="flex flex-col items-center justify-center py-12 px-6 gap-4">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200">
+              <CheckCircle className="w-10 h-10 text-white" strokeWidth={2.5} />
             </div>
-            <p className="font-bold text-[#071B33] text-center">
-              {ar ? 'تم إرسال طلبك بنجاح' : 'Request submitted successfully'}
-            </p>
-            <p className="text-sm text-slate-500 text-center">
-              {ar ? 'سيراجعه فريقنا قريباً' : 'Our team will review it soon'}
-            </p>
+            <div className="text-center space-y-1">
+              <p className="font-black text-[#071B33] text-lg">{ar ? 'تم الإرسال!' : 'Sent!'}</p>
+              <p className="text-sm text-slate-400">{ar ? 'سيراجعه فريقنا قريباً' : 'Our team will review it soon'}</p>
+            </div>
             <button onClick={close}
-              className="mt-2 px-6 py-2.5 bg-[#071B33] text-white text-sm font-bold rounded-xl">
+              className="mt-1 px-8 py-3 bg-[#071B33] text-white text-sm font-bold rounded-2xl hover:bg-[#0f2d52] transition-colors">
               {ar ? 'إغلاق' : 'Close'}
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="max-h-[72vh] overflow-y-auto" dir="rtl">
+            <div className="px-5 py-5 space-y-5">
 
-            {/* نوع الطلب */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-2">
-                {ar ? 'نوع الطلب *' : 'Request Type *'}
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {REQUEST_TYPES.map(t => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => set('requestType', t.id)}
-                    className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all text-right ${
-                      form.requestType === t.id
-                        ? 'bg-[#FF7900] border-[#FF7900] text-white'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#FF7900]/50'
-                    }`}
-                  >
-                    {ar ? t.ar : t.en}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* ── الصور — قسمان بارزان ── */}
-            <div className="space-y-3">
-              <p className="text-xs font-bold text-slate-700">
-                {ar ? 'الصور (اختياري)' : 'Photos (optional)'}
-              </p>
-
-              {/* صورة شخصية أو شعار */}
-              <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 rounded-lg bg-[#071B33]/10 flex items-center justify-center flex-shrink-0">
-                    <User className="w-3.5 h-3.5 text-[#071B33]" />
+              {/* ── نوع الطلب ── */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 rounded-lg bg-[#FF7900] flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-3 h-3 text-white" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#071B33]">
-                      {ar ? 'صورة شخصية أو شعار' : 'Profile Photo or Logo'}
-                    </p>
-                    <p className="text-[10px] text-slate-400">
-                      {ar ? 'صورة واحدة' : 'One image'}
-                    </p>
-                  </div>
+                  <span className="text-xs font-black text-[#071B33] tracking-wide uppercase">
+                    {ar ? 'نوع الطلب' : 'Request Type'}
+                  </span>
+                  <span className="text-[10px] text-[#FF7900] font-bold bg-[#FF7900]/10 px-1.5 py-0.5 rounded-full">مطلوب</span>
                 </div>
-
-                {profilePhoto ? (
-                  <div className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-[#FF7900]/30">
-                    <img src={getFileUrl(profilePhoto)} alt="" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => setProfilePhoto(null)}
-                      className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ) : (
-                  <label className={`flex items-center gap-2 cursor-pointer w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 text-xs font-medium hover:border-[#FF7900]/50 hover:text-[#FF7900] transition-colors ${uploading === 'profile' ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <Upload className="w-3.5 h-3.5 flex-shrink-0" />
-                    {uploading === 'profile'
-                      ? (ar ? 'جارٍ الرفع...' : 'Uploading...')
-                      : (ar ? 'اختر صورة' : 'Choose photo')}
-                    <input type="file" accept="image/*" className="hidden" onChange={handleProfilePhoto} />
-                  </label>
-                )}
-              </div>
-
-              {/* صور الأعمال */}
-              <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 rounded-lg bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0">
-                    <Images className="w-3.5 h-3.5 text-[#FF7900]" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#071B33]">
-                      {ar ? 'صور الأعمال' : 'Work Photos'}
-                    </p>
-                    <p className="text-[10px] text-slate-400">
-                      {ar ? 'يمكن إضافة أكثر من صورة' : 'Multiple photos allowed'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {workPhotos.map((p, i) => (
-                    <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-[#FF7900]/30">
-                      <img src={getFileUrl(p)} alt="" className="w-full h-full object-cover" />
+                <div className="grid grid-cols-3 gap-2">
+                  {REQUEST_TYPES.map(t => {
+                    const active = form.requestType === t.id
+                    return (
                       <button
+                        key={t.id}
                         type="button"
-                        onClick={() => setWorkPhotos(prev => prev.filter((_, j) => j !== i))}
-                        className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                        onClick={() => set('requestType', t.id)}
+                        className={`relative py-3 px-2 rounded-2xl text-center transition-all duration-200 ${
+                          active
+                            ? 'bg-[#FF7900] shadow-lg shadow-[#FF7900]/30 scale-[1.03]'
+                            : 'bg-slate-50 hover:bg-slate-100 border border-slate-100'
+                        }`}
                       >
-                        <X className="w-2.5 h-2.5" />
+                        <span className="block text-base mb-0.5">{t.icon}</span>
+                        <span className={`block text-[10px] font-bold leading-tight ${active ? 'text-white' : 'text-slate-600'}`}>
+                          {ar ? t.ar : t.id}
+                        </span>
+                        {active && (
+                          <span className="absolute top-1.5 left-1.5 w-3.5 h-3.5 rounded-full bg-white/30 flex items-center justify-center">
+                            <CheckCircle className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+                          </span>
+                        )}
                       </button>
-                    </div>
-                  ))}
-
-                  <label className={`w-16 h-16 flex flex-col items-center justify-center gap-1 cursor-pointer rounded-xl border-2 border-dashed border-slate-300 bg-white text-slate-400 hover:border-[#FF7900]/50 hover:text-[#FF7900] transition-colors ${uploading === 'work' ? 'opacity-50 pointer-events-none' : ''}`}>
-                    {uploading === 'work'
-                      ? <span className="w-4 h-4 border-2 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
-                      : <>
-                          <Plus className="w-4 h-4" />
-                          <span className="text-[9px] font-bold">{ar ? 'إضافة' : 'Add'}</span>
-                        </>
-                    }
-                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleWorkPhotos} />
-                  </label>
+                    )
+                  })}
                 </div>
               </div>
-            </div>
 
-            {/* الاسم */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                {ar ? 'اسمك (اختياري)' : 'Your Name (optional)'}
-              </label>
-              <input className={inp} value={form.name}
-                onChange={e => set('name', e.target.value)}
-                placeholder={ar ? 'اسمك' : 'Your name'} />
-            </div>
+              {/* ── الصور ── */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0">
+                    <Camera className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs font-black text-[#071B33] tracking-wide uppercase">
+                    {ar ? 'الصور' : 'Photos'}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">{ar ? '(اختياري)' : '(optional)'}</span>
+                </div>
 
-            {/* الواتساب */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                {ar ? 'رقم واتساب *' : 'WhatsApp Number *'}
-              </label>
-              <LibyaPhoneInput
-                value={form.whatsapp}
-                onChange={v => set('whatsapp', v)}
-                required
-              />
-            </div>
+                {/* Profile photo */}
+                <div className="bg-gradient-to-l from-slate-50 to-blue-50/50 rounded-2xl p-3.5 mb-2.5 border border-slate-100">
+                  <div className="flex items-center gap-3">
+                    {profilePhoto ? (
+                      <div className="relative flex-shrink-0">
+                        <img
+                          src={getFileUrl(profilePhoto)}
+                          alt=""
+                          className="w-16 h-16 rounded-2xl object-cover border-2 border-[#FF7900]/20 shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setProfilePhoto(null)}
+                          className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md"
+                        >
+                          <X className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className={`w-16 h-16 flex-shrink-0 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${
+                        uploading === 'profile'
+                          ? 'border-[#FF7900]/40 bg-[#FF7900]/5 opacity-60 pointer-events-none'
+                          : 'border-slate-200 hover:border-[#FF7900]/50 hover:bg-[#FF7900]/5 bg-white'
+                      }`}>
+                        {uploading === 'profile'
+                          ? <span className="w-4 h-4 border-2 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
+                          : <User className="w-5 h-5 text-slate-300" />
+                        }
+                        <input type="file" accept="image/*" className="hidden" onChange={handleProfilePhoto} />
+                      </label>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-[#071B33]">{ar ? 'صورة شخصية أو شعار' : 'Profile Photo or Logo'}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{ar ? 'صورة واحدة للملف الشخصي' : 'One profile image'}</p>
+                      {!profilePhoto && (
+                        <label className={`inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-colors ${
+                          uploading === 'profile'
+                            ? 'bg-slate-100 text-slate-400 pointer-events-none'
+                            : 'bg-[#071B33]/5 text-[#071B33] hover:bg-[#071B33]/10'
+                        }`}>
+                          {uploading === 'profile' ? (ar ? 'جارٍ الرفع...' : 'Uploading...') : (ar ? 'اختر صورة' : 'Choose')}
+                          <input type="file" accept="image/*" className="hidden" onChange={handleProfilePhoto} />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-            {/* الملاحظات */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-                {ar ? 'الملاحظات أو التفاصيل' : 'Notes or Details'}
-              </label>
-              <textarea className={inp} rows={3} value={form.notes}
-                onChange={e => set('notes', e.target.value)}
-                placeholder={ar ? 'اكتب تفاصيل الطلب...' : 'Write details...'} />
-            </div>
-
-            {error && (
-              <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 rounded-xl px-3 py-2">
-                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                {error}
+                {/* Work photos */}
+                <div className="bg-gradient-to-l from-slate-50 to-orange-50/40 rounded-2xl p-3.5 border border-slate-100">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <div>
+                      <p className="text-xs font-bold text-[#071B33]">{ar ? 'صور الأعمال' : 'Work Photos'}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{ar ? 'أضف أكثر من صورة' : 'Multiple photos'}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Images className="w-3.5 h-3.5 text-[#FF7900]" />
+                      {workPhotos.length > 0 && (
+                        <span className="text-[10px] font-black text-[#FF7900]">{workPhotos.length}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {workPhotos.map((p, i) => (
+                      <div key={i} className="relative w-14 h-14 rounded-xl overflow-hidden shadow-sm">
+                        <img src={getFileUrl(p)} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setWorkPhotos(prev => prev.filter((_, j) => j !== i))}
+                          className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center group"
+                        >
+                          <X className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
+                      </div>
+                    ))}
+                    <label className={`w-14 h-14 flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
+                      uploading === 'work'
+                        ? 'border-[#FF7900]/40 bg-[#FF7900]/5 opacity-60 pointer-events-none'
+                        : 'border-slate-200 bg-white hover:border-[#FF7900]/60 hover:bg-[#FF7900]/5'
+                    }`}>
+                      {uploading === 'work'
+                        ? <span className="w-4 h-4 border-2 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
+                        : <>
+                            <Plus className="w-4 h-4 text-slate-300" />
+                            <span className="text-[9px] font-bold text-slate-300">{ar ? 'إضافة' : 'Add'}</span>
+                          </>
+                      }
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={handleWorkPhotos} />
+                    </label>
+                  </div>
+                </div>
               </div>
-            )}
 
-            <button type="submit" disabled={submitting}
-              className="w-full bg-[#071B33] hover:bg-[#0f2d52] disabled:opacity-50 text-white font-bold py-3 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
-              {submitting
-                ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{ar ? 'جارٍ الإرسال...' : 'Sending...'}</>
-                : ar ? 'إرسال الطلب' : 'Submit Request'
-              }
-            </button>
+              {/* ── الاسم والواتساب ── */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-lg bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs font-black text-[#071B33] tracking-wide uppercase">
+                    {ar ? 'بياناتك' : 'Your Info'}
+                  </span>
+                </div>
+
+                {/* Name */}
+                <div className="relative">
+                  <input
+                    value={form.name}
+                    onChange={e => set('name', e.target.value)}
+                    placeholder={ar ? 'اسمك (اختياري)' : 'Your name (optional)'}
+                    className="w-full pr-4 pl-4 py-3 rounded-2xl border border-slate-100 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900]/40 focus:bg-white transition-all"
+                  />
+                </div>
+
+                {/* WhatsApp */}
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-[#FF7900]/20 focus-within:border-[#FF7900]/40 focus-within:bg-white transition-all">
+                  <LibyaPhoneInput
+                    value={form.whatsapp}
+                    onChange={v => set('whatsapp', v)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* ── الملاحظات ── */}
+              <div>
+                <textarea
+                  rows={3}
+                  value={form.notes}
+                  onChange={e => set('notes', e.target.value)}
+                  placeholder={ar ? 'ملاحظات أو تفاصيل إضافية...' : 'Additional notes or details...'}
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900]/40 focus:bg-white transition-all resize-none"
+                />
+              </div>
+
+              {/* ── Error ── */}
+              {error && (
+                <div className="flex items-center gap-2.5 text-red-600 text-xs bg-red-50 border border-red-100 rounded-2xl px-4 py-3">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-medium">{error}</span>
+                </div>
+              )}
+
+              {/* ── Submit ── */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-gradient-to-l from-[#FF7900] to-[#ff9a3c] hover:from-[#e66d00] hover:to-[#ff8c20] disabled:opacity-50 text-white font-black py-4 rounded-2xl text-sm transition-all shadow-lg shadow-[#FF7900]/30 flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                {submitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    {ar ? 'جارٍ الإرسال...' : 'Sending...'}
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    {ar ? 'إرسال الطلب' : 'Submit Request'}
+                  </>
+                )}
+              </button>
+
+            </div>
           </form>
         )}
       </div>
