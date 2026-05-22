@@ -224,8 +224,9 @@ export default function Home() {
               boxShadow: '0 4px 20px rgba(52,199,89,0.35)',
             }}
           >
-            <p className="text-white font-extrabold text-base leading-tight">
-              {ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}
+            <p className="text-white font-extrabold text-base leading-tight flex items-center justify-center gap-2">
+              <span>{ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}</span>
+              <span className="text-xl flex-shrink-0">{ar ? '←' : '→'}</span>
             </p>
           </div>
         </Link>
