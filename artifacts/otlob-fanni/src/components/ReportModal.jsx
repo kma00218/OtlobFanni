@@ -184,7 +184,7 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
                 </div>
 
                 {/* Profile photo */}
-                <div className="bg-gradient-to-l from-slate-50 to-blue-50/50 rounded-2xl p-3.5 mb-2.5 border border-slate-100">
+                <div className="bg-gradient-to-l from-slate-50 to-blue-50/50 rounded-2xl p-3.5 mb-2.5 border border-slate-200">
                   <div className="flex items-center gap-3">
                     {profilePhoto ? (
                       <div className="relative flex-shrink-0">
@@ -232,7 +232,7 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
                 </div>
 
                 {/* Work photos */}
-                <div className="bg-gradient-to-l from-slate-50 to-orange-50/40 rounded-2xl p-3.5 border border-slate-100">
+                <div className="bg-gradient-to-l from-slate-50 to-orange-50/40 rounded-2xl p-3.5 border border-slate-200">
                   <div className="flex items-center justify-between mb-2.5">
                     <div>
                       <p className="text-xs font-bold text-[#071B33]">{ar ? 'صور الأعمال' : 'Work Photos'}</p>
@@ -293,12 +293,12 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
                     value={form.name}
                     onChange={e => set('name', e.target.value)}
                     placeholder={ar ? 'اسمك (اختياري)' : 'Your name (optional)'}
-                    className="w-full pr-4 pl-4 py-3 rounded-2xl border border-slate-100 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900]/40 focus:bg-white transition-all"
+                    className="w-full pr-4 pl-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900]/50 focus:bg-white transition-all"
                   />
                 </div>
 
                 {/* WhatsApp */}
-                <div className="rounded-2xl border border-slate-100 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-[#FF7900]/20 focus-within:border-[#FF7900]/40 focus-within:bg-white transition-all">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-[#FF7900]/20 focus-within:border-[#FF7900]/50 focus-within:bg-white transition-all">
                   <LibyaPhoneInput
                     value={form.whatsapp}
                     onChange={v => set('whatsapp', v)}
@@ -314,7 +314,7 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
                   value={form.notes}
                   onChange={e => set('notes', e.target.value)}
                   placeholder={ar ? 'ملاحظات أو تفاصيل إضافية...' : 'Additional notes or details...'}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900]/40 focus:bg-white transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/20 focus:border-[#FF7900]/50 focus:bg-white transition-all resize-none"
                 />
               </div>
 
