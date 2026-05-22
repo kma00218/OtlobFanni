@@ -168,28 +168,58 @@ export default function Home() {
           <Logo />
         </div>
 
-        {/* ── شريط الإحصاءات ── */}
-        {stats && stats.technicians >= 100 && stats.companies >= 20 && stats.suppliers >= 10 && (
-          <div
-            className="flex items-center justify-center gap-0 rounded-2xl overflow-hidden"
-            style={{ background: 'rgba(7,27,51,0.05)', border: '1px solid rgba(7,27,51,0.08)' }}
-          >
-            <div className="flex-1 flex flex-col items-center py-3 px-2">
-              <span className="text-xl font-black text-[#FF7900] leading-none">+{stats.technicians}</span>
-              <span className="text-[10px] font-semibold text-[#071B33]/70 mt-0.5">{ar ? 'فني' : 'Technician'}</span>
+        {/* ── بطاقة الإطلاق ── */}
+        {stats && (() => {
+          const LAUNCH = new Date('2026-05-20T00:00:00')
+          const today  = new Date()
+          today.setHours(0, 0, 0, 0)
+          const dayNum = Math.max(1, Math.floor((today - LAUNCH) / 86400000) + 1)
+          return (
+            <div className="relative rounded-2xl overflow-hidden select-none" style={{ background: '#071B33' }}>
+              {/* subtle radial glow */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
+
+              <div className="relative flex items-center gap-0 px-4 pt-4 pb-6">
+                {/* Day counter */}
+                <div className="flex flex-col items-center pr-4 border-r border-white/10 flex-shrink-0 min-w-[72px]">
+                  <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-0.5">
+                    {ar ? 'اليوم' : 'Day'}
+                  </span>
+                  <span className="text-4xl font-black text-[#FF7900] leading-none">{dayNum}</span>
+                  <span className="text-[9px] font-semibold text-white/30 mt-1">
+                    {ar ? 'من الانطلاق 🚀' : 'since launch 🚀'}
+                  </span>
+                </div>
+
+                {/* Stats */}
+                <div className="flex flex-1 items-center justify-around pl-2">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-2xl font-black text-white leading-none">{stats.technicians}</span>
+                    <span className="text-[10px] font-semibold text-[#FF7900]/80">{ar ? 'فني' : 'Tech'}</span>
+                  </div>
+                  <div className="w-px self-stretch bg-white/8" />
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-2xl font-black text-white leading-none">{stats.companies}</span>
+                    <span className="text-[10px] font-semibold text-blue-300/80">{ar ? 'شركة' : 'Co.'}</span>
+                  </div>
+                  <div className="w-px self-stretch bg-white/8" />
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-2xl font-black text-white leading-none">{stats.suppliers}</span>
+                    <span className="text-[10px] font-semibold text-teal-300/80">{ar ? 'مورّد' : 'Supp.'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wave curve at the bottom */}
+              <svg viewBox="0 0 400 24" preserveAspectRatio="none"
+                className="absolute bottom-0 left-0 right-0 w-full" style={{ height: 24 }}>
+                <path d="M0,24 L0,12 Q50,0 100,10 Q150,20 200,8 Q250,-4 300,10 Q350,22 400,12 L400,24 Z"
+                  fill="#F8FAFC" />
+              </svg>
             </div>
-            <div className="w-px self-stretch bg-[#071B33]/10" />
-            <div className="flex-1 flex flex-col items-center py-3 px-2">
-              <span className="text-xl font-black text-[#071B33] leading-none">+{stats.companies}</span>
-              <span className="text-[10px] font-semibold text-[#071B33]/70 mt-0.5">{ar ? 'شركة' : 'Company'}</span>
-            </div>
-            <div className="w-px self-stretch bg-[#071B33]/10" />
-            <div className="flex-1 flex flex-col items-center py-3 px-2">
-              <span className="text-xl font-black text-teal-600 leading-none">+{stats.suppliers}</span>
-              <span className="text-[10px] font-semibold text-[#071B33]/70 mt-0.5">{ar ? 'مورّد' : 'Supplier'}</span>
-            </div>
-          </div>
-        )}
+          )
+        })()}
 
         {/* زر الانضمام */}
         <Link href="/join-us">
