@@ -5,7 +5,7 @@ import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
-  Plus, Trash2, Share2, AlertTriangle, Sparkles
+  Plus, Trash2, Share2, AlertTriangle, Sparkles, UserPlus
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
@@ -87,6 +87,17 @@ export default function Companies() {
       showToast('✓ تم إرسال بيانات الدخول')
     } catch { showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error') }
     finally { setCredsSending(null) }
+  }
+
+  const sendNominationInvite = (row) => {
+    const name = (row.companyName || row.company_name || '').trim()
+    const msg =
+      `مرحباً ${name} 👋\n\n` +
+      `رشّحكم أحد معارفكم للانضمام إلى منصة *اطلب فني* — الدليل الرقمي للفنيين والشركات في ليبيا 🇱🇾\n\n` +
+      `سجّلوا شركتكم مجاناً وابدأوا تستقبلوا طلبات من عملاء في منطقتكم.\n\n` +
+      `📲 سجّل من هنا: https://otlobfanni.ly/join-company`
+    const phone = ((row.whatsapp || row.phone) || '').replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const sendNudgeCompany = (row) => {
@@ -323,6 +334,14 @@ export default function Companies() {
               className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
               title="طلب المشاركة">
               <Share2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => sendNominationInvite(row)}
+              className="p-1.5 hover:bg-cyan-500/10 text-cyan-400 rounded-lg transition-colors"
+              title="دعوة مرشَّح للانضمام">
+              <UserPlus className="w-3.5 h-3.5" />
             </button>
           )}
           {(row.whatsapp || row.phone) && (!row.companyLogo || !(row.workImages || []).length) && (

@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles,
+  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
@@ -590,6 +590,17 @@ export default function Technicians() {
     finally { setCredsSending(null) }
   }
 
+  const sendNominationInvite = (row) => {
+    const firstName = (row.nameAr || row.name_ar || '').trim().split(' ')[0] || ''
+    const msg =
+      `مرحباً ${firstName} 👋\n\n` +
+      `رشّحك أحد معارفك للانضمام إلى منصة *اطلب فني* — الدليل الرقمي للفنيين والشركات في ليبيا 🇱🇾\n\n` +
+      `سجّل مهاراتك مجاناً وابدأ تستقبل طلبات من عملاء في منطقتك.\n\n` +
+      `📲 سجّل من هنا: https://otlobfanni.ly/join`
+    const phone = ((row.whatsapp || row.phone) || '').replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
   const sendNudgeTech = (row) => {
     const firstName = (row.nameAr || row.name_ar || '').trim().split(' ')[0] || ''
     const missing = []
@@ -981,6 +992,14 @@ export default function Technicians() {
                             className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
                             title="طلب المشاركة">
                             <Share2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        {(row.whatsapp || row.phone) && (
+                          <button
+                            onClick={() => sendNominationInvite(row)}
+                            className="p-1.5 hover:bg-cyan-500/10 text-cyan-400 rounded-lg transition-colors"
+                            title="دعوة مرشَّح للانضمام">
+                            <UserPlus className="w-3.5 h-3.5" />
                           </button>
                         )}
                         {(row.whatsapp || row.phone) && (() => {

@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles, UserPlus } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
@@ -88,6 +88,17 @@ export default function AdminSuppliers() {
       showToast('✓ تم إرسال بيانات الدخول')
     } catch { showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error') }
     finally { setCredsSending(null) }
+  }
+
+  const sendNominationInvite = (row) => {
+    const name = (row.businessName || row.business_name || '').trim()
+    const msg =
+      `مرحباً ${name} 👋\n\n` +
+      `رشّحكم أحد معارفكم للانضمام إلى منصة *اطلب فني* — الدليل الرقمي للفنيين والشركات في ليبيا 🇱🇾\n\n` +
+      `سجّلوا نشاطكم مجاناً وكونوا مرجعاً للفنيين والشركات في منطقتكم.\n\n` +
+      `📲 سجّل من هنا: https://otlobfanni.ly/join-supplier`
+    const phone = ((row.whatsapp || row.phone) || '').replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const sendNudgeSupplier = (row) => {
@@ -294,6 +305,14 @@ export default function AdminSuppliers() {
               className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
               title="طلب المشاركة">
               <Share2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => sendNominationInvite(row)}
+              className="p-1.5 hover:bg-cyan-500/10 text-cyan-400 rounded-lg transition-colors"
+              title="دعوة مرشَّح للانضمام">
+              <UserPlus className="w-3.5 h-3.5" />
             </button>
           )}
           {(row.whatsapp || row.phone) && (!row.logo || !(row.shopImages || []).length) && (
