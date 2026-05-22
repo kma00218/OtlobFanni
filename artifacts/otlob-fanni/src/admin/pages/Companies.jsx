@@ -5,7 +5,7 @@ import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
-  Plus, Trash2
+  Plus, Trash2, Share2
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
@@ -273,6 +273,14 @@ export default function Companies() {
               className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
               title="فتح واتساب">
               <WaIcon />
+            </button>
+          )}
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً ${row.companyName || row.company_name || ''}، شكراً لانضمامكم لمنصة اطلب فني\nنتمنى منكم مشاركة المنصة مع عملائكم وشركائكم حتى يستفيد الجميع 👇\nhttps://otlobfanni.ly`)}`, '_blank')}
+              className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
+              title="طلب المشاركة">
+              <Share2 className="w-3.5 h-3.5" />
             </button>
           )}
           <button onClick={() => openEdit(row)}

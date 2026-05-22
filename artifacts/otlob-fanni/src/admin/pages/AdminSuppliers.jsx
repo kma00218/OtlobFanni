@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2 } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
 
@@ -239,6 +239,15 @@ export default function AdminSuppliers() {
             className="px-2.5 py-1.5 text-xs font-semibold bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors">
             تعديل
           </button>
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً ${row.businessName || row.business_name || ''}، شكراً لانضمامكم لمنصة اطلب فني\nنتمنى منكم مشاركة المنصة مع عملائكم وشركائكم حتى يستفيد الجميع 👇\nhttps://otlobfanni.ly`)}`, '_blank')}
+              className="px-2.5 py-1.5 text-xs font-semibold bg-violet-50 text-violet-500 rounded-lg hover:bg-violet-100 transition-colors flex items-center gap-1"
+              title="طلب المشاركة">
+              <Share2 className="w-3 h-3" />
+              شارك
+            </button>
+          )}
           {(row.whatsapp || row.phone) && (
             <button
               onClick={() => sendCredentials(row)}

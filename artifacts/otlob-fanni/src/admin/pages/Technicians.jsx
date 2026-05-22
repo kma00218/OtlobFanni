@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload,
+  Image, Shield, Zap, User, Settings2, Upload, Share2,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
@@ -914,6 +914,14 @@ export default function Technicians() {
                             className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
                             title="فتح واتساب">
                             <WaIcon />
+                          </button>
+                        )}
+                        {(row.whatsapp || row.phone) && (
+                          <button
+                            onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً ${row.nameAr || row.name_ar || ''}، شكراً لانضمامك لمنصة اطلب فني\nنتمنى منك مشاركة المنصة مع أصدقائك وعائلتك حتى يستفيد الجميع 👇\nhttps://otlobfanni.ly`)}`, '_blank')}
+                            className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
+                            title="طلب المشاركة">
+                            <Share2 className="w-3.5 h-3.5" />
                           </button>
                         )}
                         <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
