@@ -225,8 +225,8 @@ export default function Home() {
             }}
           >
             <p className="text-white font-extrabold text-base leading-tight flex items-center justify-center gap-2">
+              <span className="text-xl flex-shrink-0">👆</span>
               <span>{ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}</span>
-              <span className="text-xl flex-shrink-0">{ar ? '←' : '→'}</span>
             </p>
           </div>
         </Link>
