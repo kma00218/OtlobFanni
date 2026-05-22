@@ -249,7 +249,7 @@ export default function CityTechnicians() {
               <div className="space-y-2">
                 <div className="px-1 pb-2 pt-1">
                   <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    {ar ? 'الشركات' : 'Companies'}
+                    {ar ? 'الشركات الخدمية' : 'Companies'}
                   </span>
                 </div>
                 {shownCompanies.map(company => (

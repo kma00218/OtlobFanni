@@ -422,7 +422,7 @@ export default function SearchBar({ onResultSelect } = {}) {
           {/* ── Companies ── */}
           {filteredCompanies.length > 0 && (
             <>
-              <SectionHeader label={ar ? 'الشركات' : 'Companies'} hasBorder={specialtyResults.length > 0 || filteredTechs.length > 0} />
+              <SectionHeader label={ar ? 'الشركات الخدمية' : 'Companies'} hasBorder={specialtyResults.length > 0 || filteredTechs.length > 0} />
               {filteredCompanies.map((company) => {
                 let touchStartY = 0
                 return (

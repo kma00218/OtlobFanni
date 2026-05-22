@@ -203,7 +203,7 @@ export default function Companies() {
 
   return (
     <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-28" dir={dir}>
-      <BackHeader title={ar ? 'الشركات' : 'Companies'} />
+      <BackHeader title={ar ? 'الشركات الخدمية' : 'Companies'} />
 
       <main className="px-4 pt-4 space-y-4">
         <AdBanner placement="trusted_companies" dismissible />

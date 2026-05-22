@@ -703,7 +703,7 @@ export default function CategoryTechnicians() {
                   <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-blue-600 rounded-xl">
                     <Building2 className="w-4 h-4 text-white" />
                     <p className="text-sm font-bold text-white">
-                      {ar ? `شركات ومؤسسات (${filteredCompanies.length})` : `Companies (${filteredCompanies.length})`}
+                      {ar ? `شركات خدمية ومؤسسات (${filteredCompanies.length})` : `Companies (${filteredCompanies.length})`}
                     </p>
                   </div>
                 )}
