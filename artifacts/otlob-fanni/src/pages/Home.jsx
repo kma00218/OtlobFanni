@@ -197,11 +197,11 @@ export default function Home() {
                   </span>
                   <span className="text-white/20 text-xs">·</span>
                   <span className="text-[11px] font-bold text-white">
-                    <span className="text-blue-300">{stats.companies}</span> {ar ? 'شركة' : 'Co.'}
+                    <span className="text-blue-300">{stats.companies}</span> {ar ? 'شركة خدمات' : 'Service Co.'}
                   </span>
                   <span className="text-white/20 text-xs">·</span>
                   <span className="text-[11px] font-bold text-white">
-                    <span className="text-teal-300">{stats.suppliers}</span> {ar ? 'مورّد' : 'Sup.'}
+                    <span className="text-teal-300">{stats.suppliers}</span> {ar ? 'مزوّد خدمات' : 'Provider'}
                   </span>
                 </div>
               </div>
