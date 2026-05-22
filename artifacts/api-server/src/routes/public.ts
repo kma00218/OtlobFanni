@@ -217,7 +217,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [companies] = await db
     .select({ count: count() })
     .from(companyApplicationsTable)
-    .where(eq(companyApplicationsTable.status, 'approved'));
+    .where(or(eq(companyApplicationsTable.status, 'approved'), eq(companyApplicationsTable.status, 'published')));
 
   const [suppliers] = await db
     .select({ count: count() })

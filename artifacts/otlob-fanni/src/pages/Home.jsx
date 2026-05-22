@@ -183,7 +183,7 @@ export default function Home() {
               <div className="relative flex items-center gap-3 px-4 pt-2.5 pb-5">
                 {/* Day badge */}
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className="text-[10px] font-bold text-white/40">{ar ? 'اليوم' : 'Day'}</span>
+                  <span className="text-[10px] font-bold text-white/90">{ar ? 'اليوم' : 'Day'}</span>
                   <span className="text-xl font-black text-[#FF7900] leading-none">{dayNum}</span>
                   <span className="text-[10px]">🚀</span>
                 </div>
