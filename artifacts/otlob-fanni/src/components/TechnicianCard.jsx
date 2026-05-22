@@ -41,9 +41,10 @@ export default function TechnicianCard({ technician }) {
             <img src={getFileUrl(technician.profilePhoto)} alt={name} className="w-full h-full object-cover" />
           ) : (
             <div
-              className="w-full h-full flex items-center justify-center text-white font-bold text-sm bg-gradient-to-br from-[#071B33] to-[#1a56db]"
+              className="w-full h-full flex items-center justify-center text-white font-bold bg-gradient-to-br from-[#071B33] to-[#1a56db] text-center px-1 leading-tight"
+              style={{ fontSize: name.length > 6 ? '8px' : '10px', wordBreak: 'break-word' }}
             >
-              {firstName}
+              {name || '؟'}
             </div>
           )}
         </div>
