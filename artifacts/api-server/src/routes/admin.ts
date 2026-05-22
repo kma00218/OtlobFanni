@@ -796,6 +796,55 @@ router.delete("/update-reports/:id", async (req, res): Promise<void> => {
   res.json({ ok: true });
 });
 
+router.post("/update-reports/:id/apply-photos", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { apply_profile, apply_work } = req.body;
+
+  const [report] = await db.select().from(updateReportsTable).where(eq(updateReportsTable.id, id));
+  if (!report) { res.status(404).json({ error: "Report not found" }); return; }
+
+  const { entityType, entityId, profilePhoto, workPhotos } = report as any;
+
+  if (entityType === "technician") {
+    const updates: Record<string, unknown> = {};
+    if (apply_profile && profilePhoto) updates.profilePhoto = profilePhoto;
+    if (apply_work && Array.isArray(workPhotos) && workPhotos.length > 0) {
+      const [tech] = await db.select({ workImages: techniciansTable.workImages }).from(techniciansTable).where(eq(techniciansTable.id, entityId));
+      const current: string[] = Array.isArray(tech?.workImages) ? (tech.workImages as string[]) : [];
+      updates.workImages = [...current, ...workPhotos];
+    }
+    if (Object.keys(updates).length > 0) {
+      await db.update(techniciansTable).set(updates).where(eq(techniciansTable.id, entityId));
+    }
+  } else if (entityType === "company") {
+    const updates: Record<string, unknown> = {};
+    if (apply_profile && profilePhoto) updates.companyLogo = profilePhoto;
+    if (apply_work && Array.isArray(workPhotos) && workPhotos.length > 0) {
+      const [comp] = await db.select({ workImages: companyApplicationsTable.workImages }).from(companyApplicationsTable).where(eq(companyApplicationsTable.id, entityId));
+      const current: string[] = Array.isArray(comp?.workImages) ? (comp.workImages as string[]) : [];
+      updates.workImages = [...current, ...workPhotos];
+    }
+    if (Object.keys(updates).length > 0) {
+      await db.update(companyApplicationsTable).set(updates).where(eq(companyApplicationsTable.id, entityId));
+    }
+  } else if (entityType === "supplier") {
+    const updates: Record<string, unknown> = {};
+    if (apply_profile && profilePhoto) updates.logo = profilePhoto;
+    if (apply_work && Array.isArray(workPhotos) && workPhotos.length > 0) {
+      const [sup] = await db.select({ shopImages: supplierApplicationsTable.shopImages }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, entityId));
+      const current: string[] = Array.isArray(sup?.shopImages) ? (sup.shopImages as string[]) : [];
+      updates.shopImages = [...current, ...workPhotos];
+    }
+    if (Object.keys(updates).length > 0) {
+      await db.update(supplierApplicationsTable).set(updates).where(eq(supplierApplicationsTable.id, entityId));
+    }
+  } else {
+    res.status(400).json({ error: "Unknown entity type" }); return;
+  }
+
+  res.json({ ok: true });
+});
+
 // ── Referrals ─────────────────────────────────────────────────────────────────
 router.get("/referrals", async (_req, res): Promise<void> => {
   const rows = await db.select().from(referralsTable).orderBy(desc(referralsTable.createdAt));

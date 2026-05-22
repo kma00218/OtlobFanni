@@ -1160,6 +1160,7 @@ router.post("/update-reports", async (req, res): Promise<void> => {
   const {
     entity_type, entity_id, entity_name, city,
     requester_name, requester_phone, request_type, notes, photos,
+    profile_photo, work_photos,
   } = req.body;
 
   if (!entity_type || !entity_id || !request_type) {
@@ -1180,6 +1181,8 @@ router.post("/update-reports", async (req, res): Promise<void> => {
     requestType:    request_type,
     notes:          notes || null,
     photos:         Array.isArray(photos) ? photos : [],
+    profilePhoto:   profile_photo || null,
+    workPhotos:     Array.isArray(work_photos) ? work_photos : [],
     status:         "new",
   });
 

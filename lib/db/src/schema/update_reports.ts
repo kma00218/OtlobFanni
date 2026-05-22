@@ -11,6 +11,8 @@ export const updateReportsTable = pgTable("update_reports", {
   requestType:   text("request_type").notNull().default("other"),
   notes:         text("notes"),
   photos:        jsonb("photos").notNull().default([]),
+  profilePhoto:  text("profile_photo"),
+  workPhotos:    jsonb("work_photos").$type<string[]>().default([]),
   status:        text("status").notNull().default("new"),
   createdAt:     timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

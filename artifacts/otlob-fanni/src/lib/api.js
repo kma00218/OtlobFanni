@@ -212,9 +212,10 @@ export const api = {
     analytics: () => get('/admin/analytics'),
 
     updateReports: {
-      list:       ()          => get('/admin/update-reports'),
-      setStatus:  (id, status)=> patch(`/admin/update-reports/${id}`, { status }),
-      delete:     (id)        => del(`/admin/update-reports/${id}`),
+      list:        ()               => get('/admin/update-reports'),
+      setStatus:   (id, status)     => patch(`/admin/update-reports/${id}`, { status }),
+      delete:      (id)             => del(`/admin/update-reports/${id}`),
+      applyPhotos: (id, opts)       => post(`/admin/update-reports/${id}/apply-photos`, opts),
     },
 
     referrals: {

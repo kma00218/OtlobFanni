@@ -70,6 +70,8 @@ export default function ReportModal({ open, onClose, entityType, entityId, entit
           request_type:    form.requestType,
           notes:           form.notes || null,
           photos:          allPhotos,
+          profile_photo:   profilePhoto || null,
+          work_photos:     workPhotos,
         }),
       })
       if (!res.ok) throw new Error()

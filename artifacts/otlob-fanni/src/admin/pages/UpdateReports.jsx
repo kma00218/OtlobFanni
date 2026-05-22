@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink, Pencil, MessageCircle } from 'lucide-react'
+import { Flag, Trash2, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp, Eye, ExternalLink, Pencil, MessageCircle, User, Images, ArrowLeftToLine } from 'lucide-react'
 import api from '../../lib/api'
 
 const STATUS_CONFIG = {
@@ -80,6 +80,8 @@ export default function UpdateReports() {
   const [filter, setFilter]     = useState('all')
   const [expanded, setExpanded] = useState(null)
   const [updating, setUpdating] = useState(null)
+  const [applying, setApplying] = useState({})
+  const [applied, setApplied]   = useState({})
 
   const load = async () => {
     setLoading(true)
@@ -108,6 +110,16 @@ export default function UpdateReports() {
       setReports(prev => prev.filter(r => r.id !== id))
       if (expanded === id) setExpanded(null)
     } catch { }
+  }
+
+  const handleApplyPhotos = async (id, opts) => {
+    const key = `${id}_${opts.apply_profile ? 'p' : 'w'}`
+    setApplying(prev => ({ ...prev, [key]: true }))
+    try {
+      await api.admin.updateReports.applyPhotos(id, opts)
+      setApplied(prev => ({ ...prev, [key]: true }))
+    } catch { alert('فشل تطبيق الصور، حاول مجدداً') }
+    setApplying(prev => ({ ...prev, [key]: false }))
   }
 
   const filtered = filter === 'all' ? reports : reports.filter(r => r.status === filter)
@@ -243,18 +255,110 @@ export default function UpdateReports() {
                       </div>
                     )}
 
-                    {Array.isArray(r.photos) && r.photos.length > 0 && (
-                      <div>
-                        <p className="text-xs text-slate-400 mb-2">الصور المرفقة ({r.photos.length})</p>
-                        <div className="flex gap-2 flex-wrap">
-                          {r.photos.map((p, i) => (
-                            <a key={i} href={p.startsWith('/objects/') ? `/api/storage${p}` : p}
-                              target="_blank" rel="noreferrer"
-                              className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:opacity-80 transition-opacity bg-slate-100 flex items-center justify-center">
-                              <img src={p.startsWith('/objects/') ? `/api/storage${p}` : p} alt="" className="w-full h-full object-cover" />
-                            </a>
-                          ))}
-                        </div>
+                    {/* ── Photos — Profile + Work ── */}
+                    {(r.profilePhoto || (Array.isArray(r.workPhotos) && r.workPhotos.length > 0) || (Array.isArray(r.photos) && r.photos.length > 0)) && (
+                      <div className="space-y-3">
+                        <p className="text-xs font-semibold text-slate-500">الصور المرفقة</p>
+
+                        {/* Profile photo */}
+                        {r.profilePhoto && (() => {
+                          const src = r.profilePhoto.startsWith('/objects/') ? `/api/storage${r.profilePhoto}` : r.profilePhoto
+                          const pKey = `${r.id}_p`
+                          const isDone = applied[pKey]
+                          const isBusy = applying[pKey]
+                          return (
+                            <div className="bg-white rounded-xl border border-slate-100 p-3">
+                              <div className="flex items-center gap-1.5 mb-2">
+                                <User className="w-3.5 h-3.5 text-[#071B33]" />
+                                <span className="text-xs font-bold text-[#071B33]">صورة شخصية / شعار</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <a href={src} target="_blank" rel="noreferrer"
+                                  className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:opacity-80 transition-opacity flex-shrink-0">
+                                  <img src={src} alt="" className="w-full h-full object-cover" />
+                                </a>
+                                <button
+                                  disabled={isBusy || isDone}
+                                  onClick={() => handleApplyPhotos(r.id, { apply_profile: true, apply_work: false })}
+                                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                                    isDone
+                                      ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                      : 'bg-[#071B33] text-white hover:bg-[#0f2d52] disabled:opacity-50'
+                                  }`}>
+                                  {isBusy
+                                    ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    : isDone
+                                      ? <CheckCircle className="w-3.5 h-3.5" />
+                                      : <ArrowLeftToLine className="w-3.5 h-3.5" />
+                                  }
+                                  {isDone ? 'تم التطبيق ✓' : 'تطبيق على الملف'}
+                                </button>
+                              </div>
+                            </div>
+                          )
+                        })()}
+
+                        {/* Work photos */}
+                        {Array.isArray(r.workPhotos) && r.workPhotos.length > 0 && (() => {
+                          const wKey = `${r.id}_w`
+                          const isDone = applied[wKey]
+                          const isBusy = applying[wKey]
+                          return (
+                            <div className="bg-white rounded-xl border border-slate-100 p-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-1.5">
+                                  <Images className="w-3.5 h-3.5 text-[#FF7900]" />
+                                  <span className="text-xs font-bold text-[#071B33]">صور الأعمال ({r.workPhotos.length})</span>
+                                </div>
+                                <button
+                                  disabled={isBusy || isDone}
+                                  onClick={() => handleApplyPhotos(r.id, { apply_profile: false, apply_work: true })}
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                                    isDone
+                                      ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                      : 'bg-[#FF7900] text-white hover:bg-[#e66d00] disabled:opacity-50'
+                                  }`}>
+                                  {isBusy
+                                    ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    : isDone
+                                      ? <CheckCircle className="w-3.5 h-3.5" />
+                                      : <ArrowLeftToLine className="w-3.5 h-3.5" />
+                                  }
+                                  {isDone ? 'تمت الإضافة ✓' : 'إضافة لصور الأعمال'}
+                                </button>
+                              </div>
+                              <div className="flex gap-2 flex-wrap">
+                                {r.workPhotos.map((p, i) => {
+                                  const s = p.startsWith('/objects/') ? `/api/storage${p}` : p
+                                  return (
+                                    <a key={i} href={s} target="_blank" rel="noreferrer"
+                                      className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:opacity-80 transition-opacity">
+                                      <img src={s} alt="" className="w-full h-full object-cover" />
+                                    </a>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })()}
+
+                        {/* Legacy photos (old reports without split fields) */}
+                        {!r.profilePhoto && !(Array.isArray(r.workPhotos) && r.workPhotos.length > 0) && Array.isArray(r.photos) && r.photos.length > 0 && (
+                          <div className="bg-white rounded-xl border border-slate-100 p-3">
+                            <p className="text-xs text-slate-400 mb-2">صور مرفقة ({r.photos.length})</p>
+                            <div className="flex gap-2 flex-wrap">
+                              {r.photos.map((p, i) => {
+                                const s = p.startsWith('/objects/') ? `/api/storage${p}` : p
+                                return (
+                                  <a key={i} href={s} target="_blank" rel="noreferrer"
+                                    className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 hover:opacity-80 transition-opacity">
+                                    <img src={s} alt="" className="w-full h-full object-cover" />
+                                  </a>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
