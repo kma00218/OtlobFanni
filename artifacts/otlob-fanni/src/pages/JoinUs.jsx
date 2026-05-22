@@ -148,14 +148,17 @@ export default function JoinUs() {
                   <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {ar ? 'شركة / مؤسسة' : 'Company'}
                   </span>
+                  <span className="bg-yellow-300 text-yellow-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                    {ar ? '🔨 تُقدّم خدمة' : '🔨 Provides Service'}
+                  </span>
                 </div>
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كشركة خدمات' : 'Join as Services Company'}
                 </h2>
                 <p className="text-white font-bold text-base leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
                   {ar
-                    ? 'سجّل شركتك واحصل على عملاء جدد في منطقتك'
-                    : 'Register your company and reach new clients nearby'}
+                    ? 'تذهب إلى العميل وتنجز العمل — بفريقك أو مقاوليك'
+                    : 'You go to the client and do the work — with your team or contractors'}
                 </p>
                 <div className="flex items-center gap-3 mt-3">
                   {[ar ? 'موثوق' : 'Trusted', ar ? 'نمو' : 'Growth', ar ? 'دعم' : 'Support'].map(tag => (
@@ -182,6 +185,30 @@ export default function JoinUs() {
           </div>
         </Link>
 
+        {/* Company vs Supplier clarifier */}
+        <div className="rounded-2xl overflow-hidden border-2 border-amber-300 bg-amber-50">
+          <div className="bg-amber-400 px-4 py-2 flex items-center gap-2">
+            <span className="text-amber-900 text-sm font-extrabold">❓</span>
+            <p className="text-amber-900 text-[11px] font-extrabold uppercase tracking-wide">
+              {ar ? 'لست متأكداً؟ — الفرق بين الشركة والمورد' : "Not sure? — Company vs Supplier"}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 divide-x divide-x-reverse divide-amber-200">
+            <div className="px-3.5 py-3 space-y-1">
+              <p className="text-[11px] font-extrabold text-amber-900 flex items-center gap-1">🔨 {ar ? 'شركة خدمات' : 'Service Company'}</p>
+              <p className="text-[11px] text-amber-800 font-semibold leading-snug">{ar ? '✔ تذهب إلى موقع العميل' : '✔ You go to the client'}</p>
+              <p className="text-[11px] text-amber-800 font-semibold leading-snug">{ar ? '✔ تنجز العمل بنفسك أو بفريق' : '✔ You do the job yourself'}</p>
+              <p className="text-[11px] text-amber-800 font-semibold leading-snug">{ar ? '✔ تكييف، سباكة، نظافة...' : '✔ A/C, plumbing, cleaning...'}</p>
+            </div>
+            <div className="px-3.5 py-3 space-y-1">
+              <p className="text-[11px] font-extrabold text-amber-900 flex items-center gap-1">📦 {ar ? 'مورد مستلزمات' : 'Supplier'}</p>
+              <p className="text-[11px] text-amber-800 font-semibold leading-snug">{ar ? '✔ عندك محل أو مستودع' : '✔ You have a shop / store'}</p>
+              <p className="text-[11px] text-amber-800 font-semibold leading-snug">{ar ? '✔ تبيع أدوات أو مواد' : '✔ You sell tools or materials'}</p>
+              <p className="text-[11px] text-amber-800 font-semibold leading-snug">{ar ? '✔ الفنيون يشترون منك' : '✔ Technicians buy from you'}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Supplier Card */}
         <Link href="/join-supplier">
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
@@ -200,14 +227,17 @@ export default function JoinUs() {
                   <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {ar ? 'محل / مورّد' : 'Shop / Supplier'}
                   </span>
+                  <span className="bg-yellow-300 text-yellow-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                    {ar ? '📦 تبيع منتجات' : '📦 Sells Products'}
+                  </span>
                 </div>
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
                   {ar ? 'انضم كمزود مستلزمات' : 'Join as Supplier'}
                 </h2>
                 <p className="text-white font-bold text-base leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
                   {ar
-                    ? 'سجّل محلك أو نشاطك وكن دليلاً للفنيين والشركات'
-                    : 'List your shop and become a reference for technicians & companies'}
+                    ? 'تبيع أدوات أو مواد أو قطع غيار — الفنيون يأتون إليك'
+                    : 'You sell tools, materials, or spare parts — technicians come to you'}
                 </p>
                 <div className="flex items-center gap-3 mt-3">
                   {[ar ? 'مجاناً' : 'Free', ar ? 'دليل' : 'Directory', ar ? 'موثوق' : 'Trusted'].map(tag => (
