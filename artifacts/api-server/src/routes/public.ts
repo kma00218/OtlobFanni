@@ -26,7 +26,7 @@ router.get("/city-stats", async (_req, res): Promise<void> => {
     db.select().from(citiesTable).orderBy(citiesTable.sortOrder),
     db.select({ cityId: techniciansTable.cityId, cnt: count() })
       .from(techniciansTable)
-      .where(eq(techniciansTable.status, 'published'))
+      .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)))
       .groupBy(techniciansTable.cityId),
     db.select({ city: companyApplicationsTable.city })
       .from(companyApplicationsTable)
@@ -57,11 +57,11 @@ router.get("/sitemap.xml", async (_req, res): Promise<void> => {
     db.select().from(citiesTable),
     db.select({ cityId: techniciansTable.cityId, cnt: count() })
       .from(techniciansTable)
-      .where(eq(techniciansTable.status, 'published'))
+      .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)))
       .groupBy(techniciansTable.cityId),
     db.select({ city: companyApplicationsTable.city })
       .from(companyApplicationsTable)
-      .where(eq(companyApplicationsTable.status, 'published')),
+      .where(or(eq(companyApplicationsTable.status, 'approved'), eq(companyApplicationsTable.status, 'published'))),
     db.select({ city: supplierApplicationsTable.city })
       .from(supplierApplicationsTable)
       .where(eq(supplierApplicationsTable.status, 'published')),
