@@ -180,41 +180,36 @@ export default function Home() {
               <div className="absolute inset-0 pointer-events-none"
                 style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
 
-              <div className="relative flex items-center gap-0 px-4 pt-3 pb-5">
-                {/* Day counter */}
-                <div className="flex flex-col items-center pr-3 border-r border-white/10 flex-shrink-0 min-w-[58px]">
-                  <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
-                    {ar ? 'اليوم' : 'Day'}
-                  </span>
-                  <span className="text-3xl font-black text-[#FF7900] leading-none">{dayNum}</span>
-                  <span className="text-[8px] font-semibold text-white/25 mt-0.5">
-                    {ar ? 'من الانطلاق 🚀' : 'since launch 🚀'}
-                  </span>
+              <div className="relative flex items-center gap-3 px-4 py-2.5">
+                {/* Day badge */}
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className="text-[10px] font-bold text-white/40">{ar ? 'اليوم' : 'Day'}</span>
+                  <span className="text-xl font-black text-[#FF7900] leading-none">{dayNum}</span>
+                  <span className="text-[10px]">🚀</span>
                 </div>
 
-                {/* Stats */}
-                <div className="flex flex-1 items-center justify-around pl-2">
-                  <div className="flex flex-col items-center gap-0">
-                    <span className="text-lg font-black text-white leading-none">{stats.technicians}</span>
-                    <span className="text-[9px] font-semibold text-[#FF7900]/80">{ar ? 'فني' : 'Tech'}</span>
-                  </div>
-                  <div className="w-px self-stretch bg-white/8" />
-                  <div className="flex flex-col items-center gap-0">
-                    <span className="text-lg font-black text-white leading-none">{stats.companies}</span>
-                    <span className="text-[9px] font-semibold text-blue-300/80">{ar ? 'شركة' : 'Co.'}</span>
-                  </div>
-                  <div className="w-px self-stretch bg-white/8" />
-                  <div className="flex flex-col items-center gap-0">
-                    <span className="text-lg font-black text-white leading-none">{stats.suppliers}</span>
-                    <span className="text-[9px] font-semibold text-teal-300/80">{ar ? 'مورّد' : 'Supp.'}</span>
-                  </div>
+                <div className="w-px self-stretch bg-white/15" />
+
+                {/* Stats inline */}
+                <div className="flex flex-1 items-center justify-around">
+                  <span className="text-[11px] font-bold text-white">
+                    <span className="text-[#FF7900]">{stats.technicians}</span> {ar ? 'فني' : 'Tech'}
+                  </span>
+                  <span className="text-white/20 text-xs">·</span>
+                  <span className="text-[11px] font-bold text-white">
+                    <span className="text-blue-300">{stats.companies}</span> {ar ? 'شركة' : 'Co.'}
+                  </span>
+                  <span className="text-white/20 text-xs">·</span>
+                  <span className="text-[11px] font-bold text-white">
+                    <span className="text-teal-300">{stats.suppliers}</span> {ar ? 'مورّد' : 'Sup.'}
+                  </span>
                 </div>
               </div>
 
               {/* Wave curve at the bottom */}
-              <svg viewBox="0 0 400 16" preserveAspectRatio="none"
-                className="absolute bottom-0 left-0 right-0 w-full" style={{ height: 16 }}>
-                <path d="M0,16 L0,8 Q50,0 100,7 Q150,14 200,5 Q250,-2 300,7 Q350,15 400,8 L400,16 Z"
+              <svg viewBox="0 0 400 10" preserveAspectRatio="none"
+                className="absolute bottom-0 left-0 right-0 w-full" style={{ height: 10 }}>
+                <path d="M0,10 L0,5 Q100,0 200,5 Q300,10 400,5 L400,10 Z"
                   fill="#F8FAFC" />
               </svg>
             </div>
