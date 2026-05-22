@@ -594,6 +594,12 @@ uri = "file://artifacts/otlob-fanni/public/icons/sections/moving_general.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "ZCq7rp5ddrSWho6FgUhjt"
+uri = "file://attached_assets/google-play-feature-graphic.png"
+type = "image"
+title = "otlob fanni google play feature graphic"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"
@@ -653,3 +659,15 @@ id = "RwH9uuDREBvUOif004P4O"
 uri = "file://attached_assets/icon_cat_example_electricity.png"
 type = "image"
 title = "مثال — كهرباء"
+
+[[outputs]]
+id = "Al2BohbA-zWW7LSGPqtRt"
+uri = "file://attached_assets/google-play-feature-graphic.png"
+type = "image"
+title = "Google Play Feature Graphic (1024×500)"
+
+[[outputs]]
+id = "KlkArlf7NHIskBBiC4__a"
+uri = "file://attached_assets/google-play-feature-1024x500.png"
+type = "image"
+title = "Google Play Feature Graphic — 1024×500 (ready to upload)"
