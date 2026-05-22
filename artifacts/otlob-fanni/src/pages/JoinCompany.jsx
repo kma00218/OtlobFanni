@@ -766,6 +766,21 @@ export default function JoinCompany() {
           {/* ── 6. Work Portfolio ───────────────────────────────────── */}
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <SectionTitle icon={Image} step={6}>{ar ? 'معرض الأعمال (اختياري)' : 'Work Portfolio (Optional)'}</SectionTitle>
+            <div className="mb-3 flex items-start gap-2.5 bg-orange-50 border-2 border-orange-200 rounded-xl px-3.5 py-3">
+              <span className="text-lg leading-none flex-shrink-0 mt-0.5">📸</span>
+              <div>
+                <p className="text-xs font-extrabold text-orange-900 leading-snug mb-1">
+                  {ar
+                    ? 'الشركات التي تعرض صور مشاريعها تكسب ثقة العملاء بشكل أسرع بكثير'
+                    : 'Companies that show project photos earn client trust much faster'}
+                </p>
+                <p className="text-[11px] text-orange-700 font-semibold leading-snug">
+                  {ar
+                    ? 'أضف صوراً من مشاريعك المنجزة — تركيبات، صيانة، مقاولات. العميل يريد أن يرى نتائج عملك قبل أن يتصل.'
+                    : 'Add photos of completed projects — installations, maintenance, contracting work. Clients want to see results before calling.'}
+                </p>
+              </div>
+            </div>
             <p className="text-xs text-gray-400 mb-3">
               {ar ? `${workImages.length}/6 صور` : `${workImages.length}/6 photos`}
             </p>

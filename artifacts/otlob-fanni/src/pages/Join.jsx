@@ -729,6 +729,21 @@ export default function Join() {
           {/* ── 6. Work Portfolio ─────────────────────────────────────── */}
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <SectionTitle icon={Image} step={6}>{ar ? 'معرض الأعمال (حتى 6 صور)' : 'Work Portfolio (up to 6 photos)'}</SectionTitle>
+            <div className="mb-3 flex items-start gap-2.5 bg-orange-50 border-2 border-orange-200 rounded-xl px-3.5 py-3">
+              <span className="text-lg leading-none flex-shrink-0 mt-0.5">📸</span>
+              <div>
+                <p className="text-xs font-extrabold text-orange-900 leading-snug mb-1">
+                  {ar
+                    ? 'الفنيون الذين يضيفون صور أعمالهم يحصلون على فرص أكبر بكثير للتواصل مع العملاء'
+                    : 'Technicians with portfolio photos get significantly more client contacts'}
+                </p>
+                <p className="text-[11px] text-orange-700 font-semibold leading-snug">
+                  {ar
+                    ? 'أضف صوراً من أعمالك السابقة — تركيبات، إصلاحات، مشاريع منجزة. العميل يريد أن يرى عملك قبل أن يتصل.'
+                    : 'Add photos of your previous work — installations, repairs, completed projects. Clients want to see your work before calling.'}
+                </p>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {workPreviews.map((src, i) => (
                 <div key={i} className="relative w-[calc(33%-4px)] aspect-square rounded-xl overflow-hidden border border-gray-200">

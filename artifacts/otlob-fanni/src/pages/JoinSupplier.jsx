@@ -481,6 +481,21 @@ export default function JoinSupplier() {
             </Field>
 
             {/* Shop images — max 3 */}
+            <div className="flex items-start gap-2.5 bg-orange-50 border-2 border-orange-200 rounded-xl px-3.5 py-3">
+              <span className="text-lg leading-none flex-shrink-0 mt-0.5">📸</span>
+              <div>
+                <p className="text-xs font-extrabold text-orange-900 leading-snug mb-1">
+                  {ar
+                    ? 'الأنشطة التي تضيف صوراً للمحل والمنتجات تجذب الفنيين والشركات بشكل أسرع'
+                    : 'Suppliers with shop and product photos attract technicians and companies much faster'}
+                </p>
+                <p className="text-[11px] text-orange-700 font-semibold leading-snug">
+                  {ar
+                    ? 'أضف صوراً واضحة للمحل من الداخل أو للمنتجات التي تبيعها — الفنيون يثقون أكثر بمن يعرض بضاعته.'
+                    : 'Add clear photos of your shop interior or the products you sell — technicians trust suppliers who show their goods.'}
+                </p>
+              </div>
+            </div>
             <Field label={ar ? 'صور المحل أو المنتجات (اختياري — حتى 3 صور)' : 'Shop / Product Photos (Optional — max 3)'}>
               <div className="flex gap-2 flex-wrap">
                 {shopPreviews.map((src, idx) => (
