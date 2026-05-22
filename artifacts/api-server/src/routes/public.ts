@@ -20,6 +20,91 @@ router.get("/cities", async (_req, res): Promise<void> => {
   res.json(cities);
 });
 
+// ── City Stats (counts per city across all entity types) ─────────────────────
+router.get("/city-stats", async (_req, res): Promise<void> => {
+  const [cities, techCounts, allCompanies, allSuppliers] = await Promise.all([
+    db.select().from(citiesTable).orderBy(citiesTable.sortOrder),
+    db.select({ cityId: techniciansTable.cityId, cnt: count() })
+      .from(techniciansTable)
+      .where(eq(techniciansTable.status, 'published'))
+      .groupBy(techniciansTable.cityId),
+    db.select({ city: companyApplicationsTable.city })
+      .from(companyApplicationsTable)
+      .where(eq(companyApplicationsTable.status, 'published')),
+    db.select({ city: supplierApplicationsTable.city })
+      .from(supplierApplicationsTable)
+      .where(eq(supplierApplicationsTable.status, 'published')),
+  ]);
+
+  const techMap: Record<string, number> = {};
+  for (const t of techCounts) { if (t.cityId) techMap[t.cityId] = Number(t.cnt); }
+
+  const result = cities.map(city => {
+    const keys = [city.id, city.nameAr, city.nameEn].filter(Boolean);
+    const companies = allCompanies.filter(c => keys.includes(c.city ?? '')).length;
+    const suppliers = allSuppliers.filter(s => keys.includes(s.city ?? '')).length;
+    const technicians = techMap[city.id] || 0;
+    return { id: city.id, nameAr: city.nameAr, nameEn: city.nameEn, technicians, companies, suppliers, total: technicians + companies + suppliers };
+  });
+
+  res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=300");
+  res.json(result);
+});
+
+// ── Dynamic Sitemap ───────────────────────────────────────────────────────────
+router.get("/sitemap.xml", async (_req, res): Promise<void> => {
+  const [cities, techCounts, allCompanies, allSuppliers] = await Promise.all([
+    db.select().from(citiesTable),
+    db.select({ cityId: techniciansTable.cityId, cnt: count() })
+      .from(techniciansTable)
+      .where(eq(techniciansTable.status, 'published'))
+      .groupBy(techniciansTable.cityId),
+    db.select({ city: companyApplicationsTable.city })
+      .from(companyApplicationsTable)
+      .where(eq(companyApplicationsTable.status, 'published')),
+    db.select({ city: supplierApplicationsTable.city })
+      .from(supplierApplicationsTable)
+      .where(eq(supplierApplicationsTable.status, 'published')),
+  ]);
+
+  const techMap: Record<string, number> = {};
+  for (const t of techCounts) { if (t.cityId) techMap[t.cityId] = Number(t.cnt); }
+
+  const strongCities = cities.filter(city => {
+    const keys = [city.id, city.nameAr, city.nameEn].filter(Boolean);
+    const total = (techMap[city.id] || 0)
+      + allCompanies.filter(c => keys.includes(c.city ?? '')).length
+      + allSuppliers.filter(s => keys.includes(s.city ?? '')).length;
+    return total >= 3;
+  });
+
+  const base = 'https://otlobfanni.ly';
+  const staticUrls = [
+    { loc: base,                    priority: '1.0', changefreq: 'daily'  },
+    { loc: `${base}/categories`,    priority: '0.9', changefreq: 'weekly' },
+    { loc: `${base}/city/libya`,    priority: '0.8', changefreq: 'daily'  },
+    { loc: `${base}/suppliers`,     priority: '0.8', changefreq: 'daily'  },
+    { loc: `${base}/join-us`,       priority: '0.6', changefreq: 'monthly'},
+  ];
+  const cityUrls = strongCities.map(c => ({
+    loc: `${base}/city/${c.id}`, priority: '0.7', changefreq: 'daily',
+  }));
+
+  const allUrls = [...staticUrls, ...cityUrls];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allUrls.map(u => `  <url>
+    <loc>${u.loc}</loc>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+  res.set('Content-Type', 'application/xml');
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.send(xml);
+});
+
 // ── Categories ───────────────────────────────────────────────────────────────
 router.get("/categories", async (_req, res): Promise<void> => {
   const categories = await db.select().from(categoriesTable).orderBy(categoriesTable.sortOrder);

@@ -93,12 +93,14 @@ export default function Home() {
       .then(data => setStats(data))
       .catch(() => {})
 
-    api.cities()
+    api.cityStats()
       .then(data => {
         if (!Array.isArray(data)) return
         setCitiesForFilter(data)
       })
-      .catch(() => {})
+      .catch(() => api.cities().then(data => {
+        if (Array.isArray(data)) setCitiesForFilter(data.map(c => ({ ...c, total: 0 })))
+      }).catch(() => {}))
 
     api.popularCategories()
       .then(data => {
@@ -213,21 +215,26 @@ export default function Home() {
               className="flex gap-2 overflow-x-auto pb-0.5 px-1"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {citiesForFilter.map(city => (
-                <button
-                  key={city.id}
-                  onClick={() => navigate(`/city/${city.id}`)}
-                  className="flex-shrink-0 flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold border transition-colors active:scale-95"
-                  style={{
-                    background: 'white',
-                    border: '1.5px solid #E2E8F0',
-                    color: '#071B33',
-                  }}
-                >
-                  <span style={{ fontSize: '11px' }}>📍</span>
-                  {ar ? city.nameAr : (city.nameEn || city.nameAr)}
-                </button>
-              ))}
+              {citiesForFilter.map(city => {
+                const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
+                const isStrong = (city.total || 0) >= 3
+                return (
+                  <button
+                    key={city.id}
+                    onClick={() => navigate(`/city/${city.id}`)}
+                    className="flex-shrink-0 flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold border transition-colors active:scale-95"
+                    style={{ background: 'white', border: '1.5px solid #E2E8F0', color: '#071B33' }}
+                  >
+                    <span style={{ fontSize: '11px' }}>📍</span>
+                    {label}
+                    {isStrong && (
+                      <span className="text-[10px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-1.5 py-0.5 leading-none">
+                        {city.total}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
               {/* extra right padding so last pill doesn't touch the fade */}
               <div className="flex-shrink-0 w-6" />
             </div>

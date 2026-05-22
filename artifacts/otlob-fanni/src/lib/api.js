@@ -90,6 +90,7 @@ export function getFileUrl(path) {
 // ── Public ───────────────────────────────────────────────────────────────────
 export const api = {
   cities:          () => get('/cities'),
+  cityStats:       () => get('/city-stats'),
   publicStats:     () => get('/stats'),
   categories:      () => get('/categories'),
   categoryCounts:  () => get('/category-counts'),

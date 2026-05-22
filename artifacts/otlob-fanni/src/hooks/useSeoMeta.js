@@ -13,7 +13,7 @@ function setMetaEl(attr, val, content) {
   el.setAttribute('content', content)
 }
 
-export function useSeoMeta({ title, description } = {}) {
+export function useSeoMeta({ title, description, noindex = false } = {}) {
   useEffect(() => {
     if (!title) return
     const fullTitle = `${title} | ${SITE}`
@@ -22,11 +22,13 @@ export function useSeoMeta({ title, description } = {}) {
     setMetaEl('name', 'description', desc)
     setMetaEl('property', 'og:title', fullTitle)
     setMetaEl('property', 'og:description', desc)
+    setMetaEl('name', 'robots', noindex ? 'noindex, follow' : 'index, follow')
     return () => {
       document.title = `${SITE} - Otlob Fanni`
       setMetaEl('name', 'description', DEFAULT_DESC)
       setMetaEl('property', 'og:title', `${SITE} - Otlob Fanni`)
       setMetaEl('property', 'og:description', 'الفني الأقرب إليك')
+      setMetaEl('name', 'robots', 'index, follow')
     }
-  }, [title, description])
+  }, [title, description, noindex])
 }

@@ -83,6 +83,8 @@ export default function CityTechnicians() {
   }, [id, isLibya])
 
   const cityName = city ? (ar ? city.nameAr : city.nameEn) : (ar ? 'المدينة' : 'City')
+  const cityTotal = techs.length + companies.length + suppliers.length
+  const isWeakCity = !isLibya && !loading && cityTotal < 3
 
   useSeoMeta({
     title: city ? (ar ? `فنيو ${cityName}` : `Technicians in ${cityName}`) : null,
@@ -91,6 +93,7 @@ export default function CityTechnicians() {
         ? `اعثر على أفضل الفنيين والشركات والموردين في ${cityName} — اطلب فني`
         : `Find top technicians and companies in ${cityName} on Otlob Fanni`)
       : null,
+    noindex: isWeakCity,
   })
 
   const q = search.trim().toLowerCase()
