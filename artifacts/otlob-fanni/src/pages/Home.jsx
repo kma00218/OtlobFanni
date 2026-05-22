@@ -38,8 +38,8 @@ function RecentCard({ item, ar }) {
               ? <Building2 className="w-8 h-8 text-white/60" />
               : isSupp
                 ? <Package className="w-8 h-8 text-white/60" />
-                : <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <span className="text-white font-extrabold text-base">{firstWord.charAt(0)}</span>
+                : <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center px-1">
+                    <span className="text-white font-extrabold text-center leading-tight" style={{ fontSize: firstWord.length > 5 ? '9px' : '11px' }}>{firstWord}</span>
                   </div>
           }
         </div>

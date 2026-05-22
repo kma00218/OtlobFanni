@@ -42,9 +42,9 @@ export default function TechnicianCard({ technician }) {
           ) : (
             <div
               className="w-full h-full flex items-center justify-center text-white font-bold bg-gradient-to-br from-[#071B33] to-[#1a56db] text-center px-1 leading-tight"
-              style={{ fontSize: name.length > 6 ? '8px' : '10px', wordBreak: 'break-word' }}
+              style={{ fontSize: firstName.length > 5 ? '9px' : '11px' }}
             >
-              {name || '؟'}
+              {firstName}
             </div>
           )}
         </div>
