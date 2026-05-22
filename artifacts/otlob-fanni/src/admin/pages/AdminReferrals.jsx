@@ -22,11 +22,41 @@ const TYPE_BADGE = {
   supplier:   { label: 'مورد',  color: 'bg-purple-100 text-purple-700' },
 }
 
+const INVITE_MSG = {
+  technician: (name) =>
+    `مرحباً ${name} 👋\n\n` +
+    `رشّحك أحد معارفك للانضمام إلى منصة *اطلب فني* — الدليل الرقمي للفنيين والشركات في ليبيا 🇱🇾\n\n` +
+    `سجّل مهاراتك مجاناً وابدأ تستقبل طلبات من عملاء في منطقتك.\n\n` +
+    `📲 سجّل من هنا: https://otlobfanni.ly/join`,
+  company: (name) =>
+    `مرحباً ${name} 👋\n\n` +
+    `رشّحكم أحد معارفكم للانضمام إلى منصة *اطلب فني* — الدليل الرقمي للفنيين والشركات في ليبيا 🇱🇾\n\n` +
+    `سجّلوا شركتكم مجاناً وابدأوا تستقبلوا طلبات من عملاء في منطقتكم.\n\n` +
+    `📲 سجّل من هنا: https://otlobfanni.ly/join-company`,
+  supplier: (name) =>
+    `مرحباً ${name} 👋\n\n` +
+    `رشّحكم أحد معارفكم للانضمام إلى منصة *اطلب فني* — الدليل الرقمي للفنيين والشركات في ليبيا 🇱🇾\n\n` +
+    `سجّلوا نشاطكم مجاناً وكونوا مرجعاً للفنيين والشركات في منطقتكم.\n\n` +
+    `📲 سجّل من هنا: https://otlobfanni.ly/join-supplier`,
+}
+
+function normalizePhone(raw) {
+  if (!raw) return ''
+  let digits = String(raw).replace(/\D/g, '')
+  if (!digits) return ''
+  if (!digits.startsWith('218')) digits = '218' + digits.replace(/^0+/, '')
+  return digits
+}
+
 function ReferralCard({ r, onStatus, onDelete, updating }) {
   const sc  = STATUS_CFG[r.status] || STATUS_CFG.new
   const tc  = TYPE_BADGE[r.type] || {}
   const SI  = sc.icon || Clock
-  const phone218 = r.phone.startsWith('218') ? `+${r.phone}` : r.phone
+  const digits   = normalizePhone(r.phone)
+  const display  = digits ? `+${digits}` : (r.phone || '—')
+  const msgFn    = INVITE_MSG[r.type] || INVITE_MSG.technician
+  const waText   = encodeURIComponent(msgFn(r.name || ''))
+  const waLink   = digits ? `https://wa.me/${digits}?text=${waText}` : null
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
@@ -46,22 +76,31 @@ function ReferralCard({ r, onStatus, onDelete, updating }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <a
-          href={`tel:${phone218}`}
-          className="flex items-center gap-1.5 bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold text-[#071B33] hover:bg-gray-100 transition-colors"
-          dir="ltr"
-        >
-          <Phone className="w-3.5 h-3.5 text-[#FF7900]" />
-          {phone218}
-        </a>
-        <a
-          href={`https://wa.me/${r.phone.replace(/\D/g, '')}`}
-          target="_blank" rel="noreferrer"
-          className="flex items-center gap-1.5 bg-green-50 rounded-xl px-3 py-2 text-xs font-bold text-green-700 hover:bg-green-100 transition-colors"
-        >
-          <MessageSquare className="w-3.5 h-3.5" />
-          واتساب
-        </a>
+        {digits && (
+          <a
+            href={`tel:+${digits}`}
+            className="flex items-center gap-1.5 bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold text-[#071B33] hover:bg-gray-100 transition-colors"
+            dir="ltr"
+          >
+            <Phone className="w-3.5 h-3.5 text-[#FF7900]" />
+            {display}
+          </a>
+        )}
+        {waLink ? (
+          <a
+            href={waLink}
+            target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 bg-green-50 rounded-xl px-3 py-2 text-xs font-bold text-green-700 hover:bg-green-100 transition-colors"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            واتساب
+          </a>
+        ) : (
+          <span className="flex items-center gap-1.5 bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold text-gray-400">
+            <Phone className="w-3.5 h-3.5" />
+            لا يوجد رقم
+          </span>
+        )}
       </div>
 
       {r.notes && (
