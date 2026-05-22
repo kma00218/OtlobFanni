@@ -218,7 +218,7 @@ export default function Home() {
         {/* زر الانضمام */}
         <Link href="/join-us">
           <div
-            className="rounded-2xl px-5 py-3.5 text-center active:scale-95 transition-transform duration-150 select-none"
+            className="rounded-2xl px-5 py-3.5 text-center active:scale-95 transition-transform duration-150 select-none cursor-pointer"
             style={{
               background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
               boxShadow: '0 4px 20px rgba(52,199,89,0.35)',
