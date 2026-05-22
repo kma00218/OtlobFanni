@@ -333,13 +333,31 @@ export default function JoinSupplier() {
                 )}
               </Field>
             </div>
-            <div className="flex gap-2.5 bg-amber-50 border border-amber-300 rounded-xl px-3.5 py-3">
-              <span className="text-amber-500 text-lg leading-none flex-shrink-0 mt-0.5">⚠️</span>
-              <p className="text-amber-800 text-[12.5px] font-semibold leading-relaxed">
-                {ar
-                  ? 'رقم الواتساب إجباري ويجب أن يكون مفعّلاً على واتساب — التواصل سيتم عبر واتساب فقط.'
-                  : 'WhatsApp number is required and must be active — all communication will be via WhatsApp only.'}
-              </p>
+            <div className="rounded-xl border-2 border-red-300 bg-red-50 overflow-hidden">
+              <div className="bg-red-500 px-3.5 py-2 flex items-center gap-2">
+                <span className="text-white text-base leading-none">📱</span>
+                <p className="text-white text-[11px] font-extrabold uppercase tracking-wide">
+                  {ar ? 'تنبيه مهم جداً — رقم الواتساب' : 'Critical Notice — WhatsApp Number'}
+                </p>
+              </div>
+              <div className="px-3.5 py-3 space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-red-500 font-black text-sm flex-shrink-0 leading-snug">①</span>
+                  <p className="text-red-800 text-[12.5px] font-bold leading-snug">
+                    {ar
+                      ? 'يجب أن يكون الرقم مفعّلاً على واتساب فعلاً — لا تُدخل رقماً عادياً غير مسجّل في واتساب.'
+                      : 'The number must be truly active on WhatsApp — do not enter a regular number not registered on WhatsApp.'}
+                  </p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-red-500 font-black text-sm flex-shrink-0 leading-snug">②</span>
+                  <p className="text-red-800 text-[12.5px] font-bold leading-snug">
+                    {ar
+                      ? 'الفنيون والشركات سيتواصلون معك عبر هذا الرقم مباشرةً — تأكد من أنك متاح ومتجاوب.'
+                      : 'Technicians and companies will contact you directly through this number — make sure you are available and responsive.'}
+                  </p>
+                </div>
+              </div>
             </div>
             <Field label={ar ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}>
               <input className={inp} type="email" value={form.email}
@@ -410,11 +428,45 @@ export default function JoinSupplier() {
         <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
           <SectionTitle icon={FileText} step={5}>{ar ? 'عن النشاط' : 'About Your Business'}</SectionTitle>
           <div className="space-y-4">
-            <Field label={ar ? 'وصف النشاط' : 'Business Description'}
-              hint={ar ? 'اذكر المنتجات الرئيسية التي تبيعها والعلامات التجارية إن وجدت' : 'Mention your main products and brands if any'}>
-              <textarea className={inp} rows={3} value={form.description}
+            <div className="rounded-xl border-2 border-violet-200 bg-violet-50 overflow-hidden">
+              <div className="bg-gradient-to-l from-violet-600 to-purple-700 px-3.5 py-2 flex items-center gap-2">
+                <span className="text-white text-base leading-none">✍️</span>
+                <p className="text-white text-[11px] font-extrabold uppercase tracking-wide">
+                  {ar ? 'وصف النشاط — اقرأ هذا أولاً' : 'Business Description — Read This First'}
+                </p>
+              </div>
+              <div className="px-3.5 py-3">
+                <p className="text-violet-800 text-[12px] font-extrabold mb-2">
+                  {ar ? 'كيف تكتب وصفاً يجعل الفنيين والشركات يجدونك؟' : 'How to write a description so technicians and companies find you?'}
+                </p>
+                <ul className="space-y-1.5 mb-2">
+                  {(ar ? [
+                    '📦 اذكر جميع المنتجات والمواد التي تبيعها بالتفصيل (أدوات، معدات، قطع غيار، مواد بناء...)',
+                    '🏷️ سمّ العلامات التجارية التي تتعامل معها (Bosch، Makita، Hilti، LG...)',
+                    '🔧 وضّح من هم عملاؤك المستهدفون (فنيون، مقاولون، أصحاب مشاريع...)',
+                    '📍 اذكر منطقتك وإذا كان لديك توصيل أو خدمة ميدانية',
+                  ] : [
+                    '📦 List all products and materials you sell in detail (tools, equipment, spare parts, building materials...)',
+                    '🏷️ Name the brands you carry (Bosch, Makita, Hilti, LG...)',
+                    '🔧 Clarify who your target customers are (technicians, contractors, project owners...)',
+                    '📍 Mention your area and whether you offer delivery or field service',
+                  ]).map((item, i) => (
+                    <li key={i} className="text-[12px] text-violet-700 font-semibold leading-snug list-none">{item}</li>
+                  ))}
+                </ul>
+                <p className="text-[11px] text-violet-500 font-bold border-t border-violet-200 pt-2">
+                  {ar
+                    ? '💡 الوصف الدقيق يجعل الفنيين والشركات يجدونك بسهولة — كن واضحاً ومفصّلاً'
+                    : '💡 A precise description helps technicians and companies find you easily — be clear and detailed'}
+                </p>
+              </div>
+            </div>
+            <Field label={ar ? 'وصف النشاط' : 'Business Description'}>
+              <textarea className={inp + ' min-h-[130px] resize-none'} value={form.description}
                 onChange={e => set('description', e.target.value)}
-                placeholder={ar ? 'مثال: نبيع أدوات كهربائية من ماركات Bosch وMakita ومعدات ورش متنوعة...' : 'e.g., We sell Bosch and Makita electrical tools and various workshop equipment...'} />
+                placeholder={ar
+                  ? 'مثال: نبيع أدوات كهربائية من ماركات Bosch وMakita وHilti، ومعدات ورش، وقطع غيار للمحركات والمضخات. نوفر خدمة توصيل داخل طرابلس. نخدم الفنيين والمقاولين وأصحاب المشاريع.'
+                  : 'Example: We sell electrical tools from Bosch, Makita, and Hilti, workshop equipment, and spare parts for motors and pumps. We offer delivery within Tripoli. We serve technicians, contractors, and project owners.'} />
             </Field>
 
             {/* Shop images — max 3 */}

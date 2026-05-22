@@ -460,13 +460,31 @@ export default function Join() {
                 </Field>
               </div>
 
-              <div className="flex gap-2.5 bg-amber-50 border border-amber-300 rounded-xl px-3.5 py-3">
-                <span className="text-amber-500 text-lg leading-none flex-shrink-0 mt-0.5">⚠️</span>
-                <p className="text-amber-800 text-[12.5px] font-semibold leading-relaxed">
-                  {ar
-                    ? 'رقم الواتساب إجباري ويجب أن يكون مفعّلاً على واتساب — لا تُدخل رقم هاتفك العادي إذا لم يكن مسجّلاً في واتساب، لأن التواصل معك سيتم عبر واتساب فقط.'
-                    : 'WhatsApp number is required and must be active on WhatsApp — do not enter a regular phone number that is not registered on WhatsApp, as all communication will be via WhatsApp only.'}
-                </p>
+              <div className="rounded-xl border-2 border-red-300 bg-red-50 overflow-hidden">
+                <div className="bg-red-500 px-3.5 py-2 flex items-center gap-2">
+                  <span className="text-white text-base leading-none">📱</span>
+                  <p className="text-white text-[11px] font-extrabold uppercase tracking-wide">
+                    {ar ? 'تنبيه مهم جداً — رقم الواتساب' : 'Critical Notice — WhatsApp Number'}
+                  </p>
+                </div>
+                <div className="px-3.5 py-3 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-red-500 font-black text-sm flex-shrink-0 leading-snug">①</span>
+                    <p className="text-red-800 text-[12.5px] font-bold leading-snug">
+                      {ar
+                        ? 'يجب أن يكون الرقم مفعّلاً على واتساب فعلاً — لا تُدخل رقماً عادياً غير مسجّل في واتساب.'
+                        : 'The number must be truly active on WhatsApp — do not enter a regular number not registered on WhatsApp.'}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-red-500 font-black text-sm flex-shrink-0 leading-snug">②</span>
+                    <p className="text-red-800 text-[12.5px] font-bold leading-snug">
+                      {ar
+                        ? 'العملاء سيتواصلون معك مباشرةً عبر هذا الرقم — احرص على أن تكون متاحاً ومتجاوباً دائماً.'
+                        : 'Clients will contact you directly through this number — make sure you are always available and responsive.'}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <Field label={ar ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}>
@@ -633,11 +651,46 @@ export default function Join() {
                 </Field>
               </div>
 
+              <div className="rounded-xl border-2 border-violet-200 bg-violet-50 overflow-hidden">
+                <div className="bg-gradient-to-l from-violet-600 to-purple-700 px-3.5 py-2 flex items-center gap-2">
+                  <span className="text-white text-base leading-none">✍️</span>
+                  <p className="text-white text-[11px] font-extrabold uppercase tracking-wide">
+                    {ar ? 'وصف الخدمة — اقرأ هذا أولاً' : 'Service Description — Read This First'}
+                  </p>
+                </div>
+                <div className="px-3.5 py-3">
+                  <p className="text-violet-800 text-[12px] font-extrabold mb-2">
+                    {ar ? 'كيف تكتب وصفاً يجذب العملاء ويظهر في نتائج البحث؟' : 'How to write a description that attracts clients and appears in search?'}
+                  </p>
+                  <ul className="space-y-1.5 mb-2">
+                    {(ar ? [
+                      '🔧 اذكر كل الأعمال التي تتقنها بالتفصيل (تكييف، كهرباء، سباكة، نجارة، دهان...)',
+                      '🏷️ سمّ الماركات والأجهزة التي تعمل عليها (سامسونج، ميديا، LG، بوش...)',
+                      '📍 وضّح المناطق والمدن التي تخدمها',
+                      '⭐ اذكر سنوات خبرتك وأي شهادات أو مهارات تميزك',
+                    ] : [
+                      '🔧 List all your skills in detail (A/C, electrical, plumbing, carpentry, painting...)',
+                      '🏷️ Name the brands and equipment you work on (Samsung, Midea, LG, Bosch...)',
+                      '📍 Mention the areas and cities you serve',
+                      '⭐ Share your years of experience, certificates, or special skills',
+                    ]).map((item, i) => (
+                      <li key={i} className="text-[12px] text-violet-700 font-semibold leading-snug list-none">{item}</li>
+                    ))}
+                  </ul>
+                  <p className="text-[11px] text-violet-500 font-bold border-t border-violet-200 pt-2">
+                    {ar
+                      ? '💡 الوصف التفصيلي يرفع فرصتك في الظهور في نتائج البحث — لا تترك هذا الحقل مختصراً'
+                      : '💡 A detailed description increases your chances of appearing in search results — do not leave this field brief'}
+                  </p>
+                </div>
+              </div>
               <Field label={ar ? 'وصف قصير عن خدمتك' : 'Service Description'} required>
                 <textarea
-                  className={inp + ' min-h-[90px] resize-none'} required value={form.description}
+                  className={inp + ' min-h-[130px] resize-none'} required value={form.description}
                   onChange={e => set('description', e.target.value)}
-                  placeholder={ar ? 'اكتب نبذة مختصرة عن خبرتك وخدماتك...' : 'Briefly describe your experience and services...'} />
+                  placeholder={ar
+                    ? 'مثال: أعمل في تركيب وصيانة أجهزة التكييف المركزي والسبليت من ماركات Midea وLG وGree. أقوم بتمديد الأسلاك الكهربائية وتركيب لوحات التوزيع. أخدم منطقة طرابلس والضواحي منذ أكثر من 8 سنوات.'
+                    : 'Example: I install and maintain split and central A/C units from Midea, LG, and Gree. I also do electrical wiring and panel installation. Serving Tripoli and surrounding areas for over 8 years.'} />
               </Field>
 
             </div>

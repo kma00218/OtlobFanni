@@ -475,13 +475,31 @@ export default function JoinCompany() {
                 </Field>
               </div>
 
-              <div className="flex gap-2.5 bg-amber-50 border border-amber-300 rounded-xl px-3.5 py-3">
-                <span className="text-amber-500 text-lg leading-none flex-shrink-0 mt-0.5">⚠️</span>
-                <p className="text-amber-800 text-[12.5px] font-semibold leading-relaxed">
-                  {ar
-                    ? 'رقم الواتساب إجباري ويجب أن يكون مفعّلاً على واتساب — لا تُدخل رقم هاتفك العادي إذا لم يكن مسجّلاً في واتساب، لأن التواصل معك سيتم عبر واتساب فقط.'
-                    : 'WhatsApp number is required and must be active on WhatsApp — do not enter a regular phone number that is not registered on WhatsApp, as all communication will be via WhatsApp only.'}
-                </p>
+              <div className="rounded-xl border-2 border-red-300 bg-red-50 overflow-hidden">
+                <div className="bg-red-500 px-3.5 py-2 flex items-center gap-2">
+                  <span className="text-white text-base leading-none">📱</span>
+                  <p className="text-white text-[11px] font-extrabold uppercase tracking-wide">
+                    {ar ? 'تنبيه مهم جداً — رقم الواتساب' : 'Critical Notice — WhatsApp Number'}
+                  </p>
+                </div>
+                <div className="px-3.5 py-3 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-red-500 font-black text-sm flex-shrink-0 leading-snug">①</span>
+                    <p className="text-red-800 text-[12.5px] font-bold leading-snug">
+                      {ar
+                        ? 'يجب أن يكون الرقم مفعّلاً على واتساب فعلاً — لا تُدخل رقماً عادياً غير مسجّل في واتساب.'
+                        : 'The number must be truly active on WhatsApp — do not enter a regular number not registered on WhatsApp.'}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-red-500 font-black text-sm flex-shrink-0 leading-snug">②</span>
+                    <p className="text-red-800 text-[12.5px] font-bold leading-snug">
+                      {ar
+                        ? 'العملاء سيتواصلون مع الشركة مباشرةً عبر هذا الرقم — احرص على أن يكون هناك من يرد دائماً.'
+                        : 'Clients will contact your company directly through this number — ensure someone is always available to respond.'}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <Field label={ar ? 'البريد الإلكتروني (اختياري)' : 'Email (Optional)'}>
@@ -646,11 +664,46 @@ export default function JoinCompany() {
                 </select>
               </Field>
 
+              <div className="rounded-xl border-2 border-violet-200 bg-violet-50 overflow-hidden">
+                <div className="bg-gradient-to-l from-violet-600 to-purple-700 px-3.5 py-2 flex items-center gap-2">
+                  <span className="text-white text-base leading-none">✍️</span>
+                  <p className="text-white text-[11px] font-extrabold uppercase tracking-wide">
+                    {ar ? 'وصف الشركة — اقرأ هذا أولاً' : 'Company Description — Read This First'}
+                  </p>
+                </div>
+                <div className="px-3.5 py-3">
+                  <p className="text-violet-800 text-[12px] font-extrabold mb-2">
+                    {ar ? 'كيف تكتب وصفاً يجذب العملاء ويظهر في نتائج البحث؟' : 'How to write a description that attracts clients and appears in search?'}
+                  </p>
+                  <ul className="space-y-1.5 mb-2">
+                    {(ar ? [
+                      '🏢 اذكر جميع الخدمات التي تقدمها الشركة بالتفصيل (صيانة، مقاولات، تنظيف، تكييف...)',
+                      '🏷️ سمّ الماركات والأنظمة التي تعمل عليها شركتك',
+                      '📍 وضّح المناطق والمدن التي تغطيها',
+                      '⭐ اذكر سنوات الخبرة، الشهادات، وأي إنجازات أو مشاريع بارزة',
+                    ] : [
+                      '🏢 List all services your company provides in detail (maintenance, contracting, cleaning, A/C...)',
+                      '🏷️ Name the brands and systems your company works with',
+                      '📍 Mention the areas and cities you cover',
+                      '⭐ Share years of experience, certifications, and notable projects or achievements',
+                    ]).map((item, i) => (
+                      <li key={i} className="text-[12px] text-violet-700 font-semibold leading-snug list-none">{item}</li>
+                    ))}
+                  </ul>
+                  <p className="text-[11px] text-violet-500 font-bold border-t border-violet-200 pt-2">
+                    {ar
+                      ? '💡 الوصف التفصيلي يرفع ظهور شركتك في نتائج البحث — لا تترك هذا الحقل مختصراً'
+                      : '💡 A detailed description boosts your company in search results — do not leave this field brief'}
+                  </p>
+                </div>
+              </div>
               <Field label={ar ? 'وصف الخدمات المقدمة' : 'Services Description'} required>
                 <textarea
-                  className={inp + ' min-h-[90px] resize-none'} required value={form.description}
+                  className={inp + ' min-h-[130px] resize-none'} required value={form.description}
                   onChange={e => set('description', e.target.value)}
-                  placeholder={ar ? 'اكتب نبذة عن خدمات الشركة وخبراتها...' : 'Describe the company services and expertise...'} />
+                  placeholder={ar
+                    ? 'مثال: نقدم خدمات صيانة وتركيب أجهزة التكييف المركزي والسبليت من جميع الماركات، إلى جانب أعمال الكهرباء والسباكة للمباني السكنية والتجارية. نخدم طرابلس وبنغازي منذ أكثر من 12 عاماً.'
+                    : 'Example: We provide installation and maintenance of central and split A/C systems for all brands, alongside electrical and plumbing works for residential and commercial buildings. Serving Tripoli and Benghazi for over 12 years.'} />
               </Field>
 
             </div>
