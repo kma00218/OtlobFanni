@@ -5,7 +5,7 @@ import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
-  Plus, Trash2, Share2
+  Plus, Trash2, Share2, AlertTriangle
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
@@ -52,8 +52,9 @@ export default function Companies() {
   const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')
   const [filterCity, setFilterCity] = useState('')
-  const [filterCat, setFilterCat]   = useState('')
-  const [viewItem, setViewItem]     = useState(null)
+  const [filterCat, setFilterCat]               = useState('')
+  const [filterIncomplete, setFilterIncomplete] = useState(false)
+  const [viewItem, setViewItem]                 = useState(null)
   const [editItem, setEditItem]     = useState(null)
   const [form, setForm]             = useState(emptyForm)
   const [saving, setSaving]         = useState(false)
@@ -84,6 +85,22 @@ export default function Companies() {
       showToast('✓ تم إرسال بيانات الدخول')
     } catch { showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error') }
     finally { setCredsSending(null) }
+  }
+
+  const sendNudgeCompany = (row) => {
+    const name = row.companyName || ''
+    const missing = []
+    if (!row.companyLogo) missing.push('— لا يوجد شعار')
+    if (!(row.workImages || []).length) missing.push('— لا توجد صور أعمال')
+    if (!missing.length) return
+    const msg =
+      `مرحباً ${name}، ملفكم على منصة اطلب فني يحتاج إلى تحسين وتعديل 🔧\n\n` +
+      missing.join('\n') +
+      `\n\nأضيفوها لتظهروا أكثر في نتائج البحث وتحصلوا على عملاء أكثر 📈\n\n` +
+      `شاهدوا ملفكم من هنا:\nhttps://otlobfanni.ly/company/${row.id}\n\n` +
+      `👆 اضغطوا على زر "تحديث أو إبلاغ" في الملف لإرسال الصور أو أي تعديل`
+    const phone = ((row.whatsapp || row.phone) || '').replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const catLabel = (id) => {
@@ -210,7 +227,8 @@ export default function Companies() {
     const s = !search || name.includes(search) || contact.includes(search) || r.phone?.includes(search) || r.city?.includes(search) || byId
     const c = !filterCity || r.city === filterCity
     const t = !filterCat  || r.specialty === filterCat
-    return s && c && t
+    const i = !filterIncomplete || !r.companyLogo || !(r.workImages || []).length
+    return s && c && t && i
   })
 
   const columns = [
@@ -230,7 +248,19 @@ export default function Companies() {
               }
             </div>
             <div>
-              <p className="font-semibold text-[#071B33] text-sm">{v || '—'}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-[#071B33] text-sm">{v || '—'}</p>
+                {(() => {
+                  const missing = []
+                  if (!row.companyLogo) missing.push('بدون شعار')
+                  if (!(row.workImages || []).length) missing.push('بدون صور أعمال')
+                  return missing.length > 0 ? (
+                    <span title={missing.join(' · ')} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-600 text-[10px] font-bold border border-amber-200 cursor-default">
+                      <AlertTriangle className="w-2.5 h-2.5" />{missing.length}
+                    </span>
+                  ) : null
+                })()}
+              </div>
               <p className="text-xs text-slate-500">{contact || '—'}</p>
             </div>
           </div>
@@ -281,6 +311,14 @@ export default function Companies() {
               className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
               title="طلب المشاركة">
               <Share2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {(row.whatsapp || row.phone) && (!row.companyLogo || !(row.workImages || []).length) && (
+            <button
+              onClick={() => sendNudgeCompany(row)}
+              className="p-1.5 hover:bg-amber-500/10 text-amber-500 rounded-lg transition-colors"
+              title="نج لإكمال الملف">
+              <AlertTriangle className="w-3.5 h-3.5" />
             </button>
           )}
           <button onClick={() => openEdit(row)}
@@ -364,6 +402,12 @@ export default function Companies() {
               })}
               <option value="more_services">✏️ تخصص آخر (مخصص)</option>
             </select>
+            <button
+              onClick={() => setFilterIncomplete(v => !v)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border ${filterIncomplete ? 'bg-amber-50 text-amber-700 border-amber-300' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'}`}>
+              <AlertTriangle className="w-3.5 h-3.5" />
+              غير مكتمل
+            </button>
           </div>
         }
         emptyMessage="لا توجد شركات مقبولة بعد — قم بالموافقة على الطلبات من صفحة طلبات الشركات"

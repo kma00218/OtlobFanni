@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2 } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
 
@@ -54,8 +54,9 @@ export default function AdminSuppliers() {
   const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')
   const [filterCity, setFilterCity] = useState('')
-  const [filterType, setFilterType] = useState('')
-  const [viewItem, setViewItem]     = useState(null)
+  const [filterType, setFilterType]             = useState('')
+  const [filterIncomplete, setFilterIncomplete] = useState(false)
+  const [viewItem, setViewItem]                 = useState(null)
   const [editItem, setEditItem]     = useState(null)
   const [form, setForm]             = useState(emptyForm)
   const [saving, setSaving]         = useState(false)
@@ -85,6 +86,22 @@ export default function AdminSuppliers() {
       showToast('✓ تم إرسال بيانات الدخول')
     } catch { showToast('حدث خطأ أثناء إنشاء بيانات الدخول', 'error') }
     finally { setCredsSending(null) }
+  }
+
+  const sendNudgeSupplier = (row) => {
+    const name = row.businessName || ''
+    const missing = []
+    if (!row.logo) missing.push('— لا يوجد شعار')
+    if (!(row.shopImages || []).length) missing.push('— لا توجد صور أعمال')
+    if (!missing.length) return
+    const msg =
+      `مرحباً ${name}، ملفكم على منصة اطلب فني يحتاج إلى تحسين وتعديل 🔧\n\n` +
+      missing.join('\n') +
+      `\n\nأضيفوها لتظهروا أكثر في نتائج البحث وتحصلوا على عملاء أكثر 📈\n\n` +
+      `شاهدوا ملفكم من هنا:\nhttps://otlobfanni.ly/supplier/${row.id}\n\n` +
+      `👆 اضغطوا على زر "تحديث أو إبلاغ" في الملف لإرسال الصور أو أي تعديل`
+    const phone = ((row.whatsapp || row.phone) || '').replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const reload = () => {
@@ -191,7 +208,8 @@ export default function AdminSuppliers() {
     const s = !search || name.includes(search) || contact.includes(search) || r.phone?.includes(search) || r.city?.includes(search) || byId
     const c = !filterCity || r.city === filterCity
     const t = !filterType || r.supplyType === filterType
-    return s && c && t
+    const i = !filterIncomplete || !r.logo || !(r.shopImages || []).length
+    return s && c && t && i
   })
 
   const columns = [
@@ -210,7 +228,19 @@ export default function AdminSuppliers() {
               }
             </div>
             <div>
-              <p className="font-semibold text-[#071B33] text-sm">{v || '—'}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-[#071B33] text-sm">{v || '—'}</p>
+                {(() => {
+                  const missing = []
+                  if (!row.logo) missing.push('بدون شعار')
+                  if (!(row.shopImages || []).length) missing.push('بدون صور أعمال')
+                  return missing.length > 0 ? (
+                    <span title={missing.join(' · ')} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-600 text-[10px] font-bold border border-amber-200 cursor-default">
+                      <AlertTriangle className="w-2.5 h-2.5" />{missing.length}
+                    </span>
+                  ) : null
+                })()}
+              </div>
               <p className="text-xs text-slate-500">{row.contactName || '—'}</p>
             </div>
           </div>
@@ -246,6 +276,15 @@ export default function AdminSuppliers() {
               title="طلب المشاركة">
               <Share2 className="w-3 h-3" />
               شارك
+            </button>
+          )}
+          {(row.whatsapp || row.phone) && (!row.logo || !(row.shopImages || []).length) && (
+            <button
+              onClick={() => sendNudgeSupplier(row)}
+              className="px-2.5 py-1.5 text-xs font-semibold bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-1"
+              title="نج لإكمال الملف">
+              <AlertTriangle className="w-3 h-3" />
+              تحسين
             </button>
           )}
           {(row.whatsapp || row.phone) && (
@@ -318,6 +357,12 @@ export default function AdminSuppliers() {
           <option value="">كل الأنواع</option>
           {SUPPLY_TYPES.map(t => <option key={t.id} value={t.id}>{t.emoji} {t.nameAr}</option>)}
         </select>
+        <button
+          onClick={() => setFilterIncomplete(v => !v)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border ${filterIncomplete ? 'bg-amber-50 text-amber-700 border-amber-300' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'}`}>
+          <AlertTriangle className="w-3.5 h-3.5" />
+          غير مكتمل
+        </button>
       </div>
 
       {/* Table */}

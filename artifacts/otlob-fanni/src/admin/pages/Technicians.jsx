@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload, Share2,
+  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
@@ -550,8 +550,9 @@ export default function Technicians() {
   const [search, setSearch]             = useState('')
   const [filterCity, setFilterCity]     = useState('')
   const [filterCat, setFilterCat]       = useState('')
-  const [filterStatus, setFilterStatus] = useState('')
-  const [page, setPage]                 = useState(1)
+  const [filterStatus, setFilterStatus]         = useState('')
+  const [filterIncomplete, setFilterIncomplete] = useState(false)
+  const [page, setPage]                         = useState(1)
 
   const [data, setData]   = useState([])
   const [total, setTotal] = useState(0)
@@ -587,6 +588,23 @@ export default function Technicians() {
     finally { setCredsSending(null) }
   }
 
+  const sendNudgeTech = (row) => {
+    const firstName = (row.nameAr || row.name_ar || '').trim().split(' ')[0] || ''
+    const missing = []
+    if (!row.profilePhoto && !row.profile_photo) missing.push('— لا توجد صورة شخصية أو شعار')
+    if (!(row.workImages || row.work_images || []).length) missing.push('— لا توجد صور أعمال')
+    if (!row.categoryId && !row.category_id) missing.push('— لم يُحدَّد التخصص')
+    if (!missing.length) return
+    const msg =
+      `مرحباً ${firstName}، ملفك على منصة اطلب فني يحتاج إلى تحسين وتعديل 🔧\n\n` +
+      missing.join('\n') +
+      `\n\nأضفها لتظهر أكثر في نتائج البحث وتحصل على عملاء أكثر 📈\n\n` +
+      `شاهد ملفك من هنا:\nhttps://otlobfanni.ly/technician/${row.id}\n\n` +
+      `👆 اضغط على زر "تحديث أو إبلاغ" في الملف لإرسال الصور أو أي تعديل`
+    const phone = ((row.whatsapp || row.phone) || '').replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
   const reloadTechs = useCallback(() => {
     setLoading(true)
     api.admin.technicians.list()
@@ -619,6 +637,13 @@ export default function Technicians() {
       rows = rows.filter(r => (r.categoryId || r.category_id) === filterCat)
     if (filterStatus)
       rows = rows.filter(r => r.status === filterStatus)
+    if (filterIncomplete)
+      rows = rows.filter(r => {
+        const hasPhoto    = !!(r.profilePhoto || r.profile_photo)
+        const hasWorkImgs = (r.workImages || r.work_images || []).length > 0
+        const hasCat      = !!(r.categoryId || r.category_id)
+        return !hasPhoto || !hasWorkImgs || !hasCat
+      })
     if (search) {
       const s = search.toLowerCase()
       const digits = search.replace(/\D/g, '').slice(-6)
@@ -651,7 +676,7 @@ export default function Technicians() {
         return SECTIONS.find(s => s.id === cat?.sectionId)?.nameAr || ''
       })(),
     })))
-  }, [allTechs, search, filterCity, filterCat, filterStatus, page, isSuperAdmin, cityId, cities, categories])
+  }, [allTechs, search, filterCity, filterCat, filterStatus, filterIncomplete, page, isSuperAdmin, cityId, cities, categories])
 
   const openAdd = () => {
     setEditItem(null)
@@ -811,6 +836,14 @@ export default function Technicians() {
             <option value="inactive">غير نشط</option>
           </select>
         </div>
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            onClick={() => { setFilterIncomplete(v => !v); setPage(1) }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${filterIncomplete ? 'bg-amber-50 text-amber-700 border-amber-300' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'}`}>
+            <AlertTriangle className="w-3.5 h-3.5" />
+            ملفات غير مكتملة فقط
+          </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -858,7 +891,20 @@ export default function Technicians() {
                           }
                         </div>
                         <div>
-                          <p className="font-medium text-[#071B33] text-sm">{row.nameAr || row.name_ar || '—'}</p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-medium text-[#071B33] text-sm">{row.nameAr || row.name_ar || '—'}</p>
+                            {(() => {
+                              const missing = []
+                              if (!row.profilePhoto && !row.profile_photo) missing.push('بدون صورة أو شعار')
+                              if (!(row.workImages || row.work_images || []).length) missing.push('بدون صور أعمال')
+                              if (!row.categoryId && !row.category_id) missing.push('بدون تخصص')
+                              return missing.length > 0 ? (
+                                <span title={missing.join(' · ')} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-600 text-[10px] font-bold border border-amber-200 cursor-default">
+                                  <AlertTriangle className="w-2.5 h-2.5" />{missing.length}
+                                </span>
+                              ) : null
+                            })()}
+                          </div>
                           <p className="text-xs text-slate-500" dir="ltr">{row.phone}</p>
                         </div>
                       </div>
@@ -924,6 +970,19 @@ export default function Technicians() {
                             <Share2 className="w-3.5 h-3.5" />
                           </button>
                         )}
+                        {(row.whatsapp || row.phone) && (() => {
+                          const hasPhoto    = !!(row.profilePhoto || row.profile_photo)
+                          const hasWorkImgs = (row.workImages || row.work_images || []).length > 0
+                          const hasCat      = !!(row.categoryId || row.category_id)
+                          return (!hasPhoto || !hasWorkImgs || !hasCat) ? (
+                            <button
+                              onClick={() => sendNudgeTech(row)}
+                              className="p-1.5 hover:bg-amber-500/10 text-amber-500 rounded-lg transition-colors"
+                              title="نج لإكمال الملف">
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                            </button>
+                          ) : null
+                        })()}
                         <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
