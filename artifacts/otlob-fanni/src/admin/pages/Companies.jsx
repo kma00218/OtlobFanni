@@ -5,9 +5,10 @@ import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
-  Plus, Trash2, Share2, AlertTriangle
+  Plus, Trash2, Share2, AlertTriangle, Sparkles
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
+import AiTagsModal from '../components/AiTagsModal'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const EXP_LABEL = {
@@ -64,6 +65,7 @@ export default function Companies() {
   const [categories, setCategories] = useState([])
   const [toast, setToast]           = useState(null)
   const [credsSending, setCredsSending] = useState(null)
+  const [aiModal, setAiModal]           = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -262,6 +264,16 @@ export default function Companies() {
                 })()}
               </div>
               <p className="text-xs text-slate-500">{contact || '—'}</p>
+              {(row.aiTags || row.ai_tags || []).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {(row.aiTags || row.ai_tags).slice(0, 3).map(t => (
+                    <span key={t} className="px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-600 border border-violet-200 text-[10px] font-medium">{t}</span>
+                  ))}
+                  {(row.aiTags || row.ai_tags).length > 3 && (
+                    <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 text-[10px]">+{(row.aiTags || row.ai_tags).length - 3}</span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )
@@ -324,6 +336,10 @@ export default function Companies() {
           <button onClick={() => openEdit(row)}
             className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
             <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => setAiModal({ ...row, entityType: 'company' })}
+            className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors" title="استخراج تخصصات AI">
+            <Sparkles className="w-3.5 h-3.5" />
           </button>
           {(row.whatsapp || row.phone) && (
             <button
@@ -880,6 +896,16 @@ export default function Companies() {
           </div>
         )}
       </FormModal>
+
+      <AiTagsModal
+        open={!!aiModal}
+        onClose={() => setAiModal(null)}
+        entity={aiModal}
+        onSaved={(tags) => {
+          setData(prev => prev.map(r => r.id === aiModal?.id ? { ...r, aiTags: tags } : r))
+          showToast('تم حفظ التخصصات بنجاح')
+        }}
+      />
     </div>
   )
 }

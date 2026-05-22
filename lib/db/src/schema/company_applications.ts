@@ -15,6 +15,7 @@ export const companyApplicationsTable = pgTable("company_applications", {
   specialty:       text("specialty").notNull(),
   extraSpecialties:     text("extra_specialties").array().default([]),
   customSpecialty:      text("custom_specialty"),
+  aiTags:               text("ai_tags").array().default([]),
   suggestedSpecialties: jsonb("suggested_specialties").$type<{sectionId: string, name: string}[]>().default([]),
   lat:            real("lat"),
   lng:            real("lng"),

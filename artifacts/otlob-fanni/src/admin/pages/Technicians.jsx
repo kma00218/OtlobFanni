@@ -3,9 +3,10 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle,
+  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
+import AiTagsModal from '../components/AiTagsModal'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const PAGE_SIZE = 15
@@ -564,6 +565,7 @@ export default function Technicians() {
   const [saving, setSaving]       = useState(false)
   const [toast, setToast]         = useState(null)
   const [credsSending, setCredsSending] = useState(null)
+  const [aiModal, setAiModal]           = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type })
@@ -772,6 +774,7 @@ export default function Technicians() {
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1
 
   return (
+    <>
     <div className="space-y-4" dir="rtl">
       {toast && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-xl text-sm font-semibold text-white ${toast.type === 'error' ? 'bg-red-500' : 'bg-emerald-600'}`}>
@@ -906,6 +909,16 @@ export default function Technicians() {
                             })()}
                           </div>
                           <p className="text-xs text-slate-500" dir="ltr">{row.phone}</p>
+                          {(row.aiTags || row.ai_tags || []).length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {(row.aiTags || row.ai_tags).slice(0, 3).map(t => (
+                                <span key={t} className="px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-600 border border-violet-200 text-[10px] font-medium">{t}</span>
+                              ))}
+                              {(row.aiTags || row.ai_tags).length > 3 && (
+                                <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 text-[10px]">+{(row.aiTags || row.ai_tags).length - 3}</span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -986,6 +999,9 @@ export default function Technicians() {
                         <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
+                        <button onClick={() => setAiModal({ ...row, entityType: 'technician' })} className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors" title="استخراج تخصصات AI">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </button>
                         {(row.whatsapp || row.phone) && (
                           <button
                             onClick={() => sendCredentials(row)}
@@ -1027,5 +1043,16 @@ export default function Technicians() {
         )}
       </div>
     </div>
+
+    <AiTagsModal
+      open={!!aiModal}
+      onClose={() => setAiModal(null)}
+      entity={aiModal}
+      onSaved={(tags) => {
+        setData(prev => prev.map(r => r.id === aiModal?.id ? { ...r, aiTags: tags } : r))
+        showToast('تم حفظ التخصصات بنجاح')
+      }}
+    />
+    </>
   )
 }

@@ -16,6 +16,7 @@ export const supplierApplicationsTable = pgTable("supplier_applications", {
   lat:               doublePrecision("lat"),
   lng:               doublePrecision("lng"),
   description:       text("description"),
+  aiTags:            text("ai_tags").array().default([]),
   logo:              text("logo"),
   shopImages:        jsonb("shop_images").$type<string[]>().default([]),
   email:             text("email"),

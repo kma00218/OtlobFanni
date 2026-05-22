@@ -3,8 +3,9 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
+import AiTagsModal from '../components/AiTagsModal'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
 
 function WaIcon() {
@@ -65,6 +66,7 @@ export default function AdminSuppliers() {
   const [lightbox, setLightbox]     = useState(null)
   const [toast, setToast]           = useState(null)
   const [credsSending, setCredsSending] = useState(null)
+  const [aiModal, setAiModal]           = useState(null)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -242,6 +244,16 @@ export default function AdminSuppliers() {
                 })()}
               </div>
               <p className="text-xs text-slate-500">{row.contactName || '—'}</p>
+              {(row.aiTags || row.ai_tags || []).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {(row.aiTags || row.ai_tags).slice(0, 3).map(t => (
+                    <span key={t} className="px-1.5 py-0.5 rounded-md bg-violet-50 text-violet-600 border border-violet-200 text-[10px] font-medium">{t}</span>
+                  ))}
+                  {(row.aiTags || row.ai_tags).length > 3 && (
+                    <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 text-[10px]">+{(row.aiTags || row.ai_tags).length - 3}</span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )
@@ -270,6 +282,11 @@ export default function AdminSuppliers() {
             className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors"
             title="تعديل">
             <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => setAiModal({ ...row, entityType: 'supplier' })}
+            className="p-1.5 hover:bg-violet-500/10 text-violet-400 rounded-lg transition-colors"
+            title="استخراج تخصصات AI">
+            <Sparkles className="w-3.5 h-3.5" />
           </button>
           {(row.whatsapp || row.phone) && (
             <button
@@ -615,6 +632,16 @@ export default function AdminSuppliers() {
           </div>
         </FormModal>
       )}
+
+      <AiTagsModal
+        open={!!aiModal}
+        onClose={() => setAiModal(null)}
+        entity={aiModal}
+        onSaved={(tags) => {
+          setData(prev => prev.map(r => r.id === aiModal?.id ? { ...r, aiTags: tags } : r))
+          showToast('تم حفظ التخصصات بنجاح')
+        }}
+      />
 
       {/* Lightbox */}
       {lightbox && (

@@ -5,6 +5,7 @@ import adminRouter from "./admin";
 import storageRouter from "./storage";
 import analyticsRouter from "./analytics";
 import suppliersRouter from "./suppliers";
+import aiRouter from "./ai";
 
 const router: IRouter = Router();
 
@@ -12,6 +13,7 @@ router.use(healthRouter);
 router.use(storageRouter);
 router.use(analyticsRouter);
 router.use(suppliersRouter);
+router.use(aiRouter);
 router.use(publicRouter);
 router.use("/admin", adminRouter);
 
