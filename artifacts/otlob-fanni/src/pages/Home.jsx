@@ -180,7 +180,7 @@ export default function Home() {
               <div className="absolute inset-0 pointer-events-none"
                 style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
 
-              <div className="relative flex items-center gap-3 px-4 py-2.5">
+              <div className="relative flex items-center gap-3 px-4 pt-2.5 pb-5">
                 {/* Day badge */}
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <span className="text-[10px] font-bold text-white/40">{ar ? 'اليوم' : 'Day'}</span>
@@ -206,11 +206,10 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Wave curve at the bottom */}
-              <svg viewBox="0 0 400 10" preserveAspectRatio="none"
-                className="absolute bottom-0 left-0 right-0 w-full" style={{ height: 10 }}>
-                <path d="M0,10 L0,5 Q100,0 200,5 Q300,10 400,5 L400,10 Z"
-                  fill="#F8FAFC" />
+              {/* Single clean arc at the bottom */}
+              <svg viewBox="0 0 400 14" preserveAspectRatio="none"
+                className="absolute bottom-0 left-0 right-0 w-full" style={{ height: 14 }}>
+                <path d="M0,14 L0,14 Q200,0 400,14 Z" fill="#F8FAFC" />
               </svg>
             </div>
           )
