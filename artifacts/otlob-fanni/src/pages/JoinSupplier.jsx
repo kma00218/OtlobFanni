@@ -226,14 +226,14 @@ export default function JoinSupplier() {
 
   return (
     <div className="min-h-screen bg-[#ECEEF2] pb-28" dir={ar ? 'rtl' : 'ltr'}>
-      <BackHeader title={ar ? 'انضم كمزود مستلزمات' : 'Join as Supplier'} />
+      <BackHeader title={ar ? 'انضم كمورد مستلزمات' : 'Join as Supplier'} />
 
       <main className="pt-20 pb-12 px-4 max-w-[480px] mx-auto">
 
       <div className="text-center mb-5">
         <div className="inline-flex items-center gap-2 bg-[#071B33]/8 px-4 py-1.5 rounded-full mb-3">
           <Package className="w-4 h-4 text-[#071B33]" />
-          <span className="text-xs font-bold text-[#071B33]">{ar ? 'تسجيل مزود مستلزمات' : 'Supplier Registration'}</span>
+          <span className="text-xs font-bold text-[#071B33]">{ar ? 'تسجيل مورد مستلزمات' : 'Supplier Registration'}</span>
         </div>
         <h1 className="text-lg font-bold text-[#071B33] mb-1">{ar ? 'نموذج تسجيل الموردين' : 'Supplier Registration Form'}</h1>
         <p className="text-gray-500 text-sm">{ar ? 'أكمل جميع البيانات المطلوبة للانضمام إلى المنصة كمورد' : 'Complete all required fields to join the platform as a supplier'}</p>

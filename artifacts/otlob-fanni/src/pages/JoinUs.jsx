@@ -232,7 +232,7 @@ export default function JoinUs() {
                   </span>
                 </div>
                 <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
-                  {ar ? 'انضم كمزود مستلزمات' : 'Join as Supplier'}
+                  {ar ? 'انضم كمورد مستلزمات' : 'Join as Supplier'}
                 </h2>
                 <p className="text-white font-bold text-base leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
                   {ar
