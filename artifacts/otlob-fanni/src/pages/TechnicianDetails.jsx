@@ -378,7 +378,7 @@ export default function TechnicianDetails() {
             {/* Action buttons */}
             <div className="flex gap-2.5">
               <a
-                href={`https://wa.me/${tech.whatsapp}?text=${encodeURIComponent('مرحباً، وجدتك عبر منصة اطلب فني 🇱🇾\nهل أنت متاح؟')}`}
+                href={`https://wa.me/${tech.whatsapp}?text=${encodeURIComponent('السلام عليكم، وجدت خدمتك على منصة اطلب فني وأرغب في الاستفسار عن الخدمة.')}`}
                 target="_blank" rel="noreferrer"
                 onClick={() => track('whatsapp_click', id)}
                 className="flex-1 bg-[#25D366] text-white text-sm font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm">

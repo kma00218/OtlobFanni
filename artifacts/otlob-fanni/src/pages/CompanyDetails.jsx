@@ -335,7 +335,7 @@ export default function CompanyDetails() {
         {/* أزرار التواصل */}
         <div className="flex gap-2">
           <a
-            href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent('مرحباً، وجدتك عبر منصة اطلب فني 🇱🇾\nهل أنت متاح؟')}`}
+            href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent('السلام عليكم، وجدت شركتكم على منصة اطلب فني وأرغب في الاستفسار عن خدماتكم.')}`}
             target="_blank"
             rel="noreferrer"
             className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
