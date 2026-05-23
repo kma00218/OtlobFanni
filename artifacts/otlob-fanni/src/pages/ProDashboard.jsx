@@ -97,27 +97,9 @@ export default function ProDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 px-4 pt-6 pb-10">
-        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 px-1">أدوات العمل</p>
+      <div className="flex-1 px-4 pt-6 pb-10 space-y-4">
 
-        {/* 2×2 grid — soon tools */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          {TOOLS.map(tool => (
-            <button key={tool.id} type="button" onClick={tool.onClick}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col items-center gap-3 cursor-pointer select-none"
-              style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0.05)' }}>
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${tool.bg}`}>
-                {tool.icon}
-              </div>
-              <div className="text-center">
-                <p className="font-bold text-[#071B33] text-sm leading-tight">{tool.labelAr}</p>
-                <p className="text-xs text-[#FF7900] font-semibold mt-0.5">قريباً</p>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* My Profile — wide active card */}
+        {/* My Profile — active, at the top */}
         <button type="button" onClick={() => navigate('/pro/profile')}
           className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5 flex items-center gap-5 cursor-pointer select-none active:scale-[0.98] transition-transform"
           style={{ WebkitTapHighlightColor: 'rgba(0,0,0,0.05)' }}>
@@ -130,6 +112,32 @@ export default function ProDashboard() {
           </div>
           <ChevronLeft className="w-5 h-5 text-slate-300 flex-shrink-0" />
         </button>
+
+        {/* Coming soon banner */}
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-center gap-3">
+          <span className="text-2xl">🚧</span>
+          <div>
+            <p className="text-amber-800 font-extrabold text-sm">قريباً — أدوات إضافية</p>
+            <p className="text-amber-700 text-xs mt-0.5">الأدوات التالية ستكون متاحة قريباً لمشتركي الباقة المهنية</p>
+          </div>
+        </div>
+
+        {/* 2×2 grid — soon tools */}
+        <div className="grid grid-cols-2 gap-3">
+          {TOOLS.map(tool => (
+            <div key={tool.id}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col items-center gap-3 opacity-50 select-none">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${tool.bg}`}>
+                {tool.icon}
+              </div>
+              <div className="text-center">
+                <p className="font-bold text-[#071B33] text-sm leading-tight">{tool.labelAr}</p>
+                <p className="text-xs text-slate-400 font-semibold mt-0.5">قريباً</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
 
     </div>
