@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
-import { Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft, Receipt } from 'lucide-react'
+import { Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft, Receipt, ArrowRight } from 'lucide-react'
 
 const TYPE_LABEL = {
   technician: 'فني',
@@ -71,6 +71,10 @@ export default function ProDashboard() {
     <div className="min-h-[100dvh] bg-[#F2F2F7] flex flex-col max-w-[480px] mx-auto" dir="rtl">
 
       <div className="bg-[#071B33] px-5 pt-14 pb-8">
+        <button onClick={() => navigate('/more')} className="flex items-center gap-1.5 text-white/60 text-sm mb-5 active:opacity-70">
+          <ArrowRight className="w-4 h-4" />
+          العودة
+        </button>
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-[#FF7900] flex items-center justify-center flex-shrink-0">
