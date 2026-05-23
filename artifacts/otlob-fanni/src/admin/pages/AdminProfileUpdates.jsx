@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, User, Building2, Package } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, ChevronDown, ChevronUp, User, Building2, Package, Lightbulb } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
+import { categories, sections } from '../../data/services'
 
 const TYPE_LABEL = { technician: 'فني', company: 'شركة', supplier: 'مورد مستلزمات' }
 const TYPE_ICON  = { technician: User, company: Building2, supplier: Package }
@@ -18,11 +19,70 @@ const STATUS_LABELS = {
   cancelled: 'ملغي',
 }
 
-function ChangeRow({ label, value }) {
+// Helper: get Arabic category name from ID
+const getCatName = (id) => categories.find(c => String(c.id) === String(id))?.nameAr || String(id)
+const getSecName = (id) => sections.find(s => s.id === id)?.nameAr || id
+
+// ── Change Row ────────────────────────────────────────────────────────────────
+function ChangeRow({ label, value, type }) {
   if (value === undefined || value === null || value === '') return null
+
+  // suggestedSpecialties: array of { sectionId, name }
+  if (type === 'suggestedSpecialties') {
+    if (!Array.isArray(value) || value.length === 0) return null
+    return (
+      <div className="py-2.5 border-b border-slate-100 last:border-0">
+        <div className="flex items-center gap-1.5 mb-2">
+          <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">{label}</p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {value.map((item, i) => (
+            <span key={i} className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg font-semibold">
+              {item.sectionId && item.sectionId !== 'new_department'
+                ? `${getSecName(item.sectionId)}: ${item.name}`
+                : `قسم جديد: ${item.name}`}
+            </span>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Array of category IDs (extraSpecialties)
+  if (type === 'categoryIds' && Array.isArray(value)) {
+    if (value.length === 0) return null
+    return (
+      <div className="py-2.5 border-b border-slate-100 last:border-0">
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-2">{label}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {value.map((id, i) => (
+            <span key={i} className="text-xs bg-[#FF7900]/10 text-[#FF7900] px-2.5 py-1 rounded-lg font-bold">
+              {getCatName(id)}
+            </span>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Category ID (single)
+  if (type === 'categoryId') {
+    return (
+      <div className="py-2.5 border-b border-slate-100 last:border-0">
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1">{label}</p>
+        <span className="inline-flex text-sm font-black text-white px-3 py-1 rounded-lg"
+          style={{ background: 'linear-gradient(135deg,#FF7900,#c45e00)' }}>
+          {getCatName(value)}
+        </span>
+      </div>
+    )
+  }
+
+  // Generic array
   if (Array.isArray(value)) {
     if (value.length === 0) return null
-    const isImages = typeof value[0] === 'string' && value[0].includes('/')
+    const isImages = typeof value[0] === 'string' && (value[0].includes('/') || value[0].startsWith('uploads/'))
     return (
       <div className="py-2.5 border-b border-slate-100 last:border-0">
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-2">{label}</p>
@@ -35,43 +95,49 @@ function ChangeRow({ label, value }) {
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {value.map((v, i) => (
-              <span key={i} className="text-xs bg-[#FF7900]/10 text-[#FF7900] px-2 py-1 rounded-lg font-medium">{v}</span>
+              <span key={i} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg font-medium">{String(v)}</span>
             ))}
           </div>
         )}
       </div>
     )
   }
+
+  // Image path
   const isImagePath = typeof value === 'string' && (value.startsWith('uploads/') || value.includes('/o/'))
   return (
     <div className="py-2.5 border-b border-slate-100 last:border-0">
       <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1">{label}</p>
       {isImagePath
         ? <img src={getFileUrl(value)} alt="" className="w-20 h-20 rounded-xl object-cover border border-slate-200" />
-        : <p className="text-sm text-[#071B33] font-medium">{String(value)}</p>
-      }
+        : <p className="text-sm text-[#071B33] font-medium">{String(value)}</p>}
     </div>
   )
 }
 
-const CHANGE_LABELS = {
-  nameAr:           'الاسم (عربي)',
-  nameEn:           'الاسم (إنجليزي)',
-  descriptionAr:    'الوصف',
-  descriptionEn:    'الوصف (إنجليزي)',
-  profilePhoto:     'صورة الملف الشخصي',
-  companyLogo:      'شعار الشركة',
-  logo:             'الشعار',
-  workImages:       'صور الأعمال',
-  shopImages:       'صور المحل',
-  categoryId:       'التخصص',
-  specialty:        'التخصص',
-  supplyType:       'نوع المستلزمات',
-  companyName:      'اسم الشركة',
-  businessName:     'اسم النشاط',
-  description:      'الوصف',
-  extraSpecialties: 'تخصصات إضافية',
+// Field config: label + how to render
+const FIELD_CONFIG = {
+  nameAr:               { label: 'الاسم (عربي)' },
+  nameEn:               { label: 'الاسم (إنجليزي)' },
+  descriptionAr:        { label: 'الوصف' },
+  descriptionEn:        { label: 'الوصف (إنجليزي)' },
+  description:          { label: 'الوصف' },
+  profilePhoto:         { label: 'صورة الملف الشخصي' },
+  companyLogo:          { label: 'شعار الشركة' },
+  logo:                 { label: 'الشعار' },
+  workImages:           { label: 'صور الأعمال' },
+  shopImages:           { label: 'صور المحل' },
+  categoryId:           { label: 'التخصص الرئيسي',  type: 'categoryId' },
+  specialty:            { label: 'التخصص الرئيسي',  type: 'categoryId' },
+  extraSpecialties:     { label: 'تخصصات إضافية',   type: 'categoryIds' },
+  suggestedSpecialties: { label: 'مقترحات تخصصات',  type: 'suggestedSpecialties' },
+  supplyType:           { label: 'نوع المستلزمات' },
+  companyName:          { label: 'اسم الشركة' },
+  businessName:         { label: 'اسم النشاط' },
 }
+
+// Keys to always hide from the changes display (metadata only)
+const HIDDEN_KEYS = new Set(['otherSpecialty'])
 
 function RequestCard({ req, onReview }) {
   const [expanded, setExpanded] = useState(false)
@@ -81,7 +147,12 @@ function RequestCard({ req, onReview }) {
 
   const Icon = TYPE_ICON[req.entityType] || User
   const changes = req.changes || {}
-  const changeKeys = Object.keys(changes).filter(k => changes[k] !== undefined && changes[k] !== null)
+  const changeKeys = Object.keys(changes).filter(k =>
+    !HIDDEN_KEYS.has(k) &&
+    changes[k] !== undefined &&
+    changes[k] !== null &&
+    !(Array.isArray(changes[k]) && changes[k].length === 0)
+  )
 
   const handleAction = async (action) => {
     setLoading(true)
@@ -95,12 +166,17 @@ function RequestCard({ req, onReview }) {
     }
   }
 
+  // Primary specialty for display
+  const primaryCatId = changes.categoryId || changes.specialty
+  const primaryCatName = primaryCatId ? getCatName(primaryCatId) : null
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       {/* Card header */}
       <div className="px-4 py-4 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#071B33]/8 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-5 h-5 text-[#071B33]" />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: req.entityType === 'technician' ? 'rgba(255,121,0,0.1)' : req.entityType === 'company' ? 'rgba(30,64,175,0.1)' : 'rgba(16,185,129,0.1)' }}>
+          <Icon className="w-5 h-5" style={{ color: req.entityType === 'technician' ? '#FF7900' : req.entityType === 'company' ? '#1E40AF' : '#10B981' }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -111,10 +187,19 @@ function RequestCard({ req, onReview }) {
               {STATUS_LABELS[req.status] || req.status}
             </span>
           </div>
-          <p className="text-sm font-bold text-[#071B33] mt-1 truncate">ID: {req.entityId}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{changeKeys.length} تعديل · {new Date(req.createdAt).toLocaleDateString('ar-LY')}</p>
+          <p className="text-sm font-bold text-[#071B33] mt-1 truncate">
+            {changes.nameAr || changes.companyName || changes.businessName || `ID: ${req.entityId}`}
+          </p>
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+            {primaryCatName && (
+              <span className="text-[11px] font-bold text-[#FF7900]">★ {primaryCatName}</span>
+            )}
+            <span className="text-xs text-slate-400">
+              {changeKeys.length} تعديل · {new Date(req.createdAt).toLocaleDateString('ar-LY')}
+            </span>
+          </div>
         </div>
-        <button onClick={() => setExpanded(v => !v)} className="text-slate-400 hover:text-slate-600 transition-colors">
+        <button onClick={() => setExpanded(v => !v)} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
           {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </button>
       </div>
@@ -123,12 +208,20 @@ function RequestCard({ req, onReview }) {
         <div className="border-t border-slate-100">
           {/* Changes */}
           <div className="px-4 py-3">
-            <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">التعديلات المطلوبة</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">التعديلات المطلوبة</p>
             {changeKeys.length === 0
-              ? <p className="text-sm text-slate-400 text-center py-2">لا توجد تعديلات</p>
-              : changeKeys.map(k => (
-                <ChangeRow key={k} label={CHANGE_LABELS[k] || k} value={changes[k]} />
-              ))
+              ? <p className="text-sm text-slate-400 text-center py-3">لا توجد تعديلات</p>
+              : changeKeys.map(k => {
+                  const cfg = FIELD_CONFIG[k] || { label: k }
+                  return (
+                    <ChangeRow
+                      key={k}
+                      label={cfg.label}
+                      value={changes[k]}
+                      type={cfg.type}
+                    />
+                  )
+                })
             }
           </div>
 
@@ -143,7 +236,6 @@ function RequestCard({ req, onReview }) {
           {/* Actions (only for pending) */}
           {req.status === 'pending' && (
             <div className="px-4 pb-4 space-y-3">
-              {/* Optional note */}
               {noteOpen ? (
                 <textarea
                   value={note}
@@ -154,7 +246,7 @@ function RequestCard({ req, onReview }) {
                   className="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 text-sm outline-none focus:border-[#FF7900] resize-none transition-all"
                 />
               ) : (
-                <button onClick={() => setNoteOpen(true)} className="text-xs text-slate-400 hover:text-slate-600 transition-colors font-medium">
+                <button onClick={() => setNoteOpen(true)} className="text-xs text-slate-400 hover:text-slate-600 transition-colors font-semibold">
                   + إضافة ملاحظة للمستخدم
                 </button>
               )}
@@ -162,20 +254,26 @@ function RequestCard({ req, onReview }) {
                 <button
                   onClick={() => handleAction('approve')}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-emerald-500 text-white active:scale-95 transition-all disabled:opacity-60"
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-emerald-500 text-white active:scale-95 transition-all disabled:opacity-60 shadow-sm"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  قبول
+                  قبول وتطبيق
                 </button>
                 <button
                   onClick={() => handleAction('reject')}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-red-500 text-white active:scale-95 transition-all disabled:opacity-60"
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-red-500 text-white active:scale-95 transition-all disabled:opacity-60 shadow-sm"
                 >
                   <XCircle className="w-4 h-4" />
                   رفض
                 </button>
               </div>
+              {loading && (
+                <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-[#FF7900] border-t-transparent animate-spin" />
+                  جارٍ المعالجة…
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -222,7 +320,9 @@ export default function AdminProfileUpdates() {
             </span>
           )}
         </div>
-        <p className="text-slate-500 text-sm mt-1">مراجعة طلبات التعديل المقدَّمة من الفنيين والشركات والموردين</p>
+        <p className="text-slate-500 text-sm mt-1 font-medium">
+          عند الضغط على "قبول وتطبيق" تُطبَّق التعديلات فوراً على ملف الفني / الشركة / المورد
+        </p>
       </div>
 
       {/* Filters */}
