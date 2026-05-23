@@ -134,9 +134,6 @@ const FIELD_CONFIG = {
   supplyType:           { label: 'نوع المستلزمات' },
   companyName:          { label: 'اسم الشركة' },
   businessName:         { label: 'اسم النشاط' },
-  cityId:               { label: 'المدينة',           type: 'cityId' },
-  city:                 { label: 'المدينة' },
-  area:                 { label: 'الحي / المنطقة' },
 }
 
 // Keys to always hide from the changes display (metadata only)
