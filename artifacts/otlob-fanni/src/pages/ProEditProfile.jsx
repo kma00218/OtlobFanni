@@ -2,21 +2,24 @@ import { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'wouter'
 import {
   ArrowRight, Camera, X, Plus, CheckCircle, AlertCircle,
-  Send, ImagePlus, User, Building2, Package, ChevronDown, ChevronUp,
+  Send, ImagePlus, User, Building2, Package, ChevronDown,
+  Star, Sparkles,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../lib/api'
+import { sections, categories } from '../data/services'
 import { SUPPLY_TYPES } from '../data/suppliers'
 
-const SECTION_NAMES = {
-  home_services:     'خدمات منزلية',
-  car_services:      'خدمات سيارات',
-  construction:      'بناء وتشطيب',
-  tech_security:     'تقنية وأمن',
-  moving_general:    'نقل وخدمات عامة',
-  gardens_pools:     'حدائق ومسابح',
-  energy_generators: 'الطاقة والمولدات',
-  business_services: 'الخدمات التجارية',
-  more_services:     'المزيد من الخدمات',
+// ── Section gradients (match JoinCompany) ────────────────────────────────────
+const SECTION_GRADIENT = {
+  home_services:     ['#FF7900', '#e85e00'],
+  car_services:      ['#1E40AF', '#0f2472'],
+  construction:      ['#D97706', '#b35500'],
+  tech_security:     ['#6366F1', '#4338CA'],
+  moving_general:    ['#8B5CF6', '#6D28D9'],
+  gardens_pools:     ['#10B981', '#047857'],
+  energy_generators: ['#F59E0B', '#D97706'],
+  business_services: ['#0EA5E9', '#0369A1'],
+  more_services:     ['#6B7280', '#374151'],
 }
 
 function getCurrentValues(profile, entityType) {
@@ -29,7 +32,6 @@ function getCurrentValues(profile, entityType) {
     workImages:       profile.workImages       || profile.work_images       || [],
     categoryId:       profile.categoryId       || profile.category_id       || '',
     extraSpecialties: profile.extraSpecialties || profile.extra_specialties || [],
-    otherSpecialty:   profile.otherSpecialty   || '',
   }
   if (entityType === 'company') return {
     companyName:      profile.companyName      || profile.company_name      || '',
@@ -38,7 +40,6 @@ function getCurrentValues(profile, entityType) {
     workImages:       profile.workImages       || profile.work_images       || [],
     specialty:        profile.specialty        || '',
     extraSpecialties: profile.extraSpecialties || profile.extra_specialties || [],
-    otherSpecialty:   profile.otherSpecialty   || '',
   }
   if (entityType === 'supplier') return {
     businessName:     profile.businessName     || profile.business_name     || '',
@@ -65,11 +66,10 @@ function AvatarUploader({ value, onChange }) {
     <div className="flex flex-col items-center gap-2">
       <div onClick={() => !uploading && ref.current?.click()} className="relative w-28 h-28 rounded-full cursor-pointer">
         <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(135deg, #FF7900, #ff9a40)', padding: 3 }}>
-          <div className="w-full h-full rounded-full overflow-hidden bg-[#F2F2F7]">
+          <div className="w-full h-full rounded-full overflow-hidden bg-slate-100">
             {value
               ? <img src={getFileUrl(value)} alt="" className="w-full h-full object-cover" />
-              : <div className="w-full h-full flex items-center justify-center"><User className="w-10 h-10 text-slate-300" /></div>
-            }
+              : <div className="w-full h-full flex items-center justify-center"><User className="w-10 h-10 text-slate-300" /></div>}
           </div>
         </div>
         <div className="absolute bottom-0 left-0 w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-white"
@@ -86,7 +86,7 @@ function AvatarUploader({ value, onChange }) {
         )}
       </div>
       <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
-      <p className="text-xs text-slate-400 font-medium">اضغط لتغيير الصورة</p>
+      <p className="text-xs text-slate-400 font-semibold">اضغط لتغيير الصورة</p>
     </div>
   )
 }
@@ -108,10 +108,12 @@ function WorkImagesUploader({ value = [], onChange, max = 5 }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <ImagePlus className="w-4 h-4 text-[#FF7900]" />
+          <div className="w-7 h-7 rounded-lg bg-[#FF7900]/10 flex items-center justify-center">
+            <ImagePlus className="w-3.5 h-3.5 text-[#FF7900]" />
+          </div>
           <span className="text-sm font-bold text-[#071B33]">صور الأعمال</span>
         </div>
-        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">{value.length}/{max}</span>
+        <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">{value.length}/{max}</span>
       </div>
       <div className="grid grid-cols-3 gap-2">
         {value.map((path, i) => (
@@ -129,7 +131,7 @@ function WorkImagesUploader({ value = [], onChange, max = 5 }) {
             className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-1.5 disabled:opacity-50 bg-slate-50 hover:bg-slate-100 hover:border-[#FF7900]/40 transition-all">
             {uploading
               ? <div className="w-5 h-5 rounded-full border-2 border-[#FF7900] border-t-transparent animate-spin" />
-              : <><Plus className="w-5 h-5 text-slate-400" /><span className="text-[10px] text-slate-400 font-semibold">إضافة</span></>}
+              : <><Plus className="w-5 h-5 text-slate-400" /><span className="text-[10px] text-slate-400 font-bold">إضافة</span></>}
           </button>
         )}
       </div>
@@ -138,143 +140,163 @@ function WorkImagesUploader({ value = [], onChange, max = 5 }) {
   )
 }
 
-// ── Grouped Select (main specialty) ──────────────────────────────────────────
-function GroupedSelect({ value, onChange, categories, placeholder }) {
-  // Group by sectionId
-  const groups = {}
-  categories.forEach(c => {
-    const sec = c.sectionId || 'other'
-    if (!groups[sec]) groups[sec] = []
-    groups[sec].push(c)
-  })
-  const inputCls = "w-full px-4 py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-[#FF7900] outline-none text-sm text-[#071B33] transition-all font-medium cursor-pointer"
-  return (
-    <select value={value} onChange={e => onChange(e.target.value)} className={inputCls}>
-      <option value="">{placeholder}</option>
-      {Object.entries(groups).map(([secId, cats]) => (
-        <optgroup key={secId} label={`── ${SECTION_NAMES[secId] || secId} ──`}>
-          {cats.map(c => <option key={c.id} value={String(c.id)}>{c.nameAr}</option>)}
-        </optgroup>
-      ))}
-    </select>
-  )
-}
-
-// ── Extra Specialties Multi-Select ────────────────────────────────────────────
-function ExtraSpecialtiesPicker({ value = [], onChange, categories, mainCategoryId }) {
-  const [open, setOpen] = useState(false)
-
-  const toggle = (id) => {
-    const sid = String(id)
-    if (value.includes(sid)) onChange(value.filter(v => v !== sid))
-    else onChange([...value, sid])
-  }
-
-  // Group by section, exclude main category
-  const groups = {}
-  categories
-    .filter(c => String(c.id) !== String(mainCategoryId))
-    .forEach(c => {
-      const sec = c.sectionId || 'other'
-      if (!groups[sec]) groups[sec] = []
-      groups[sec].push(c)
-    })
-
-  const selectedNames = value
-    .map(id => categories.find(c => String(c.id) === String(id))?.nameAr)
-    .filter(Boolean)
+// ── Specialty Accordion Picker ────────────────────────────────────────────────
+function SpecialtyAccordion({ selectedIds, onToggle, suggestedSpecialties, onAddSuggested, onRemoveSuggested, newDeptSuggestions, onAddNewDept, onRemoveNewDept, chipInputValues, onChipInput }) {
+  const [expandedSections, setExpandedSections] = useState([])
+  const toggleSection = id => setExpandedSections(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id])
 
   return (
-    <div>
-      {/* Trigger */}
-      <button type="button" onClick={() => setOpen(v => !v)}
-        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 text-sm text-right flex items-center justify-between transition-all hover:border-[#FF7900]/40"
-        style={{ borderColor: open ? '#FF7900' : undefined, background: open ? 'white' : undefined }}>
-        <span className={value.length ? 'text-[#071B33] font-medium' : 'text-slate-300'}>
-          {value.length ? `${value.length} تخصص مختار` : 'اختر تخصصات إضافية'}
-        </span>
-        {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-      </button>
+    <div className="rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100 shadow-sm">
+      {sections.map(section => {
+        const isMore = section.id === 'more_services'
+        const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more' && c.isActive)
+        const selectedCount = isMore ? newDeptSuggestions.length : sectionCats.filter(c => selectedIds.includes(c.id)).length
+        const sugCount = (suggestedSpecialties[section.id] || []).length
+        const totalCount = selectedCount + sugCount
+        const isOpen = expandedSections.includes(section.id)
+        const [c1, c2] = SECTION_GRADIENT[section.id] || ['#6B7280', '#374151']
 
-      {/* Selected chips */}
-      {selectedNames.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-2">
-          {selectedNames.map((name, i) => (
-            <span key={i}
-              className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-xl"
-              style={{ background: '#FF7900/12', color: '#c45e00', backgroundColor: 'rgba(255,121,0,0.12)' }}>
-              {name}
-              <button type="button" onClick={() => toggle(value[i])}><X className="w-3 h-3" /></button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Dropdown */}
-      {open && (
-        <div className="mt-2 rounded-2xl border-2 border-[#FF7900]/20 bg-white shadow-lg overflow-hidden max-h-72 overflow-y-auto">
-          {Object.entries(groups).map(([secId, cats]) => (
-            <div key={secId}>
-              <div className="px-4 py-2 bg-slate-50 border-b border-slate-100">
-                <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                  {SECTION_NAMES[secId] || secId}
-                </span>
+        return (
+          <div key={section.id}>
+            {/* Section header */}
+            <button type="button" onClick={() => toggleSection(section.id)}
+              className="w-full flex items-center gap-3 px-4 py-3.5 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors text-right">
+              <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center shadow-sm"
+                style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                <img src={`/icons/services/${isMore ? 'more' : section.id}.svg`} alt=""
+                  style={{ width: 18, height: 18 }} className="object-contain brightness-0 invert"
+                  onError={e => { e.currentTarget.style.display = 'none' }} />
               </div>
-              {cats.map(c => {
-                const sid = String(c.id)
-                const selected = value.includes(sid)
-                return (
-                  <button key={sid} type="button" onClick={() => toggle(sid)}
-                    className="w-full flex items-center justify-between px-4 py-3 text-right border-b border-slate-50 last:border-0 transition-colors"
-                    style={{ background: selected ? 'rgba(255,121,0,0.06)' : 'white' }}>
-                    <span className={`text-sm font-medium ${selected ? 'text-[#FF7900]' : 'text-[#071B33]'}`}>{c.nameAr}</span>
-                    {selected && <CheckCircle className="w-4 h-4 text-[#FF7900] flex-shrink-0" />}
-                  </button>
-                )
-              })}
-            </div>
-          ))}
-        </div>
-      )}
+              <span className="flex-1 font-bold text-[#071B33] text-sm text-right">{section.nameAr}</span>
+              {totalCount > 0 && (
+                <span className="text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[22px] text-center"
+                  style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                  {totalCount}
+                </span>
+              )}
+              <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Section body */}
+            {isOpen && (
+              <div className="border-t border-slate-100">
+                {isMore ? (
+                  /* New department suggestions */
+                  <div className="px-4 py-3 bg-slate-50 space-y-2.5">
+                    <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                      💡 اقترح قسماً أو تخصصاً غير موجود — اضغط + أو Enter لإضافته
+                    </p>
+                    {newDeptSuggestions.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {newDeptSuggestions.map((name, i) => (
+                          <span key={i} className="flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold px-2.5 py-1 rounded-full">
+                            {name}
+                            <button type="button" onClick={() => onRemoveNewDept(i)}><X className="w-3 h-3" /></button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <input type="text"
+                        className="flex-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-[#071B33] outline-none focus:border-[#FF7900] font-medium placeholder:text-slate-300"
+                        value={chipInputValues['__new_dept__'] || ''}
+                        onChange={e => onChipInput('__new_dept__', e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onAddNewDept() } }}
+                        placeholder="مثال: أنظمة الطاقة الشمسية" />
+                      <button type="button" onClick={onAddNewDept}
+                        className="w-9 h-9 flex-shrink-0 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-base hover:bg-amber-600 transition-colors">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Categories list */}
+                    <div className="divide-y divide-slate-50">
+                      {sectionCats.map(c => {
+                        const checked = selectedIds.includes(c.id)
+                        const isPrimary = selectedIds[0] === c.id
+                        return (
+                          <label key={c.id}
+                            className="flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors"
+                            style={{ background: checked ? `${c1}08` : 'white' }}>
+                            <input type="checkbox" className="w-4 h-4 accent-[#FF7900] flex-shrink-0"
+                              checked={checked} onChange={() => onToggle(c.id)} />
+                            <span className={`flex-1 text-sm font-medium ${checked ? 'text-[#071B33] font-bold' : 'text-slate-600'}`}>
+                              {c.nameAr}
+                            </span>
+                            {isPrimary && (
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
+                                style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                                رئيسي
+                              </span>
+                            )}
+                          </label>
+                        )
+                      })}
+                    </div>
+
+                    {/* Per-section suggestion input */}
+                    <div className="px-4 py-3 bg-orange-50/50 border-t border-dashed border-orange-100 space-y-2">
+                      <p className="text-[11px] text-slate-400 font-semibold">
+                        💡 تخصص غير مذكور في هذا القسم؟ أضفه هنا
+                      </p>
+                      {(suggestedSpecialties[section.id] || []).length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {(suggestedSpecialties[section.id] || []).map((name, i) => (
+                            <span key={i} className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border"
+                              style={{ background: `${c1}15`, color: c1, borderColor: `${c1}30` }}>
+                              {name}
+                              <button type="button" onClick={() => onRemoveSuggested(section.id, i)}><X className="w-3 h-3" /></button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <input type="text"
+                          className="flex-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-[#071B33] outline-none focus:border-[#FF7900] font-medium placeholder:text-slate-300"
+                          value={chipInputValues[section.id] || ''}
+                          onChange={e => onChipInput(section.id, e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onAddSuggested(section.id) } }}
+                          placeholder="مثال: صيانة خزانات المياه" />
+                        <button type="button" onClick={() => onAddSuggested(section.id)}
+                          className="w-9 h-9 flex-shrink-0 rounded-xl text-white flex items-center justify-center font-bold text-base transition-colors"
+                          style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
 
-// ── Field ─────────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const inputCls = "w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#FF7900] outline-none text-sm text-[#071B33] transition-all placeholder:text-slate-300 font-medium"
+
 function Field({ label, hint, children }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between">
         <label className="text-sm font-bold text-[#071B33]">{label}</label>
-        {hint && <span className="text-[11px] text-slate-400">{hint}</span>}
+        {hint && <span className="text-[11px] text-slate-400 font-semibold">{hint}</span>}
       </div>
       {children}
     </div>
   )
 }
 
-const inputCls = "w-full px-4 py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:bg-white focus:border-[#FF7900] outline-none text-sm text-[#071B33] transition-all placeholder:text-slate-300 font-medium"
-
-function TextInput({ value, onChange, placeholder, dir = 'rtl', rows }) {
-  return rows
-    ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} dir={dir} rows={rows} className={inputCls + ' resize-none leading-relaxed'} />
-    : <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} dir={dir} className={inputCls} />
-}
-
-function SelectInput({ value, onChange, options, placeholder }) {
+function CardHeader({ icon: Icon, gradient, title }) {
   return (
-    <select value={value} onChange={e => onChange(e.target.value)} className={inputCls + ' cursor-pointer'}>
-      <option value="">{placeholder}</option>
-      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-    </select>
-  )
-}
-
-function SectionHeader({ icon: Icon, title }) {
-  return (
-    <div className="flex items-center gap-2.5 pb-4 border-b border-slate-100">
-      <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-        style={{ background: 'linear-gradient(135deg, #FF7900, #ff9a40)' }}>
+    <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
+        style={{ background: gradient || 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
         <Icon className="w-4 h-4 text-white" />
       </div>
       <span className="font-black text-[#071B33] text-sm">{title}</span>
@@ -287,12 +309,32 @@ export default function ProEditProfile() {
   const [, navigate] = useLocation()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [categories, setCategories] = useState([])
   const [form, setForm] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
 
+  // Specialty picker state
+  const [selectedCats, setSelectedCats] = useState([])           // first = primary
+  const [suggestedSpecs, setSuggestedSpecs] = useState({})       // { sectionId: [name, …] }
+  const [newDeptSuggestions, setNewDeptSuggestions] = useState([])
+  const [chipInputs, setChipInputs] = useState({})
+
   const set = key => val => setForm(f => ({ ...f, [key]: val }))
+
+  const toggleCat = id => setSelectedCats(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id])
+  const addSuggested = sectionId => {
+    const val = (chipInputs[sectionId] || '').trim(); if (!val) return
+    setSuggestedSpecs(p => ({ ...p, [sectionId]: [...(p[sectionId] || []), val] }))
+    setChipInputs(p => ({ ...p, [sectionId]: '' }))
+  }
+  const removeSuggested = (sectionId, idx) =>
+    setSuggestedSpecs(p => ({ ...p, [sectionId]: (p[sectionId] || []).filter((_, i) => i !== idx) }))
+  const addNewDept = () => {
+    const val = (chipInputs['__new_dept__'] || '').trim(); if (!val) return
+    setNewDeptSuggestions(p => [...p, val])
+    setChipInputs(p => ({ ...p, '__new_dept__': '' }))
+  }
+  const removeNewDept = idx => setNewDeptSuggestions(p => p.filter((_, i) => i !== idx))
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -300,13 +342,20 @@ export default function ProEditProfile() {
     try {
       const s = JSON.parse(raw)
       setSession(s)
-      Promise.all([
-        api.pro.getProfile(s.entityType, s.entityId),
-        fetch('/api/categories').then(r => r.json()).catch(() => []),
-      ]).then(([prof, cats]) => {
-        setCategories(cats.filter(c => c.isActive))
-        setForm(getCurrentValues(prof, s.entityType))
-      }).catch(() => {}).finally(() => setLoading(false))
+      api.pro.getProfile(s.entityType, s.entityId)
+        .then(prof => {
+          const vals = getCurrentValues(prof, s.entityType)
+          setForm(vals)
+          // pre-populate specialty picker
+          if (s.entityType !== 'supplier') {
+            const primary = vals.categoryId || vals.specialty
+            const extras  = vals.extraSpecialties || []
+            const all = [primary, ...extras].filter(Boolean)
+            setSelectedCats(all)
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false))
     } catch {
       localStorage.removeItem('pro_session')
       navigate('/pro-login')
@@ -317,8 +366,22 @@ export default function ProEditProfile() {
     e?.preventDefault()
     if (!session) return
     setSubmitting(true); setResult(null)
+
+    const type = session.entityType
+    const payload = { ...form }
+
+    if (type !== 'supplier') {
+      payload[type === 'technician' ? 'categoryId' : 'specialty'] = selectedCats[0] || ''
+      payload.extraSpecialties = selectedCats.slice(1)
+      payload.suggestedSpecialties = [
+        ...Object.entries(suggestedSpecs)
+          .flatMap(([sId, names]) => names.filter(n => n.trim()).map(name => ({ sectionId: sId, name }))),
+        ...newDeptSuggestions.filter(n => n.trim()).map(name => ({ sectionId: 'new_department', name })),
+      ]
+    }
+
     try {
-      await api.pro.requestUpdate(session.entityType, session.entityId, form)
+      await api.pro.requestUpdate(type, session.entityId, payload)
       setResult({ type: 'success', text: 'تم إرسال طلب التعديل! ستُطبَّق التعديلات بعد مراجعة الإدارة.' })
       setTimeout(() => navigate('/pro/profile'), 2200)
     } catch (err) {
@@ -327,41 +390,51 @@ export default function ProEditProfile() {
   }
 
   if (!session) return null
-
   const type = session.entityType
   const supplyOptions = SUPPLY_TYPES.map(t => ({ value: t.id, label: `${t.emoji} ${t.nameAr}` }))
   const EntityIcon = type === 'technician' ? User : type === 'company' ? Building2 : Package
-  const sectionTitle = type === 'technician' ? 'بيانات الفني' : type === 'company' ? 'بيانات الشركة' : 'بيانات المورد'
-  const mainCatKey = type === 'company' ? 'specialty' : 'categoryId'
+  const entityLabel = type === 'technician' ? 'بيانات الفني' : type === 'company' ? 'بيانات الشركة' : 'بيانات المورد'
+  const totalSpecCount = selectedCats.length + newDeptSuggestions.length +
+    Object.values(suggestedSpecs).reduce((a, arr) => a + arr.length, 0)
 
   return (
     <div className="min-h-[100dvh] flex flex-col max-w-[480px] mx-auto" style={{ background: '#F0F2F5' }} dir="rtl">
 
-      {/* Header */}
-      <div style={{ background: 'linear-gradient(160deg, #071B33 0%, #0d2a4a 100%)' }} className="px-5 pt-14 pb-8 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #FF7900 0%, transparent 60%)' }} />
-        <button onClick={() => navigate('/pro/profile')} className="flex items-center gap-1.5 text-white/50 text-sm mb-6 active:opacity-70 relative">
+      {/* ── Header ── */}
+      <div style={{ background: 'linear-gradient(160deg, #071B33 0%, #0d2a4a 100%)' }}
+        className="px-5 pt-14 pb-8 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5"
+          style={{ backgroundImage: 'radial-gradient(circle at 15% 60%, #FF7900 0%, transparent 55%)' }} />
+        <button onClick={() => navigate('/pro/profile')}
+          className="flex items-center gap-1.5 text-white/50 text-sm mb-6 active:opacity-70 relative">
           <ArrowRight className="w-4 h-4" />
           العودة لملفي الشخصي
         </button>
         <h1 className="text-white font-black text-2xl relative">تعديل الملف الشخصي</h1>
-        <p className="text-white/40 text-sm mt-1 relative">ستُراجَع التعديلات من الإدارة قبل تطبيقها</p>
+        <p className="text-white/40 text-sm mt-1 relative font-medium">
+          ستُراجَع التعديلات من الإدارة قبل تطبيقها
+        </p>
       </div>
 
-      <div className="flex-1 px-4 pt-5 pb-32">
+      {/* ── Body ── */}
+      <div className="flex-1 px-4 pt-4 pb-36">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-10 h-10 rounded-full border-[3px] border-[#FF7900] border-t-transparent animate-spin" />
-            <p className="text-slate-400 text-sm font-medium">جارٍ التحميل…</p>
+            <p className="text-slate-400 text-sm font-semibold">جارٍ التحميل…</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* Main info card */}
+            {/* ── Card 1: Basic Info ── */}
             <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-              <div className="px-5 pt-6 pb-5" style={{ background: 'linear-gradient(160deg, #F8F9FC 0%, #ffffff 100%)' }}>
-                <SectionHeader icon={EntityIcon} title={sectionTitle} />
-                <div className="mt-5 flex justify-center">
+              {/* Avatar */}
+              <div className="px-5 pt-6 pb-5 bg-gradient-to-b from-slate-50 to-white">
+                <CardHeader icon={EntityIcon} title={entityLabel}
+                  gradient={type === 'technician' ? 'linear-gradient(135deg,#FF7900,#c45e00)'
+                    : type === 'company' ? 'linear-gradient(135deg,#1E40AF,#0f2472)'
+                    : 'linear-gradient(135deg,#10B981,#047857)'} />
+                <div className="flex justify-center">
                   <AvatarUploader
                     value={form.profilePhoto || form.companyLogo || form.logo}
                     onChange={set(type === 'technician' ? 'profilePhoto' : type === 'company' ? 'companyLogo' : 'logo')}
@@ -371,85 +444,117 @@ export default function ProEditProfile() {
 
               <div className="h-px bg-slate-100 mx-5" />
 
+              {/* Fields */}
               <div className="px-5 py-5 space-y-4">
-
-                {/* Technician */}
                 {type === 'technician' && <>
                   <Field label="الاسم بالعربي">
-                    <TextInput value={form.nameAr || ''} onChange={set('nameAr')} placeholder="محمد الصادق" />
+                    <input value={form.nameAr || ''} onChange={e => set('nameAr')(e.target.value)}
+                      placeholder="محمد الصادق" className={inputCls} />
                   </Field>
                   <Field label="الاسم بالإنجليزي" hint="اختياري">
-                    <TextInput value={form.nameEn || ''} onChange={set('nameEn')} placeholder="Mohammed Al-Sadeq" dir="ltr" />
+                    <input value={form.nameEn || ''} onChange={e => set('nameEn')(e.target.value)}
+                      placeholder="Mohammed Al-Sadeq" dir="ltr" className={inputCls} />
                   </Field>
                   <Field label="نبذة تعريفية" hint="اختياري">
-                    <TextInput value={form.descriptionAr || ''} onChange={set('descriptionAr')} placeholder="خبرة 10 سنوات في التمديدات…" rows={3} />
+                    <textarea value={form.descriptionAr || ''} onChange={e => set('descriptionAr')(e.target.value)}
+                      placeholder="خبرة 10 سنوات في التمديدات…" rows={3}
+                      className={inputCls + ' resize-none leading-relaxed'} />
                   </Field>
                 </>}
 
-                {/* Company */}
                 {type === 'company' && <>
                   <Field label="اسم الشركة">
-                    <TextInput value={form.companyName || ''} onChange={set('companyName')} placeholder="شركة الخدمات المتكاملة" />
+                    <input value={form.companyName || ''} onChange={e => set('companyName')(e.target.value)}
+                      placeholder="شركة الخدمات المتكاملة" className={inputCls} />
                   </Field>
                   <Field label="وصف الشركة" hint="اختياري">
-                    <TextInput value={form.description || ''} onChange={set('description')} placeholder="نحن شركة متخصصة في…" rows={3} />
+                    <textarea value={form.description || ''} onChange={e => set('description')(e.target.value)}
+                      placeholder="نحن شركة متخصصة في…" rows={3}
+                      className={inputCls + ' resize-none leading-relaxed'} />
                   </Field>
                 </>}
 
-                {/* Supplier */}
                 {type === 'supplier' && <>
                   <Field label="اسم المحل / النشاط التجاري">
-                    <TextInput value={form.businessName || ''} onChange={set('businessName')} placeholder="محل الأدوات الفنية" />
+                    <input value={form.businessName || ''} onChange={e => set('businessName')(e.target.value)}
+                      placeholder="محل الأدوات الفنية" className={inputCls} />
                   </Field>
                   <Field label="وصف النشاط" hint="اختياري">
-                    <TextInput value={form.description || ''} onChange={set('description')} placeholder="نوفر جميع مستلزمات…" rows={3} />
+                    <textarea value={form.description || ''} onChange={e => set('description')(e.target.value)}
+                      placeholder="نوفر جميع مستلزمات…" rows={3}
+                      className={inputCls + ' resize-none leading-relaxed'} />
                   </Field>
                   <Field label="نوع المستلزمات">
-                    <SelectInput value={form.supplyType || ''} onChange={set('supplyType')} options={supplyOptions} placeholder="اختر النوع" />
+                    <select value={form.supplyType || ''} onChange={e => set('supplyType')(e.target.value)}
+                      className={inputCls + ' cursor-pointer'}>
+                      <option value="">اختر النوع</option>
+                      {supplyOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
                   </Field>
                 </>}
               </div>
             </div>
 
-            {/* Specialties card — technician & company only */}
-            {(type === 'technician' || type === 'company') && (
-              <div className="bg-white rounded-3xl shadow-sm px-5 py-5 space-y-5">
-                <div className="flex items-center gap-2.5 pb-4 border-b border-slate-100">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #071B33, #1a3a5c)' }}>
-                    <span className="text-white text-xs font-black">★</span>
-                  </div>
-                  <span className="font-black text-[#071B33] text-sm">التخصصات</span>
+            {/* ── Card 2: Specialties (technician & company only) ── */}
+            {type !== 'supplier' && (
+              <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+                <div className="px-5 pt-5 pb-3">
+                  <CardHeader icon={Star} title="التخصصات"
+                    gradient="linear-gradient(135deg,#F59E0B,#D97706)" />
+
+                  {/* Summary row */}
+                  {totalSpecCount > 0 && (
+                    <div className="mb-3 flex flex-wrap gap-1.5">
+                      {selectedCats.slice(0, 1).map(id => {
+                        const cat = categories.find(c => c.id === id)
+                        return cat ? (
+                          <span key={id} className="inline-flex items-center gap-1 text-xs font-black px-3 py-1 rounded-full text-white"
+                            style={{ background: 'linear-gradient(135deg,#FF7900,#c45e00)' }}>
+                            ★ {cat.nameAr}
+                          </span>
+                        ) : null
+                      })}
+                      {selectedCats.slice(1).map(id => {
+                        const cat = categories.find(c => c.id === id)
+                        return cat ? (
+                          <span key={id} className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+                            style={{ background: 'rgba(255,121,0,0.1)', color: '#c45e00' }}>
+                            {cat.nameAr}
+                          </span>
+                        ) : null
+                      })}
+                    </div>
+                  )}
+
+                  {/* Hint */}
+                  <p className="text-[12px] text-slate-500 font-semibold leading-relaxed mb-3">
+                    افتح أي قسم واختر تخصصاتك — <span className="text-[#FF7900] font-black">أول اختيار يصبح التخصص الرئيسي</span> تلقائياً
+                  </p>
                 </div>
 
-                <Field label="التخصص الرئيسي">
-                  <GroupedSelect
-                    value={form[mainCatKey] || ''}
-                    onChange={set(mainCatKey)}
-                    categories={categories}
-                    placeholder="اختر التخصص الرئيسي"
+                <div className="px-4 pb-5">
+                  <SpecialtyAccordion
+                    selectedIds={selectedCats}
+                    onToggle={toggleCat}
+                    suggestedSpecialties={suggestedSpecs}
+                    onAddSuggested={addSuggested}
+                    onRemoveSuggested={removeSuggested}
+                    newDeptSuggestions={newDeptSuggestions}
+                    onAddNewDept={addNewDept}
+                    onRemoveNewDept={removeNewDept}
+                    chipInputValues={chipInputs}
+                    onChipInput={(k, v) => setChipInputs(p => ({ ...p, [k]: v }))}
                   />
-                </Field>
-
-                <Field label="تخصصات إضافية" hint="اختياري">
-                  <ExtraSpecialtiesPicker
-                    value={form.extraSpecialties || []}
-                    onChange={set('extraSpecialties')}
-                    categories={categories}
-                    mainCategoryId={form[mainCatKey]}
-                  />
-                </Field>
-
-                <Field label="تخصص آخر" hint="اكتب ما لا يظهر في القائمة">
-                  <TextInput
-                    value={form.otherSpecialty || ''}
-                    onChange={set('otherSpecialty')}
-                    placeholder="مثال: صيانة مكيفات تجارية، تمديدات صناعية…"
-                  />
-                </Field>
+                  {totalSpecCount === 0 && (
+                    <p className="text-xs text-slate-400 font-semibold mt-2 text-center">
+                      لم يتم اختيار أي تخصص بعد
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* Work images card */}
+            {/* ── Card 3: Work Images ── */}
             <div className="bg-white rounded-3xl shadow-sm px-5 py-5">
               <WorkImagesUploader
                 value={form.workImages || form.shopImages || []}
@@ -458,14 +563,19 @@ export default function ProEditProfile() {
               />
             </div>
 
-            {/* Result */}
+            {/* Result banner */}
             {result && (
-              <div className={`rounded-2xl px-4 py-4 flex gap-3 items-start ${result.type === 'success' ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
+              <div className={`rounded-2xl px-4 py-4 flex gap-3 items-start border ${
+                result.type === 'success'
+                  ? 'bg-emerald-50 border-emerald-200'
+                  : 'bg-red-50 border-red-200'
+              }`}>
                 {result.type === 'success'
                   ? <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  : <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                }
-                <p className={`text-sm font-semibold leading-relaxed ${result.type === 'success' ? 'text-emerald-800' : 'text-red-800'}`}>{result.text}</p>
+                  : <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />}
+                <p className={`text-sm font-semibold leading-relaxed ${
+                  result.type === 'success' ? 'text-emerald-800' : 'text-red-800'
+                }`}>{result.text}</p>
               </div>
             )}
 
@@ -473,17 +583,17 @@ export default function ProEditProfile() {
         )}
       </div>
 
-      {/* Sticky submit */}
+      {/* ── Sticky submit ── */}
       {!loading && (
-        <div className="fixed bottom-0 inset-x-0 max-w-[480px] mx-auto px-4 pb-6 pt-3"
-          style={{ background: 'linear-gradient(to top, #F0F2F5 70%, transparent)' }}>
-          <button onClick={handleSubmit} disabled={submitting || result?.type === 'success'}
-            className="w-full py-4 rounded-2xl font-black text-white text-base transition-all active:scale-[0.97] disabled:opacity-60 flex items-center justify-center gap-2.5 shadow-lg"
-            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 8px 24px rgba(255,121,0,0.35)' }}>
+        <div className="fixed bottom-0 inset-x-0 max-w-[480px] mx-auto px-4 pb-6 pt-4"
+          style={{ background: 'linear-gradient(to top, #F0F2F5 65%, transparent)' }}>
+          <button onClick={handleSubmit}
+            disabled={submitting || result?.type === 'success'}
+            className="w-full py-4 rounded-2xl font-black text-white text-base transition-all active:scale-[0.97] disabled:opacity-60 flex items-center justify-center gap-2.5"
+            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 8px 28px rgba(255,121,0,0.4)' }}>
             {submitting
               ? <><div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" /> جارٍ الإرسال…</>
-              : <><Send className="w-5 h-5" /> إرسال طلب التعديل</>
-            }
+              : <><Send className="w-5 h-5" /> إرسال طلب التعديل</>}
           </button>
         </div>
       )}
