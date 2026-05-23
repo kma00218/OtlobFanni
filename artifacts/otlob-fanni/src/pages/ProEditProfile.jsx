@@ -149,7 +149,7 @@ function SpecialtyAccordion({ selectedIds, onToggle, suggestedSpecialties, onAdd
     <div className="rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100 shadow-sm">
       {sections.map(section => {
         const isMore = section.id === 'more_services'
-        const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more' && c.isActive)
+        const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more')
         const selectedCount = isMore ? newDeptSuggestions.length : sectionCats.filter(c => selectedIds.includes(c.id)).length
         const sugCount = (suggestedSpecialties[section.id] || []).length
         const totalCount = selectedCount + sugCount
