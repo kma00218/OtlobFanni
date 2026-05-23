@@ -161,13 +161,19 @@ export default function ProProfile() {
   return (
     <div className="min-h-[100dvh] bg-[#F2F2F7] flex flex-col max-w-[480px] mx-auto" dir="rtl">
 
-      <div className="bg-[#071B33] px-5 pt-14 pb-6">
-        <button onClick={() => navigate('/pro')} className="flex items-center gap-1.5 text-white/60 text-sm mb-5 active:opacity-70">
-          <ArrowRight className="w-4 h-4" />
-          العودة للوحة التحكم
-        </button>
-        <h1 className="text-white font-extrabold text-xl">ملفي الشخصي</h1>
-        <p className="text-white/60 text-sm mt-0.5">كيف تظهر في دليل اطلب فني</p>
+      {/* ── Top bar ── */}
+      <div className="bg-white border-b border-slate-100 px-4 pt-14 pb-0 sticky top-0 z-10">
+        <div className="flex items-center gap-3 pb-3">
+          <button onClick={() => navigate('/pro')}
+            className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#071B33] active:opacity-70 flex-shrink-0 transition-opacity">
+            <ArrowRight className="w-4 h-4 text-white" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[#071B33] font-black text-lg leading-tight">ملفي الشخصي</h1>
+            <p className="text-slate-400 text-xs font-medium">كيف تظهر في دليل اطلب فني</p>
+          </div>
+        </div>
+        <div className="h-0.5 rounded-full" style={{ background: 'linear-gradient(90deg, #FF7900, #ffb366, transparent)' }} />
       </div>
 
       <div className="flex-1 px-4 pt-5 pb-10 space-y-4">

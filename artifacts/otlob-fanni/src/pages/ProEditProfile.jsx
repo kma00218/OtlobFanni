@@ -400,20 +400,19 @@ export default function ProEditProfile() {
   return (
     <div className="min-h-[100dvh] flex flex-col max-w-[480px] mx-auto" style={{ background: '#F0F2F5' }} dir="rtl">
 
-      {/* ── Header ── */}
-      <div style={{ background: 'linear-gradient(160deg, #071B33 0%, #0d2a4a 100%)' }}
-        className="px-5 pt-14 pb-8 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: 'radial-gradient(circle at 15% 60%, #FF7900 0%, transparent 55%)' }} />
-        <button onClick={() => navigate('/pro/profile')}
-          className="flex items-center gap-1.5 text-white/50 text-sm mb-6 active:opacity-70 relative">
-          <ArrowRight className="w-4 h-4" />
-          العودة لملفي الشخصي
-        </button>
-        <h1 className="text-white font-black text-2xl relative">تعديل الملف الشخصي</h1>
-        <p className="text-white/40 text-sm mt-1 relative font-medium">
-          ستُراجَع التعديلات من الإدارة قبل تطبيقها
-        </p>
+      {/* ── Top bar ── */}
+      <div className="bg-white border-b border-slate-100 px-4 pt-14 pb-0 sticky top-0 z-10">
+        <div className="flex items-center gap-3 pb-3">
+          <button onClick={() => navigate('/pro/profile')}
+            className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#071B33] active:opacity-70 flex-shrink-0 transition-opacity">
+            <ArrowRight className="w-4 h-4 text-white" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[#071B33] font-black text-lg leading-tight">تعديل الملف الشخصي</h1>
+            <p className="text-slate-400 text-xs font-medium">ستُراجَع التعديلات من الإدارة قبل تطبيقها</p>
+          </div>
+        </div>
+        <div className="h-0.5 rounded-full" style={{ background: 'linear-gradient(90deg, #FF7900, #ffb366, transparent)' }} />
       </div>
 
       {/* ── Body ── */}
