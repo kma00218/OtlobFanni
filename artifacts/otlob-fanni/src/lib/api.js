@@ -248,8 +248,11 @@ export const api = {
   },
 
   pro: {
-    login: (whatsapp, password) => post('/pro/login', { whatsapp, password }),
-    generateCredentials: (entityType, entityId) => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
+    login:               (whatsapp, password)                        => post('/pro/login', { whatsapp, password }),
+    generateCredentials: (entityType, entityId)                      => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
+    getProfile:          (entityType, entityId)                      => get(`/pro/me?entityType=${entityType}&entityId=${entityId}`),
+    changePassword:      (entityType, entityId, currentPassword, newPassword) =>
+      post('/pro/change-password', { entityType, entityId, currentPassword, newPassword }),
   },
 
   popularCategories: () => get('/categories/popular'),

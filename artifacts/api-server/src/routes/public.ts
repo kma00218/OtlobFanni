@@ -1201,6 +1201,59 @@ router.post("/pro/login", async (req, res): Promise<void> => {
   res.json({ entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });
 });
 
+// ── Pro: Get own profile (no status restriction) ─────────────────────────────
+router.get("/pro/me", async (req, res): Promise<void> => {
+  const { entityType, entityId } = req.query as { entityType?: string; entityId?: string };
+  if (!entityType || !entityId) { res.status(400).json({ error: "entityType and entityId required" }); return; }
+  let profile: Record<string, unknown> | null = null;
+  if (entityType === 'technician') {
+    const [row] = await db.select({
+      tech: techniciansTable,
+      cityNameAr: citiesTable.nameAr,
+      cityNameEn: citiesTable.nameEn,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
+    }).from(techniciansTable)
+      .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+      .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
+      .where(eq(techniciansTable.id, entityId));
+    if (row) profile = { ...row.tech, cityNameAr: row.cityNameAr, cityNameEn: row.cityNameEn, categoryAr: row.categoryAr, categoryEn: row.categoryEn };
+  } else if (entityType === 'company') {
+    const [row] = await db.select({
+      company: companyApplicationsTable,
+      categoryAr: categoriesTable.nameAr,
+      categoryEn: categoriesTable.nameEn,
+    }).from(companyApplicationsTable)
+      .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
+      .where(eq(companyApplicationsTable.id, entityId));
+    if (row) profile = { ...row.company, categoryAr: row.categoryAr, categoryEn: row.categoryEn };
+  } else if (entityType === 'supplier') {
+    const [row] = await db.select().from(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, entityId));
+    if (row) profile = row as Record<string, unknown>;
+  } else {
+    res.status(400).json({ error: "Invalid entityType" }); return;
+  }
+  if (!profile) { res.status(404).json({ error: "Profile not found" }); return; }
+  res.json(profile);
+});
+
+// ── Pro: Change password ──────────────────────────────────────────────────────
+router.post("/pro/change-password", async (req, res): Promise<void> => {
+  const { entityType, entityId, currentPassword, newPassword } = req.body;
+  if (!entityType || !entityId || !currentPassword || !newPassword) {
+    res.status(400).json({ error: "Missing required fields" }); return;
+  }
+  if (String(newPassword).length < 4) { res.status(400).json({ error: "كلمة المرور قصيرة جداً" }); return; }
+  const [cred] = await db.select().from(proCredentialsTable)
+    .where(and(eq(proCredentialsTable.entityType, entityType as any), eq(proCredentialsTable.entityId, entityId)));
+  if (!cred) { res.status(404).json({ error: "Account not found" }); return; }
+  const currentHash = crypto.createHash("sha256").update(String(currentPassword)).digest("hex");
+  if (currentHash !== cred.passwordHash) { res.status(401).json({ error: "كلمة المرور الحالية غير صحيحة" }); return; }
+  const newHash = crypto.createHash("sha256").update(String(newPassword)).digest("hex");
+  await db.update(proCredentialsTable).set({ passwordHash: newHash, updatedAt: new Date() }).where(eq(proCredentialsTable.id, cred.id));
+  res.json({ success: true });
+});
+
 // ── Submit Referral (public) ─────────────────────────────────────────────────
 router.post("/referrals", async (req, res): Promise<void> => {
   const { type, name, phone, specialty, city, notes } = req.body;
