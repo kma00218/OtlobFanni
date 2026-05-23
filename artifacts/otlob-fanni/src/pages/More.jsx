@@ -245,28 +245,7 @@ export default function More() {
         <h1 className="text-2xl font-bold text-[#071B33]">{ar ? 'المزيد' : 'More'}</h1>
       </div>
 
-      {/* Professional Login Button */}
-      <div className="px-4 mb-4">
-        <Link href="/pro-login">
-          <div className="flex items-center gap-4 px-4 py-4 rounded-2xl shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
-            style={{ background: 'linear-gradient(135deg, #071B33 0%, #1a3a5c 100%)' }}>
-            <div className="w-12 h-12 rounded-2xl bg-[#FF7900] flex items-center justify-center flex-shrink-0 shadow-md">
-              <Briefcase className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-extrabold text-base leading-tight">
-                {ar ? 'دخول الحسابات المهنية' : 'Professional Login'}
-              </p>
-              <p className="text-white/60 text-xs mt-0.5">
-                {ar ? 'للفنيين والشركات والموردين' : 'Technicians, Companies & Suppliers'}
-              </p>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-              <ExternalLink className="w-4 h-4 text-white/60" />
-            </div>
-          </div>
-        </Link>
-      </div>
+      {/* Professional Login Button — hidden until subscriptions are ready */}
 
       {/* Language Toggle */}
       <div className="px-4 mb-4">
