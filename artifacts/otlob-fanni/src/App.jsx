@@ -49,6 +49,7 @@ const ProLogin = lazy(() => import("./pages/ProLogin"));
 const ProDashboard = lazy(() => import("./pages/ProDashboard"));
 const ProSoon = lazy(() => import("./pages/ProSoon"));
 const ProProfile = lazy(() => import("./pages/ProProfile"));
+const ProEditProfile = lazy(() => import("./pages/ProEditProfile"));
 
 // Admin — lazy loaded as a separate chunk
 const AdminLogin = lazy(() => import("./admin/AdminLogin"));
@@ -107,7 +108,7 @@ function InstallFAB() {
   }, []);
 
   if (isInstalled) return null;
-  if (location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile') return null;
+  if (location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile') return null;
 
   const handleInstall = async () => {
     if (!installPrompt) return;
@@ -151,7 +152,7 @@ function SearchFAB() {
   const [open, setOpen] = useState(false);
 
   // Hide on home (already has search bar) and on join form pages
-  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin') || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile';
+  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin') || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile';
   if (hidden) return null;
 
   const ar = lang === 'ar';
@@ -203,7 +204,7 @@ function AppContent() {
     );
   }
 
-  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile';
+  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile';
 
   return (
     <LanguageProvider>
@@ -241,6 +242,7 @@ function AppContent() {
               <Route path="/status" component={StatusTracking} />
               <Route path="/pro-login" component={ProLogin} />
               <Route path="/pro/soon" component={ProSoon} />
+              <Route path="/pro/edit-profile" component={ProEditProfile} />
               <Route path="/pro/profile" component={ProProfile} />
               <Route path="/pro" component={ProDashboard} />
               <Route path="/about" component={About} />
@@ -250,7 +252,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           </ErrorBoundary>
-          {location !== '/pro-login' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && <BottomNav />}
+          {location !== '/pro-login' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && <BottomNav />}
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />

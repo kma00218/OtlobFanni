@@ -4,7 +4,7 @@ import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
-  proCredentialsTable, referralsTable,
+  proCredentialsTable, referralsTable, profileUpdateRequestsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
@@ -35,6 +35,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [activeSupplierApps]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(ne(supplierApplicationsTable.status, "published"));
   const [pendingUpdateRpts]    = await db.select({ count: count() }).from(updateReportsTable).where(eq(updateReportsTable.status, "new"));
   const [pendingReferrals]     = await db.select({ count: count() }).from(referralsTable).where(eq(referralsTable.status, "new"));
+  const [pendingProfileUpds]   = await db.select({ count: count() }).from(profileUpdateRequestsTable).where(eq(profileUpdateRequestsTable.status, "pending"));
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
@@ -60,8 +61,9 @@ router.get("/stats", async (_req, res): Promise<void> => {
     totalSupplierApps:    Number(totalSupplierApps.count),
     activeSupplierApps:   Number(activeSupplierApps.count),
     totalSuppliers:       Number(publishedSuppliers.count),
-    pendingUpdateReports: Number(pendingUpdateRpts.count),
-    pendingReferrals:     Number(pendingReferrals.count),
+    pendingUpdateReports:   Number(pendingUpdateRpts.count),
+    pendingReferrals:       Number(pendingReferrals.count),
+    pendingProfileUpdates:  Number(pendingProfileUpds.count),
     recentRequests,
     recentTechs,
     recentCompanies,
@@ -866,6 +868,75 @@ router.delete("/referrals/:id", async (req, res): Promise<void> => {
   const { id } = req.params;
   await db.delete(referralsTable).where(eq(referralsTable.id, Number(id)));
   res.json({ ok: true });
+});
+
+// ── Profile Update Requests ───────────────────────────────────────────────────
+router.get("/profile-update-requests", async (_req, res): Promise<void> => {
+  const rows = await db.select().from(profileUpdateRequestsTable)
+    .orderBy(desc(profileUpdateRequestsTable.createdAt));
+  res.json(rows);
+});
+
+router.patch("/profile-update-requests/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { action, adminNote } = req.body;
+  if (!action || !["approve", "reject"].includes(action)) {
+    res.status(400).json({ error: "action must be 'approve' or 'reject'" }); return;
+  }
+  const [request] = await db.select().from(profileUpdateRequestsTable)
+    .where(eq(profileUpdateRequestsTable.id, id));
+  if (!request) { res.status(404).json({ error: "Request not found" }); return; }
+
+  const newStatus = action === "approve" ? "approved" : "rejected";
+  await db.update(profileUpdateRequestsTable).set({
+    status: newStatus,
+    adminNote: adminNote || null,
+    reviewedAt: new Date(),
+  }).where(eq(profileUpdateRequestsTable.id, id));
+
+  if (action === "approve") {
+    const changes = request.changes as Record<string, unknown>;
+    if (request.entityType === "technician") {
+      const updates: Record<string, unknown> = {};
+      if (changes.nameAr        !== undefined) updates.nameAr        = changes.nameAr;
+      if (changes.nameEn        !== undefined) updates.nameEn        = changes.nameEn;
+      if (changes.descriptionAr !== undefined) updates.descriptionAr = changes.descriptionAr;
+      if (changes.descriptionEn !== undefined) updates.descriptionEn = changes.descriptionEn;
+      if (changes.profilePhoto  !== undefined) updates.profilePhoto  = changes.profilePhoto;
+      if (changes.workImages    !== undefined) updates.workImages    = changes.workImages;
+      if (changes.extraSpecialties !== undefined) updates.extraSpecialties = changes.extraSpecialties;
+      if (changes.categoryId    !== undefined) updates.categoryId    = String(changes.categoryId);
+      if (Object.keys(updates).length > 0) {
+        await db.update(techniciansTable).set(updates as any)
+          .where(eq(techniciansTable.id, request.entityId));
+      }
+    } else if (request.entityType === "company") {
+      const updates: Record<string, unknown> = {};
+      if (changes.companyName   !== undefined) updates.companyName   = changes.companyName;
+      if (changes.description   !== undefined) updates.description   = changes.description;
+      if (changes.companyLogo   !== undefined) updates.companyLogo   = changes.companyLogo;
+      if (changes.workImages    !== undefined) updates.workImages    = changes.workImages;
+      if (changes.specialty     !== undefined) updates.specialty     = String(changes.specialty);
+      if (changes.extraSpecialties !== undefined) updates.extraSpecialties = changes.extraSpecialties;
+      if (Object.keys(updates).length > 0) {
+        await db.update(companyApplicationsTable).set(updates as any)
+          .where(eq(companyApplicationsTable.id, request.entityId));
+      }
+    } else if (request.entityType === "supplier") {
+      const updates: Record<string, unknown> = {};
+      if (changes.businessName  !== undefined) updates.businessName  = changes.businessName;
+      if (changes.description   !== undefined) updates.description   = changes.description;
+      if (changes.logo          !== undefined) updates.logo          = changes.logo;
+      if (changes.shopImages    !== undefined) updates.shopImages    = changes.shopImages;
+      if (changes.supplyType    !== undefined) updates.supplyType    = changes.supplyType;
+      if (Object.keys(updates).length > 0) {
+        await db.update(supplierApplicationsTable).set(updates as any)
+          .where(eq(supplierApplicationsTable.id, request.entityId));
+      }
+    }
+  }
+
+  res.json({ ok: true, status: newStatus });
 });
 
 export default router;

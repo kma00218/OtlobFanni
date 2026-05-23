@@ -5,7 +5,7 @@ import {
   adsTable, technicianApplicationsTable, companyApplicationsTable,
   adRequestsTable, serviceRequestsTable, reviewsTable,
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
-  referralsTable, analyticsEventsTable,
+  referralsTable, analyticsEventsTable, profileUpdateRequestsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
@@ -1252,6 +1252,45 @@ router.post("/pro/change-password", async (req, res): Promise<void> => {
   const newHash = crypto.createHash("sha256").update(String(newPassword)).digest("hex");
   await db.update(proCredentialsTable).set({ passwordHash: newHash, updatedAt: new Date() }).where(eq(proCredentialsTable.id, cred.id));
   res.json({ success: true });
+});
+
+// ── Pro: Submit profile update request ───────────────────────────────────────
+router.post("/pro/request-update", async (req, res): Promise<void> => {
+  const { entityType, entityId, changes } = req.body;
+  if (!entityType || !entityId || !changes || typeof changes !== "object") {
+    res.status(400).json({ error: "entityType, entityId, and changes are required" }); return;
+  }
+  const validTypes = ["technician", "company", "supplier"];
+  if (!validTypes.includes(entityType)) { res.status(400).json({ error: "Invalid entityType" }); return; }
+
+  // Cancel any existing pending request
+  await db.update(profileUpdateRequestsTable)
+    .set({ status: "cancelled" })
+    .where(and(
+      eq(profileUpdateRequestsTable.entityType, entityType),
+      eq(profileUpdateRequestsTable.entityId, entityId),
+      eq(profileUpdateRequestsTable.status, "pending"),
+    ));
+
+  const id = `pur_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  await db.insert(profileUpdateRequestsTable).values({
+    id, entityType, entityId: String(entityId), changes, status: "pending",
+  });
+  res.status(201).json({ ok: true, id });
+});
+
+// ── Pro: Get pending request ──────────────────────────────────────────────────
+router.get("/pro/pending-request", async (req, res): Promise<void> => {
+  const { entityType, entityId } = req.query as { entityType?: string; entityId?: string };
+  if (!entityType || !entityId) { res.status(400).json({ error: "entityType and entityId required" }); return; }
+  const [row] = await db.select().from(profileUpdateRequestsTable)
+    .where(and(
+      eq(profileUpdateRequestsTable.entityType, entityType),
+      eq(profileUpdateRequestsTable.entityId, entityId),
+    ))
+    .orderBy(desc(profileUpdateRequestsTable.createdAt))
+    .limit(1);
+  res.json(row || null);
 });
 
 // ── Submit Referral (public) ─────────────────────────────────────────────────

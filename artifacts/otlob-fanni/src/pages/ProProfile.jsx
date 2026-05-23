@@ -3,6 +3,7 @@ import { useLocation } from 'wouter'
 import {
   ArrowRight, User, MapPin, Phone, Share2, ExternalLink,
   Lock, Eye, EyeOff, CheckCircle, XCircle, Clock, MessageSquare, Image,
+  Pencil, AlertCircle,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 
@@ -79,6 +80,8 @@ export default function ProProfile() {
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState('')
 
+  const [pendingReq, setPendingReq] = useState(null)
+
   const [cpOpen, setCpOpen]         = useState(false)
   const [cpCurrent, setCpCurrent]   = useState('')
   const [cpNew, setCpNew]           = useState('')
@@ -94,9 +97,13 @@ export default function ProProfile() {
     try {
       const s = JSON.parse(raw)
       setSession(s)
-      api.pro.getProfile(s.entityType, s.entityId)
-        .then(data => setProfile(data))
-        .catch(() => setError('تعذّر تحميل الملف الشخصي'))
+      Promise.all([
+        api.pro.getProfile(s.entityType, s.entityId),
+        api.pro.getPendingRequest(s.entityType, s.entityId).catch(() => null),
+      ]).then(([data, req]) => {
+        setProfile(data)
+        if (req) setPendingReq(req)
+      }).catch(() => setError('تعذّر تحميل الملف الشخصي'))
         .finally(() => setLoading(false))
     } catch {
       localStorage.removeItem('pro_session')
@@ -224,6 +231,35 @@ export default function ProProfile() {
               </div>
             </div>
 
+            {/* Pending update request banner */}
+            {pendingReq && pendingReq.status === 'pending' && (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex gap-3">
+                <Clock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-amber-800 text-xs font-bold">طلب تعديل قيد المراجعة</p>
+                  <p className="text-amber-700 text-xs mt-0.5">تم استلام طلبك وسيتم تطبيق التعديلات خلال 24 ساعة.</p>
+                </div>
+              </div>
+            )}
+            {pendingReq && pendingReq.status === 'rejected' && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 flex gap-3">
+                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-red-800 text-xs font-bold">طلب التعديل مرفوض</p>
+                  {pendingReq.adminNote && <p className="text-red-700 text-xs mt-0.5">{pendingReq.adminNote}</p>}
+                  <button onClick={() => navigate('/pro/edit-profile')} className="text-[#FF7900] text-xs font-bold mt-1 underline">
+                    تعديل وإعادة الإرسال
+                  </button>
+                </div>
+              </div>
+            )}
+            {pendingReq && pendingReq.status === 'approved' && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 flex gap-3">
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <p className="text-emerald-800 text-xs font-bold">تم قبول آخر طلب تعديل وتطبيقه على ملفك</p>
+              </div>
+            )}
+
             {/* Action buttons grid */}
             <div className="grid grid-cols-2 gap-3">
               {publicUrl && (
@@ -260,6 +296,14 @@ export default function ProProfile() {
                   <Lock className="w-5 h-5 text-amber-500" />
                 </div>
                 <p className="text-xs font-bold text-[#071B33]">تغيير كلمة المرور</p>
+              </button>
+
+              <button onClick={() => navigate('/pro/edit-profile')}
+                className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 py-4 flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-[#FF7900]/10 flex items-center justify-center">
+                  <Pencil className="w-5 h-5 text-[#FF7900]" />
+                </div>
+                <p className="text-xs font-bold text-[#071B33]">تعديل ملفي</p>
               </button>
             </div>
 

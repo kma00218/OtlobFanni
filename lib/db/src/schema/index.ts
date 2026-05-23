@@ -13,3 +13,4 @@ export * from "./reviews";
 export * from "./update_reports";
 export * from "./pro_credentials";
 export * from "./referrals";
+export * from "./profile_update_requests";

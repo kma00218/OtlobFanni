@@ -23,6 +23,7 @@ import SupplierApplications from './pages/SupplierApplications'
 import AdminSuppliers from './pages/AdminSuppliers'
 import UpdateReports from './pages/UpdateReports'
 import AdminReferrals from './pages/AdminReferrals'
+import AdminProfileUpdates from './pages/AdminProfileUpdates'
 import { Shield } from 'lucide-react'
 
 function AccessDenied() {
@@ -60,6 +61,7 @@ function AdminRoutes() {
       <Route path="/admin/suppliers"               component={AdminSuppliers} />
       <Route path="/admin/update-reports"          component={UpdateReports} />
       <Route path="/admin/referrals"               component={AdminReferrals} />
+      <Route path="/admin/profile-updates"         component={AdminProfileUpdates} />
       <Route path="/admin/search"                  component={AdminSearch} />
       <Route path="/admin/poster"                  component={PostGenerator} />
       <Route path="/admin/categories">{isSuperAdmin ? <Categories /> : <AccessDenied />}</Route>

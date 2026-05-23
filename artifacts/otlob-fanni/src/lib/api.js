@@ -237,6 +237,10 @@ export const api = {
       update:  (id, status, opts = {}) => patch(`/admin/supplier-applications/${id}`, { status, ...opts }),
       delete:  (id)                    => del(`/admin/supplier-applications/${id}`),
     },
+    profileUpdates: {
+      list:   ()                       => get('/admin/profile-update-requests'),
+      review: (id, action, adminNote)  => patch(`/admin/profile-update-requests/${id}`, { action, adminNote }),
+    },
     suppliers: {
       list:      ()          => get('/admin/suppliers'),
       create:    (data)      => post('/admin/suppliers', data),
@@ -253,6 +257,8 @@ export const api = {
     getProfile:          (entityType, entityId)                      => get(`/pro/me?entityType=${entityType}&entityId=${entityId}`),
     changePassword:      (entityType, entityId, currentPassword, newPassword) =>
       post('/pro/change-password', { entityType, entityId, currentPassword, newPassword }),
+    requestUpdate:       (entityType, entityId, changes)             => post('/pro/request-update', { entityType, entityId, changes }),
+    getPendingRequest:   (entityType, entityId)                      => get(`/pro/pending-request?entityType=${entityType}&entityId=${entityId}`),
   },
 
   popularCategories: () => get('/categories/popular'),
