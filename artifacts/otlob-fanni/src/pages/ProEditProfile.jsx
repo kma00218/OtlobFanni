@@ -3,7 +3,7 @@ import { useLocation } from 'wouter'
 import {
   ArrowRight, Camera, X, Plus, CheckCircle, AlertCircle,
   Send, ImagePlus, User, Building2, Package, ChevronDown,
-  Star, Sparkles,
+  Star, MapPin,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../lib/api'
 import { sections, categories } from '../data/services'
@@ -32,6 +32,8 @@ function getCurrentValues(profile, entityType) {
     workImages:       profile.workImages       || profile.work_images       || [],
     categoryId:       profile.categoryId       || profile.category_id       || '',
     extraSpecialties: profile.extraSpecialties || profile.extra_specialties || [],
+    cityId:           profile.cityId           || profile.city_id           || '',
+    area:             profile.area             || '',
   }
   if (entityType === 'company') return {
     companyName:      profile.companyName      || profile.company_name      || '',
@@ -40,6 +42,8 @@ function getCurrentValues(profile, entityType) {
     workImages:       profile.workImages       || profile.work_images       || [],
     specialty:        profile.specialty        || '',
     extraSpecialties: profile.extraSpecialties || profile.extra_specialties || [],
+    city:             profile.city             || '',
+    area:             profile.area             || '',
   }
   if (entityType === 'supplier') return {
     businessName:     profile.businessName     || profile.business_name     || '',
@@ -47,6 +51,8 @@ function getCurrentValues(profile, entityType) {
     logo:             profile.logo             || null,
     shopImages:       profile.shopImages       || profile.shop_images       || [],
     supplyType:       profile.supplyType       || profile.supply_type       || '',
+    city:             profile.city             || '',
+    area:             profile.area             || '',
   }
   return {}
 }
@@ -309,6 +315,7 @@ export default function ProEditProfile() {
   const [, navigate] = useLocation()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [cities, setCities] = useState([])
   const [form, setForm] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
@@ -342,6 +349,7 @@ export default function ProEditProfile() {
     try {
       const s = JSON.parse(raw)
       setSession(s)
+      fetch('/api/cities').then(r => r.json()).then(data => setCities(data.filter(c => c.isActive))).catch(() => {})
       api.pro.getProfile(s.entityType, s.entityId)
         .then(prof => {
           const vals = getCurrentValues(prof, s.entityType)
@@ -494,7 +502,47 @@ export default function ProEditProfile() {
               </div>
             </div>
 
-            {/* ── Card 2: Specialties (technician & company only) ── */}
+            {/* ── Card 2: Location ── */}
+            <div className="bg-white rounded-3xl shadow-sm px-5 py-5 space-y-4">
+              <CardHeader icon={MapPin} title="الموقع"
+                gradient="linear-gradient(135deg,#10B981,#047857)" />
+
+              <Field label="المدينة">
+                <select
+                  value={
+                    type === 'technician'
+                      ? (form.cityId || '')
+                      : (cities.find(c => c.nameAr === form.city)?.id || '')
+                  }
+                  onChange={e => {
+                    const chosen = cities.find(c => c.id === e.target.value)
+                    if (!chosen) return
+                    if (type === 'technician') {
+                      set('cityId')(chosen.id)
+                    } else {
+                      set('city')(chosen.nameAr)
+                    }
+                  }}
+                  className={inputCls + ' cursor-pointer'}
+                >
+                  <option value="">اختر المدينة</option>
+                  {cities.map(c => (
+                    <option key={c.id} value={c.id}>{c.nameAr}</option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="الحي / المنطقة" hint="اختياري">
+                <input
+                  value={form.area || ''}
+                  onChange={e => set('area')(e.target.value)}
+                  placeholder="مثال: حي الأندلس، طريق المطار…"
+                  className={inputCls}
+                />
+              </Field>
+            </div>
+
+            {/* ── Card 3: Specialties (technician & company only) ── */}
             {type !== 'supplier' && (
               <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
                 <div className="px-5 pt-5 pb-3">

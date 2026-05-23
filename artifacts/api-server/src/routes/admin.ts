@@ -898,37 +898,43 @@ router.patch("/profile-update-requests/:id", async (req, res): Promise<void> => 
     const changes = request.changes as Record<string, unknown>;
     if (request.entityType === "technician") {
       const updates: Record<string, unknown> = {};
-      if (changes.nameAr        !== undefined) updates.nameAr        = changes.nameAr;
-      if (changes.nameEn        !== undefined) updates.nameEn        = changes.nameEn;
-      if (changes.descriptionAr !== undefined) updates.descriptionAr = changes.descriptionAr;
-      if (changes.descriptionEn !== undefined) updates.descriptionEn = changes.descriptionEn;
-      if (changes.profilePhoto  !== undefined) updates.profilePhoto  = changes.profilePhoto;
-      if (changes.workImages    !== undefined) updates.workImages    = changes.workImages;
+      if (changes.nameAr           !== undefined) updates.nameAr           = changes.nameAr;
+      if (changes.nameEn           !== undefined) updates.nameEn           = changes.nameEn;
+      if (changes.descriptionAr    !== undefined) updates.descriptionAr    = changes.descriptionAr;
+      if (changes.descriptionEn    !== undefined) updates.descriptionEn    = changes.descriptionEn;
+      if (changes.profilePhoto     !== undefined) updates.profilePhoto     = changes.profilePhoto;
+      if (changes.workImages       !== undefined) updates.workImages       = changes.workImages;
       if (changes.extraSpecialties !== undefined) updates.extraSpecialties = changes.extraSpecialties;
-      if (changes.categoryId    !== undefined) updates.categoryId    = String(changes.categoryId);
+      if (changes.categoryId       !== undefined) updates.categoryId       = String(changes.categoryId);
+      if (changes.cityId           !== undefined) updates.cityId           = String(changes.cityId);
+      if (changes.area             !== undefined) updates.area             = changes.area;
       if (Object.keys(updates).length > 0) {
         await db.update(techniciansTable).set(updates as any)
           .where(eq(techniciansTable.id, request.entityId));
       }
     } else if (request.entityType === "company") {
       const updates: Record<string, unknown> = {};
-      if (changes.companyName   !== undefined) updates.companyName   = changes.companyName;
-      if (changes.description   !== undefined) updates.description   = changes.description;
-      if (changes.companyLogo   !== undefined) updates.companyLogo   = changes.companyLogo;
-      if (changes.workImages    !== undefined) updates.workImages    = changes.workImages;
-      if (changes.specialty     !== undefined) updates.specialty     = String(changes.specialty);
+      if (changes.companyName      !== undefined) updates.companyName      = changes.companyName;
+      if (changes.description      !== undefined) updates.description      = changes.description;
+      if (changes.companyLogo      !== undefined) updates.companyLogo      = changes.companyLogo;
+      if (changes.workImages       !== undefined) updates.workImages       = changes.workImages;
+      if (changes.specialty        !== undefined) updates.specialty        = String(changes.specialty);
       if (changes.extraSpecialties !== undefined) updates.extraSpecialties = changes.extraSpecialties;
+      if (changes.city             !== undefined) updates.city             = changes.city;
+      if (changes.area             !== undefined) updates.area             = changes.area;
       if (Object.keys(updates).length > 0) {
         await db.update(companyApplicationsTable).set(updates as any)
           .where(eq(companyApplicationsTable.id, request.entityId));
       }
     } else if (request.entityType === "supplier") {
       const updates: Record<string, unknown> = {};
-      if (changes.businessName  !== undefined) updates.businessName  = changes.businessName;
-      if (changes.description   !== undefined) updates.description   = changes.description;
-      if (changes.logo          !== undefined) updates.logo          = changes.logo;
-      if (changes.shopImages    !== undefined) updates.shopImages    = changes.shopImages;
-      if (changes.supplyType    !== undefined) updates.supplyType    = changes.supplyType;
+      if (changes.businessName     !== undefined) updates.businessName     = changes.businessName;
+      if (changes.description      !== undefined) updates.description      = changes.description;
+      if (changes.logo             !== undefined) updates.logo             = changes.logo;
+      if (changes.shopImages       !== undefined) updates.shopImages       = changes.shopImages;
+      if (changes.supplyType       !== undefined) updates.supplyType       = changes.supplyType;
+      if (changes.city             !== undefined) updates.city             = changes.city;
+      if (changes.area             !== undefined) updates.area             = changes.area;
       if (Object.keys(updates).length > 0) {
         await db.update(supplierApplicationsTable).set(updates as any)
           .where(eq(supplierApplicationsTable.id, request.entityId));
