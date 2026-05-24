@@ -107,7 +107,7 @@ const EXP_YEARS_MAP: Record<string, number> = {
 
 router.patch("/technician-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status, createCategory, linkCategoryId, rejectionReason } = req.body;
+  const { status, createCategory, createInSectionId, linkCategoryId, rejectionReason } = req.body;
   const setData: Record<string, unknown> = { status };
   if (status === "rejected" && rejectionReason) setData.rejectionReason = rejectionReason;
   if (status !== "rejected") setData.rejectionReason = null;
@@ -122,13 +122,14 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
 
   if ((status === "approved" || status === "published") && app.customSpecialty && createCategory === true) {
     const customName = app.customSpecialty.trim();
+    const targetSection = createInSectionId || "more_services";
     const allCats = await db.select().from(categoriesTable);
     const existing = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
     if (!existing) {
       const catId = "custom_" + Date.now();
       await db.insert(categoriesTable).values({
         id: catId, nameAr: customName, nameEn: customName,
-        iconName: "more", sectionId: "more_services", sortOrder: 99, isActive: true,
+        iconName: "more", sectionId: targetSection, sortOrder: 99, isActive: true,
       }).onConflictDoNothing();
       resolvedCategoryId = catId;
     } else {
@@ -270,7 +271,7 @@ router.get("/company-applications", async (_req, res): Promise<void> => {
 
 router.patch("/company-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status, createCategory, linkCategoryId, rejectionReason } = req.body;
+  const { status, createCategory, createInSectionId, linkCategoryId, rejectionReason } = req.body;
 
   let resolvedCategoryId: string | null = linkCategoryId || null;
   const updates: Record<string, unknown> = { status };
@@ -281,13 +282,14 @@ router.patch("/company-applications/:id", async (req, res): Promise<void> => {
     const [existingApp] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
     if (createCategory === true && existingApp?.customSpecialty) {
       const customName = existingApp.customSpecialty.trim();
+      const targetSection = createInSectionId || "more_services";
       const allCats = await db.select().from(categoriesTable);
       const existingCat = allCats.find(c => c.nameAr === customName || c.nameEn === customName);
       if (!existingCat) {
         const catId = "custom_" + Date.now();
         await db.insert(categoriesTable).values({
           id: catId, nameAr: customName, nameEn: customName,
-          iconName: "more", sectionId: "more_services", sortOrder: 99, isActive: true,
+          iconName: "more", sectionId: targetSection, sortOrder: 99, isActive: true,
         }).onConflictDoNothing();
         resolvedCategoryId = catId;
       } else {

@@ -40,6 +40,7 @@ export default function CompanyApplications() {
   const [lastPublished, setLastPublished]     = useState(null)
   const [specialtyAction, setSpecialtyAction] = useState('none')
   const [linkCatId, setLinkCatId]             = useState('')
+  const [createSectionId, setCreateSectionId] = useState('')
   const [allCats, setAllCats]                 = useState([])
   const [categories, setCategories]           = useState([])
   const [rejectModal, setRejectModal]         = useState({ open: false, id: null, reason: '', isView: false })
@@ -97,7 +98,10 @@ export default function CompanyApplications() {
       if (status === 'approved') {
         const app = data.find(r => r.id === id)
         if (app?.customSpecialty) {
-          if (specialtyAction === 'create') opts.createCategory = true
+          if (specialtyAction === 'create') {
+            opts.createCategory = true
+            if (createSectionId) opts.createInSectionId = createSectionId
+          }
           if (specialtyAction === 'link' && linkCatId) opts.linkCategoryId = linkCatId
         }
       }
@@ -701,7 +705,7 @@ export default function CompanyApplications() {
                       <p className="text-xs text-gray-500 font-medium">إجراء التخصص عند القبول:</p>
                       {[
                         { v: 'none',   label: 'قبول بدون إنشاء تخصص جديد' },
-                        { v: 'create', label: 'إنشاء تخصص جديد في "المزيد من الخدمات"' },
+                        { v: 'create', label: 'إنشاء تخصص جديد في قسم...' },
                         { v: 'link',   label: 'ربط بتخصص موجود' },
                       ].map(opt => (
                         <label key={opt.v} className="flex items-center gap-2.5 cursor-pointer">
@@ -712,6 +716,18 @@ export default function CompanyApplications() {
                           <span className="text-xs text-gray-600">{opt.label}</span>
                         </label>
                       ))}
+                      {specialtyAction === 'create' && (
+                        <select
+                          value={createSectionId}
+                          onChange={e => setCreateSectionId(e.target.value)}
+                          className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                        >
+                          <option value="">— اختر القسم —</option>
+                          {SECTIONS.map(sec => (
+                            <option key={sec.id} value={sec.id}>{sec.nameAr}</option>
+                          ))}
+                        </select>
+                      )}
                       {specialtyAction === 'link' && (
                         <select
                           value={linkCatId}
