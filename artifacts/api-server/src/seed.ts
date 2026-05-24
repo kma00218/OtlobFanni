@@ -84,53 +84,56 @@ const BASE_CATEGORIES = [
   { id: 'plastering',           nameAr: 'عامل لياسة ومحارة',        nameEn: 'Plastering Worker',                      iconName: 'plastering',           sortOrder: 54, isActive: true, sectionId: 'construction'      },
 ];
 
-// 35 additional categories inserted only when missing (ON CONFLICT DO NOTHING).
-// These cover technician specialties that existed in the DB but lacked seed entries.
+// 35 additional categories — upserted with correct section assignments.
 const EXTRA_CATEGORIES = [
   // ── Home Services ─────────────────────────────────────────────────────────────
-  { id: 'gas',             nameAr: 'تمديد غاز',            nameEn: 'Gas Installation',    iconName: 'flame',       sortOrder: 13, isActive: true, sectionId: 'home_services'  },
-  { id: 'pumps',           nameAr: 'مضخات مياه',           nameEn: 'Water Pumps',         iconName: 'droplets',    sortOrder: 14, isActive: true, sectionId: 'home_services'  },
-  { id: 'locks',           nameAr: 'أقفال ومفاتيح',        nameEn: 'Locks & Locksmith',   iconName: 'key',         sortOrder: 15, isActive: true, sectionId: 'home_services'  },
-  { id: 'tank_cleaning',   nameAr: 'تنظيف خزانات',         nameEn: 'Tank Cleaning',       iconName: 'container',   sortOrder: 16, isActive: true, sectionId: 'home_services'  },
-  { id: 'home_help',       nameAr: 'مساعدة منزلية',        nameEn: 'Home Help',           iconName: 'home',        sortOrder: 17, isActive: true, sectionId: 'home_services'  },
+  { id: 'gas',             nameAr: 'تمديد غاز',            nameEn: 'Gas Installation',    iconName: 'flame',       sortOrder: 13, isActive: true, sectionId: 'home_services'      },
+  { id: 'pumps',           nameAr: 'مضخات مياه',           nameEn: 'Water Pumps',         iconName: 'droplets',    sortOrder: 14, isActive: true, sectionId: 'home_services'      },
+  { id: 'locks',           nameAr: 'أقفال ومفاتيح',        nameEn: 'Locks & Locksmith',   iconName: 'key',         sortOrder: 15, isActive: true, sectionId: 'home_services'      },
+  { id: 'tank_cleaning',   nameAr: 'تنظيف خزانات',         nameEn: 'Tank Cleaning',       iconName: 'container',   sortOrder: 16, isActive: true, sectionId: 'home_services'      },
+  { id: 'home_help',       nameAr: 'مساعدة منزلية',        nameEn: 'Home Help',           iconName: 'home',        sortOrder: 17, isActive: true, sectionId: 'home_services'      },
 
   // ── Construction & Finishing ──────────────────────────────────────────────────
-  { id: 'tiles',           nameAr: 'بلاط وسيراميك',        nameEn: 'Tiles & Ceramic',     iconName: 'grid',        sortOrder: 18, isActive: true, sectionId: 'construction'   },
-  { id: 'gypsum',          nameAr: 'جبسيات',               nameEn: 'Gypsum Work',         iconName: 'layers',      sortOrder: 19, isActive: true, sectionId: 'construction'   },
-  { id: 'aluminum',        nameAr: 'ألمنيوم وزجاج',        nameEn: 'Aluminum & Glass',    iconName: 'square',      sortOrder: 20, isActive: true, sectionId: 'construction'   },
-  { id: 'waterproof',      nameAr: 'عزل مائي',             nameEn: 'Waterproofing',       iconName: 'droplets',    sortOrder: 21, isActive: true, sectionId: 'construction'   },
-  { id: 'thermal',         nameAr: 'عزل حراري',            nameEn: 'Thermal Insulation',  iconName: 'thermometer', sortOrder: 22, isActive: true, sectionId: 'construction'   },
-  { id: 'concrete',        nameAr: 'أعمال خرسانية',        nameEn: 'Concrete Works',      iconName: 'building',    sortOrder: 23, isActive: true, sectionId: 'construction'   },
-  { id: 'roofing',         nameAr: 'أسطح وعزل',            nameEn: 'Roofing',             iconName: 'home',        sortOrder: 24, isActive: true, sectionId: 'construction'   },
-  { id: 'contracting',     nameAr: 'مقاولات عامة',         nameEn: 'General Contracting', iconName: 'hard_hat',    sortOrder: 25, isActive: true, sectionId: 'construction'   },
+  { id: 'tiles',           nameAr: 'بلاط وسيراميك',        nameEn: 'Tiles & Ceramic',     iconName: 'grid',        sortOrder: 18, isActive: true, sectionId: 'construction'        },
+  { id: 'gypsum',          nameAr: 'جبسيات',               nameEn: 'Gypsum Work',         iconName: 'layers',      sortOrder: 19, isActive: true, sectionId: 'construction'        },
+  { id: 'aluminum',        nameAr: 'ألمنيوم وزجاج',        nameEn: 'Aluminum & Glass',    iconName: 'square',      sortOrder: 20, isActive: true, sectionId: 'construction'        },
+  { id: 'waterproof',      nameAr: 'عزل مائي',             nameEn: 'Waterproofing',       iconName: 'droplets',    sortOrder: 21, isActive: true, sectionId: 'construction'        },
+  { id: 'thermal',         nameAr: 'عزل حراري',            nameEn: 'Thermal Insulation',  iconName: 'thermometer', sortOrder: 22, isActive: true, sectionId: 'construction'        },
+  { id: 'concrete',        nameAr: 'أعمال خرسانية',        nameEn: 'Concrete Works',      iconName: 'building',    sortOrder: 23, isActive: true, sectionId: 'construction'        },
+  { id: 'roofing',         nameAr: 'أسطح وعزل',            nameEn: 'Roofing',             iconName: 'home',        sortOrder: 24, isActive: true, sectionId: 'construction'        },
+  { id: 'contracting',     nameAr: 'مقاولات عامة',         nameEn: 'General Contracting', iconName: 'hard_hat',    sortOrder: 25, isActive: true, sectionId: 'construction'        },
 
   // ── Tech & Security ───────────────────────────────────────────────────────────
-  { id: 'satellite',       nameAr: 'دش وستالايت',          nameEn: 'Satellite & TV',      iconName: 'antenna',     sortOrder: 26, isActive: true, sectionId: 'tech_security'  },
-  { id: 'alarm',           nameAr: 'إنذار وحماية',         nameEn: 'Alarm Systems',       iconName: 'bell',        sortOrder: 27, isActive: true, sectionId: 'tech_security'  },
-  { id: 'access_control',  nameAr: 'تحكم بالدخول',         nameEn: 'Access Control',      iconName: 'shield',      sortOrder: 28, isActive: true, sectionId: 'tech_security'  },
-  { id: 'computer',        nameAr: 'كمبيوتر وصيانة',       nameEn: 'Computer Repair',     iconName: 'monitor',     sortOrder: 29, isActive: true, sectionId: 'tech_security'  },
-  { id: 'mobile_repair',   nameAr: 'صيانة موبايل',         nameEn: 'Mobile Repair',       iconName: 'smartphone',  sortOrder: 30, isActive: true, sectionId: 'tech_security'  },
+  { id: 'satellite',       nameAr: 'دش وستالايت',          nameEn: 'Satellite & TV',      iconName: 'antenna',     sortOrder: 26, isActive: true, sectionId: 'tech_security'       },
+  { id: 'alarm',           nameAr: 'إنذار وحماية',         nameEn: 'Alarm Systems',       iconName: 'bell',        sortOrder: 27, isActive: true, sectionId: 'tech_security'       },
+  { id: 'access_control',  nameAr: 'تحكم بالدخول',         nameEn: 'Access Control',      iconName: 'shield',      sortOrder: 28, isActive: true, sectionId: 'tech_security'       },
+  { id: 'computer',        nameAr: 'كمبيوتر وصيانة',       nameEn: 'Computer Repair',     iconName: 'monitor',     sortOrder: 29, isActive: true, sectionId: 'tech_security'       },
+  { id: 'mobile_repair',   nameAr: 'صيانة موبايل',         nameEn: 'Mobile Repair',       iconName: 'smartphone',  sortOrder: 30, isActive: true, sectionId: 'tech_security'       },
 
   // ── Car Services ─────────────────────────────────────────────────────────────
-  { id: 'car_mechanic',    nameAr: 'ميكانيك سيارات',       nameEn: 'Car Mechanic',        iconName: 'car',         sortOrder: 31, isActive: true, sectionId: 'car_services'   },
-  { id: 'auto_electrician',nameAr: 'كهرباء سيارات',        nameEn: 'Auto Electrician',    iconName: 'zap',         sortOrder: 32, isActive: true, sectionId: 'car_services'   },
-  { id: 'car_body',        nameAr: 'كاروسيري وسمكرة',      nameEn: 'Car Body & Paint',    iconName: 'paintbrush',  sortOrder: 33, isActive: true, sectionId: 'car_services'   },
-  { id: 'tire_repair',     nameAr: 'إطارات',               nameEn: 'Tire Repair',         iconName: 'circle',      sortOrder: 34, isActive: true, sectionId: 'car_services'   },
-  { id: 'car_ac',          nameAr: 'تكييف سيارات',         nameEn: 'Car AC',              iconName: 'wind',        sortOrder: 35, isActive: true, sectionId: 'car_services'   },
-  { id: 'car_battery',     nameAr: 'بطارية سيارات',        nameEn: 'Car Battery',         iconName: 'battery',     sortOrder: 36, isActive: true, sectionId: 'car_services'   },
-  { id: 'car_diagnostics', nameAr: 'فحص وكمبيوتر سيارات', nameEn: 'Car Diagnostics',     iconName: 'search',      sortOrder: 37, isActive: true, sectionId: 'car_services'   },
-  { id: 'oil_change',      nameAr: 'تغيير زيت',            nameEn: 'Oil Change',          iconName: 'droplets',    sortOrder: 38, isActive: true, sectionId: 'car_services'   },
-  { id: 'car_wash',        nameAr: 'غسيل سيارات',          nameEn: 'Car Wash',            iconName: 'sparkles',    sortOrder: 39, isActive: true, sectionId: 'car_services'   },
-  { id: 'towing',          nameAr: 'سحب سيارات',           nameEn: 'Towing',              iconName: 'truck',       sortOrder: 40, isActive: true, sectionId: 'car_services'   },
+  { id: 'car_mechanic',    nameAr: 'ميكانيك سيارات',       nameEn: 'Car Mechanic',        iconName: 'car',         sortOrder: 31, isActive: true, sectionId: 'car_services'        },
+  { id: 'auto_electrician',nameAr: 'كهرباء سيارات',        nameEn: 'Auto Electrician',    iconName: 'zap',         sortOrder: 32, isActive: true, sectionId: 'car_services'        },
+  { id: 'car_body',        nameAr: 'كاروسيري وسمكرة',      nameEn: 'Car Body & Paint',    iconName: 'paintbrush',  sortOrder: 33, isActive: true, sectionId: 'car_services'        },
+  { id: 'tire_repair',     nameAr: 'إطارات',               nameEn: 'Tire Repair',         iconName: 'circle',      sortOrder: 34, isActive: true, sectionId: 'car_services'        },
+  { id: 'car_ac',          nameAr: 'تكييف سيارات',         nameEn: 'Car AC',              iconName: 'wind',        sortOrder: 35, isActive: true, sectionId: 'car_services'        },
+  { id: 'car_battery',     nameAr: 'بطارية سيارات',        nameEn: 'Car Battery',         iconName: 'battery',     sortOrder: 36, isActive: true, sectionId: 'car_services'        },
+  { id: 'car_diagnostics', nameAr: 'فحص وكمبيوتر سيارات', nameEn: 'Car Diagnostics',     iconName: 'search',      sortOrder: 37, isActive: true, sectionId: 'car_services'        },
+  { id: 'oil_change',      nameAr: 'تغيير زيت',            nameEn: 'Oil Change',          iconName: 'droplets',    sortOrder: 38, isActive: true, sectionId: 'car_services'        },
+  { id: 'car_wash',        nameAr: 'غسيل سيارات',          nameEn: 'Car Wash',            iconName: 'sparkles',    sortOrder: 39, isActive: true, sectionId: 'car_services'        },
+  { id: 'towing',          nameAr: 'سحب سيارات',           nameEn: 'Towing',              iconName: 'truck',       sortOrder: 40, isActive: true, sectionId: 'car_services'        },
 
-  // ── General Services ─────────────────────────────────────────────────────────
-  { id: 'solar',           nameAr: 'طاقة شمسية',           nameEn: 'Solar Energy',        iconName: 'sun',         sortOrder: 41, isActive: true, sectionId: 'moving_general' },
-  { id: 'generators',      nameAr: 'مولدات كهربائية',      nameEn: 'Generators',          iconName: 'zap',         sortOrder: 42, isActive: true, sectionId: 'moving_general' },
-  { id: 'pest_control',    nameAr: 'مكافحة حشرات',         nameEn: 'Pest Control',        iconName: 'bug',         sortOrder: 43, isActive: true, sectionId: 'moving_general' },
-  { id: 'landscaping',     nameAr: 'تنسيق حدائق',          nameEn: 'Landscaping',         iconName: 'tree',        sortOrder: 44, isActive: true, sectionId: 'moving_general' },
-  { id: 'pool',            nameAr: 'مسابح',                nameEn: 'Pool Services',       iconName: 'waves',       sortOrder: 45, isActive: true, sectionId: 'moving_general' },
-  { id: 'workers',         nameAr: 'عمال يومية',            nameEn: 'Daily Workers',       iconName: 'users',       sortOrder: 46, isActive: true, sectionId: 'moving_general' },
-  { id: 'more_services',   nameAr: 'خدمات أخرى',           nameEn: 'Other Services',      iconName: 'plus',        sortOrder: 47, isActive: true, sectionId: 'moving_general' },
+  // ── Energy & Generators ───────────────────────────────────────────────────────
+  { id: 'solar',           nameAr: 'طاقة شمسية',           nameEn: 'Solar Energy',        iconName: 'sun',         sortOrder: 41, isActive: true, sectionId: 'energy_generators'  },
+  { id: 'generators',      nameAr: 'مولدات كهربائية',      nameEn: 'Generators',          iconName: 'zap',         sortOrder: 42, isActive: true, sectionId: 'energy_generators'  },
+
+  // ── Moving & General Services ─────────────────────────────────────────────────
+  { id: 'pest_control',    nameAr: 'مكافحة حشرات',         nameEn: 'Pest Control',        iconName: 'bug',         sortOrder: 43, isActive: true, sectionId: 'moving_general'     },
+  { id: 'workers',         nameAr: 'عمال يومية',            nameEn: 'Daily Workers',       iconName: 'users',       sortOrder: 46, isActive: true, sectionId: 'moving_general'     },
+  { id: 'more_services',   nameAr: 'خدمات أخرى',           nameEn: 'Other Services',      iconName: 'plus',        sortOrder: 47, isActive: true, sectionId: 'moving_general'     },
+
+  // ── Gardens & Pools ───────────────────────────────────────────────────────────
+  { id: 'landscaping',     nameAr: 'تنسيق حدائق',          nameEn: 'Landscaping',         iconName: 'tree',        sortOrder: 44, isActive: true, sectionId: 'gardens_pools'      },
+  { id: 'pool',            nameAr: 'مسابح',                nameEn: 'Pool Services',       iconName: 'waves',       sortOrder: 45, isActive: true, sectionId: 'gardens_pools'      },
 ];
 
 export async function seedDatabase(): Promise<void> {
@@ -144,9 +147,7 @@ export async function seedDatabase(): Promise<void> {
       console.log(`[seed] Inserted ${CITIES.length} cities`);
     }
 
-    // Upsert the 19 base categories (names/icons may evolve over time).
-    // sectionId is intentionally excluded from the update set so existing
-    // admin-assigned section mappings are never overwritten on restart.
+    // Upsert base categories — always update names/icons/section.
     await db.insert(categoriesTable).values(BASE_CATEGORIES).onConflictDoUpdate({
       target: categoriesTable.id,
       set: {
@@ -155,13 +156,61 @@ export async function seedDatabase(): Promise<void> {
         iconName:  sql`excluded.icon_name`,
         sortOrder: sql`excluded.sort_order`,
         isActive:  sql`excluded.is_active`,
+        sectionId: sql`excluded.section_id`,
       },
     });
     console.log(`[seed] Upserted ${BASE_CATEGORIES.length} base categories`);
 
-    // Insert the 35 extra categories only when they are missing — never overwrite
-    await db.insert(categoriesTable).values(EXTRA_CATEGORIES).onConflictDoNothing();
-    console.log(`[seed] Ensured ${EXTRA_CATEGORIES.length} extra categories`);
+    // Upsert extra categories — always update section assignments.
+    await db.insert(categoriesTable).values(EXTRA_CATEGORIES).onConflictDoUpdate({
+      target: categoriesTable.id,
+      set: {
+        nameAr:    sql`excluded.name_ar`,
+        nameEn:    sql`excluded.name_en`,
+        iconName:  sql`excluded.icon_name`,
+        sortOrder: sql`excluded.sort_order`,
+        isActive:  sql`excluded.is_active`,
+        sectionId: sql`excluded.section_id`,
+      },
+    });
+    console.log(`[seed] Upserted ${EXTRA_CATEGORIES.length} extra categories`);
+
+    // Fix legacy k1–k15 categories: assign them to the correct sections.
+    await db.execute(sql`
+      UPDATE categories SET section_id = CASE id
+        WHEN 'k1'  THEN 'home_services'
+        WHEN 'k2'  THEN 'home_services'
+        WHEN 'k3'  THEN 'home_services'
+        WHEN 'k4'  THEN 'home_services'
+        WHEN 'k5'  THEN 'home_services'
+        WHEN 'k6'  THEN 'home_services'
+        WHEN 'k7'  THEN 'moving_general'
+        WHEN 'k8'  THEN 'home_services'
+        WHEN 'k9'  THEN 'tech_security'
+        WHEN 'k10' THEN 'tech_security'
+        WHEN 'k11' THEN 'home_services'
+        WHEN 'k12' THEN 'construction'
+        WHEN 'k13' THEN 'construction'
+        WHEN 'k14' THEN 'construction'
+        WHEN 'k15' THEN 'tech_security'
+        ELSE section_id
+      END
+      WHERE id IN ('k1','k2','k3','k4','k5','k6','k7','k8','k9','k10','k11','k12','k13','k14','k15')
+    `);
+
+    // Remove duplicate admin-created categories: keep only the earliest per name+section.
+    await db.execute(sql`
+      DELETE FROM categories
+      WHERE id IN (
+        SELECT id FROM (
+          SELECT id,
+                 ROW_NUMBER() OVER (PARTITION BY section_id, name_ar ORDER BY id) AS rn
+          FROM categories
+          WHERE id LIKE 'custom_%'
+        ) t WHERE rn > 1
+      )
+    `);
+    console.log('[seed] Cleaned up duplicate custom categories');
 
     const [{ count: adminCount }] = await db
       .select({ count: sql<number>`count(*)::int` })
