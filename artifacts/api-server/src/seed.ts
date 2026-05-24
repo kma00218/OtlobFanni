@@ -175,26 +175,11 @@ export async function seedDatabase(): Promise<void> {
     });
     console.log(`[seed] Upserted ${EXTRA_CATEGORIES.length} extra categories`);
 
-    // Fix legacy k1–k15 categories: assign them to the correct sections.
+    // Hide legacy k1–k15 categories — they are duplicates of the named seed categories.
+    // Deactivating prevents them from appearing in section listings while keeping
+    // any technician records that reference them intact.
     await db.execute(sql`
-      UPDATE categories SET section_id = CASE id
-        WHEN 'k1'  THEN 'home_services'
-        WHEN 'k2'  THEN 'home_services'
-        WHEN 'k3'  THEN 'home_services'
-        WHEN 'k4'  THEN 'home_services'
-        WHEN 'k5'  THEN 'home_services'
-        WHEN 'k6'  THEN 'home_services'
-        WHEN 'k7'  THEN 'moving_general'
-        WHEN 'k8'  THEN 'home_services'
-        WHEN 'k9'  THEN 'tech_security'
-        WHEN 'k10' THEN 'tech_security'
-        WHEN 'k11' THEN 'home_services'
-        WHEN 'k12' THEN 'construction'
-        WHEN 'k13' THEN 'construction'
-        WHEN 'k14' THEN 'construction'
-        WHEN 'k15' THEN 'tech_security'
-        ELSE section_id
-      END
+      UPDATE categories SET is_active = false
       WHERE id IN ('k1','k2','k3','k4','k5','k6','k7','k8','k9','k10','k11','k12','k13','k14','k15')
     `);
 
