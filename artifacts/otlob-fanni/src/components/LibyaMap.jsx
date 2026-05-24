@@ -93,7 +93,7 @@ export default function LibyaMap({ stats = [], ar = true }) {
         { maxZoom: 12 }
       ).addTo(map)
 
-      map.fitBounds([[30.0, 9.0], [33.4, 25.5]])
+      map.fitBounds([[19.3, 9.3], [33.5, 25.4]])
 
       layerGroupRef.current = L.layerGroup().addTo(map)
     })
