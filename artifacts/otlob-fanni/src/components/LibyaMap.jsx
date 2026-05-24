@@ -60,6 +60,13 @@ const COORDS = {
   c59: [31.8167, 12.4167],
 }
 
+function dotRadius(total) {
+  if (total >= 11) return 13
+  if (total >= 4)  return 9
+  if (total >= 1)  return 6
+  return 3.5
+}
+
 export default function LibyaMap({ stats = [], ar = true }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
@@ -81,26 +88,27 @@ export default function LibyaMap({ stats = [], ar = true }) {
       mapRef.current = map
 
       L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
         { maxZoom: 12 }
       ).addTo(map)
 
-      map.fitBounds([[19.3, 9.3], [33.5, 25.4]])
+      map.fitBounds([[30.0, 9.0], [33.4, 25.5]])
 
       stats.forEach(city => {
         const coords = COORDS[city.id]
         if (!coords) return
 
-        const total = city.total ?? (city.technicians ?? 0) + (city.companies ?? 0) + (city.suppliers ?? 0)
+        const total  = city.total ?? (city.technicians ?? 0) + (city.companies ?? 0) + (city.suppliers ?? 0)
         const active = total > 0
+        const radius = dotRadius(total)
 
         const circle = L.circleMarker(coords, {
-          radius: active ? Math.min(5 + Math.sqrt(total) * 2.8, 22) : 3.5,
-          fillColor: active ? '#FF7900' : '#cbd5e1',
-          color: active ? '#b85c00' : '#94a3b8',
-          weight: active ? 1.5 : 1,
-          fillOpacity: active ? 0.88 : 0.55,
-          opacity: 1,
+          radius,
+          fillColor:   active ? '#FF7900' : '#3a4a5c',
+          color:       active ? '#ff9a3c' : '#2a3a4c',
+          weight:      active ? 1.5 : 1,
+          fillOpacity: active ? 0.92 : 0.55,
+          opacity:     1,
         }).addTo(map)
 
         if (active) {
@@ -114,19 +122,13 @@ export default function LibyaMap({ stats = [], ar = true }) {
           ].filter(Boolean).join('')
 
           circle.bindPopup(
-            `<div style="direction:rtl;text-align:right;font-family:system-ui,sans-serif;min-width:110px;padding:2px 0">
+            `<div style="direction:rtl;text-align:right;font-family:system-ui,sans-serif;min-width:120px;padding:2px 0">
               <div style="font-weight:800;font-size:13px;color:#071B33;margin-bottom:5px">${ar ? city.nameAr : (city.nameEn || city.nameAr)}</div>
               <div style="font-size:12px;line-height:1.9;color:#374151">${rows}</div>
             </div>`,
-            { closeButton: false, maxWidth: 180, className: 'libya-popup' }
+            { closeButton: false, maxWidth: 180 }
           )
           circle.on('click', () => circle.openPopup())
-        } else {
-          circle.bindTooltip(city.nameAr, {
-            permanent: false,
-            direction: 'top',
-            opacity: 0.75,
-          })
         }
       })
     })
@@ -147,8 +149,7 @@ export default function LibyaMap({ stats = [], ar = true }) {
         height: '272px',
         borderRadius: '16px',
         overflow: 'hidden',
-        boxShadow: '0 2px 16px rgba(0,0,0,0.10)',
-        border: '1px solid #f1f5f9',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
       }}
     />
   )
