@@ -69,7 +69,8 @@ function dotRadius(total) {
 
 export default function LibyaMap({ stats = [], ar = true }) {
   const containerRef = useRef(null)
-  const mapRef = useRef(null)
+  const mapRef       = useRef(null)
+  const layerGroupRef = useRef(null)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -94,6 +95,27 @@ export default function LibyaMap({ stats = [], ar = true }) {
 
       map.fitBounds([[30.0, 9.0], [33.4, 25.5]])
 
+      layerGroupRef.current = L.layerGroup().addTo(map)
+    })
+
+    return () => {
+      mounted = false
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+        layerGroupRef.current = null
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!stats.length || !mapRef.current || !layerGroupRef.current) return
+
+    import('leaflet').then(({ default: L }) => {
+      if (!mapRef.current || !layerGroupRef.current) return
+
+      layerGroupRef.current.clearLayers()
+
       stats.forEach(city => {
         const coords = COORDS[city.id]
         if (!coords) return
@@ -107,9 +129,9 @@ export default function LibyaMap({ stats = [], ar = true }) {
           fillColor:   active ? '#FF7900' : '#3a4a5c',
           color:       active ? '#ff9a3c' : '#2a3a4c',
           weight:      active ? 1.5 : 1,
-          fillOpacity: active ? 0.92 : 0.55,
+          fillOpacity: active ? 0.92 : 0.45,
           opacity:     1,
-        }).addTo(map)
+        }).addTo(layerGroupRef.current)
 
         if (active) {
           const techs = city.technicians ?? 0
@@ -132,15 +154,7 @@ export default function LibyaMap({ stats = [], ar = true }) {
         }
       })
     })
-
-    return () => {
-      mounted = false
-      if (mapRef.current) {
-        mapRef.current.remove()
-        mapRef.current = null
-      }
-    }
-  }, [])
+  }, [stats, ar])
 
   return (
     <div
