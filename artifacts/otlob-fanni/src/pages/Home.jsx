@@ -10,6 +10,7 @@ import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
+import LibyaMap from '../components/LibyaMap'
 
 function RecentCard({ item, ar }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
@@ -486,36 +487,45 @@ export default function Home() {
             <Share2 className="w-4 h-4 text-white/40 flex-shrink-0" />
           </button>
 
-          {/* بطاقة الانطلاق */}
-          <div
-            className="mt-4 rounded-2xl p-6 flex flex-col items-center gap-4 text-center select-none"
-            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #071B33 100%)' }}
-          >
-            <span className="text-5xl">🚀</span>
-            <div className="flex flex-col gap-2">
-              <p className="text-white font-extrabold text-2xl leading-tight drop-shadow">
-                {ar ? 'اطلب فني ينطلق!' : 'Otlob Fanni is Launching!'}
-              </p>
-              <p className="text-white font-semibold text-base leading-relaxed">
-                {ar
-                  ? 'التطبيق جديد وقاعدة الفنيين والشركات تنمو كل يوم'
-                  : 'Our network of technicians & companies grows every day'}
+          {/* خريطة توزيع مقدمي الخدمات في ليبيا */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2 px-0.5">
+              <span className="text-sm font-extrabold text-[#071B33]">
+                {ar ? '🗺️ مقدمو الخدمات في ليبيا' : '🗺️ Providers Across Libya'}
+              </span>
+              <div className="flex items-center gap-3 text-[10px] font-semibold text-gray-500">
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF7900] inline-block" />
+                  {ar ? 'نشط' : 'Active'}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block" />
+                  {ar ? 'قريباً' : 'Soon'}
+                </span>
+              </div>
+            </div>
+            <LibyaMap stats={citiesForFilter} ar={ar} />
+            <div className="flex items-center justify-center gap-4 mt-2 text-[11px] text-gray-400 font-medium">
+              <span>🔧 {ar ? 'فنيون' : 'Technicians'}</span>
+              <span>🏢 {ar ? 'شركات' : 'Companies'}</span>
+              <span>📦 {ar ? 'موردون' : 'Suppliers'}</span>
+            </div>
+          </div>
+
+          {/* زر الانضمام */}
+          <Link href="/join-us">
+            <div
+              className="mt-3 rounded-2xl px-5 py-4 active:scale-95 transition-transform duration-150 shadow-lg flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
+                boxShadow: '0 4px 16px rgba(52,199,89,0.4)',
+              }}
+            >
+              <p className="text-white font-extrabold text-base leading-tight text-center">
+                {ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}
               </p>
             </div>
-            <Link href="/join-us">
-              <div
-                className="rounded-xl px-6 py-3 active:scale-95 transition-transform duration-150 shadow-lg"
-                style={{
-                  background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
-                  boxShadow: '0 4px 16px rgba(52,199,89,0.4)',
-                }}
-              >
-                <p className="text-white font-extrabold text-base leading-tight">
-                  {ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}
-                </p>
-              </div>
-            </Link>
-          </div>
+          </Link>
 
           {/* كل التخصصات */}
           <Link href="/categories">
