@@ -233,15 +233,25 @@ router.get("/stats", async (_req, res): Promise<void> => {
 });
 
 // ── Category counts (active technicians per category) ────────────────────────
+// Counts both primary categoryId AND entries in extraSpecialties, matching the
+// same logic used by GET /technicians?category=X
 router.get("/category-counts", async (_req, res): Promise<void> => {
-  const rows = await db
-    .select({ categoryId: techniciansTable.categoryId, cnt: count() })
-    .from(techniciansTable)
-    .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)))
-    .groupBy(techniciansTable.categoryId);
+  const rows = await db.execute<{ cat_id: string; cnt: string }>(sql`
+    SELECT cat_id, COUNT(DISTINCT id) AS cnt
+    FROM (
+      SELECT id, category_id AS cat_id
+      FROM technicians
+      WHERE is_approved = true AND is_active = true AND category_id IS NOT NULL
+      UNION ALL
+      SELECT id, unnest(extra_specialties) AS cat_id
+      FROM technicians
+      WHERE is_approved = true AND is_active = true
+    ) t
+    GROUP BY cat_id
+  `);
 
   const map: Record<string, number> = {};
-  rows.forEach(r => { if (r.categoryId) map[r.categoryId] = Number(r.cnt); });
+  rows.rows.forEach(r => { if (r.cat_id) map[r.cat_id] = Number(r.cnt); });
   res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=120");
   res.json(map);
 });
