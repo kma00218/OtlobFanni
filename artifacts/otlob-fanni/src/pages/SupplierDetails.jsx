@@ -79,7 +79,7 @@ export default function SupplierDetails() {
   const [lightbox,     setLightbox]     = useState(null)
   const [reviews,      setReviews]      = useState([])
   const [showReviews,  setShowReviews]  = useState(false)
-  const [reviewModal,  setReviewModal]  = useState(true)
+  const [reviewModal,  setReviewModal]  = useState(false)
   const [form,         setForm]         = useState({ name: '', rating: 0, comment: '' })
   const [submitting,   setSubmitting]   = useState(false)
   const [submitted,    setSubmitted]    = useState(false)
