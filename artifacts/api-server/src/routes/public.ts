@@ -1259,7 +1259,8 @@ router.get("/pro/me", async (req, res): Promise<void> => {
     }).from(techniciansTable)
       .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
       .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
-      .where(eq(techniciansTable.id, entityId));
+      .where(or(eq(techniciansTable.id, entityId), eq(techniciansTable.applicationId, entityId)))
+      .limit(1);
     if (row) profile = { ...row.tech, cityNameAr: row.cityNameAr, cityNameEn: row.cityNameEn, categoryAr: row.categoryAr, categoryEn: row.categoryEn };
   } else if (entityType === 'company') {
     const [row] = await db.select({
