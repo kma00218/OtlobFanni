@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import CategoryCard from '../components/CategoryCard'
-import { sections, categories } from '../data/services'
+import { sections } from '../data/services'
 import AdBanner from '../components/AdBanner'
 import api from '../lib/api'
 
@@ -10,9 +10,11 @@ export default function Categories() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const [counts, setCounts] = useState({})
+  const [allCats, setAllCats] = useState([])
 
   useEffect(() => {
     api.categoryCounts().then(setCounts).catch(() => {})
+    api.categories().then(setAllCats).catch(() => {})
   }, [])
 
   return (
@@ -23,7 +25,7 @@ export default function Categories() {
         <AdBanner placement="all_specialties_page" dismissible />
 
         {sections.filter(s => s.isActive).map(section => {
-          const sectionCats = categories.filter(c => c.sectionId === section.id)
+          const sectionCats = allCats.filter(c => c.sectionId === section.id && c.isActive !== false)
           if (sectionCats.length === 0) return null
           return (
             <div key={section.id}>

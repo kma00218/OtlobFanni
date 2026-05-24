@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import { useEffect, useState } from 'react'
 import BackHeader from '../components/BackHeader'
 import CategoryCard from '../components/CategoryCard'
-import { sections, categories } from '../data/services'
+import { sections } from '../data/services'
 import AdBanner from '../components/AdBanner'
 import api from '../lib/api'
 
@@ -13,26 +13,31 @@ export default function Section() {
   const ar = lang === 'ar'
   const [, navigate] = useLocation()
   const [counts, setCounts] = useState({})
+  const [sectionCats, setSectionCats] = useState([])
+  const [loadingCats, setLoadingCats] = useState(true)
 
   useEffect(() => {
     api.categoryCounts().then(setCounts).catch(() => {})
   }, [])
 
-  const section = sections.find(s => s.id === id)
-  const sectionCats = categories.filter(c => c.sectionId === id)
+  useEffect(() => {
+    api.categories()
+      .then(all => setSectionCats(all.filter(c => c.sectionId === id && c.isActive !== false)))
+      .catch(() => setSectionCats([]))
+      .finally(() => setLoadingCats(false))
+  }, [id])
 
-  // If section not found redirect; if single category (non-more_services) skip the section page
-  const redirectTo = !section
-    ? '/categories'
-    : sectionCats.length === 1 && id !== 'more_services'
-      ? `/category/${sectionCats[0].id}`
-      : null
+  const section = sections.find(s => s.id === id)
 
   useEffect(() => {
-    if (redirectTo) navigate(redirectTo, { replace: true })
-  }, [redirectTo])
+    if (loadingCats) return
+    if (!section) { navigate('/categories', { replace: true }); return }
+    if (sectionCats.length === 1 && id !== 'more_services') {
+      navigate(`/category/${sectionCats[0].id}`, { replace: true })
+    }
+  }, [loadingCats, section, sectionCats])
 
-  if (redirectTo) return null
+  if (loadingCats || !section) return null
 
   const title = ar ? section.nameAr : section.nameEn
 
