@@ -205,6 +205,16 @@ export default function Home() {
                     <span className="text-teal-300">{stats.suppliers}</span> {ar ? 'مورد مستلزمات' : 'Supplier'}
                   </span>
                 </div>
+
+                <div className="w-px self-stretch bg-white/15" />
+
+                {/* Grand total */}
+                <div className="flex flex-col items-center flex-shrink-0">
+                  <span className="text-2xl font-black text-[#FF7900] leading-none">
+                    {stats.technicians + stats.companies + stats.suppliers}
+                  </span>
+                  <span className="text-[9px] font-bold text-white/60 mt-0.5">{ar ? 'إجمالي' : 'Total'}</span>
+                </div>
               </div>
 
               {/* Single clean arc at the bottom */}
