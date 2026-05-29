@@ -1,0 +1,102 @@
+Implement a lightweight “Request Service / أرسل طلب” lead system for OtlobFanni.
+
+Important:
+Do NOT build a full booking system.
+Do NOT add payments.
+Do NOT add calendar scheduling.
+Do NOT remove the current WhatsApp buttons.
+Keep the app lightweight.
+
+Goal:
+Users can send a request from the public profile of a technician, service company, or supplier provider. The request must be saved in the platform AND also sent through WhatsApp as a fallback.
+
+Apply this to all professional entity types:
+1. Technicians
+2. Service companies
+3. Supplier providers
+
+Required behavior:
+
+1. On every public profile page, add a clear button:
+أرسل طلب
+or
+Request Service
+
+Keep the existing WhatsApp contact button too.
+
+2. When the user clicks “أرسل طلب”, open a simple form with:
+- Customer name
+- Customer phone
+- City / area
+- Request type
+- Preferred date/time optional
+- Description
+- Optional image upload if already easy, otherwise skip image for now
+
+3. When the form is submitted:
+- Save the request in the database
+- Link it to the selected professional:
+  owner_id
+  owner_type: technician / service_company / supplier
+- Store request status:
+  new / contacted / completed / cancelled
+- Store created_at
+
+4. After saving the request, open WhatsApp to the same professional with a pre-filled message containing:
+- Customer name
+- Phone
+- City / area
+- Request type
+- Description
+- Preferred date/time if provided
+- Link to the professional profile
+
+This is important because not all professionals may check their pro dashboard yet.
+
+5. In the professional dashboard, add a new section:
+طلبات العملاء
+or
+Customer Requests
+
+Show only requests belonging to the logged-in professional.
+
+Each request card should show:
+- Customer name
+- Phone
+- City / area
+- Request type
+- Description
+- Preferred date/time
+- Status
+- Created date
+- WhatsApp button to reply to the customer
+- Button to mark as contacted
+- Button to mark as completed
+- Button to mark as cancelled
+
+6. In the admin dashboard, add a simple page:
+إدارة طلبات العملاء
+
+Admin can see all requests with filters:
+- owner type
+- city
+- status
+- date
+- technician/company/supplier name
+
+Admin can also update request status if needed.
+
+7. Do not expose customer phone numbers publicly.
+Only show them to:
+- the selected professional
+- admin
+
+8. Keep the UI simple and consistent with OtlobFanni colors and current design.
+
+9. Do not change the current registration forms.
+10. Do not change the existing profile layout except adding the new request button/section.
+11. Do not use higher power mode.
+
+Purpose:
+This is not a full booking system.
+This is a lightweight lead system that converts OtlobFanni from a directory into a real professional platform while keeping WhatsApp as the main communication fallback.
