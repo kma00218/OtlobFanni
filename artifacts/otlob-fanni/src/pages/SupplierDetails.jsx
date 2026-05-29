@@ -313,12 +313,30 @@ export default function SupplierDetails() {
                 </button>
               )}
             </div>
+            {/* ── Customer section ── */}
+            <div className="flex items-center gap-3 mt-4 mb-2">
+              <div className="flex-1 h-px" style={{ background: '#EEF2F8' }} />
+              <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase">
+                {ar ? 'كعميل' : 'As a Customer'}
+              </span>
+              <div className="flex-1 h-px" style={{ background: '#EEF2F8' }} />
+            </div>
             <button
               onClick={() => setShowRequest(true)}
-              className="w-full mt-2 flex items-center justify-center gap-2 text-[#071B33] text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
-              style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', border: '1.5px solid #BFDBFE' }}>
-              <ClipboardList className="w-4 h-4 text-[#3B82F6]" />
-              {ar ? 'أرسل طلب خدمة' : 'Request Service'}
+              className="w-full flex items-center gap-3.5 bg-white rounded-2xl px-4 py-3.5 active:scale-[0.98] transition-transform"
+              style={{ border: '1.5px solid #99F6E4', boxShadow: '0 2px 0 #0D9488, 0 4px 14px rgba(13,148,136,0.15)' }}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #0D9488, #0F766E)', boxShadow: '0 2px 8px rgba(13,148,136,0.35)' }}>
+                <ClipboardList className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 text-right">
+                <p className="font-black text-[#0D9488] text-sm leading-tight">
+                  {ar ? 'اطلب خدمة الآن' : 'Request Service Now'}
+                </p>
+                <p className="text-[11px] text-gray-400 mt-0.5 font-medium">
+                  {ar ? 'أخبر المورد بما تحتاجه' : 'Tell the supplier what you need'}
+                </p>
+              </div>
             </button>
             <button
               onClick={() => setShowReport(true)}
