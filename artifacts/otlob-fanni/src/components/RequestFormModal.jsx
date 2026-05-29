@@ -118,6 +118,13 @@ export default function RequestFormModal({
     if (!form.requestType)         { setError(ar ? 'نوع الطلب مطلوب' : 'Request type is required'); return }
     setError('')
     setSubmitting(true)
+
+    // Open the window NOW (synchronously, before any await) so the browser
+    // does not treat it as an unsolicited popup. We update its URL after.
+    const clean = (ownerWhatsapp || '').replace(/\D/g, '')
+    const waNum = clean.startsWith('218') ? clean : clean.startsWith('0') ? '218' + clean.slice(1) : '218' + clean
+    const waWin = window.open('about:blank', '_blank')
+
     try {
       let uploadedPaths = []
       if (photos.length > 0) {
@@ -136,13 +143,17 @@ export default function RequestFormModal({
         photoUrls: servingUrls.length > 0 ? servingUrls : undefined,
       })
       setDone(true)
-      const clean = (ownerWhatsapp || '').replace(/\D/g, '')
-      const waNum = clean.startsWith('218') ? clean : clean.startsWith('0') ? '218' + clean.slice(1) : '218' + clean
+
       const msg = buildWhatsAppMsg(form, ownerName, profileUrl, ar, servingUrls)
-      setTimeout(() => {
-        window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank')
-      }, 400)
+      const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`
+      if (waWin) {
+        waWin.location.href = waUrl
+      } else {
+        // Fallback if popup was blocked anyway
+        setTimeout(() => window.open(waUrl, '_blank'), 100)
+      }
     } catch {
+      if (waWin) waWin.close()
       setError(ar ? 'حدث خطأ، حاول مجدداً' : 'Something went wrong, try again')
     } finally {
       setSubmitting(false)
