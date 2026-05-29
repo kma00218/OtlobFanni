@@ -771,13 +771,80 @@ router.post("/pro-credentials/:entityType/:entityId", async (req, res): Promise<
   const id = crypto.randomUUID();
 
   await db.insert(proCredentialsTable).values({
-    id, entityType, entityId, whatsapp, displayName, passwordHash,
+    id, entityType, entityId, whatsapp, displayName, passwordHash, passwordPlain: password,
   }).onConflictDoUpdate({
     target: proCredentialsTable.entityId,
-    set: { whatsapp, displayName, passwordHash, updatedAt: new Date() },
+    set: { whatsapp, displayName, passwordHash, passwordPlain: password, updatedAt: new Date() },
   });
 
   res.json({ password, whatsapp, displayName });
+});
+
+// ── Pro Credentials Bulk (Admin) ──────────────────────────────────────────────
+router.post("/pro-credentials/bulk", async (_req, res): Promise<void> => {
+  const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  function genPassword() {
+    const bytes = crypto.randomBytes(6);
+    let p = "";
+    for (let i = 0; i < 6; i++) p += CHARS[bytes[i] % CHARS.length];
+    return p;
+  }
+
+  const [technicians, companies, suppliers, existingCreds] = await Promise.all([
+    db.select().from(techniciansTable)
+      .where(and(eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true))),
+    db.select().from(companyApplicationsTable)
+      .where(or(eq(companyApplicationsTable.status, 'approved'), eq(companyApplicationsTable.status, 'published'))),
+    db.select().from(supplierApplicationsTable)
+      .where(eq(supplierApplicationsTable.status, 'published')),
+    db.select().from(proCredentialsTable),
+  ]);
+
+  const credMap = new Map(existingCreds.map(c => [c.entityId, c]));
+
+  const results: { entityType: string; entityId: string; displayName: string; whatsapp: string; password: string; isNew: boolean }[] = [];
+
+  const upserts: Promise<unknown>[] = [];
+
+  const process = (entityType: string, entityId: string, displayName: string, whatsapp: string) => {
+    const existing = credMap.get(entityId);
+    let password: string;
+    let isNew: boolean;
+
+    if (existing && existing.passwordPlain) {
+      password = existing.passwordPlain;
+      isNew = false;
+    } else {
+      password = genPassword();
+      const passwordHash = crypto.createHash("sha256").update(password).digest("hex");
+      const id = crypto.randomUUID();
+      upserts.push(
+        db.insert(proCredentialsTable).values({
+          id, entityType, entityId, whatsapp, displayName, passwordHash, passwordPlain: password,
+        }).onConflictDoUpdate({
+          target: proCredentialsTable.entityId,
+          set: { whatsapp, displayName, passwordHash, passwordPlain: password, updatedAt: new Date() },
+        })
+      );
+      isNew = true;
+    }
+
+    results.push({ entityType, entityId, displayName, whatsapp, password, isNew });
+  };
+
+  for (const t of technicians) {
+    process('technician', t.id, t.nameAr || t.nameEn || '', t.whatsapp || t.phone || '');
+  }
+  for (const c of companies) {
+    process('company', c.id, c.companyName || '', c.whatsapp || c.phone || '');
+  }
+  for (const s of suppliers) {
+    process('supplier', s.id, s.businessName || '', s.whatsapp || s.phone || '');
+  }
+
+  await Promise.all(upserts);
+  res.json(results);
 });
 
 // ── Update Reports (Admin) ─────────────────────────────────────────────────────

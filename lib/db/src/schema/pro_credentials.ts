@@ -6,7 +6,8 @@ export const proCredentialsTable = pgTable("pro_credentials", {
   entityId:     text("entity_id").notNull().unique(),
   whatsapp:     text("whatsapp").notNull(),
   displayName:  text("display_name").notNull().default(""),
-  passwordHash: text("password_hash").notNull(),
+  passwordHash:  text("password_hash").notNull(),
+  passwordPlain: text("password_plain").default(""),
   createdAt:    timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt:    timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
