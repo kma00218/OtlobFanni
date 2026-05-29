@@ -337,6 +337,17 @@ export default function TechnicianDetails() {
               </div>
             )}
 
+            {/* AI-extracted keyword tags */}
+            {tech.aiTags?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {tech.aiTags.map((tag, i) => (
+                  <span key={i} className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-0.5 rounded-full">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Referral trust badge */}
             {tech.referralSource === 'technician' && (
               <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-bold px-3 py-1 rounded-full mb-3">

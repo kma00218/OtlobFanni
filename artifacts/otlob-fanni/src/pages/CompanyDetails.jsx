@@ -326,6 +326,17 @@ export default function CompanyDetails() {
               </div>
             )}
 
+            {/* AI-extracted keyword tags */}
+            {company.aiTags?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {company.aiTags.map((tag, i) => (
+                  <span key={i} className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-0.5 rounded-full">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Stats strip */}
             <div className="flex flex-wrap gap-2 mb-3">
               <span className="inline-flex items-center gap-1.5 text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>

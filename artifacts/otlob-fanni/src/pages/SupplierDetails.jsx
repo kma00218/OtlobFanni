@@ -274,6 +274,17 @@ export default function SupplierDetails() {
               </div>
             )}
 
+            {/* AI-extracted keyword tags */}
+            {supplier.aiTags?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {supplier.aiTags.map((tag, i) => (
+                  <span key={i} className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-0.5 rounded-full">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Stats strip */}
             <div className="flex flex-wrap gap-2 mb-3">
               {city && (
