@@ -87,6 +87,18 @@ function RequestCard({ req, onStatusChange }) {
         </div>
       )}
 
+      {/* Photos */}
+      {req.photoUrls && req.photoUrls.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {req.photoUrls.map((url, i) => (
+            <a key={i} href={url} target="_blank" rel="noreferrer"
+              className="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0 hover:opacity-90 transition-opacity">
+              <img src={url} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display='none' }} />
+            </a>
+          ))}
+        </div>
+      )}
+
       {/* Preferred datetime */}
       {req.preferredDatetime && (
         <p className="text-xs text-gray-500 flex items-center gap-1.5">

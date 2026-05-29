@@ -15,6 +15,7 @@ export const serviceRequestsTable = pgTable("service_requests", {
   categoryName:      text("category_name"),
   description:       text("description"),
   preferredDatetime: text("preferred_datetime"),
+  photoUrls:         text("photo_urls").array(),
   status:            text("status").notNull().default("new"),
   createdAt:         timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

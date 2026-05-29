@@ -621,7 +621,7 @@ router.get("/technicians/:id", async (req, res): Promise<void> => {
 
 // ── Create Service Request (lead) ─────────────────────────────────────────────
 router.post("/service-requests", async (req, res): Promise<void> => {
-  const { ownerId, ownerType, customerName, phone, cityName, requestType, description, preferredDatetime } = req.body;
+  const { ownerId, ownerType, customerName, phone, cityName, requestType, description, preferredDatetime, photoUrls } = req.body;
   if (!customerName || !ownerId || !ownerType) {
     res.status(400).json({ error: "Missing required fields" }); return;
   }
@@ -633,6 +633,7 @@ router.post("/service-requests", async (req, res): Promise<void> => {
     requestType: requestType || null,
     description: description || null,
     preferredDatetime: preferredDatetime || null,
+    photoUrls: Array.isArray(photoUrls) && photoUrls.length > 0 ? photoUrls : null,
     status: "new",
   }).returning();
   res.status(201).json(r);
