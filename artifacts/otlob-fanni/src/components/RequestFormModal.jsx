@@ -110,7 +110,7 @@ export default function RequestFormModal({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Sheet */}
-      <div className="relative w-full max-w-[480px] bg-white rounded-t-3xl shadow-2xl max-h-[90dvh] overflow-y-auto">
+      <div className="relative w-full max-w-[480px] bg-white rounded-t-3xl shadow-2xl max-h-[calc(90dvh-72px)] overflow-y-auto mb-[72px]">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-gray-200 rounded-full" />
