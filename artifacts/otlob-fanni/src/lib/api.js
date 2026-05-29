@@ -114,6 +114,10 @@ export const api = {
 
   updateServiceRequest: (id, status) => patch(`/service-requests/${id}/status`, { status }),
 
+  createServiceRequest: (data) => post('/service-requests', data),
+  myServiceRequests: (entityType, entityId) =>
+    get(`/service-requests/mine?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`),
+
   checkWhatsapp: (number, opts = {}) => {
     const p = new URLSearchParams({ number })
     if (opts.excludeId)   p.set('excludeId',   opts.excludeId)
@@ -196,8 +200,8 @@ export const api = {
     },
 
     serviceRequests: {
-      list:   ()             => get('/admin/service-requests'),
-      update: (id, status)  => patch(`/admin/service-requests/${id}`, { status }),
+      list:   (qs = '')     => get(`/admin/service-requests${qs}`),
+      update: (id, status)  => patch(`/admin/service-requests/${id}/status`, { status }),
       delete: (id)          => del(`/admin/service-requests/${id}`),
     },
 

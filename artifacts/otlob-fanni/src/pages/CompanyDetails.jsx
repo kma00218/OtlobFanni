@@ -6,7 +6,7 @@ import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, MessageSquare, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, Building2,
-  Facebook, Instagram, CheckCircle, Heart, Star, Send, X, Share2,
+  Facebook, Instagram, CheckCircle, Heart, Star, Send, X, Share2, ClipboardList,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { track } from '../lib/tracker'
@@ -15,6 +15,7 @@ import ImageLightbox from '../components/ImageLightbox'
 import ShareSheet from '../components/ShareSheet'
 import { SkeletonProfileHeader } from '../components/Skeleton'
 import ReportModal from '../components/ReportModal'
+import RequestFormModal from '../components/RequestFormModal'
 
 function useFavorites(storageKey) {
   const [favs, setFavs] = useState(() => {
@@ -110,8 +111,9 @@ export default function CompanyDetails() {
   const [showComment,  setShowComment]  = useState(false)
   const [rating,       setRating]       = useState(0)
   const [reviewsCount, setReviewsCount] = useState(0)
-  const [showShare,  setShowShare]  = useState(false)
-  const [showReport, setShowReport] = useState(false)
+  const [showShare,   setShowShare]   = useState(false)
+  const [showReport,  setShowReport]  = useState(false)
+  const [showRequest, setShowRequest] = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('fav_companies')
 
   const _seoCoName  = company?.company_name || company?.companyName || ''
@@ -377,6 +379,13 @@ export default function CompanyDetails() {
               style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
               <Send className="w-3.5 h-3.5" />
               {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
+            </button>
+            <button
+              onClick={() => setShowRequest(true)}
+              className="w-full mt-2 flex items-center justify-center gap-2 text-[#071B33] text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
+              style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', border: '1.5px solid #BFDBFE' }}>
+              <ClipboardList className="w-4 h-4 text-[#3B82F6]" />
+              {ar ? 'أرسل طلب خدمة' : 'Request Service'}
             </button>
             <button
               onClick={() => setShowReport(true)}
@@ -744,6 +753,16 @@ export default function CompanyDetails() {
         entityId={String(id)}
         entityName={name}
         city={city}
+        ar={ar}
+      />
+      <RequestFormModal
+        open={showRequest}
+        onClose={() => setShowRequest(false)}
+        ownerType="company"
+        ownerId={String(id)}
+        ownerName={name}
+        ownerWhatsapp={company?.whatsapp || company?.phone || ''}
+        profileUrl={window.location.href}
         ar={ar}
       />
     </div>

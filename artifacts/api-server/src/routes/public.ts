@@ -619,6 +619,35 @@ router.get("/technicians/:id", async (req, res): Promise<void> => {
   });
 });
 
+// ── Create Service Request (lead) ─────────────────────────────────────────────
+router.post("/service-requests", async (req, res): Promise<void> => {
+  const { ownerId, ownerType, customerName, phone, cityName, requestType, description, preferredDatetime } = req.body;
+  if (!customerName || !ownerId || !ownerType) {
+    res.status(400).json({ error: "Missing required fields" }); return;
+  }
+  const id = crypto.randomBytes(8).toString("hex");
+  const [r] = await db.insert(serviceRequestsTable).values({
+    id, ownerId, ownerType, customerName,
+    phone: phone || null,
+    cityName: cityName || null,
+    requestType: requestType || null,
+    description: description || null,
+    preferredDatetime: preferredDatetime || null,
+    status: "new",
+  }).returning();
+  res.status(201).json(r);
+});
+
+// ── Get service requests for logged-in pro ─────────────────────────────────────
+router.get("/service-requests/mine", async (req, res): Promise<void> => {
+  const { entityType, entityId } = req.query as Record<string, string>;
+  if (!entityType || !entityId) { res.status(400).json({ error: "Missing params" }); return; }
+  const reqs = await db.select().from(serviceRequestsTable)
+    .where(and(eq(serviceRequestsTable.ownerType, entityType), eq(serviceRequestsTable.ownerId, entityId)))
+    .orderBy(desc(serviceRequestsTable.createdAt));
+  res.json(reqs);
+});
+
 // ── Service Requests by IDs (public — user tracks own requests) ───────────────
 router.get("/service-requests/by-ids", async (req, res): Promise<void> => {
   const raw = req.query.ids as string;
@@ -633,7 +662,7 @@ router.get("/service-requests/by-ids", async (req, res): Promise<void> => {
 router.patch("/service-requests/:id/status", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const { status } = req.body;
-  if (!['cancelled', 'completed'].includes(status)) {
+  if (!['cancelled', 'completed', 'contacted'].includes(status)) {
     res.status(400).json({ error: "Invalid status" }); return;
   }
   const [r] = await db.update(serviceRequestsTable).set({ status }).where(eq(serviceRequestsTable.id, raw)).returning();

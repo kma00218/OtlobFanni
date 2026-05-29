@@ -1008,4 +1008,27 @@ router.patch("/profile-update-requests/:id", async (req, res): Promise<void> => 
   res.json({ ok: true, status: newStatus });
 });
 
+// ── Service Requests (admin) ───────────────────────────────────────────────────
+router.get("/service-requests", async (req, res): Promise<void> => {
+  const { ownerType, status, city } = req.query as Record<string, string>;
+  const conditions = [];
+  if (ownerType) conditions.push(eq(serviceRequestsTable.ownerType, ownerType));
+  if (status)    conditions.push(eq(serviceRequestsTable.status, status));
+  if (city)      conditions.push(ilike(serviceRequestsTable.cityName, `%${city}%`));
+  const reqs = conditions.length > 0
+    ? await db.select().from(serviceRequestsTable).where(and(...conditions)).orderBy(desc(serviceRequestsTable.createdAt))
+    : await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt));
+  res.json(reqs);
+});
+
+router.patch("/service-requests/:id/status", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { status } = req.body;
+  const allowed = ['new', 'contacted', 'completed', 'cancelled'];
+  if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
+  const [r] = await db.update(serviceRequestsTable).set({ status }).where(eq(serviceRequestsTable.id, id)).returning();
+  if (!r) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(r);
+});
+
 export default router;

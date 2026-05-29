@@ -5,7 +5,7 @@ import { useRoute } from 'wouter'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, Package, Heart, Image as ImageIcon,
-  Star, X, Send, Share2,
+  Star, X, Send, Share2, ClipboardList,
 } from 'lucide-react'
 import api from '../lib/api'
 import { track } from '../lib/tracker'
@@ -13,6 +13,7 @@ import { SUPPLY_TYPES, supplyTypeLabel } from '../data/suppliers'
 import ImageLightbox from '../components/ImageLightbox'
 import { SkeletonProfileHeader } from '../components/Skeleton'
 import ReportModal from '../components/ReportModal'
+import RequestFormModal from '../components/RequestFormModal'
 
 const WaIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0">
@@ -85,6 +86,7 @@ export default function SupplierDetails() {
   const [submitted,    setSubmitted]    = useState(false)
   const [showComment,  setShowComment]  = useState(false)
   const [showReport,   setShowReport]   = useState(false)
+  const [showRequest,  setShowRequest]  = useState(false)
   const { isFav, toggle: toggleFav } = useFavorites('favSuppliers')
 
   const _seoSupName = supplier?.businessName || supplier?.business_name || ''
@@ -311,6 +313,13 @@ export default function SupplierDetails() {
                 </button>
               )}
             </div>
+            <button
+              onClick={() => setShowRequest(true)}
+              className="w-full mt-2 flex items-center justify-center gap-2 text-[#071B33] text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
+              style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', border: '1.5px solid #BFDBFE' }}>
+              <ClipboardList className="w-4 h-4 text-[#3B82F6]" />
+              {ar ? 'أرسل طلب خدمة' : 'Request Service'}
+            </button>
             <button
               onClick={() => setShowReport(true)}
               className="w-full mt-2 flex items-center justify-center gap-1.5 text-slate-500 text-xs font-semibold py-2.5 rounded-2xl transition-all"
@@ -596,6 +605,16 @@ export default function SupplierDetails() {
         entityId={String(id)}
         entityName={name}
         city={city}
+        ar={ar}
+      />
+      <RequestFormModal
+        open={showRequest}
+        onClose={() => setShowRequest(false)}
+        ownerType="supplier"
+        ownerId={String(id)}
+        ownerName={name}
+        ownerWhatsapp={whatsapp || ''}
+        profileUrl={window.location.href}
         ar={ar}
       />
     </div>
