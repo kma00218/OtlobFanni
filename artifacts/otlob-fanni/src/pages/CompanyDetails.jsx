@@ -6,7 +6,7 @@ import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, MessageSquare, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, Building2,
-  Facebook, Instagram, CheckCircle, Heart, Star, Send, X,
+  Facebook, Instagram, CheckCircle, Heart, Star, Send, X, Share2,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { track } from '../lib/tracker'
@@ -178,7 +178,7 @@ export default function CompanyDetails() {
   }
 
   if (notFound) return (
-    <div className="bg-[#EEF4FF] min-h-screen pt-20" dir={dir}>
+    <div className="bg-[#F4F6FA] min-h-screen pt-20" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
       <div className="flex flex-col items-center justify-center py-20 text-center px-6 gap-4">
         <p className="text-gray-700 font-bold text-lg">{ar ? 'الشركة غير موجودة' : 'Company not found'}</p>
@@ -188,7 +188,7 @@ export default function CompanyDetails() {
   )
 
   if (!company) return (
-    <div className="bg-[#EEF4FF] min-h-screen pt-20" dir={dir}>
+    <div className="bg-[#F4F6FA] min-h-screen pt-20" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
       <div className="px-4 pt-4 space-y-3">
         <SkeletonProfileHeader />
@@ -238,7 +238,7 @@ export default function CompanyDetails() {
   const expLabel   = ar ? (EXP_AR[yearsActive] || yearsActive) : (EXP_EN[yearsActive] || yearsActive)
 
   return (
-    <div className="bg-[#EEF4FF] min-h-screen pt-20 pb-28" dir={dir}>
+    <div className="bg-[#F4F6FA] min-h-screen pt-20 pb-28" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل الشركة' : 'Company Details'} />
 
       {lightbox && (
@@ -252,124 +252,153 @@ export default function CompanyDetails() {
       <main className="px-4 pt-4 space-y-4">
 
         {/* بطاقة الشركة الرئيسية */}
-        <div className="bg-[#EBF5FF] rounded-2xl border border-blue-300 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-[#0e3460] to-[#1a56db] px-4 pt-4 pb-6 flex items-start justify-end">
-            <button
-              onClick={() => toggleFav(id)}
-              className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
-              aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
-            >
-              <Heart
-                className="w-4 h-4 transition-colors"
-                fill={isFav(id) ? '#f43f5e' : 'none'}
-                stroke={isFav(id) ? '#f43f5e' : 'white'}
-              />
-            </button>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 4px 28px rgba(7,27,51,0.1)' }}>
+
+          {/* Hero */}
+          <div className="relative h-36 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0e3460 0%, #1a3d6e 55%, #1a56db 100%)' }}>
+            <div className="absolute -top-8 -end-8 w-40 h-40 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #FF7900, transparent)' }} />
+            <div className="absolute -bottom-8 -start-8 w-40 h-40 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #60a5fa, transparent)' }} />
+            <div className="relative flex items-start justify-between p-3 z-10">
+              <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-white/20">
+                <Building2 className="w-2.5 h-2.5" /> {ar ? 'شركة خدمات' : 'Service Co.'}
+              </span>
+              <button
+                onClick={() => toggleFav(id)}
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)' }}
+                aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
+              >
+                <Heart className="w-4 h-4 transition-colors"
+                  fill={isFav(id) ? '#f43f5e' : 'none'}
+                  stroke={isFav(id) ? '#f43f5e' : 'white'} />
+              </button>
+            </div>
+            {availableNow && (
+              <div className="absolute bottom-3 start-4 z-10">
+                <span className="inline-flex items-center gap-1.5 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-md"
+                  style={{ background: 'rgba(16,185,129,0.88)' }}>
+                  <span className="w-2 h-2 bg-white rounded-full" />
+                  {ar ? 'متاح الآن' : 'Available Now'}
+                </span>
+              </div>
+            )}
           </div>
-          <div className="px-4 pt-0 pb-4 -mt-5">
-            <div className="flex items-end gap-3 mb-3">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 bg-[#0e3460] flex items-center justify-center">
+
+          <div className="px-4 pb-5">
+            {/* Avatar overlapping hero */}
+            <div className="flex items-end gap-3 -mt-12 mb-1">
+              <div className="w-24 h-24 rounded-3xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+                style={{ border: '4px solid white', boxShadow: '0 4px 20px rgba(7,27,51,0.18)', background: 'linear-gradient(135deg, #0e3460, #1a56db)', position: 'relative', zIndex: 1 }}>
                 {logo
                   ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [logo], index: 0 })} />
-                  : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
-                      <span className="text-white text-lg font-bold text-center px-1 leading-tight">{firstWord}</span>
-                    </div>
+                  : <span className="text-white text-2xl font-black">{firstWord}</span>
                 }
               </div>
-              <div className="flex-1 min-w-0 mt-10">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <Building2 className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
-                  <h1 className="font-bold text-gray-900 text-lg leading-tight">{name}</h1>
-                  <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 my-1">
-                  <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full tracking-wide shadow-sm">
-                    🪪 {ar ? 'رقم التعريف' : 'ID'}: COM-{createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear()}-{String(company.id).replace(/\D/g,'').slice(-6)}
+              <div className="pb-1 flex-1" />
+            </div>
+
+            {/* Name + ID */}
+            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-1">{name}</h1>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-slate-400 text-[11px] font-bold">
+                🪪 COM-{createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear()}-{String(company.id).replace(/\D/g,'').slice(-6)}
+              </span>
+              {createdAt && (
+                <span className="inline-flex items-center gap-1 bg-[#1a56db] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                  📅 {new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+
+            {/* Specialty chips */}
+            {allCatNames.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {allCatNames.map((n, i) => (
+                  <span key={i}
+                    className="inline-flex items-center gap-1.5 text-[#1a56db] text-xs font-black px-3 py-1.5 rounded-full"
+                    style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.1), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
+                    <Building2 className="w-3 h-3 flex-shrink-0" />
+                    {n}
                   </span>
-                  {createdAt && (
-                    <span className="inline-flex items-center gap-1.5 bg-[#1a56db] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
-                      📅 {ar ? 'نشر في' : 'Since'}: {new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-[#FF7900] font-medium">{catName}</p>
+                ))}
               </div>
-            </div>
+            )}
 
-            <div className="flex items-center gap-1.5 mb-2">
-              <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-              <p className="text-sm text-gray-600">{city}{area ? ` · ${area}` : ''}</p>
-            </div>
-
-            {/* التقييم */}
-            <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 mb-2 active:opacity-70 transition-opacity">
-              <Stars rating={rating} count={reviewsCount} />
-              {reviewsCount > 0 && (
-                <span className="text-xs text-[#FF7900] font-bold underline underline-offset-2">
-                  {ar ? 'عرض التقييمات' : 'See reviews'}
-                </span>
-              )}
-            </button>
-
-            <div className="flex flex-wrap gap-2 mt-3">
-              {availableNow && (
-                <span className="bg-green-50 border border-green-200 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                  {ar ? '● متاح الآن' : '● Available Now'}
-                </span>
-              )}
-              {emergency && (
-                <span className="bg-red-50 border border-red-200 text-red-600 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> {ar ? 'خدمة طوارئ 24/7' : 'Emergency 24/7'}
-                </span>
-              )}
+            {/* Stats strip */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              <span className="inline-flex items-center gap-1.5 text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+                <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                {city}{area ? ` · ${area}` : ''}
+              </span>
               {expLabel && (
-                <span className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                <span className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full">
                   <Briefcase className="w-3 h-3" /> {expLabel}
                 </span>
               )}
+              {emergency && (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-200 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full">
+                  <Zap className="w-3 h-3" /> {ar ? 'طوارئ 24/7' : 'Emergency 24/7'}
+                </span>
+              )}
             </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3 mb-4">
+              <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
+                <Stars rating={rating} count={reviewsCount} />
+                {reviewsCount > 0 && (
+                  <span className="text-xs text-[#FF7900] font-bold underline underline-offset-2">
+                    {ar ? 'عرض التقييمات' : 'See reviews'}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2.5 mb-2">
+              <a
+                href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent('السلام عليكم، وجدت شركتكم على منصة اطلب فني وأرغب في الاستفسار عن خدماتكم.')}`}
+                target="_blank" rel="noreferrer"
+                className="flex-1 text-white text-sm font-black py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                style={{ background: 'linear-gradient(135deg, #25D366, #1aad52)', boxShadow: '0 4px 16px rgba(37,211,102,0.35)' }}>
+                <MessageSquare className="w-4 h-4" />
+                {ar ? 'واتساب' : 'WhatsApp'}
+              </a>
+              <a href={`tel:${phone}`}
+                className="flex-1 text-white text-sm font-black py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                style={{ background: 'linear-gradient(135deg, #071B33, #102848)', boxShadow: '0 4px 16px rgba(7,27,51,0.25)' }}>
+                <Phone className="w-4 h-4" />
+                {ar ? 'اتصال' : 'Call'}
+              </a>
+            </div>
+            <button
+              onClick={() => setShowShare(true)}
+              className="w-full mt-1 flex items-center justify-center gap-2 text-white text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
+              style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
+              <Send className="w-3.5 h-3.5" />
+              {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
+            </button>
+            <button
+              onClick={() => setShowReport(true)}
+              className="w-full mt-2 flex items-center justify-center gap-1.5 text-slate-500 text-xs font-semibold py-2.5 rounded-2xl transition-all"
+              style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+              <svg className="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
+            </button>
           </div>
         </div>
 
-        {/* أزرار التواصل */}
-        <div className="flex gap-2">
-          <a
-            href={`https://wa.me/${whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent('السلام عليكم، وجدت شركتكم على منصة اطلب فني وأرغب في الاستفسار عن خدماتكم.')}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            {ar ? 'واتساب' : 'WhatsApp'}
-          </a>
-          <a
-            href={`tel:${phone}`}
-            className="flex-1 bg-[#071B33] hover:bg-[#0f2d52] text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
-          >
-            <Phone className="w-3.5 h-3.5" />
-            {ar ? 'اتصال' : 'Call'}
-          </a>
-        </div>
-        <button
-          onClick={() => setShowShare(true)}
-          className="w-full flex items-center justify-center gap-2 bg-[#FF7900] text-white text-xs font-bold py-2.5 rounded-xl active:scale-[0.98] transition-transform mt-1 shadow-sm shadow-[#FF7900]/30">
-          <Send className="w-3.5 h-3.5" />
-          {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
-        </button>
-        <button
-          onClick={() => setShowReport(true)}
-          className="w-full flex items-center justify-center gap-1.5 bg-[#EBF5FF] hover:bg-[#DBEAFE] border border-[#3B82F6]/30 text-[#1D4ED8] text-xs font-semibold py-2 rounded-xl active:scale-[0.98] transition-all mt-1">
-          <svg className="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
-        </button>
-
         {/* السعر */}
         {priceFrom && (
-          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <DollarSign className="w-3.5 h-3.5" /> {ar ? 'نطاق السعر' : 'Price Range'}
-            </p>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                <DollarSign className="w-4 h-4 text-[#FF7900]" />
+              </div>
+              <p className="font-bold text-[#071B33] text-sm">{ar ? 'نطاق السعر' : 'Price Range'}</p>
+            </div>
+            <div className="px-5 py-4">
             <div className="flex items-center justify-between bg-[#FF7900]/5 rounded-xl p-3">
               <div className="text-center">
                 <p className="text-xs text-gray-400">{ar ? 'يبدأ من' : 'From'}</p>
@@ -385,24 +414,36 @@ export default function CompanyDetails() {
                 </div>
               </>}
             </div>
+            </div>
           </div>
         )}
 
         {/* وصف الشركة */}
         {description && (
-          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">
-              {ar ? 'عن الشركة' : 'About'}
-            </p>
-            <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
+                <Building2 className="w-4 h-4 text-[#1a56db]" />
+              </div>
+              <p className="font-bold text-[#071B33] text-sm">{ar ? 'عن الشركة' : 'About'}</p>
+            </div>
+            <div className="px-5 py-4">
+              <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+            </div>
           </div>
         )}
 
         {/* معلومات إضافية */}
-        <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4 space-y-2">
-          <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-3">
-            {ar ? 'معلومات الشركة' : 'Company Info'}
-          </p>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+            <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
+              <Building2 className="w-4 h-4 text-[#1a56db]" />
+            </div>
+            <p className="font-bold text-[#071B33] text-sm">{ar ? 'معلومات الشركة' : 'Company Info'}</p>
+          </div>
+          <div className="px-5 py-4 space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <InfoRow label={ar ? 'المدينة' : 'City'}        value={city} />
             <InfoRow label={ar ? 'المنطقة' : 'Area'}       value={area} />
@@ -423,92 +464,107 @@ export default function CompanyDetails() {
               <p className="text-sm text-blue-800 leading-relaxed">{certifications}</p>
             </div>
           )}
+          </div>
         </div>
 
         {/* أوقات العمل */}
         {(workingDays.length > 0 || hoursFrom) && (
-          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" /> {ar ? 'أوقات العمل' : 'Working Hours'}
-            </p>
-            {(hoursFrom || hoursTo) && (
-              <div className="flex items-center gap-2 mb-3 bg-gray-50 rounded-xl px-3 py-2">
-                <Clock className="w-3.5 h-3.5 text-[#FF7900]" />
-                <span className="text-sm text-gray-700 font-medium" dir="ltr">
-                  {hoursFrom}{hoursTo ? ` – ${hoursTo}` : ''}
-                </span>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                <Clock className="w-4 h-4 text-[#FF7900]" />
               </div>
-            )}
-            {workingDays.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {workingDays.map(d => (
-                  <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">
-                    {ar ? (DAY_AR[d] || d) : (DAY_EN[d] || d)}
+              <p className="font-bold text-[#071B33] text-sm">{ar ? 'أوقات العمل' : 'Working Hours'}</p>
+            </div>
+            <div className="px-5 py-4">
+              {(hoursFrom || hoursTo) && (
+                <div className="flex items-center gap-2 mb-3 bg-slate-50 rounded-xl px-3 py-2">
+                  <Clock className="w-3.5 h-3.5 text-[#FF7900]" />
+                  <span className="text-sm text-gray-700 font-medium" dir="ltr">
+                    {hoursFrom}{hoursTo ? ` – ${hoursTo}` : ''}
                   </span>
-                ))}
-              </div>
-            )}
+                </div>
+              )}
+              {workingDays.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {workingDays.map(d => (
+                    <span key={d} className="bg-[#071B33] text-white text-xs px-2.5 py-1 rounded-lg">
+                      {ar ? (DAY_AR[d] || d) : (DAY_EN[d] || d)}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         {/* معرض الأعمال */}
         {workImages.length > 0 && (
-          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5" />
-              {ar ? `معرض الأعمال (${workImages.length})` : `Work Portfolio (${workImages.length})`}
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {workImages.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={`${i + 1}`}
-                  className="w-full aspect-square object-cover rounded-xl border border-gray-100 cursor-zoom-in hover:opacity-90"
-                  onClick={() => setLightbox({ images: workImages, index: i })}
-                />
-              ))}
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                <ImageIcon className="w-4 h-4 text-[#FF7900]" />
+              </div>
+              <p className="font-bold text-[#071B33] text-sm">{ar ? `معرض الأعمال (${workImages.length})` : `Portfolio (${workImages.length})`}</p>
+            </div>
+            <div className="px-5 py-4">
+              <div className="grid grid-cols-3 gap-2">
+                {workImages.map((src, i) => (
+                  <img key={i} src={src} alt={`${i + 1}`}
+                    className="w-full aspect-square object-cover rounded-2xl border border-gray-100 cursor-zoom-in hover:opacity-90"
+                    onClick={() => setLightbox({ images: workImages, index: i })} />
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* التواصل الاجتماعي */}
         {(facebook || instagram) && (
-          <div className="bg-[#EBF5FF] rounded-2xl border border-blue-200 shadow-sm p-4 space-y-3">
-            <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">
-              {ar ? 'التواصل الاجتماعي' : 'Social Media'}
-            </p>
-            {facebook && (
-              <a href={facebook} target="_blank" rel="noreferrer"
-                className="flex items-center gap-3 bg-blue-50 rounded-xl px-3 py-2.5 text-blue-600 hover:bg-blue-100 transition-colors">
-                <Facebook className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm truncate" dir="ltr">{facebook}</span>
-              </a>
-            )}
-            {instagram && (
-              <a href={instagram} target="_blank" rel="noreferrer"
-                className="flex items-center gap-3 bg-pink-50 rounded-xl px-3 py-2.5 text-pink-600 hover:bg-pink-100 transition-colors">
-                <Instagram className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm truncate" dir="ltr">{instagram}</span>
-              </a>
-            )}
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
+                <Share2 className="w-4 h-4 text-[#1a56db]" />
+              </div>
+              <p className="font-bold text-[#071B33] text-sm">{ar ? 'التواصل الاجتماعي' : 'Social Media'}</p>
+            </div>
+            <div className="px-5 py-4 space-y-3">
+              {facebook && (
+                <a href={facebook} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-3 bg-blue-50 rounded-xl px-3 py-2.5 text-blue-600 hover:bg-blue-100 transition-colors">
+                  <Facebook className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm truncate" dir="ltr">{facebook}</span>
+                </a>
+              )}
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-3 bg-pink-50 rounded-xl px-3 py-2.5 text-pink-600 hover:bg-pink-100 transition-colors">
+                  <Instagram className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm truncate" dir="ltr">{instagram}</span>
+                </a>
+              )}
+            </div>
           </div>
         )}
 
         {/* ── قسم التقييمات ─────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#FF790018' }}>
-                <Star className="w-3.5 h-3.5 text-[#FF7900]" />
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                <Star className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+              <p className="font-bold text-[#071B33] text-sm">
                 {ar ? `التقييمات (${reviewsCount})` : `Reviews (${reviewsCount})`}
               </p>
             </div>
           </div>
 
-          <div className="px-4 py-3">
+          <div className="px-5 py-4">
             {reviewsCount === 0 ? (
               <div className="flex flex-col items-center py-5 gap-2 text-center">
                 <Star className="w-8 h-8 text-gray-200" />
@@ -576,13 +632,14 @@ export default function CompanyDetails() {
 
         {/* ── نموذج إضافة تقييم ─────────────────────────────────────────── */}
         {reviewModal && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-amber-50">
-                  <Star className="w-3.5 h-3.5 text-amber-500" />
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))', border: '1px solid rgba(245,158,11,0.25)' }}>
+                  <Star className="w-4 h-4 text-amber-500" />
                 </div>
-                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                <p className="font-bold text-[#071B33] text-sm">
                   {ar ? 'أضف تقييمك' : 'Add Your Review'}
                 </p>
               </div>

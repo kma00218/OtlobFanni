@@ -5,7 +5,7 @@ import { useRoute } from 'wouter'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, Package, Heart, Image as ImageIcon,
-  Star, X, Send,
+  Star, X, Send, Share2,
 } from 'lucide-react'
 import api from '../lib/api'
 import { track } from '../lib/tracker'
@@ -147,7 +147,7 @@ export default function SupplierDetails() {
 
   if (loading) {
     return (
-      <div className="bg-[#EEF9F8] min-h-screen pt-20" dir={dir}>
+      <div className="bg-[#F4F6FA] min-h-screen pt-20" dir={dir}>
         <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
         <main className="px-4 pt-4"><SkeletonProfileHeader /></main>
       </div>
@@ -156,7 +156,7 @@ export default function SupplierDetails() {
 
   if (!supplier) {
     return (
-      <div className="bg-[#EEF9F8] min-h-screen pt-20 flex flex-col" dir={dir}>
+      <div className="bg-[#F4F6FA] min-h-screen pt-20 flex flex-col" dir={dir}>
         <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-400 text-sm">{ar ? 'لم يتم العثور على المورد' : 'Supplier not found'}</p>
@@ -199,7 +199,7 @@ export default function SupplierDetails() {
   const openPhone = () => window.open(`tel:${phone}`, '_self')
 
   return (
-    <div className="bg-[#EEF9F8] min-h-screen pt-20 pb-28" dir={dir}>
+    <div className="bg-[#F4F6FA] min-h-screen pt-20 pb-28" dir={dir}>
       <BackHeader title={ar ? 'تفاصيل المورد' : 'Supplier Details'} />
 
       {lightbox && (
@@ -213,57 +213,77 @@ export default function SupplierDetails() {
       <main className="px-4 pt-4 space-y-4">
 
         {/* ── Header card ── */}
-        <div className="bg-[#E4F7F6] rounded-2xl border border-teal-300 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-[#0e5c6d] to-[#1a8fa8] px-4 pt-4 pb-6 flex items-start justify-end">
-            <button
-              onClick={() => toggleFav(id)}
-              className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform bg-white/90 shadow"
-              aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
-            >
-              <Heart
-                className="w-5 h-5 transition-colors"
-                fill={isFav(id) ? '#f43f5e' : 'none'}
-                stroke={isFav(id) ? '#f43f5e' : '#374151'}
-              />
-            </button>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 4px 28px rgba(7,27,51,0.1)' }}>
+
+          {/* Hero */}
+          <div className="relative h-36 overflow-hidden" style={{ background: 'linear-gradient(135deg, #0e5c6d 0%, #0e7c8f 55%, #1a9fb8 100%)' }}>
+            <div className="absolute -top-8 -end-8 w-40 h-40 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #FF7900, transparent)' }} />
+            <div className="absolute -bottom-8 -start-8 w-40 h-40 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #a7f3d0, transparent)' }} />
+            <div className="relative flex items-start justify-between p-3 z-10">
+              <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-white/20">
+                <Package className="w-2.5 h-2.5" /> {ar ? 'مورد مستلزمات' : 'Supplier'}
+              </span>
+              <button
+                onClick={() => toggleFav(id)}
+                className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)' }}
+                aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
+              >
+                <Heart className="w-4 h-4 transition-colors"
+                  fill={isFav(id) ? '#f43f5e' : 'none'}
+                  stroke={isFav(id) ? '#f43f5e' : 'white'} />
+              </button>
+            </div>
           </div>
 
-          <div className="px-4 pt-0 pb-4 -mt-5">
-            <div className="flex items-end gap-3 mb-3">
-              <div
-                className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow flex-shrink-0 flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #0e7c8f 0%, #071B33 100%)' }}
-              >
+          <div className="px-4 pb-5">
+            {/* Avatar overlapping hero */}
+            <div className="flex items-end gap-3 -mt-12 mb-1">
+              <div className="w-24 h-24 rounded-3xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+                style={{ border: '4px solid white', boxShadow: '0 4px 20px rgba(7,27,51,0.18)', background: 'linear-gradient(135deg, #0e5c6d, #0e7c8f)', position: 'relative', zIndex: 1 }}>
                 {logo
-                  ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in"
-                      onClick={() => setLightbox({ images: [logo], index: 0 })} />
-                  : <span className="text-3xl">{supplyEmoji}</span>
+                  ? <img src={logo} alt={name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [logo], index: 0 })} />
+                  : <span className="text-4xl">{supplyEmoji}</span>
                 }
               </div>
-
-              <div className="flex-1 min-w-0 mt-10">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <Package className="w-4 h-4 text-[#0e5c6d] flex-shrink-0" />
-                  <h1 className="font-bold text-gray-900 text-lg leading-tight">{name}</h1>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 my-1">
-                  <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full tracking-wide shadow-sm">
-                    🪪 {ar ? 'رقم التعريف' : 'ID'}: {idBadge}
-                  </span>
-                  {createdAt && (
-                    <span className="inline-flex items-center gap-1.5 bg-[#0e7c8f] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
-                      📅 {ar ? 'نشر في' : 'Since'}: {new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </span>
-                  )}
-                </div>
-                {supplyLabel && (
-                  <p className="text-sm text-[#0e5c6d] font-medium">{supplyEmoji} {supplyLabel}</p>
-                )}
-              </div>
+              <div className="pb-1 flex-1" />
             </div>
 
-            {/* Rating row */}
-            <div className="flex items-center gap-2 mb-3">
+            {/* Name + ID */}
+            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-1">{name}</h1>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-slate-400 text-[11px] font-bold">
+                🪪 {idBadge}
+              </span>
+              {createdAt && (
+                <span className="inline-flex items-center gap-1 bg-[#0e7c8f] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                  📅 {new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+
+            {/* Supply type chip */}
+            {supplyLabel && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[#0e5c6d] text-xs font-black px-3 py-1.5 rounded-full"
+                  style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.1), rgba(14,124,143,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
+                  {supplyEmoji} {supplyLabel}
+                </span>
+              </div>
+            )}
+
+            {/* Stats strip */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {city && (
+                <span className="inline-flex items-center gap-1.5 text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+                  <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                  {city}{area ? ` · ${area}` : ''}
+                </span>
+              )}
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3 mb-4">
               <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
                 <Stars rating={rating} count={reviewsCount} />
                 {reviewsCount > 0 && (
@@ -274,32 +294,28 @@ export default function SupplierDetails() {
               </button>
             </div>
 
-            {/* Location */}
-            {city && (
-              <div className="flex items-center gap-1.5 mb-3">
-                <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                <p className="text-sm text-gray-600">{city}{area ? ` · ${area}` : ''}</p>
-              </div>
-            )}
-
-            <div className="flex gap-2 mt-2">
+            {/* Action buttons */}
+            <div className="flex gap-2.5 mb-2">
               {(whatsapp || phone) && (
                 <button onClick={openWa}
-                  className="flex-1 bg-green-500 text-white text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                  className="flex-1 text-white text-sm font-black py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                  style={{ background: 'linear-gradient(135deg, #25D366, #1aad52)', boxShadow: '0 4px 16px rgba(37,211,102,0.35)' }}>
                   <WaIcon /> {ar ? 'واتساب' : 'WhatsApp'}
                 </button>
               )}
               {phone && (
                 <button onClick={openPhone}
-                  className="flex-1 bg-[#071B33] text-white text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                  className="flex-1 text-white text-sm font-black py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                  style={{ background: 'linear-gradient(135deg, #071B33, #102848)', boxShadow: '0 4px 16px rgba(7,27,51,0.25)' }}>
                   <Phone className="w-4 h-4" /> {ar ? 'اتصال' : 'Call'}
                 </button>
               )}
             </div>
             <button
               onClick={() => setShowReport(true)}
-              className="w-full flex items-center justify-center gap-1.5 bg-[#EBF5FF] hover:bg-[#DBEAFE] border border-[#3B82F6]/30 text-[#1D4ED8] text-xs font-semibold py-2 rounded-xl active:scale-95 transition-all mt-1">
-              <svg className="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              className="w-full mt-2 flex items-center justify-center gap-1.5 text-slate-500 text-xs font-semibold py-2.5 rounded-2xl transition-all"
+              style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+              <svg className="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
               {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
             </button>
           </div>
@@ -335,29 +351,34 @@ export default function SupplierDetails() {
 
         {/* ── Description ── */}
         {description && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <div className="pb-2">
-              <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                {ar ? 'عن النشاط' : 'About'}
-              </span>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
+                <Package className="w-4 h-4 text-[#0e5c6d]" />
+              </div>
+              <p className="font-bold text-[#071B33] text-sm">{ar ? 'عن النشاط' : 'About'}</p>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+            <div className="px-5 py-4">
+              <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+            </div>
           </div>
         )}
 
         {/* ── Shop Images ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-50">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#0e5c6d18' }}>
-              <ImageIcon className="w-3.5 h-3.5 text-[#0e5c6d]" />
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+            <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
+              <ImageIcon className="w-4 h-4 text-[#0e5c6d]" />
             </div>
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+            <p className="font-bold text-[#071B33] text-sm">
               {ar
                 ? `صور النشاط${shopImages.length > 0 ? ` (${shopImages.length})` : ''}`
                 : `Shop Photos${shopImages.length > 0 ? ` (${shopImages.length})` : ''}`}
             </p>
           </div>
-          <div className="px-4 py-3">
+          <div className="px-5 py-4">
             {shopImages.length > 0 ? (
               <div className="grid grid-cols-3 gap-2">
                 {shopImages.map((img, i) => (
@@ -385,13 +406,15 @@ export default function SupplierDetails() {
 
         {/* ── Social Media ── */}
         {(facebook || instagram || tiktok) && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <div className="pb-3">
-              <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                {ar ? 'وسائل التواصل' : 'Social Media'}
-              </span>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
+                <Share2 className="w-4 h-4 text-[#0e5c6d]" />
+              </div>
+              <p className="font-bold text-[#071B33] text-sm">{ar ? 'وسائل التواصل' : 'Social Media'}</p>
             </div>
-            <div className="space-y-2.5">
+            <div className="px-5 py-4 space-y-2.5">
               {facebook && (
                 <a href={facebook.startsWith('http') ? facebook : `https://${facebook}`}
                   target="_blank" rel="noreferrer"
@@ -427,13 +450,14 @@ export default function SupplierDetails() {
         )}
 
         {/* ── Reviews Section ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#0e5c6d18' }}>
-                <Star className="w-3.5 h-3.5 text-[#0e5c6d]" />
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
+                <Star className="w-4 h-4 text-[#0e5c6d]" />
               </div>
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+              <p className="font-bold text-[#071B33] text-sm">
                 {ar ? 'التقييمات' : 'Reviews'}
               </p>
             </div>

@@ -66,14 +66,15 @@ function InteractiveStars({ value, onChange }) {
 
 function SectionCard({ icon: Icon, title, children, accent = '#FF7900' }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-50">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${accent}18` }}>
-          <Icon className="w-3.5 h-3.5" style={{ color: accent }} />
+    <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
+      <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+        <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+          style={{ background: `linear-gradient(135deg, ${accent}22, ${accent}08)`, border: `1px solid ${accent}28` }}>
+          <Icon className="w-4 h-4" style={{ color: accent }} />
         </div>
-        <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">{title}</p>
+        <p className="font-bold text-[#071B33] text-sm">{title}</p>
       </div>
-      <div className="px-4 py-3">{children}</div>
+      <div className="px-5 py-4">{children}</div>
     </div>
   )
 }
@@ -214,7 +215,7 @@ export default function TechnicianDetails() {
 
   if (notFound) {
     return (
-      <div className="bg-[#ECEEF2] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
+      <div className="bg-[#F4F6FA] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
         <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
         <div className="flex flex-col items-center justify-center py-20 text-center px-6 gap-4">
           <p className="text-gray-700 font-bold text-lg">{ar ? 'الفني غير موجود' : 'Technician not found'}</p>
@@ -225,7 +226,7 @@ export default function TechnicianDetails() {
   }
 
   if (!tech) return (
-    <div className="bg-[#ECEEF2] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F4F6FA] min-h-screen pt-20" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
       <div className="px-4 pt-4 space-y-3">
         <SkeletonProfileHeader />
@@ -243,7 +244,7 @@ export default function TechnicianDetails() {
   const firstName = tech.name ? (tech.name.trim().split(' ')[0] || '?') : '?'
 
   return (
-    <div className="bg-[#ECEEF2] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F4F6FA] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
       <BackHeader title={ar ? 'تفاصيل الفني' : 'Technician Details'} />
 
       {lightbox && (
@@ -259,70 +260,74 @@ export default function TechnicianDetails() {
       <main className="px-4 pt-4 space-y-3">
 
         {/* ── Profile Card ─────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 4px 28px rgba(7,27,51,0.1)' }}>
 
-          {/* Colored header strip */}
-          <div className="h-16 w-full flex items-start justify-between p-2" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
-            {tech.isFeatured ? (
-              <span className="bg-[#FF7900] text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                <Star className="w-2.5 h-2.5" fill="currentColor" />
-                {ar ? 'مميز' : 'Featured'}
-              </span>
-            ) : <span />}
-            <button
-              onClick={() => toggleFav(tech.id)}
-              className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
-              aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
-            >
-              <Heart
-                className="w-4 h-4 transition-colors"
-                fill={isFav(tech.id) ? '#f43f5e' : 'none'}
-                stroke={isFav(tech.id) ? '#f43f5e' : 'white'}
-              />
-            </button>
+          {/* Hero gradient */}
+          <div className="relative h-36 overflow-hidden" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0d2540 55%, #1a3a60 100%)' }}>
+            <div className="absolute -top-8 -end-8 w-40 h-40 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #FF7900, transparent)' }} />
+            <div className="absolute -bottom-8 -start-8 w-40 h-40 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #1a56db, transparent)' }} />
+            <div className="relative flex items-start justify-between p-3 z-10">
+              {tech.isFeatured ? (
+                <span className="bg-[#FF7900] text-white text-[10px] font-black px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <Star className="w-2.5 h-2.5" fill="currentColor" />
+                  {ar ? 'مميز' : 'Featured'}
+                </span>
+              ) : <span />}
+              <button
+                onClick={() => toggleFav(tech.id)}
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)' }}
+                aria-label={ar ? 'أضف للمفضلة' : 'Add to favorites'}
+              >
+                <Heart className="w-4 h-4 transition-colors"
+                  fill={isFav(tech.id) ? '#f43f5e' : 'none'}
+                  stroke={isFav(tech.id) ? '#f43f5e' : 'white'} />
+              </button>
+            </div>
+            {tech.availableNow && (
+              <div className="absolute bottom-3 start-4 z-10">
+                <span className="inline-flex items-center gap-1.5 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-md"
+                  style={{ background: 'rgba(16,185,129,0.88)' }}>
+                  <span className="w-2 h-2 bg-white rounded-full" />
+                  {ar ? 'متاح الآن' : 'Available Now'}
+                </span>
+              </div>
+            )}
           </div>
 
-          <div className="px-4 pb-4">
-            {/* Avatar overlapping strip */}
-            <div className="flex items-end gap-3 -mt-8 mb-3">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md flex-shrink-0 bg-[#071B33] flex items-center justify-center">
+          <div className="px-4 pb-5">
+            {/* Avatar overlapping hero */}
+            <div className="flex items-end gap-3 -mt-12 mb-1">
+              <div className="w-24 h-24 rounded-3xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+                style={{ border: '4px solid white', boxShadow: '0 4px 20px rgba(7,27,51,0.18)', background: 'linear-gradient(135deg, #071B33, #1a56db)', position: 'relative', zIndex: 1 }}>
                 {tech.photoUrl
                   ? <img src={tech.photoUrl} alt={tech.name} className="w-full h-full object-cover cursor-zoom-in" onClick={() => setLightbox({ images: [tech.photoUrl], index: 0 })} />
-                  : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
-                      <span className="text-white text-lg font-bold text-center px-1 leading-tight">{firstName}</span>
-                    </div>
+                  : <span className="text-white text-2xl font-black">{firstName}</span>
                 }
               </div>
-              <div className="pb-1 flex-1 min-w-0">
-                {tech.availableNow && (
-                  <span className="inline-flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
-                    {ar ? 'متاح الآن' : 'Available Now'}
-                  </span>
-                )}
-              </div>
+              <div className="pb-1 flex-1" />
             </div>
 
-            {/* Name */}
-            <h1 className="font-extrabold text-[#071B33] text-xl leading-tight mb-1">{tech.name}</h1>
-            {/* Reference ID */}
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-[11px] font-black px-3 py-1 rounded-full tracking-wide shadow-sm">
-                🪪 {ar ? 'رقم التعريف' : 'ID'}: TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
+            {/* Name + ID */}
+            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-1">{tech.name}</h1>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-slate-400 text-[11px] font-bold">
+                🪪 TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
               </span>
               {tech.createdAt && (
-                <span className="inline-flex items-center gap-1.5 bg-[#FF7900] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
-                  📅 {ar ? 'نشر في' : 'Since'}: {new Date(tech.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
+                <span className="inline-flex items-center gap-1 bg-[#FF7900] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                  📅 {new Date(tech.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
                 </span>
               )}
             </div>
 
-            {/* Specialty badges */}
+            {/* Specialty chips */}
             {allCatNames.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
+              <div className="flex flex-wrap gap-2 mb-3">
                 {allCatNames.map((name, i) => (
-                  <span key={i} className="inline-flex items-center gap-1.5 bg-[#FF7900]/10 border border-[#FF7900]/20 text-[#FF7900] text-xs font-bold px-3 py-1 rounded-full">
+                  <span key={i}
+                    className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-full"
+                    style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.05))', border: '1px solid rgba(255,121,0,0.25)' }}>
                     <Wrench className="w-3 h-3 flex-shrink-0" />
                     {name}
                   </span>
@@ -342,8 +347,27 @@ export default function TechnicianDetails() {
               </div>
             )}
 
-            {/* Rating — clickable to open reviews */}
-            <div className="flex items-center gap-3 mb-2">
+            {/* Stats strip */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              <span className="inline-flex items-center gap-1.5 text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+                <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                {cityName}{tech.area ? ` · ${tech.area}` : ''}
+              </span>
+              {tech.experienceYears > 0 && (
+                <span className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full">
+                  <Briefcase className="w-3 h-3" />
+                  {ar ? `${tech.experienceYears} سنوات خبرة` : `${tech.experienceYears} yrs exp`}
+                </span>
+              )}
+              {tech.emergency && (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-200 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full">
+                  <Zap className="w-3 h-3" /> {ar ? 'طوارئ 24/7' : 'Emergency 24/7'}
+                </span>
+              )}
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3 mb-4">
               <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
                 <Stars rating={tech.rating} count={tech.reviewsCount} />
                 {tech.reviewsCount > 0 && (
@@ -354,54 +378,37 @@ export default function TechnicianDetails() {
               </button>
             </div>
 
-            {/* Location */}
-            <div className="flex items-center gap-1.5 mb-3">
-              <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-              <p className="text-sm text-gray-600">{cityName}{tech.area ? ` · ${tech.area}` : ''}</p>
-            </div>
-
-            {/* Tags row */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {tech.emergency && (
-                <span className="bg-red-50 border border-red-200 text-red-600 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> {ar ? 'خدمة طوارئ' : 'Emergency'}
-                </span>
-              )}
-              {tech.experienceYears > 0 && (
-                <span className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Briefcase className="w-3 h-3" />
-                  {ar ? `${tech.experienceYears} سنوات خبرة` : `${tech.experienceYears} yrs exp`}
-                </span>
-              )}
-            </div>
-
             {/* Action buttons */}
-            <div className="flex gap-2.5">
+            <div className="flex gap-2.5 mb-2">
               <a
                 href={`https://wa.me/${tech.whatsapp}?text=${encodeURIComponent('السلام عليكم، وجدت خدمتك على منصة اطلب فني وأرغب في الاستفسار عن الخدمة.')}`}
                 target="_blank" rel="noreferrer"
                 onClick={() => track('whatsapp_click', id)}
-                className="flex-1 bg-[#25D366] text-white text-sm font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm">
+                className="flex-1 text-white text-sm font-black py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                style={{ background: 'linear-gradient(135deg, #25D366, #1aad52)', boxShadow: '0 4px 16px rgba(37,211,102,0.35)' }}>
                 <MessageSquare className="w-4 h-4" />
                 {ar ? 'واتساب' : 'WhatsApp'}
               </a>
               <a href={`tel:${tech.phone}`}
                 onClick={() => track('phone_click', id)}
-                className="flex-1 bg-[#071B33] text-white text-sm font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm">
+                className="flex-1 text-white text-sm font-black py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                style={{ background: 'linear-gradient(135deg, #071B33, #102848)', boxShadow: '0 4px 16px rgba(7,27,51,0.25)' }}>
                 <Phone className="w-4 h-4" />
                 {ar ? 'اتصال' : 'Call'}
               </a>
             </div>
             <button
               onClick={() => setShowShare(true)}
-              className="w-full mt-1 flex items-center justify-center gap-2 bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-2xl active:scale-[0.98] transition-transform shadow-sm shadow-[#FF7900]/30">
+              className="w-full mt-1 flex items-center justify-center gap-2 text-white text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
+              style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
               <Send className="w-4 h-4" />
               {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
             </button>
             <button
               onClick={() => setShowReport(true)}
-              className="w-full mt-1 flex items-center justify-center gap-1.5 bg-[#EBF5FF] hover:bg-[#DBEAFE] border border-[#3B82F6]/30 text-[#1D4ED8] text-xs font-semibold py-2 rounded-xl active:scale-[0.98] transition-all">
-              <svg className="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              className="w-full mt-2 flex items-center justify-center gap-1.5 text-slate-500 text-xs font-semibold py-2.5 rounded-2xl transition-all"
+              style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+              <svg className="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
               {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
             </button>
           </div>
