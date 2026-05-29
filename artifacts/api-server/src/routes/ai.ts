@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { generateTags, batchExtractTags } from "../lib/aiTags";
 import { db } from "@workspace/db";
 import { techniciansTable, companyApplicationsTable, supplierApplicationsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
@@ -7,7 +7,6 @@ import { eq } from "drizzle-orm";
 const router = Router();
 
 // ── POST /admin/ai/extract-tags ───────────────────────────────────────────────
-// Takes a description + optional name and returns AI-suggested specialty tags
 router.post("/admin/ai/extract-tags", async (req, res): Promise<void> => {
   const { description, name, entity_type } = req.body;
 
@@ -16,59 +15,36 @@ router.post("/admin/ai/extract-tags", async (req, res): Promise<void> => {
     return;
   }
 
-  const entityHint =
-    entity_type === "supplier"
-      ? "supplier of tools, equipment, or materials"
-      : entity_type === "company"
-      ? "service company or institution"
-      : "individual technician or craftsman";
-
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_completion_tokens: 512,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert at extracting professional specialties from Arabic or English business descriptions for a Libyan home-services directory. " +
-            "Return ONLY a JSON array of short Arabic specialty tags (2–4 words each, max 10 tags). " +
-            "Each tag should be a distinct service or skill mentioned explicitly or implied in the description. " +
-            "Example output: [\"تركيب تكييف\", \"صيانة كهربائية\", \"سباكة منزلية\"]. " +
-            "No explanations, no markdown, only the JSON array.",
-        },
-        {
-          role: "user",
-          content:
-            `Entity type: ${entityHint}\n` +
-            (name ? `Name: ${name}\n` : "") +
-            `Description: ${description}\n\n` +
-            "Extract the specialty tags as a JSON array of Arabic strings.",
-        },
-      ],
-    });
-
-    const raw = response.choices[0]?.message?.content?.trim() ?? "[]";
-    let tags: string[] = [];
-    try {
-      // Strip markdown code fences if present
-      const cleaned = raw.replace(/```json?|```/g, "").trim();
-      tags = JSON.parse(cleaned);
-      if (!Array.isArray(tags)) tags = [];
-      tags = tags.filter((t) => typeof t === "string" && t.trim().length > 0).slice(0, 10);
-    } catch {
-      tags = [];
-    }
-
+    const tags = await generateTags(description, name || "", entity_type || "technician");
     res.json({ tags });
-  } catch (err: any) {
-    console.error("AI extract-tags error:", err?.message || err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("AI extract-tags error:", msg);
     res.status(500).json({ error: "AI service error" });
   }
 });
 
+// ── POST /admin/ai/batch-extract-tags ─────────────────────────────────────────
+// Processes ALL entities of a given type that have description but no ai_tags
+router.post("/admin/ai/batch-extract-tags", async (req, res): Promise<void> => {
+  const { entity_type } = req.body;
+  if (!["technician", "company", "supplier"].includes(entity_type)) {
+    res.status(400).json({ error: "entity_type must be technician, company, or supplier" });
+    return;
+  }
+
+  try {
+    const result = await batchExtractTags(entity_type as "technician" | "company" | "supplier");
+    res.json(result);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("AI batch-extract-tags error:", msg);
+    res.status(500).json({ error: "Batch extraction failed" });
+  }
+});
+
 // ── PATCH /admin/ai/save-tags ─────────────────────────────────────────────────
-// Saves approved ai_tags back to the entity
 router.patch("/admin/ai/save-tags", async (req, res): Promise<void> => {
   const { entity_type, id, tags } = req.body;
 
@@ -77,7 +53,7 @@ router.patch("/admin/ai/save-tags", async (req, res): Promise<void> => {
     return;
   }
 
-  const cleanTags = tags.filter((t: any) => typeof t === "string" && t.trim().length > 0);
+  const cleanTags = tags.filter((t: unknown) => typeof t === "string" && (t as string).trim().length > 0);
 
   try {
     if (entity_type === "technician") {
@@ -91,8 +67,9 @@ router.patch("/admin/ai/save-tags", async (req, res): Promise<void> => {
       return;
     }
     res.json({ ok: true, tags: cleanTags });
-  } catch (err: any) {
-    console.error("AI save-tags error:", err?.message || err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("AI save-tags error:", msg);
     res.status(500).json({ error: "DB error" });
   }
 });

@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { autoExtractTagsInBackground } from "../lib/aiTags";
 import { db } from "@workspace/db";
 import { supplierApplicationsTable, citiesTable, reviewsTable } from "@workspace/db/schema";
 import { eq, desc, and, or, ilike } from "drizzle-orm";
@@ -233,6 +234,11 @@ router.patch("/admin/supplier-applications/:id", async (req, res): Promise<void>
     .returning();
 
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
+
+  if (status === "published" || status === "approved") {
+    autoExtractTagsInBackground(raw, "supplier");
+  }
+
   res.json(app);
 });
 

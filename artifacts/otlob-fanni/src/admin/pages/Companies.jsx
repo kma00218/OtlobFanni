@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
+import AiBatchButton from '../components/AiBatchButton'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const EXP_LABEL = {
@@ -415,6 +416,7 @@ export default function Companies() {
         searchPlaceholder="بحث بالاسم أو الهاتف أو المدينة أو رقم التعريف..."
         actions={
           <div className="flex gap-2">
+            <AiBatchButton entityType="company" />
             <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors">
               <Plus className="w-4 h-4" /> إضافة شركة
             </button>

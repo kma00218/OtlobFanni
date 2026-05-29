@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { autoExtractTagsInBackground } from "../lib/aiTags";
 import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
@@ -309,6 +310,11 @@ router.patch("/company-applications/:id", async (req, res): Promise<void> => {
     .where(eq(companyApplicationsTable.id, raw))
     .returning();
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
+
+  if (status === "approved" || status === "published") {
+    autoExtractTagsInBackground(raw, "company");
+  }
+
   res.json({ ...app, resolvedCategoryId });
 });
 
@@ -419,6 +425,11 @@ router.patch("/technicians/:id", async (req, res): Promise<void> => {
 
   const [tech] = await db.update(techniciansTable).set(updates).where(eq(techniciansTable.id, raw)).returning();
   if (!tech) { res.status(404).json({ error: "Not found" }); return; }
+
+  if (body.is_approved === true) {
+    autoExtractTagsInBackground(raw, "technician");
+  }
+
   res.json(tech);
 });
 

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
+import AiBatchButton from '../components/AiBatchButton'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
 const PAGE_SIZE = 15
@@ -810,9 +811,12 @@ export default function Technicians() {
           <h1 className="text-xl font-bold text-[#071B33]">الفنيون</h1>
           <p className="text-sm text-slate-500 mt-0.5">إدارة جميع الفنيين في الدليل ({total} فني)</p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">
-          <Plus className="w-4 h-4" /> إضافة فني
-        </button>
+        <div className="flex items-center gap-2">
+          <AiBatchButton entityType="technician" />
+          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">
+            <Plus className="w-4 h-4" /> إضافة فني
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

@@ -6,6 +6,7 @@ import FormModal from '../components/FormModal'
 import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles, UserPlus } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
+import AiBatchButton from '../components/AiBatchButton'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
 
 function WaIcon() {
@@ -368,6 +369,7 @@ export default function AdminSuppliers() {
           <p className="text-slate-500 text-sm mt-0.5">هؤلاء المزودون تمت الموافقة عليهم وأصبحوا جزءاً من الدليل.</p>
         </div>
         <div className="flex items-center gap-3">
+          <AiBatchButton entityType="supplier" />
           <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">
             <Plus className="w-4 h-4" /> إضافة مزود
           </button>
