@@ -205,6 +205,153 @@ function BulkCredentialsSection() {
   )
 }
 
+const TELEGRAM_LINK = 'https://t.me/otlobfanni'
+
+function TelegramInviteSection() {
+  const [loading, setLoading]   = useState(false)
+  const [list, setList]         = useState(null)
+  const [sent, setSent]         = useState({})
+  const [error, setError]       = useState('')
+  const [showAll, setShowAll]   = useState(false)
+
+  const MSG = (name) =>
+    `مرحباً ${name ? name.split(' ')[0] : ''}،\n\n` +
+    `ندعوك للانضمام إلى قناتنا الرسمية على تيليغرام 📣\n\n` +
+    `تابع آخر أخبار منصة اطلب فني، العروض الحصرية، والتحديثات الجديدة:\n\n` +
+    `👉 ${TELEGRAM_LINK}\n\n` +
+    `فريق اطلب فني 🔧`
+
+  const TYPE_LABEL = { technician: '🔧 فني', company: '🏢 شركة', supplier: '📦 مورد' }
+
+  const load = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await api.pro.bulkCredentials()
+      setList(data)
+    } catch {
+      setError('حدث خطأ أثناء تحميل البيانات')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const sendOne = (item) => {
+    const phone = (item.whatsapp || '').replace(/\D/g, '')
+    if (!phone) return
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(MSG(item.displayName))}`, '_blank')
+    setSent(s => ({ ...s, [item.entityId]: true }))
+  }
+
+  const sentCount = Object.keys(sent).length
+  const allCount  = list ? list.length : 0
+  const visible   = list ? (showAll ? list : list.slice(0, 8)) : []
+
+  if (!list) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-2">
+        <div className="w-full rounded-2xl p-5 flex flex-col items-center gap-3 text-center"
+          style={{ background: 'linear-gradient(135deg,rgba(41,182,246,0.08),rgba(7,27,51,0.04))', border: '1.5px dashed rgba(41,182,246,0.35)' }}>
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+            style={{ background: 'rgba(41,182,246,0.12)', border: '1px solid rgba(41,182,246,0.2)' }}>
+            <Globe className="w-6 h-6" style={{ color: '#29B6F6' }} />
+          </div>
+          <div>
+            <p className="font-black text-[#071B33] text-sm">دعوة متابعة قناة تيليغرام</p>
+            <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+              يجلب جميع المحترفين ويرسل لكل واحد دعوة<br/>لمتابعة القناة الرسمية على تيليغرام
+            </p>
+          </div>
+          <button
+            onClick={load}
+            disabled={loading}
+            className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg,#29B6F6,#0288D1)', boxShadow: '0 4px 20px rgba(41,182,246,0.35)' }}
+          >
+            {loading
+              ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> جاري التحميل...</>
+              : <><Send className="w-4 h-4" /> تحضير قائمة الدعوة</>}
+          </button>
+          {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          { label: 'إجمالي', value: allCount,  color: '#071B33' },
+          { label: 'تم الإرسال', value: sentCount, color: '#10B981' },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="rounded-2xl p-3 text-center" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
+            <p className="font-black text-lg" style={{ color }}>{value}</p>
+            <p className="text-slate-500 text-[11px] font-semibold">{label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2' }}>
+        {visible.map((item, i) => {
+          const isSent = sent[item.entityId]
+          return (
+            <div key={item.entityId}
+              className="flex items-center gap-3 px-4 py-3 transition-colors"
+              style={{
+                borderBottom: i < visible.length - 1 ? '1px solid #F1F5F9' : 'none',
+                background: isSent ? 'rgba(16,185,129,0.04)' : 'white',
+              }}>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[#071B33] text-sm truncate">{item.displayName || item.whatsapp}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[10px] font-bold text-slate-400">{TYPE_LABEL[item.entityType]}</span>
+                  {isSent && (
+                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>✓ أُرسل</span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => sendOne(item)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-black text-white text-xs flex-shrink-0 transition-all active:scale-95"
+                style={{
+                  background: isSent
+                    ? 'linear-gradient(135deg,#10B981,#059669)'
+                    : 'linear-gradient(135deg,#25D366,#128C7E)',
+                  boxShadow: isSent
+                    ? '0 2px 10px rgba(16,185,129,0.3)'
+                    : '0 2px 10px rgba(37,211,102,0.35)',
+                }}
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                {isSent ? 'أعد الإرسال' : 'إرسال'}
+              </button>
+            </div>
+          )
+        })}
+      </div>
+
+      {list.length > 8 && (
+        <button
+          onClick={() => setShowAll(s => !s)}
+          className="flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-sm font-bold text-slate-500 transition-colors hover:text-[#071B33]"
+          style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}
+        >
+          {showAll ? <><ChevronUp className="w-4 h-4" /> عرض أقل</> : <><ChevronDown className="w-4 h-4" /> عرض الكل ({list.length})</>}
+        </button>
+      )}
+
+      <button
+        onClick={() => { setList(null); setSent({}) }}
+        className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
+      >
+        <X className="w-3.5 h-3.5" /> إغلاق القائمة
+      </button>
+    </div>
+  )
+}
+
 export default function Settings() {
   const { isSuperAdmin, profile } = useAdmin()
   const [saved, setSaved] = useState(false)
@@ -358,6 +505,11 @@ export default function Settings() {
       {/* Bulk Credentials */}
       <Section icon={Send} title="إرسال بيانات الدخول للمحترفين" description="أرسل اسم المستخدم وكلمة المرور لكل الفنيين والشركات والموردين دفعة واحدة">
         <BulkCredentialsSection />
+      </Section>
+
+      {/* Telegram Invite */}
+      <Section icon={Globe} title="دعوة متابعة قناة تيليغرام" description="أرسل دعوة واتساب لكل المحترفين لمتابعة القناة الرسمية على تيليغرام">
+        <TelegramInviteSection />
       </Section>
 
       {/* System Info */}
