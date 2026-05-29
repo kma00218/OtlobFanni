@@ -25,7 +25,7 @@ router.post("/admin/ai/extract-tags", async (req, res): Promise<void> => {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 512,
       messages: [
         {
