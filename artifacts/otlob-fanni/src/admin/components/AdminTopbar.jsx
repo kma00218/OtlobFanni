@@ -14,6 +14,7 @@ const BREADCRUMBS = {
   '/admin/company-applications':    ['الطلبات', 'طلبات الشركات'],
   '/admin/requests':                ['الطلبات', 'طلبات الخدمة'],
   '/admin/ad-requests':             ['الطلبات', 'طلبات الإعلانات'],
+  '/admin/service-requests':        ['الطلبات', 'طلبات العملاء'],
   '/admin/ads':                     ['الإعلانات', 'الإعلانات النشطة'],
   '/admin/users':                   ['النظام', 'المستخدمون'],
   '/admin/settings':                ['النظام', 'الإعدادات'],
