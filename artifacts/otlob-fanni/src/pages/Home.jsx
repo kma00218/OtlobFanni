@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
-import { sections } from '../data/services'
+import { sections, categories as allCategoriesData } from '../data/services'
 import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
@@ -112,6 +112,13 @@ export default function Home() {
   }, [])
 
   const activeSections = sections.filter(s => s.isActive)
+
+  // All categories: popular first, then the rest (excluding 'more' meta-entry)
+  const popularIds = new Set(topCategories.map(c => c.id))
+  const remainingCats = allCategoriesData
+    .filter(c => c.id !== 'more' && !popularIds.has(c.id))
+    .map(c => ({ id: c.id, nameAr: c.nameAr, nameEn: c.nameEn }))
+  const allSortedCategories = [...topCategories, ...remainingCats]
 
   return (
     <div className="bg-background min-h-screen pt-16 pb-36">
@@ -288,7 +295,7 @@ export default function Home() {
         )}
 
         {/* ── التخصصات الأكثر طلباً ── */}
-        {topCategories.length > 0 && (
+        {allSortedCategories.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
@@ -308,7 +315,7 @@ export default function Home() {
               className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1"
               style={{ scrollbarWidth: 'none' }}
             >
-              {topCategories.map(cat => (
+              {allSortedCategories.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => navigate(`/category/${cat.id}`)}
