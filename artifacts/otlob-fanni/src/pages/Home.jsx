@@ -312,9 +312,15 @@ export default function Home() {
                 <button
                   key={cat.id}
                   onClick={() => navigate(`/category/${cat.id}`)}
-                  className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors active:scale-95"
+                  className="flex-shrink-0 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold transition-colors active:scale-95"
                   style={{ background: '#FF7900', color: 'white' }}
                 >
+                  <img
+                    src={`/icons/categories/${cat.id}.png`}
+                    alt=""
+                    className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                    onError={e => { e.currentTarget.style.display = 'none' }}
+                  />
                   {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
                 </button>
               ))}
