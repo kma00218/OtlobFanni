@@ -6,7 +6,7 @@ import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, MessageSquare, Star, Zap, Briefcase,
   Clock, DollarSign, Image as ImageIcon, CheckCircle,
-  Facebook, Instagram, Wrench, Heart, Send, X, ClipboardList,
+  Facebook, Instagram, Wrench, Heart, Send, X, ClipboardList, Sparkles,
 } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { track } from '../lib/tracker'
@@ -67,15 +67,16 @@ function InteractiveStars({ value, onChange }) {
 
 function SectionCard({ icon: Icon, title, children, accent = '#FF7900' }) {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-      <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
-        <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-          style={{ background: `linear-gradient(135deg, ${accent}22, ${accent}08)`, border: `1px solid ${accent}28` }}>
-          <Icon className="w-4 h-4" style={{ color: accent }} />
+    <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #E8EEF6', boxShadow: '0 2px 20px rgba(7,27,51,0.07)' }}>
+      <div className="flex items-center gap-3 px-5 py-4"
+        style={{ borderBottom: '2px solid #F2F5FA', background: 'linear-gradient(135deg, #FAFBFD 0%, #FFFFFF 100%)' }}>
+        <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+          style={{ background: `linear-gradient(135deg, ${accent}22, ${accent}0a)`, border: `1.5px solid ${accent}30` }}>
+          <Icon className="w-5 h-5" style={{ color: accent }} />
         </div>
-        <p className="font-bold text-[#071B33] text-sm">{title}</p>
+        <p className="font-bold text-[#071B33] text-[15px]">{title}</p>
       </div>
-      <div className="px-5 py-4">{children}</div>
+      <div className="px-5 py-5">{children}</div>
     </div>
   )
 }
@@ -312,71 +313,110 @@ export default function TechnicianDetails() {
             </div>
 
             {/* Name + ID */}
-            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-1">{tech.name}</h1>
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="text-slate-400 text-[11px] font-bold">
-                🪪 TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
+            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-2">{tech.name}</h1>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-2 text-[#071B33] text-[11px] font-black px-3 py-1.5 rounded-xl"
+                style={{ background: 'linear-gradient(135deg, #EDF0F8, #E4E9F2)', border: '1px solid #C8D3E6' }}>
+                <span className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-white text-[8px] font-black"
+                  style={{ background: '#071B33' }}>ID</span>
+                TEC-{tech.createdAt ? new Date(tech.createdAt).getFullYear() : new Date().getFullYear()}-{String(tech.id).replace(/\D/g,'').slice(-6)}
               </span>
               {tech.createdAt && (
-                <span className="inline-flex items-center gap-1 bg-[#FF7900] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
-                  📅 {new Date(tech.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-xl"
+                  style={{ background: 'rgba(255,121,0,0.08)', border: '1px solid rgba(255,121,0,0.22)', color: '#CC6000' }}>
+                  <Clock className="w-3 h-3 flex-shrink-0" />
+                  {ar ? 'عضو منذ ' : 'Since '}{new Date(tech.createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
                 </span>
               )}
             </div>
 
             {/* Specialty chips */}
             {allCatNames.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {allCatNames.map((name, i) => (
-                  <span key={i}
-                    className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-full"
-                    style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.05))', border: '1px solid rgba(255,121,0,0.25)' }}>
-                    <Wrench className="w-3 h-3 flex-shrink-0" />
-                    {name}
-                  </span>
-                ))}
+              <div className="mb-4">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                  {ar ? 'التخصصات' : 'Specialties'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {allCatNames.map((name, i) => (
+                    <span key={i}
+                      className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-xl"
+                      style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.28)' }}>
+                      <Wrench className="w-3.5 h-3.5 flex-shrink-0" />
+                      {name}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* AI-extracted keyword tags */}
             {tech.aiTags?.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {tech.aiTags.map((tag, i) => (
-                  <span key={i} className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-0.5 rounded-full">
-                    {tag}
-                  </span>
-                ))}
+              <div className="mb-4">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Sparkles className="w-3 h-3 text-violet-400" />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    {ar ? 'كلمات مفتاحية' : 'Keywords'}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {tech.aiTags.map((tag, i) => (
+                    <span key={i} className="text-[11px] font-semibold text-violet-700 px-2.5 py-1 rounded-xl"
+                      style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)' }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* Referral trust badge */}
             {tech.referralSource === 'technician' && (
-              <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-bold px-3 py-1 rounded-full mb-3">
+              <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-bold px-3 py-1.5 rounded-xl mb-4">
                 ⭐ {ar ? 'تم ترشيحه من فني معتمد على المنصة' : 'Referred by a verified technician'}
               </div>
             )}
             {tech.referralSource === 'company' && (
-              <div className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold px-3 py-1 rounded-full mb-3">
+              <div className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold px-3 py-1.5 rounded-xl mb-4">
                 🤝 {ar ? 'تم ترشيحه من شركة معتمدة على المنصة' : 'Referred by a verified company'}
               </div>
             )}
 
-            {/* Stats strip */}
-            <div className="flex flex-wrap gap-2 mb-3">
-              <span className="inline-flex items-center gap-1.5 text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
-                <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                {cityName}{tech.area ? ` · ${tech.area}` : ''}
-              </span>
+            {/* Stats mini-cards */}
+            <div className="flex gap-2 mb-4">
+              {cityName && (
+                <div className="flex-1 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-1"
+                  style={{ background: '#F8FAFC', border: '1px solid #E4EAF2' }}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(255,121,0,0.1)' }}>
+                    <MapPin className="w-4 h-4 text-[#FF7900]" />
+                  </div>
+                  <span className="text-[10px] font-black text-[#071B33] text-center leading-tight truncate w-full px-1">
+                    {cityName}{tech.area ? ` · ${tech.area}` : ''}
+                  </span>
+                  <span className="text-[9px] text-slate-400 font-semibold">{ar ? 'الموقع' : 'Location'}</span>
+                </div>
+              )}
               {tech.experienceYears > 0 && (
-                <span className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full">
-                  <Briefcase className="w-3 h-3" />
-                  {ar ? `${tech.experienceYears} سنوات خبرة` : `${tech.experienceYears} yrs exp`}
-                </span>
+                <div className="flex-1 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-1"
+                  style={{ background: '#EEF4FF', border: '1px solid #C7DCFF' }}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(59,130,246,0.12)' }}>
+                    <Briefcase className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <span className="text-[10px] font-black text-blue-700 text-center">{tech.experienceYears}</span>
+                  <span className="text-[9px] text-blue-400 font-semibold">{ar ? 'سنوات خبرة' : 'Yrs Exp'}</span>
+                </div>
               )}
               {tech.emergency && (
-                <span className="inline-flex items-center gap-1.5 bg-red-50 border border-red-200 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full">
-                  <Zap className="w-3 h-3" /> {ar ? 'طوارئ 24/7' : 'Emergency 24/7'}
-                </span>
+                <div className="flex-1 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-1"
+                  style={{ background: '#FFF3F3', border: '1px solid #FFD0D0' }}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(239,68,68,0.1)' }}>
+                    <Zap className="w-4 h-4 text-red-500" />
+                  </div>
+                  <span className="text-[10px] font-black text-red-600 text-center">24/7</span>
+                  <span className="text-[9px] text-red-400 font-semibold">{ar ? 'طوارئ' : 'Emergency'}</span>
+                </div>
               )}
             </div>
 

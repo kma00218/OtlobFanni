@@ -5,7 +5,7 @@ import { useRoute } from 'wouter'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, Package, Heart, Image as ImageIcon,
-  Star, X, Send, Share2, ClipboardList,
+  Star, X, Send, Share2, ClipboardList, Sparkles, Clock,
 } from 'lucide-react'
 import api from '../lib/api'
 import { track } from '../lib/tracker'
@@ -252,48 +252,87 @@ export default function SupplierDetails() {
             </div>
 
             {/* Name + ID */}
-            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-1">{name}</h1>
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="text-slate-400 text-[11px] font-bold">
-                🪪 {idBadge}
+            <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-2">{name}</h1>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-2 text-[#071B33] text-[11px] font-black px-3 py-1.5 rounded-xl"
+                style={{ background: 'linear-gradient(135deg, #EDF0F8, #E4E9F2)', border: '1px solid #C8D3E6' }}>
+                <span className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-white text-[8px] font-black"
+                  style={{ background: '#071B33' }}>ID</span>
+                {idBadge}
               </span>
               {createdAt && (
-                <span className="inline-flex items-center gap-1 bg-[#0e7c8f] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
-                  📅 {new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-xl"
+                  style={{ background: 'rgba(14,124,143,0.08)', border: '1px solid rgba(14,124,143,0.22)', color: '#0a6475' }}>
+                  <Clock className="w-3 h-3 flex-shrink-0" />
+                  {ar ? 'عضو منذ ' : 'Since '}{new Date(createdAt).toLocaleDateString(ar ? 'ar-LY' : 'en-GB', { month: 'short', year: 'numeric' })}
                 </span>
               )}
             </div>
 
             {/* Supply type chip */}
             {supplyLabel && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 text-[#0e5c6d] text-xs font-black px-3 py-1.5 rounded-full"
-                  style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.1), rgba(14,124,143,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
-                  {supplyEmoji} {supplyLabel}
-                </span>
+              <div className="mb-4">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                  {ar ? 'نوع المستلزمات' : 'Supply Type'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 text-[#0e5c6d] text-xs font-black px-3 py-1.5 rounded-xl"
+                    style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,124,143,0.04))', border: '1.5px solid rgba(14,92,109,0.25)' }}>
+                    {supplyEmoji} {supplyLabel}
+                  </span>
+                </div>
               </div>
             )}
 
             {/* AI-extracted keyword tags */}
             {supplier.aiTags?.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {supplier.aiTags.map((tag, i) => (
-                  <span key={i} className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-0.5 rounded-full">
-                    {tag}
-                  </span>
-                ))}
+              <div className="mb-4">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Sparkles className="w-3 h-3 text-violet-400" />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    {ar ? 'كلمات مفتاحية' : 'Keywords'}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {supplier.aiTags.map((tag, i) => (
+                    <span key={i} className="text-[11px] font-semibold text-violet-700 px-2.5 py-1 rounded-xl"
+                      style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)' }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Stats strip */}
-            <div className="flex flex-wrap gap-2 mb-3">
-              {city && (
-                <span className="inline-flex items-center gap-1.5 text-slate-600 text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
-                  <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                  {city}{area ? ` · ${area}` : ''}
-                </span>
-              )}
-            </div>
+            {/* Stats mini-cards */}
+            {city && (
+              <div className="flex gap-2 mb-4">
+                <div className="flex-1 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-1"
+                  style={{ background: '#F8FAFC', border: '1px solid #E4EAF2' }}>
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(14,124,143,0.1)' }}>
+                    <MapPin className="w-4 h-4 text-[#0e7c8f]" />
+                  </div>
+                  <span className="text-[10px] font-black text-[#071B33] text-center leading-tight truncate w-full px-1">
+                    {city}{area ? ` · ${area}` : ''}
+                  </span>
+                  <span className="text-[9px] text-slate-400 font-semibold">{ar ? 'الموقع' : 'Location'}</span>
+                </div>
+                {contactName && (
+                  <div className="flex-2 flex flex-col items-center gap-1.5 rounded-2xl py-3 px-2"
+                    style={{ background: '#F0FAF9', border: '1px solid #C0E8E4', minWidth: 0, flex: 2 }}>
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: 'rgba(14,124,143,0.12)' }}>
+                      <span className="text-lg">👤</span>
+                    </div>
+                    <span className="text-[10px] font-black text-[#0e5c6d] text-center leading-tight truncate w-full px-1">
+                      {contactName}
+                    </span>
+                    <span className="text-[9px] text-teal-400 font-semibold">{ar ? 'المسؤول' : 'Contact'}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Rating */}
             <div className="flex items-center gap-3 mb-4">
