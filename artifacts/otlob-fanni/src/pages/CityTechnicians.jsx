@@ -105,6 +105,8 @@ export default function CityTechnicians() {
       t.categoryAr, t.categoryEn,
       t.descriptionAr, t.descriptionEn,
       t.customSpecialty,
+      ...(Array.isArray(t.aiTags) ? t.aiTags : []),
+      ...(Array.isArray(t.extraSpecialties) ? t.extraSpecialties : []),
     ]
     return fields.some(f => f && f.toLowerCase().includes(q))
   }
@@ -116,6 +118,7 @@ export default function CityTechnicians() {
       c.categoryAr, c.categoryEn,
       c.description,
       c.customSpecialty,
+      ...(Array.isArray(c.aiTags) ? c.aiTags : []),
     ]
     return fields.some(f => f && f.toLowerCase().includes(q))
   }
@@ -128,6 +131,7 @@ export default function CityTechnicians() {
       s.description,
       s.supplyType, s.supply_type,
       s.customSupplyType, s.custom_supply_type,
+      ...(Array.isArray(s.aiTags) ? s.aiTags : []),
     ]
     return fields.some(f => f && f.toLowerCase().includes(q))
   }

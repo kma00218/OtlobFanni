@@ -497,11 +497,16 @@ export default function CategoryTechnicians() {
   const filteredTechs = techs
     .filter(t => {
       if (!search) return true
-      const name = (t.nameAr || t.name_ar || '').toLowerCase()
-      const city = (t.city_name || t.city || '').toLowerCase()
-      const area = (t.area || '').toLowerCase()
-      const q    = search.toLowerCase()
-      return name.includes(q) || city.includes(q) || area.includes(q)
+      const q = search.toLowerCase()
+      const fields = [
+        t.nameAr, t.name_ar, t.nameEn, t.name_en,
+        t.city_name, t.city, t.area,
+        t.descriptionAr, t.description_ar,
+        t.descriptionEn, t.description_en,
+        ...(Array.isArray(t.aiTags) ? t.aiTags : []),
+        ...(Array.isArray(t.extraSpecialties) ? t.extraSpecialties : []),
+      ]
+      return fields.some(f => f && String(f).toLowerCase().includes(q))
     })
     .map(withDist)
     .sort(byDist)
@@ -509,11 +514,14 @@ export default function CategoryTechnicians() {
   const filteredCompanies = companies
     .filter(c => {
       if (!search) return true
-      const name = (c.companyName || c.company_name || '').toLowerCase()
-      const city = (c.city || '').toLowerCase()
-      const area = (c.area || '').toLowerCase()
-      const q    = search.toLowerCase()
-      return name.includes(q) || city.includes(q) || area.includes(q)
+      const q = search.toLowerCase()
+      const fields = [
+        c.companyName, c.company_name,
+        c.city, c.area,
+        c.description,
+        ...(Array.isArray(c.aiTags) ? c.aiTags : []),
+      ]
+      return fields.some(f => f && String(f).toLowerCase().includes(q))
     })
     .map(withDist)
     .sort(byDist)
