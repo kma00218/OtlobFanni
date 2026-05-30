@@ -352,8 +352,8 @@ export default function TechnicianDetails() {
                         className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-xl"
                         style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.28)' }}>
                         {catId
-                          ? <img src={`/icons/categories/${catId}.png`} alt="" className="w-4 h-4 rounded object-cover flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
-                          : <Wrench className="w-3.5 h-3.5 flex-shrink-0" />
+                          ? <img src={`/icons/categories/${catId}.png`} alt="" className="w-7 h-7 rounded-lg object-cover flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                          : <Wrench className="w-4 h-4 flex-shrink-0" />
                         }
                         {name}
                       </span>
