@@ -113,6 +113,9 @@ function normalizeTech(t, cities = [], categories = []) {
     categoryNameEn: primaryEn,
     allCategoryNamesAr: allAr,
     allCategoryNamesEn: allEn,
+    allCategoryIds:     cat
+      ? [t.category_id || t.categoryId || '', ...extraIds.filter(id => id !== (t.category_id || t.categoryId))]
+      : [...extraIds],
     photoUrl:       getFileUrl(t.profile_photo || t.profilePhoto || null),
     workImages:     (t.work_images || t.workImages || []).map(getFileUrl),
     rating:         Number(t.rating || 0),
@@ -342,14 +345,20 @@ export default function TechnicianDetails() {
                   {ar ? 'التخصصات' : 'Specialties'}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {allCatNames.map((name, i) => (
-                    <span key={i}
-                      className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-xl"
-                      style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.28)' }}>
-                      <Wrench className="w-3.5 h-3.5 flex-shrink-0" />
-                      {name}
-                    </span>
-                  ))}
+                  {allCatNames.map((name, i) => {
+                    const catId = tech.allCategoryIds?.[i]
+                    return (
+                      <span key={i}
+                        className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-xl"
+                        style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.28)' }}>
+                        {catId
+                          ? <img src={`/icons/categories/${catId}.png`} alt="" className="w-4 h-4 rounded object-cover flex-shrink-0" onError={e => { e.currentTarget.style.display = 'none' }} />
+                          : <Wrench className="w-3.5 h-3.5 flex-shrink-0" />
+                        }
+                        {name}
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
             )}

@@ -68,7 +68,12 @@ export default function TechnicianCard({ technician }) {
           {/* Specialty — large prominent line */}
           {specialty && (
             <div className="flex items-center gap-1.5 mb-2">
-              <div className="w-1 h-5 rounded-full bg-[#FF7900] flex-shrink-0" />
+              <img
+                src={`/icons/categories/${technician.categoryId || technician.category_id}.png`}
+                alt=""
+                className="w-6 h-6 rounded-lg object-cover flex-shrink-0"
+                onError={e => { e.currentTarget.style.display = 'none' }}
+              />
               <span className="text-base font-extrabold text-[#FF7900] truncate">{specialty}</span>
             </div>
           )}
