@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles, UserPlus } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles, UserPlus, MessageCircle } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
 import AiBatchButton from '../components/AiBatchButton'
@@ -300,6 +300,14 @@ export default function AdminSuppliers() {
             title="استخراج تخصصات AI">
             <Sparkles className="w-3.5 h-3.5" />
           </button>
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.businessName || row.business_name || ''}! 🎉 تم نشر نشاطكم الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنكم الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/supplier/${row.id}\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
+              className="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded-lg transition-colors"
+              title="رسالة الترحيب 🎉">
+              <MessageCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
           {(row.whatsapp || row.phone) && (
             <button
               onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً ${row.businessName || row.business_name || ''}، شكراً لانضمامكم لمنصة اطلب فني\nنتمنى منكم مشاركة المنصة مع عملائكم وشركائكم حتى يستفيد الجميع 👇\nhttps://otlobfanni.ly`)}`, '_blank')}

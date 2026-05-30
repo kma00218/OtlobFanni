@@ -5,7 +5,7 @@ import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
-  Plus, Trash2, Share2, AlertTriangle, Sparkles, UserPlus
+  Plus, Trash2, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
@@ -327,6 +327,14 @@ export default function Companies() {
               className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
               title="فتح واتساب">
               <WaIcon />
+            </button>
+          )}
+          {(row.whatsapp || row.phone) && (
+            <button
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.companyName || row.company_name || ''}! 🎉 تم نشر شركتكم الآن على منصة اطلب فني 🇱🇾\n\nيمكنكم الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/company/${row.id}\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الشركات الجديدة\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
+              className="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded-lg transition-colors"
+              title="رسالة الترحيب 🎉">
+              <MessageCircle className="w-3.5 h-3.5" />
             </button>
           )}
           {(row.whatsapp || row.phone) && (

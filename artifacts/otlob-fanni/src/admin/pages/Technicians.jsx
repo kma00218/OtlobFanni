@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus,
+  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
@@ -988,6 +988,14 @@ export default function Technicians() {
                             className="p-1.5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors"
                             title="فتح واتساب">
                             <WaIcon />
+                          </button>
+                        )}
+                        {(row.whatsapp || row.phone) && (
+                          <button
+                            onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.nameAr || row.name_ar || ''}! 🎉 تم نشر ملفك الآن على منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع أصدقائك وعملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/technician/${row.id}\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
+                            className="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded-lg transition-colors"
+                            title="رسالة الترحيب 🎉">
+                            <MessageCircle className="w-3.5 h-3.5" />
                           </button>
                         )}
                         {(row.whatsapp || row.phone) && (
