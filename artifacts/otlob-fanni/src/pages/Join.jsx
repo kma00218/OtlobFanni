@@ -813,9 +813,11 @@ export default function Join() {
                 </div>
               ))}
               {workPreviews.length < 6 && (
-                <label className="w-[calc(33%-4px)] aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-[#FF7900]/50 hover:bg-[#FF7900]/5 transition-colors">
-                  <Plus className="w-5 h-5 text-gray-400 mb-0.5" />
-                  <span className="text-gray-400 text-xs">{ar ? 'إضافة' : 'Add'}</span>
+                <label className="w-[calc(33%-4px)] aspect-square rounded-xl border-2 border-dashed border-[#FF7900] flex flex-col items-center justify-center cursor-pointer bg-[#FF7900]/8 hover:bg-[#FF7900]/15 active:scale-95 transition-all shadow-sm">
+                  <div className="w-9 h-9 rounded-full bg-[#FF7900]/15 flex items-center justify-center mb-1">
+                    <Plus className="w-5 h-5 text-[#FF7900]" strokeWidth={2.5} />
+                  </div>
+                  <span className="text-[#FF7900] text-[11px] font-bold">{ar ? 'أضف صورة' : 'Add Photo'}</span>
                   <input type="file" accept="image/*" multiple className="hidden" onChange={handleWorkImages} />
                 </label>
               )}

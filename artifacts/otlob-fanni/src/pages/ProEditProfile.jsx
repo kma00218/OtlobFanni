@@ -170,10 +170,10 @@ function WorkImagesUploader({ value = [], onChange, max = 5 }) {
         ))}
         {value.length < max && (
           <button type="button" onClick={() => ref.current?.click()} disabled={uploading}
-            className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-1.5 disabled:opacity-50 bg-slate-50 hover:bg-slate-100 hover:border-[#FF7900]/40 transition-all">
+            className="aspect-square rounded-2xl border-2 border-dashed border-[#FF7900] flex flex-col items-center justify-center gap-1 disabled:opacity-50 bg-[#FF7900]/8 hover:bg-[#FF7900]/15 active:scale-95 transition-all shadow-sm">
             {uploading
-              ? <div className="w-5 h-5 rounded-full border-2 border-[#FF7900] border-t-transparent animate-spin" />
-              : <><Plus className="w-5 h-5 text-slate-400" /><span className="text-[10px] text-slate-400 font-bold">إضافة</span></>}
+              ? <div className="w-6 h-6 rounded-full border-2 border-[#FF7900] border-t-transparent animate-spin" />
+              : <><div className="w-9 h-9 rounded-full bg-[#FF7900]/15 flex items-center justify-center"><Plus className="w-5 h-5 text-[#FF7900]" strokeWidth={2.5} /></div><span className="text-[11px] text-[#FF7900] font-bold">أضف صورة</span></>}
           </button>
         )}
       </div>

@@ -556,9 +556,11 @@ export default function JoinSupplier() {
                   </div>
                 ))}
                 {shopPreviews.length < 3 && (
-                  <label className="flex flex-col items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#FF7900]/50 hover:bg-[#FF7900]/5 transition-colors flex-shrink-0">
-                    <Upload className="w-4 h-4 text-gray-400 mb-1" />
-                    <span className="text-xs text-gray-500 text-center">{ar ? 'إضافة' : 'Add'}</span>
+                  <label className="flex flex-col items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-[#FF7900] cursor-pointer bg-[#FF7900]/8 hover:bg-[#FF7900]/15 active:scale-95 transition-all flex-shrink-0 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-[#FF7900]/15 flex items-center justify-center mb-1">
+                      <Plus className="w-5 h-5 text-[#FF7900]" strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[#FF7900] text-[11px] font-bold">{ar ? 'أضف صورة' : 'Add'}</span>
                     <input type="file" accept="image/*" multiple className="hidden" onChange={handleShopImages} />
                   </label>
                 )}
