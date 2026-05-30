@@ -67,14 +67,19 @@ function InteractiveStars({ value, onChange }) {
 
 function SectionCard({ icon: Icon, title, children, accent = '#FF7900' }) {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 20px rgba(7,27,51,0.10)' }}>
+    <div className="rounded-3xl overflow-hidden" style={{
+      border: '1px solid rgba(7,27,51,0.10)',
+      borderTop: '3px solid #FF7900',
+      boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)',
+      background: '#fff'
+    }}>
       <div className="flex items-center gap-3 px-5 py-4"
-        style={{ borderBottom: '2px solid #D8E3EF', background: 'linear-gradient(135deg, #FAFBFD 0%, #FFFFFF 100%)' }}>
+        style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
         <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-          style={{ background: `linear-gradient(135deg, ${accent}22, ${accent}0a)`, border: `1.5px solid ${accent}30` }}>
+          style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
           <Icon className="w-5 h-5" style={{ color: accent }} />
         </div>
-        <p className="font-bold text-[#071B33] text-[15px]">{title}</p>
+        <p className="font-bold text-white text-[15px]">{title}</p>
       </div>
       <div className="px-5 py-5">{children}</div>
     </div>

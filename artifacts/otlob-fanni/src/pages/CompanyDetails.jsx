@@ -326,7 +326,7 @@ export default function CompanyDetails() {
                 <div className="flex flex-wrap gap-2">
                   {allCatNames.map((n, i) => (
                     <span key={i}
-                      className="inline-flex items-center gap-1.5 text-[#1a56db] text-xs font-black px-3 py-1.5 rounded-xl"
+                      className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-xl"
                       style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.1), rgba(26,86,219,0.03))', border: '1.5px solid rgba(26,86,219,0.22)' }}>
                       <Building2 className="w-3.5 h-3.5 flex-shrink-0" />
                       {n}
@@ -376,9 +376,9 @@ export default function CompanyDetails() {
                   style={{ background: '#EEF4FF', border: '1px solid #C7DCFF' }}>
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{ background: 'rgba(26,86,219,0.12)' }}>
-                    <Briefcase className="w-4 h-4 text-[#1a56db]" />
+                    <Briefcase className="w-4 h-4 text-[#FF7900]" />
                   </div>
-                  <span className="text-[10px] font-black text-[#1a56db] text-center leading-tight px-1">{expLabel}</span>
+                  <span className="text-[10px] font-black text-[#FF7900] text-center leading-tight px-1">{expLabel}</span>
                   <span className="text-[9px] text-blue-400 font-semibold">{ar ? 'الخبرة' : 'Experience'}</span>
                 </div>
               )}
@@ -468,13 +468,13 @@ export default function CompanyDetails() {
 
         {/* السعر */}
         {priceFrom && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
                 <DollarSign className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? 'نطاق السعر' : 'Price Range'}</p>
+              <p className="font-bold text-white text-sm">{ar ? 'نطاق السعر' : 'Price Range'}</p>
             </div>
             <div className="px-5 py-4">
             <div className="flex items-center justify-between bg-[#FF7900]/5 rounded-xl p-3">
@@ -498,13 +498,13 @@ export default function CompanyDetails() {
 
         {/* وصف الشركة */}
         {description && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
-                <Building2 className="w-4 h-4 text-[#1a56db]" />
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                <Building2 className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? 'عن الشركة' : 'About'}</p>
+              <p className="font-bold text-white text-sm">{ar ? 'عن الشركة' : 'About'}</p>
             </div>
             <div className="px-5 py-4">
               <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
@@ -513,13 +513,13 @@ export default function CompanyDetails() {
         )}
 
         {/* معلومات إضافية */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+        <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
             <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
-              <Building2 className="w-4 h-4 text-[#1a56db]" />
+              style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+              <Building2 className="w-4 h-4 text-[#FF7900]" />
             </div>
-            <p className="font-bold text-[#071B33] text-sm">{ar ? 'معلومات الشركة' : 'Company Info'}</p>
+            <p className="font-bold text-white text-sm">{ar ? 'معلومات الشركة' : 'Company Info'}</p>
           </div>
           <div className="px-5 py-4 space-y-2">
           <div className="grid grid-cols-2 gap-2">
@@ -547,13 +547,13 @@ export default function CompanyDetails() {
 
         {/* أوقات العمل */}
         {(workingDays.length > 0 || hoursFrom) && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
                 <Clock className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? 'أوقات العمل' : 'Working Hours'}</p>
+              <p className="font-bold text-white text-sm">{ar ? 'أوقات العمل' : 'Working Hours'}</p>
             </div>
             <div className="px-5 py-4">
               {(hoursFrom || hoursTo) && (
@@ -579,13 +579,13 @@ export default function CompanyDetails() {
 
         {/* معرض الأعمال */}
         {workImages.length > 0 && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
                 <ImageIcon className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? `معرض الأعمال (${workImages.length})` : `Portfolio (${workImages.length})`}</p>
+              <p className="font-bold text-white text-sm">{ar ? `معرض الأعمال (${workImages.length})` : `Portfolio (${workImages.length})`}</p>
             </div>
             <div className="px-5 py-4">
               <div className="grid grid-cols-3 gap-2">
@@ -601,13 +601,13 @@ export default function CompanyDetails() {
 
         {/* التواصل الاجتماعي */}
         {(facebook || instagram) && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
-                <Share2 className="w-4 h-4 text-[#1a56db]" />
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                <Share2 className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? 'التواصل الاجتماعي' : 'Social Media'}</p>
+              <p className="font-bold text-white text-sm">{ar ? 'التواصل الاجتماعي' : 'Social Media'}</p>
             </div>
             <div className="px-5 py-4 space-y-3">
               {facebook && (
@@ -629,14 +629,14 @@ export default function CompanyDetails() {
         )}
 
         {/* ── قسم التقييمات ─────────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+        <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
                 <Star className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">
+              <p className="font-bold text-white text-sm">
                 {ar ? `التقييمات (${reviewsCount})` : `Reviews (${reviewsCount})`}
               </p>
             </div>
@@ -710,14 +710,14 @@ export default function CompanyDetails() {
 
         {/* ── نموذج إضافة تقييم ─────────────────────────────────────────── */}
         {reviewModal && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))', border: '1px solid rgba(245,158,11,0.25)' }}>
-                  <Star className="w-4 h-4 text-amber-500" />
+                  style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                  <Star className="w-4 h-4 text-[#FF7900]" />
                 </div>
-                <p className="font-bold text-[#071B33] text-sm">
+                <p className="font-bold text-white text-sm">
                   {ar ? 'أضف تقييمك' : 'Add Your Review'}
                 </p>
               </div>

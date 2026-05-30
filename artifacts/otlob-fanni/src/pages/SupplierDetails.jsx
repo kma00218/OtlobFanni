@@ -399,42 +399,48 @@ export default function SupplierDetails() {
         </div>
 
         {/* ── Basic Info ── */}
-        <div className="bg-[#E4F7F6] rounded-2xl border border-teal-200 shadow-sm p-4 space-y-3">
-          <p className="text-xs font-bold text-[#0e5c6d] uppercase tracking-wider">
-            {ar ? 'المعلومات الأساسية' : 'Basic Info'}
-          </p>
-          {contactName && (
-            <div className="bg-white/60 rounded-xl p-3 border border-teal-100">
-              <p className="text-xs text-gray-400 mb-0.5">{ar ? 'المسؤول' : 'Contact Person'}</p>
-              <p className="font-medium text-gray-800 text-sm">{contactName}</p>
+        <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
+            <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+              <MapPin className="w-4 h-4 text-[#FF7900]" />
             </div>
-          )}
-          {city && (
-            <div className="bg-white/60 rounded-xl p-3 border border-teal-100">
-              <p className="text-xs text-gray-400 mb-0.5">{ar ? 'الموقع' : 'Location'}</p>
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#0e5c6d] flex-shrink-0" />
-                <p className="font-medium text-gray-800 text-sm">{city}{area ? ` · ${area}` : ''}</p>
+            <p className="font-bold text-white text-sm">{ar ? 'المعلومات الأساسية' : 'Basic Info'}</p>
+          </div>
+          <div className="px-5 py-4 space-y-3">
+            {contactName && (
+              <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                <p className="text-xs text-gray-400 mb-0.5">{ar ? 'المسؤول' : 'Contact Person'}</p>
+                <p className="font-medium text-gray-800 text-sm">{contactName}</p>
               </div>
-            </div>
-          )}
-          {supplyLabel && (
-            <div className="bg-white/60 rounded-xl p-3 border border-teal-100">
-              <p className="text-xs text-gray-400 mb-0.5">{ar ? 'نوع المستلزمات' : 'Supply Type'}</p>
-              <p className="font-medium text-gray-800 text-sm">{supplyEmoji} {supplyLabel}</p>
-            </div>
-          )}
+            )}
+            {city && (
+              <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                <p className="text-xs text-gray-400 mb-0.5">{ar ? 'الموقع' : 'Location'}</p>
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#FF7900] flex-shrink-0" />
+                  <p className="font-medium text-gray-800 text-sm">{city}{area ? ` · ${area}` : ''}</p>
+                </div>
+              </div>
+            )}
+            {supplyLabel && (
+              <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                <p className="text-xs text-gray-400 mb-0.5">{ar ? 'نوع المستلزمات' : 'Supply Type'}</p>
+                <p className="font-medium text-gray-800 text-sm">{supplyEmoji} {supplyLabel}</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── Description ── */}
         {description && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
-                <Package className="w-4 h-4 text-[#0e5c6d]" />
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                <Package className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? 'عن النشاط' : 'About'}</p>
+              <p className="font-bold text-white text-sm">{ar ? 'عن النشاط' : 'About'}</p>
             </div>
             <div className="px-5 py-4">
               <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
@@ -443,13 +449,13 @@ export default function SupplierDetails() {
         )}
 
         {/* ── Shop Images ── */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+        <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
             <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
-              <ImageIcon className="w-4 h-4 text-[#0e5c6d]" />
+              style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+              <ImageIcon className="w-4 h-4 text-[#FF7900]" />
             </div>
-            <p className="font-bold text-[#071B33] text-sm">
+            <p className="font-bold text-white text-sm">
               {ar
                 ? `صور النشاط${shopImages.length > 0 ? ` (${shopImages.length})` : ''}`
                 : `Shop Photos${shopImages.length > 0 ? ` (${shopImages.length})` : ''}`}
@@ -483,13 +489,13 @@ export default function SupplierDetails() {
 
         {/* ── Social Media ── */}
         {(facebook || instagram || tiktok) && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+          <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
-                <Share2 className="w-4 h-4 text-[#0e5c6d]" />
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                <Share2 className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">{ar ? 'وسائل التواصل' : 'Social Media'}</p>
+              <p className="font-bold text-white text-sm">{ar ? 'وسائل التواصل' : 'Social Media'}</p>
             </div>
             <div className="px-5 py-4 space-y-2.5">
               {facebook && (
@@ -527,21 +533,21 @@ export default function SupplierDetails() {
         )}
 
         {/* ── Reviews Section ── */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
+        <div className="rounded-3xl overflow-hidden" style={{ border: '1px solid rgba(7,27,51,0.10)', borderTop: '3px solid #FF7900', boxShadow: '0 8px 32px rgba(7,27,51,0.14), 0 2px 8px rgba(255,121,0,0.07)', background: '#fff' }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0D2545 100%)' }}>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
-                <Star className="w-4 h-4 text-[#0e5c6d]" />
+                style={{ background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.22)' }}>
+                <Star className="w-4 h-4 text-[#FF7900]" />
               </div>
-              <p className="font-bold text-[#071B33] text-sm">
+              <p className="font-bold text-white text-sm">
                 {ar ? 'التقييمات' : 'Reviews'}
               </p>
             </div>
             {reviews.length > 0 && (
               <button
                 onClick={() => setShowReviews(v => !v)}
-                className="text-xs font-bold text-[#0e5c6d] underline underline-offset-2 active:opacity-70"
+                className="text-xs font-bold text-orange-300 underline underline-offset-2 active:opacity-70"
               >
                 {showReviews
                   ? (ar ? 'إخفاء' : 'Hide')
