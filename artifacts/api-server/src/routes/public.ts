@@ -413,20 +413,19 @@ router.get("/search", async (req, res): Promise<void> => {
     ilike(techniciansTable.descriptionEn, `%${t}%`),
     ilike(citiesTable.nameAr, `%${t}%`),
     ilike(citiesTable.nameEn, `%${t}%`),
-    // ← FIX: also match the technician's registered category name
     ilike(categoriesTable.nameAr, `%${t}%`),
     ilike(categoriesTable.nameEn, `%${t}%`),
-    // ← FIX: also match extra specialties (stored as JSON array of category IDs)
     sql`CAST(${techniciansTable.extraSpecialties} AS text) ILIKE ${'%' + t + '%'}`,
+    sql`CAST(${techniciansTable.aiTags} AS text) ILIKE ${'%' + t + '%'}`,
   ]);
   const companyWhere = terms.flatMap(t => [
     ilike(companyApplicationsTable.companyName, `%${t}%`),
     ilike(companyApplicationsTable.contactName, `%${t}%`),
     ilike(companyApplicationsTable.description, `%${t}%`),
     ilike(companyApplicationsTable.city, `%${t}%`),
-    // ← FIX: also match the company's registered category name
     ilike(categoriesTable.nameAr, `%${t}%`),
     ilike(categoriesTable.nameEn, `%${t}%`),
+    sql`CAST(${(companyApplicationsTable as any).aiTags} AS text) ILIKE ${'%' + t + '%'}`,
   ]);
   const cityWhere = terms.flatMap(t => [
     ilike(citiesTable.nameAr, `%${t}%`),
@@ -449,6 +448,7 @@ router.get("/search", async (req, res): Promise<void> => {
       ilike(supplierApplicationsTable.customSupplyType, `%${t}%`),
       ilike(supplierApplicationsTable.city, `%${t}%`),
       ilike(supplierApplicationsTable.area, `%${t}%`),
+      sql`CAST(${(supplierApplicationsTable as any).aiTags} AS text) ILIKE ${'%' + t + '%'}`,
     ]),
     // Match by supply type label (Arabic or English)
     ...(matchedTypeIds.length > 0 ? [inArray(supplierApplicationsTable.supplyType, matchedTypeIds)] : []),
@@ -560,6 +560,7 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
     ilike(categoriesTable.nameAr, `%${t}%`),
     ilike(categoriesTable.nameEn, `%${t}%`),
     sql`CAST(${techniciansTable.extraSpecialties} AS text) ILIKE ${'%' + t + '%'}`,
+    sql`CAST(${techniciansTable.aiTags} AS text) ILIKE ${'%' + t + '%'}`,
   ]);
 
   const rows = await db
