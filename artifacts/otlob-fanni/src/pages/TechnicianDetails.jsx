@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
-import { useRoute } from 'wouter'
+import { useRoute, Link } from 'wouter'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
   MapPin, Phone, MessageSquare, Star, Zap, Briefcase,
@@ -113,6 +113,7 @@ function normalizeTech(t, cities = [], categories = []) {
     categoryNameEn: primaryEn,
     allCategoryNamesAr: allAr,
     allCategoryNamesEn: allEn,
+    extraCategories:    extraCats,
     photoUrl:       getFileUrl(t.profile_photo || t.profilePhoto || null),
     workImages:     (t.work_images || t.workImages || []).map(getFileUrl),
     rating:         Number(t.rating || 0),
@@ -598,6 +599,35 @@ export default function TechnicianDetails() {
               </a>
             )}
           </div>
+        )}
+
+        {/* ── Extra Specialties ─────────────────────────────── */}
+        {tech.extraCategories?.length > 0 && (
+          <SectionCard icon={Wrench} title={ar ? 'خدمات إضافية يقدمها هذا الفني' : 'Additional Services'} accent="#FF7900">
+            <div className="grid grid-cols-3 gap-4">
+              {tech.extraCategories.map(cat => {
+                const catName = ar ? (cat.name_ar || cat.nameAr || '') : (cat.name_en || cat.nameEn || cat.name_ar || cat.nameAr || '')
+                return (
+                  <Link key={cat.id} href={`/category/${cat.id}`} onClick={() => track('extra_specialty_click', cat.id)}>
+                    <div className="flex flex-col items-center gap-2 active:scale-90 transition-transform cursor-pointer select-none">
+                      <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden"
+                        style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.14)' }}>
+                        <img
+                          src={`/icons/categories/${cat.id}.png`}
+                          alt={catName}
+                          className="w-full h-full object-cover"
+                          onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
+                        />
+                      </div>
+                      <span className="text-[12px] font-bold text-center text-[#071B33] leading-tight line-clamp-2 w-full px-0.5">
+                        {catName}
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </SectionCard>
         )}
 
         {/* ── Reviews Section ───────────────────────────────── */}
