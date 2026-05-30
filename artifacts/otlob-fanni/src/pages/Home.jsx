@@ -258,13 +258,13 @@ export default function Home() {
                   <button
                     key={city.id}
                     onClick={() => navigate(`/city/${city.id}`)}
-                    className="flex-shrink-0 flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold border transition-colors active:scale-95"
+                    className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border transition-colors active:scale-95"
                     style={{ background: 'white', border: '1.5px solid #E2E8F0', color: '#071B33' }}
                   >
-                    <span style={{ fontSize: '11px' }}>📍</span>
+                    <span style={{ fontSize: '14px' }}>📍</span>
                     {label}
                     {isStrong && (
-                      <span className="text-[10px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-1.5 py-0.5 leading-none">
+                      <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
                         {city.total}
                       </span>
                     )}
