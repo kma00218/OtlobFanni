@@ -305,23 +305,27 @@ export default function Home() {
               </Link>
             </div>
             <div
-              className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1"
+              className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1"
               style={{ scrollbarWidth: 'none' }}
             >
               {topCategories.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => navigate(`/category/${cat.id}`)}
-                  className="flex-shrink-0 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold transition-colors active:scale-95"
-                  style={{ background: '#FF7900', color: 'white' }}
+                  className="flex-shrink-0 flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
                 >
-                  <img
-                    src={`/icons/categories/${cat.id}.png`}
-                    alt=""
-                    className="w-6 h-6 rounded-full object-cover flex-shrink-0"
-                    onError={e => { e.currentTarget.style.display = 'none' }}
-                  />
-                  {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-sm"
+                    style={{ border: '1.5px solid rgba(255,121,0,0.18)' }}>
+                    <img
+                      src={`/icons/categories/${cat.id}.png`}
+                      alt={ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
+                      className="w-full h-full object-cover"
+                      onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-[#071B33] text-center w-16 leading-tight line-clamp-2">
+                    {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
+                  </span>
                 </button>
               ))}
             </div>
