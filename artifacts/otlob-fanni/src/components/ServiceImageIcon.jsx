@@ -61,6 +61,7 @@ const iconMap = {
   car_diagnostics:          '/icons/services/car_diagnostics.svg',
   heavy_truck_driver:       '/icons/services/heavy_truck_driver.svg',
   pipe_fittings:            '/icons/services/pipe_fittings.png',
+  furniture_install:        '/icons/services/furniture_install.png',
 }
 
 export default function ServiceImageIcon({ iconName, className = '' }) {
