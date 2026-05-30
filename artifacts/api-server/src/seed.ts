@@ -96,8 +96,7 @@ const EXTRA_CATEGORIES = [
   { id: 'pumps',                nameAr: 'مضخات مياه',                      nameEn: 'Water Pumps',                            iconName: 'plumbing',             sortOrder: 9,  isActive: true, sectionId: 'home_services'      },
   { id: 'gas',                  nameAr: 'تأسيس غاز',                       nameEn: 'Gas Installation',                       iconName: 'gas',                  sortOrder: 10, isActive: true, sectionId: 'home_services'      },
   { id: 'home_help',            nameAr: 'مساعدة منزلية وتنظيف',            nameEn: 'Home Help & Cleaning',                   iconName: 'cleaning',             sortOrder: 75, isActive: true, sectionId: 'home_services'      },
-  { id: 'pipe_fittings',        nameAr: 'تركيب إناث',                       nameEn: 'Pipe Fittings',                          iconName: 'pipe_fittings',        sortOrder: 76, isActive: true, sectionId: 'home_services'      },
-  { id: 'furniture_install',    nameAr: 'تركيب أثاث',                       nameEn: 'Furniture Installation',                 iconName: 'furniture_install',    sortOrder: 77, isActive: true, sectionId: 'home_services'      },
+  { id: 'furniture_install',    nameAr: 'تركيب أثاث',                       nameEn: 'Furniture Installation',                 iconName: 'furniture_install',    sortOrder: 76, isActive: true, sectionId: 'home_services'      },
 
   // ── 2. Car Services ───────────────────────────────────────────────────────────
   { id: 'car_mechanic',         nameAr: 'ميكانيكي سيارات',                 nameEn: 'Car Mechanic',                           iconName: 'car_mechanic',         sortOrder: 11, isActive: true, sectionId: 'car_services'        },
