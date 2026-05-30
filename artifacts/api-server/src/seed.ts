@@ -228,6 +228,10 @@ export async function seedDatabase(): Promise<void> {
     `);
     console.log('[seed] Cleaned up duplicate custom categories');
 
+    // Remove obsolete categories that were retired from the directory
+    await db.execute(sql`DELETE FROM categories WHERE id IN ('pipe_fittings')`);
+    console.log('[seed] Removed obsolete categories (pipe_fittings)');
+
     const [{ count: adminCount }] = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(adminsTable);
