@@ -173,6 +173,7 @@ router.post("/admin/suppliers", async (req, res): Promise<void> => {
     tiktok:          b.tiktok          || '',
     status:          'published',
   }).returning();
+  autoExtractTagsInBackground(row.id, "supplier");
   res.status(201).json(row);
 });
 
@@ -199,6 +200,9 @@ router.patch("/admin/suppliers/:id", async (req, res): Promise<void> => {
   if (body.custom_supply_type !== undefined) updates.customSupplyType = body.custom_supply_type;
   const [row] = await db.update(supplierApplicationsTable).set(updates).where(eq(supplierApplicationsTable.id, raw)).returning();
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  if (body.description !== undefined) {
+    autoExtractTagsInBackground(raw, "supplier");
+  }
   res.json(row);
 });
 
