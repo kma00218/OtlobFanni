@@ -259,6 +259,7 @@ export const api = {
     login:               (whatsapp, password)                        => post('/pro/login', { whatsapp, password }),
     generateCredentials: (entityType, entityId)                      => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
     bulkCredentials:     ()                                          => post(`/admin/pro-credentials/bulk`, {}),
+    markSent:            (entityId, type)                            => patch(`/admin/pro-credentials/${entityId}/mark-sent`, { type }),
     getProfile:          (entityType, entityId)                      => get(`/pro/me?entityType=${entityType}&entityId=${entityId}`),
     changePassword:      (entityType, entityId, currentPassword, newPassword) =>
       post('/pro/change-password', { entityType, entityId, currentPassword, newPassword }),

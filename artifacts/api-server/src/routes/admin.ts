@@ -800,11 +800,15 @@ router.post("/pro-credentials/bulk", async (_req, res): Promise<void> => {
 
   const credMap = new Map(existingCreds.map(c => [c.entityId, c]));
 
-  const results: { entityType: string; entityId: string; displayName: string; whatsapp: string; password: string; isNew: boolean }[] = [];
+  const results: {
+    entityType: string; entityId: string; displayName: string; whatsapp: string;
+    password: string; isNew: boolean; entityCreatedAt: string | null;
+    credentialsSentAt: string | null; telegramSentAt: string | null;
+  }[] = [];
 
   const upserts: Promise<unknown>[] = [];
 
-  const process = (entityType: string, entityId: string, displayName: string, whatsapp: string) => {
+  const process = (entityType: string, entityId: string, displayName: string, whatsapp: string, entityCreatedAt: Date | null) => {
     const existing = credMap.get(entityId);
     let password: string;
     let isNew: boolean;
@@ -827,21 +831,41 @@ router.post("/pro-credentials/bulk", async (_req, res): Promise<void> => {
       isNew = true;
     }
 
-    results.push({ entityType, entityId, displayName, whatsapp, password, isNew });
+    results.push({
+      entityType, entityId, displayName, whatsapp, password, isNew,
+      entityCreatedAt: entityCreatedAt ? entityCreatedAt.toISOString() : null,
+      credentialsSentAt: existing?.credentialsSentAt ? existing.credentialsSentAt.toISOString() : null,
+      telegramSentAt:    existing?.telegramSentAt    ? existing.telegramSentAt.toISOString()    : null,
+    });
   };
 
   for (const t of technicians) {
-    process('technician', t.id, t.nameAr || t.nameEn || '', t.whatsapp || t.phone || '');
+    process('technician', t.id, t.nameAr || t.nameEn || '', t.whatsapp || t.phone || '', t.createdAt ?? null);
   }
   for (const c of companies) {
-    process('company', c.id, c.companyName || '', c.whatsapp || c.phone || '');
+    process('company', c.id, c.companyName || '', c.whatsapp || c.phone || '', c.createdAt ?? null);
   }
   for (const s of suppliers) {
-    process('supplier', s.id, s.businessName || '', s.whatsapp || s.phone || '');
+    process('supplier', s.id, s.businessName || '', s.whatsapp || s.phone || '', s.createdAt ?? null);
   }
 
   await Promise.all(upserts);
   res.json(results);
+});
+
+// ── Pro Credentials Mark Sent (Admin) ─────────────────────────────────────────
+router.patch("/pro-credentials/:entityId/mark-sent", async (req, res): Promise<void> => {
+  const { entityId } = req.params;
+  const { type } = req.body as { type: 'credentials' | 'telegram' };
+  if (!type || !['credentials', 'telegram'].includes(type)) {
+    res.status(400).json({ error: "type must be 'credentials' or 'telegram'" }); return;
+  }
+  const now = new Date();
+  const col = type === 'credentials' ? { credentialsSentAt: now } : { telegramSentAt: now };
+  await db.update(proCredentialsTable)
+    .set(col)
+    .where(eq(proCredentialsTable.entityId, entityId));
+  res.json({ ok: true, sentAt: now.toISOString() });
 });
 
 // ── Update Reports (Admin) ─────────────────────────────────────────────────────

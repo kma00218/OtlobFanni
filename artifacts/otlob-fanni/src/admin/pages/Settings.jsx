@@ -50,15 +50,84 @@ function ToggleRow({ label, description, enabled, onChange }) {
   )
 }
 
-function BulkCredentialsSection() {
-  const [loading, setLoading]   = useState(false)
-  const [list, setList]         = useState(null)
-  const [sent, setSent]         = useState({})
-  const [error, setError]       = useState('')
-  const [showAll, setShowAll]   = useState(false)
+const PLATFORM_URL = 'otlobfanni.ly'
+const TELEGRAM_LINK = 'https://t.me/otlobfanni'
+const TYPE_LABEL = { technician: '🔧 فني', company: '🏢 شركة', supplier: '📦 مورد' }
 
-  const PLATFORM_URL = 'otlobfanni.ly'
-  const MSG = (wa, pass) =>
+function fmtDay(iso) {
+  if (!iso) return 'تاريخ غير معروف'
+  return new Date(iso).toLocaleDateString('ar-LY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+}
+function fmtTime(iso) {
+  if (!iso) return null
+  return new Date(iso).toLocaleString('ar-LY', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+function groupByDay(list) {
+  const map = {}
+  list.forEach(item => {
+    const key = item.entityCreatedAt
+      ? new Date(item.entityCreatedAt).toISOString().slice(0, 10)
+      : '0000-00-00'
+    if (!map[key]) map[key] = { key, label: fmtDay(item.entityCreatedAt), items: [] }
+    map[key].items.push(item)
+  })
+  return Object.values(map).sort((a, b) => b.key.localeCompare(a.key))
+}
+
+function useProList() {
+  const [loading, setLoading] = useState(false)
+  const [list, setList]       = useState(null)
+  const [error, setError]     = useState('')
+
+  const load = async () => {
+    setLoading(true); setError('')
+    try {
+      const data = await api.pro.bulkCredentials()
+      setList(data)
+    } catch { setError('حدث خطأ أثناء تحميل البيانات') }
+    finally { setLoading(false) }
+  }
+
+  const markSent = async (entityId, type) => {
+    try {
+      const { sentAt } = await api.pro.markSent(entityId, type)
+      setList(prev => prev.map(i =>
+        i.entityId === entityId
+          ? { ...i, [type === 'credentials' ? 'credentialsSentAt' : 'telegramSentAt']: sentAt }
+          : i
+      ))
+    } catch { }
+  }
+
+  return { loading, list, error, load, markSent, reset: () => setList(null) }
+}
+
+function DayGroup({ day, children }) {
+  const [open, setOpen] = useState(true)
+  return (
+    <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2' }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-slate-50"
+        style={{ background: 'linear-gradient(135deg, #F8FAFC, #F2F5FA)', borderBottom: open ? '1px solid #E8EDF2' : 'none' }}
+      >
+        <div className="flex items-center gap-2">
+          {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+          <span className="font-black text-[#071B33] text-xs">{day.label}</span>
+        </div>
+        <span className="text-[11px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+          {day.items.length} شخص
+        </span>
+      </button>
+      {open && <div>{children}</div>}
+    </div>
+  )
+}
+
+function BulkCredentialsSection() {
+  const { loading, list, error, load, markSent, reset } = useProList()
+
+  const CRED_MSG = (wa, pass) =>
     `تم تفعيل حسابك المهني على منصة اطلب فني 🎉\n\n` +
     `يمكنك الآن الدخول إلى أدوات العمل عبر منصة:\n` +
     `🌐 ${PLATFORM_URL}\n\n` +
@@ -66,32 +135,12 @@ function BulkCredentialsSection() {
     `اسم المستخدم:\n${wa}\n\n` +
     `كلمة المرور:\n${pass}`
 
-  const TYPE_LABEL = { technician: '🔧 فني', company: '🏢 شركة', supplier: '📦 مورد' }
-
-  const load = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const data = await api.pro.bulkCredentials()
-      setList(data)
-    } catch {
-      setError('حدث خطأ أثناء تحميل البيانات')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const sendOne = (item) => {
     const phone = (item.whatsapp || '').replace(/\D/g, '')
     if (!phone) return
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(MSG(item.whatsapp, item.password))}`, '_blank')
-    setSent(s => ({ ...s, [item.entityId]: true }))
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(CRED_MSG(item.whatsapp, item.password))}`, '_blank')
+    markSent(item.entityId, 'credentials')
   }
-
-  const newCount  = list ? list.filter(i => i.isNew).length : 0
-  const allCount  = list ? list.length : 0
-  const sentCount = Object.keys(sent).length
-  const visible   = list ? (showAll ? list : list.slice(0, 8)) : []
 
   if (!list) {
     return (
@@ -105,18 +154,15 @@ function BulkCredentialsSection() {
           <div>
             <p className="font-black text-[#071B33] text-sm">إرسال بيانات الدخول لجميع المحترفين</p>
             <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-              يجلب كل الفنيين والشركات والموردين المفعّلين<br/>ويعرضهم مع رابط واتساب جاهز لكل واحد
+              القائمة مقسّمة حسب يوم الانضمام — تتبّع من أرسلت له محفوظ في قاعدة البيانات
             </p>
           </div>
-          <button
-            onClick={load}
-            disabled={loading}
+          <button onClick={load} disabled={loading}
             className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg,#FF7900,#FF9500)', boxShadow: '0 4px 20px rgba(255,121,0,0.35)' }}
-          >
+            style={{ background: 'linear-gradient(135deg,#FF7900,#FF9500)', boxShadow: '0 4px 20px rgba(255,121,0,0.35)' }}>
             {loading
-              ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> جاري التحميل...</>
-              : <><Send className="w-4 h-4" /> تحضير قائمة الإرسال</>}
+              ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />جاري التحميل...</>
+              : <><Send className="w-4 h-4" />تحضير القائمة</>}
           </button>
           {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
         </div>
@@ -124,13 +170,15 @@ function BulkCredentialsSection() {
     )
   }
 
+  const groups = groupByDay(list)
+  const sentCount = list.filter(i => i.credentialsSentAt).length
+
   return (
     <div className="flex flex-col gap-3">
-      {/* Summary bar */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'إجمالي', value: allCount,  color: '#071B33' },
-          { label: 'جديد',   value: newCount,   color: '#FF7900' },
+          { label: 'إجمالي',     value: list.length, color: '#071B33' },
+          { label: 'جديد',       value: list.filter(i => i.isNew).length, color: '#FF7900' },
           { label: 'تم الإرسال', value: sentCount, color: '#10B981' },
         ].map(({ label, value, color }) => (
           <div key={label} className="rounded-2xl p-3 text-center" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
@@ -140,112 +188,73 @@ function BulkCredentialsSection() {
         ))}
       </div>
 
-      {/* List */}
-      <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2' }}>
-        {visible.map((item, i) => {
-          const isSent = sent[item.entityId]
-          return (
-            <div key={item.entityId}
-              className="flex items-center gap-3 px-4 py-3 transition-colors"
-              style={{
-                borderBottom: i < visible.length - 1 ? '1px solid #F1F5F9' : 'none',
-                background: isSent ? 'rgba(16,185,129,0.04)' : 'white',
-              }}>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#071B33] text-sm truncate">{item.displayName || item.whatsapp}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] font-bold text-slate-400">{TYPE_LABEL[item.entityType]}</span>
-                  {item.isNew && (
-                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'rgba(255,121,0,0.12)', color: '#FF7900' }}>جديد</span>
-                  )}
-                  {isSent && (
-                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>✓ أُرسل</span>
-                  )}
+      <div className="flex flex-col gap-2">
+        {groups.map(day => (
+          <DayGroup key={day.key} day={day}>
+            {day.items.map((item, i) => {
+              const wasSent = !!item.credentialsSentAt
+              return (
+                <div key={item.entityId}
+                  className="flex items-center gap-3 px-4 py-3"
+                  style={{
+                    borderBottom: i < day.items.length - 1 ? '1px solid #F1F5F9' : 'none',
+                    background: wasSent ? 'rgba(16,185,129,0.03)' : 'white',
+                  }}>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[#071B33] text-sm truncate">{item.displayName || item.whatsapp}</p>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-[10px] font-bold text-slate-400">{TYPE_LABEL[item.entityType]}</span>
+                      {item.isNew && (
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full"
+                          style={{ background: 'rgba(255,121,0,0.12)', color: '#FF7900' }}>جديد</span>
+                      )}
+                      {wasSent && (
+                        <span className="text-[10px] font-semibold text-emerald-600">
+                          ✓ أُرسل {fmtTime(item.credentialsSentAt)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button onClick={() => sendOne(item)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-black text-white text-xs flex-shrink-0 active:scale-95 transition-transform"
+                    style={{
+                      background: wasSent ? 'linear-gradient(135deg,#10B981,#059669)' : 'linear-gradient(135deg,#25D366,#128C7E)',
+                      boxShadow: wasSent ? '0 2px 10px rgba(16,185,129,0.3)' : '0 2px 10px rgba(37,211,102,0.35)',
+                    }}>
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    {wasSent ? 'أعد الإرسال' : 'إرسال'}
+                  </button>
                 </div>
-              </div>
-              <button
-                onClick={() => sendOne(item)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-black text-white text-xs flex-shrink-0 transition-all active:scale-95"
-                style={{
-                  background: isSent
-                    ? 'linear-gradient(135deg,#10B981,#059669)'
-                    : 'linear-gradient(135deg,#25D366,#128C7E)',
-                  boxShadow: isSent
-                    ? '0 2px 10px rgba(16,185,129,0.3)'
-                    : '0 2px 10px rgba(37,211,102,0.35)',
-                }}
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                {isSent ? 'أعد الإرسال' : 'إرسال'}
-              </button>
-            </div>
-          )
-        })}
+              )
+            })}
+          </DayGroup>
+        ))}
       </div>
 
-      {list.length > 8 && (
-        <button
-          onClick={() => setShowAll(s => !s)}
-          className="flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-sm font-bold text-slate-500 transition-colors hover:text-[#FF7900]"
-          style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}
-        >
-          {showAll ? <><ChevronUp className="w-4 h-4" /> عرض أقل</> : <><ChevronDown className="w-4 h-4" /> عرض الكل ({list.length})</>}
-        </button>
-      )}
-
-      <button
-        onClick={() => { setList(null); setSent({}) }}
-        className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
-      >
+      <button onClick={reset}
+        className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors">
         <X className="w-3.5 h-3.5" /> إغلاق القائمة
       </button>
     </div>
   )
 }
 
-const TELEGRAM_LINK = 'https://t.me/otlobfanni'
-
 function TelegramInviteSection() {
-  const [loading, setLoading]   = useState(false)
-  const [list, setList]         = useState(null)
-  const [sent, setSent]         = useState({})
-  const [error, setError]       = useState('')
-  const [showAll, setShowAll]   = useState(false)
+  const { loading, list, error, load, markSent, reset } = useProList()
 
-  const MSG = (name) =>
+  const TG_MSG = (name) =>
     `مرحباً ${name ? name.split(' ')[0] : ''}،\n\n` +
     `ندعوك للانضمام إلى قناتنا الرسمية على تيليغرام 📣\n\n` +
     `تابع آخر أخبار منصة اطلب فني، العروض الحصرية، والتحديثات الجديدة:\n\n` +
     `👉 ${TELEGRAM_LINK}\n\n` +
     `فريق اطلب فني 🔧`
 
-  const TYPE_LABEL = { technician: '🔧 فني', company: '🏢 شركة', supplier: '📦 مورد' }
-
-  const load = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const data = await api.pro.bulkCredentials()
-      setList(data)
-    } catch {
-      setError('حدث خطأ أثناء تحميل البيانات')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const sendOne = (item) => {
     const phone = (item.whatsapp || '').replace(/\D/g, '')
     if (!phone) return
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(MSG(item.displayName))}`, '_blank')
-    setSent(s => ({ ...s, [item.entityId]: true }))
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(TG_MSG(item.displayName))}`, '_blank')
+    markSent(item.entityId, 'telegram')
   }
-
-  const sentCount = Object.keys(sent).length
-  const allCount  = list ? list.length : 0
-  const visible   = list ? (showAll ? list : list.slice(0, 8)) : []
 
   if (!list) {
     return (
@@ -259,18 +268,15 @@ function TelegramInviteSection() {
           <div>
             <p className="font-black text-[#071B33] text-sm">دعوة متابعة قناة تيليغرام</p>
             <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-              يجلب جميع المحترفين ويرسل لكل واحد دعوة<br/>لمتابعة القناة الرسمية على تيليغرام
+              القائمة مقسّمة حسب يوم الانضمام — تتبّع من دعوته محفوظ في قاعدة البيانات
             </p>
           </div>
-          <button
-            onClick={load}
-            disabled={loading}
+          <button onClick={load} disabled={loading}
             className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg,#29B6F6,#0288D1)', boxShadow: '0 4px 20px rgba(41,182,246,0.35)' }}
-          >
+            style={{ background: 'linear-gradient(135deg,#29B6F6,#0288D1)', boxShadow: '0 4px 20px rgba(41,182,246,0.35)' }}>
             {loading
-              ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> جاري التحميل...</>
-              : <><Send className="w-4 h-4" /> تحضير قائمة الدعوة</>}
+              ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />جاري التحميل...</>
+              : <><Send className="w-4 h-4" />تحضير القائمة</>}
           </button>
           {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
         </div>
@@ -278,12 +284,15 @@ function TelegramInviteSection() {
     )
   }
 
+  const groups = groupByDay(list)
+  const sentCount = list.filter(i => i.telegramSentAt).length
+
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-2">
         {[
-          { label: 'إجمالي', value: allCount,  color: '#071B33' },
-          { label: 'تم الإرسال', value: sentCount, color: '#10B981' },
+          { label: 'إجمالي',     value: list.length, color: '#071B33' },
+          { label: 'تم الإرسال', value: sentCount,    color: '#10B981' },
         ].map(({ label, value, color }) => (
           <div key={label} className="rounded-2xl p-3 text-center" style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}>
             <p className="font-black text-lg" style={{ color }}>{value}</p>
@@ -292,60 +301,48 @@ function TelegramInviteSection() {
         ))}
       </div>
 
-      <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #E8EDF2' }}>
-        {visible.map((item, i) => {
-          const isSent = sent[item.entityId]
-          return (
-            <div key={item.entityId}
-              className="flex items-center gap-3 px-4 py-3 transition-colors"
-              style={{
-                borderBottom: i < visible.length - 1 ? '1px solid #F1F5F9' : 'none',
-                background: isSent ? 'rgba(16,185,129,0.04)' : 'white',
-              }}>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#071B33] text-sm truncate">{item.displayName || item.whatsapp}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] font-bold text-slate-400">{TYPE_LABEL[item.entityType]}</span>
-                  {isSent && (
-                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>✓ أُرسل</span>
-                  )}
+      <div className="flex flex-col gap-2">
+        {groups.map(day => (
+          <DayGroup key={day.key} day={day}>
+            {day.items.map((item, i) => {
+              const wasSent = !!item.telegramSentAt
+              return (
+                <div key={item.entityId}
+                  className="flex items-center gap-3 px-4 py-3"
+                  style={{
+                    borderBottom: i < day.items.length - 1 ? '1px solid #F1F5F9' : 'none',
+                    background: wasSent ? 'rgba(41,182,246,0.03)' : 'white',
+                  }}>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[#071B33] text-sm truncate">{item.displayName || item.whatsapp}</p>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-[10px] font-bold text-slate-400">{TYPE_LABEL[item.entityType]}</span>
+                      {wasSent && (
+                        <span className="text-[10px] font-semibold text-sky-600">
+                          ✓ دُعي {fmtTime(item.telegramSentAt)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button onClick={() => sendOne(item)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-black text-white text-xs flex-shrink-0 active:scale-95 transition-transform"
+                    style={{
+                      background: wasSent ? 'linear-gradient(135deg,#29B6F6,#0288D1)' : 'linear-gradient(135deg,#29B6F6,#0288D1)',
+                      boxShadow: '0 2px 10px rgba(41,182,246,0.3)',
+                      opacity: wasSent ? 0.85 : 1,
+                    }}>
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    {wasSent ? 'أعد الإرسال' : 'دعوة'}
+                  </button>
                 </div>
-              </div>
-              <button
-                onClick={() => sendOne(item)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-black text-white text-xs flex-shrink-0 transition-all active:scale-95"
-                style={{
-                  background: isSent
-                    ? 'linear-gradient(135deg,#10B981,#059669)'
-                    : 'linear-gradient(135deg,#25D366,#128C7E)',
-                  boxShadow: isSent
-                    ? '0 2px 10px rgba(16,185,129,0.3)'
-                    : '0 2px 10px rgba(37,211,102,0.35)',
-                }}
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                {isSent ? 'أعد الإرسال' : 'إرسال'}
-              </button>
-            </div>
-          )
-        })}
+              )
+            })}
+          </DayGroup>
+        ))}
       </div>
 
-      {list.length > 8 && (
-        <button
-          onClick={() => setShowAll(s => !s)}
-          className="flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-sm font-bold text-slate-500 transition-colors hover:text-[#071B33]"
-          style={{ background: '#F8FAFC', border: '1px solid #E8EDF2' }}
-        >
-          {showAll ? <><ChevronUp className="w-4 h-4" /> عرض أقل</> : <><ChevronDown className="w-4 h-4" /> عرض الكل ({list.length})</>}
-        </button>
-      )}
-
-      <button
-        onClick={() => { setList(null); setSent({}) }}
-        className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
-      >
+      <button onClick={reset}
+        className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors">
         <X className="w-3.5 h-3.5" /> إغلاق القائمة
       </button>
     </div>
