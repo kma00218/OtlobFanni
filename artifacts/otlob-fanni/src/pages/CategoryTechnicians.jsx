@@ -325,17 +325,31 @@ function CityPicker({ cities, categoryName, categoryIcon, ar, onSelect }) {
           </span>
         </div>
 
-        {/* Cities — 4-column grid, name on card */}
+        {/* Cities — 4-column grid */}
         <div className="grid grid-cols-4 gap-2.5">
-          {cities.map((city) => {
+          {cities.map((city, idx) => {
             const cityName = ar ? (city.name_ar || city.nameAr || '') : (city.name_en || city.nameEn || '')
+            const gradients = [
+              'linear-gradient(145deg,#FF7900 0%,#FF9A3C 100%)',
+              'linear-gradient(145deg,#071B33 0%,#1A3A5C 100%)',
+              'linear-gradient(145deg,#C2410C 0%,#EA7A2A 100%)',
+              'linear-gradient(145deg,#0E4D8C 0%,#1A73C8 100%)',
+              'linear-gradient(145deg,#B45309 0%,#D97706 100%)',
+              'linear-gradient(145deg,#1D4E6B 0%,#0E7490 100%)',
+              'linear-gradient(145deg,#7C2D12 0%,#C2410C 100%)',
+              'linear-gradient(145deg,#1E3A5F 0%,#2D6FA6 100%)',
+            ]
+            const bg = gradients[idx % gradients.length]
             return (
               <button
                 key={city.id}
                 onClick={() => onSelect(city.id)}
-                className="flex items-center justify-center bg-white border border-gray-100 rounded-2xl active:scale-95 transition-transform shadow-sm aspect-square"
+                className="flex flex-col items-center justify-center rounded-2xl active:scale-95 transition-transform aspect-square relative overflow-hidden"
+                style={{ background: bg, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
               >
-                <span className="text-[#071B33] font-extrabold text-[17px] text-center leading-snug w-full px-1.5 line-clamp-2">{cityName}</span>
+                <span className="text-white/40 text-[18px] mb-0.5 leading-none select-none">📍</span>
+                <span className="text-white font-extrabold text-[13px] text-center leading-tight w-full px-1.5 line-clamp-2 drop-shadow-sm">{cityName}</span>
+                <div className="absolute inset-0 rounded-2xl" style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 60%)' }} />
               </button>
             )
           })}
