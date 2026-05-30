@@ -60,6 +60,7 @@ const iconMap = {
   oil_change:               '/icons/services/oil_change.svg',
   car_diagnostics:          '/icons/services/car_diagnostics.svg',
   heavy_truck_driver:       '/icons/services/heavy_truck_driver.svg',
+  pipe_fittings:            '/icons/services/pipe_fittings.png',
 }
 
 export default function ServiceImageIcon({ iconName, className = '' }) {

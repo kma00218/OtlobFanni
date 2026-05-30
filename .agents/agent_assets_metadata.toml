@@ -600,6 +600,12 @@ uri = "file://attached_assets/google-play-feature-graphic.png"
 type = "image"
 title = "otlob fanni google play feature graphic"
 
+[[generated]]
+id = "8gcK3_KS5d9BK4VfE2eAI"
+uri = "file://artifacts/otlob-fanni/public/icons/services/pipe_fittings.png"
+type = "image"
+title = "pipe fittings plumber installation"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"
@@ -671,3 +677,9 @@ id = "KlkArlf7NHIskBBiC4__a"
 uri = "file://attached_assets/google-play-feature-1024x500.png"
 type = "image"
 title = "Google Play Feature Graphic — 1024×500 (ready to upload)"
+
+[[outputs]]
+id = "6YG438S9W__i2x7mB0_Ko"
+uri = "file://artifacts/otlob-fanni/public/icons/services/pipe_fittings.png"
+type = "image"
+title = "أيقونة تركيب إناث — AI Generated"
