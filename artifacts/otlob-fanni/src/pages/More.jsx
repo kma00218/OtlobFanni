@@ -206,7 +206,7 @@ export default function More() {
     {
       labelAr: 'واتساب',
       labelEn: 'WhatsApp',
-      href: 'https://wa.me/19297186991',
+      href: 'https://wa.me/491791607597',
       external: true,
       bg: 'bg-[#25D366]',
       icon: (
@@ -368,7 +368,7 @@ export default function More() {
       {/* WhatsApp Contact Card */}
       <div className="px-4 mb-4">
         <a
-          href="https://wa.me/19297186991"
+          href="https://wa.me/491791607597"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-between px-4 py-3.5 rounded-2xl active:scale-[0.98] transition-transform shadow-sm"
