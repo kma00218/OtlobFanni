@@ -146,7 +146,7 @@ export default function Support() {
             {ar ? 'لم تجد إجابتك؟ تواصل معنا مباشرة' : "Didn't find your answer? Contact us directly"}
           </p>
           <a
-            href="https://wa.me/19297186991"
+            href="https://wa.me/491791607597"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between px-4 py-4 rounded-2xl shadow-sm active:scale-[0.98] transition-transform"

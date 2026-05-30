@@ -93,7 +93,7 @@ export default function Header({ woodTexture = false }) {
 
       <div className="flex items-end gap-3">
         <a
-          href="https://wa.me/19297186991"
+          href="https://wa.me/491791607597"
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
