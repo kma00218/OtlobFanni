@@ -126,6 +126,7 @@ function normalizeTech(t, cities = [], categories = []) {
     isFeatured:     t.is_featured || t.isFeatured || false,
     createdAt:      t.created_at  || t.createdAt  || null,
     referralSource: t.referral_source || t.referralSource || null,
+    aiTags:         t.aiTags || t.ai_tags || [],
   }
 }
 
