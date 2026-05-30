@@ -580,20 +580,6 @@ router.delete("/ad-requests/:id", async (req, res): Promise<void> => {
   res.sendStatus(204);
 });
 
-// ── Service Requests ──────────────────────────────────────────────────────────
-router.get("/service-requests", async (_req, res): Promise<void> => {
-  const reqs = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt));
-  res.json(reqs);
-});
-
-router.patch("/service-requests/:id", async (req, res): Promise<void> => {
-  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  const { status } = req.body;
-  const [r] = await db.update(serviceRequestsTable).set({ status }).where(eq(serviceRequestsTable.id, raw)).returning();
-  if (!r) { res.status(404).json({ error: "Not found" }); return; }
-  res.json(r);
-});
-
 router.delete("/service-requests/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   await db.delete(serviceRequestsTable).where(eq(serviceRequestsTable.id, raw));
