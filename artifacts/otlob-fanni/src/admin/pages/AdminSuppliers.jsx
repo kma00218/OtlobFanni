@@ -369,7 +369,7 @@ export default function AdminSuppliers() {
           <p className="text-slate-500 text-sm mt-0.5">هؤلاء المزودون تمت الموافقة عليهم وأصبحوا جزءاً من الدليل.</p>
         </div>
         <div className="flex items-center gap-3">
-          <AiBatchButton entityType="supplier" />
+          <AiBatchButton entityType="supplier" onComplete={reload} />
           <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#FF7900] hover:bg-[#e86d00] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">
             <Plus className="w-4 h-4" /> إضافة مزود
           </button>

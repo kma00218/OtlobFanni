@@ -3,7 +3,7 @@ import { Sparkles, Loader2, CheckCircle, X } from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
-export default function AiBatchButton({ entityType }) {
+export default function AiBatchButton({ entityType, onComplete }) {
   const [state, setState] = useState('idle')
   const [result, setResult] = useState(null)
 
@@ -21,6 +21,7 @@ export default function AiBatchButton({ entityType }) {
       if (!r.ok) throw new Error(d.error || 'خطأ غير معروف')
       setResult(d)
       setState('done')
+      if (d.processed > 0) onComplete?.()
     } catch (err) {
       setResult({ error: err.message })
       setState('error')
