@@ -67,9 +67,9 @@ function InteractiveStars({ value, onChange }) {
 
 function SectionCard({ icon: Icon, title, children, accent = '#FF7900' }) {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #E8EEF6', boxShadow: '0 2px 20px rgba(7,27,51,0.07)' }}>
+    <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 20px rgba(7,27,51,0.10)' }}>
       <div className="flex items-center gap-3 px-5 py-4"
-        style={{ borderBottom: '2px solid #F2F5FA', background: 'linear-gradient(135deg, #FAFBFD 0%, #FFFFFF 100%)' }}>
+        style={{ borderBottom: '2px solid #D8E3EF', background: 'linear-gradient(135deg, #FAFBFD 0%, #FFFFFF 100%)' }}>
         <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
           style={{ background: `linear-gradient(135deg, ${accent}22, ${accent}0a)`, border: `1.5px solid ${accent}30` }}>
           <Icon className="w-5 h-5" style={{ color: accent }} />

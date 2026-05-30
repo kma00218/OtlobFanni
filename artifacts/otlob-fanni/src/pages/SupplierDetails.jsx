@@ -428,8 +428,8 @@ export default function SupplierDetails() {
 
         {/* ── Description ── */}
         {description && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
                 <Package className="w-4 h-4 text-[#0e5c6d]" />
@@ -443,8 +443,8 @@ export default function SupplierDetails() {
         )}
 
         {/* ── Shop Images ── */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
             <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
               style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
               <ImageIcon className="w-4 h-4 text-[#0e5c6d]" />
@@ -483,8 +483,8 @@ export default function SupplierDetails() {
 
         {/* ── Social Media ── */}
         {(facebook || instagram || tiktok) && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>
                 <Share2 className="w-4 h-4 text-[#0e5c6d]" />
@@ -527,8 +527,8 @@ export default function SupplierDetails() {
         )}
 
         {/* ── Reviews Section ── */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,92,109,0.04))', border: '1px solid rgba(14,92,109,0.2)' }}>

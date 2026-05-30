@@ -468,8 +468,8 @@ export default function CompanyDetails() {
 
         {/* السعر */}
         {priceFrom && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
                 <DollarSign className="w-4 h-4 text-[#FF7900]" />
@@ -498,8 +498,8 @@ export default function CompanyDetails() {
 
         {/* وصف الشركة */}
         {description && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
                 <Building2 className="w-4 h-4 text-[#1a56db]" />
@@ -513,8 +513,8 @@ export default function CompanyDetails() {
         )}
 
         {/* معلومات إضافية */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+          <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
             <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
               style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
               <Building2 className="w-4 h-4 text-[#1a56db]" />
@@ -547,8 +547,8 @@ export default function CompanyDetails() {
 
         {/* أوقات العمل */}
         {(workingDays.length > 0 || hoursFrom) && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
                 <Clock className="w-4 h-4 text-[#FF7900]" />
@@ -579,8 +579,8 @@ export default function CompanyDetails() {
 
         {/* معرض الأعمال */}
         {workImages.length > 0 && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
                 <ImageIcon className="w-4 h-4 text-[#FF7900]" />
@@ -601,8 +601,8 @@ export default function CompanyDetails() {
 
         {/* التواصل الاجتماعي */}
         {(facebook || instagram) && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.12), rgba(26,86,219,0.04))', border: '1px solid rgba(26,86,219,0.2)' }}>
                 <Share2 className="w-4 h-4 text-[#1a56db]" />
@@ -629,8 +629,8 @@ export default function CompanyDetails() {
         )}
 
         {/* ── قسم التقييمات ─────────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+        <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,121,0,0.04))', border: '1px solid rgba(255,121,0,0.2)' }}>
@@ -710,8 +710,8 @@ export default function CompanyDetails() {
 
         {/* ── نموذج إضافة تقييم ─────────────────────────────────────────── */}
         {reviewModal && (
-          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1px solid #EEF2F8', boxShadow: '0 2px 16px rgba(7,27,51,0.06)' }}>
-            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #F5F7FB' }}>
+          <div className="bg-white rounded-3xl overflow-hidden" style={{ border: '1.5px solid #C8D5E6', boxShadow: '0 2px 16px rgba(7,27,51,0.10)' }}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1.5px solid #D8E3EF' }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0"
                   style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))', border: '1px solid rgba(245,158,11,0.25)' }}>
