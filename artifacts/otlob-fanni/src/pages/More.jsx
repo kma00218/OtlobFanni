@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { track } from '../lib/tracker';
 import { NotificationSettingsRow } from '../components/NotificationPrompt';
 import LibyaPhoneInput from '../components/LibyaPhoneInput';
-import * as api from '../lib/api';
+import api from '../lib/api';
 
 const IOS_STEPS_AR = [
   { n: '1', text: 'افتح التطبيق في متصفح Safari' },

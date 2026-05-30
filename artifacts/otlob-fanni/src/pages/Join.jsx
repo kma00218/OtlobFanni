@@ -399,15 +399,42 @@ export default function Join() {
                   className="text-sm font-bold text-[#FF7900] hover:underline" disabled={uploading > 0}>
                   {(profilePreview || profilePhoto) ? (ar ? 'تغيير الصورة' : 'Change Photo') : (ar ? '📷 أضف صورتك الشخصية' : '📷 Add Your Profile Photo')}
                 </button>
-                <div className="mt-2 flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 text-right">
-                  <span className="text-lg flex-shrink-0 leading-none">⭐</span>
-                  <div>
-                    <p className="text-xs font-bold text-orange-900 leading-snug">
-                      {ar ? 'الفنيون الذين يضيفون صورة يحصلون على ثقة أعلى من العملاء وفرصة أكبر للتواصل' : 'Technicians with a photo earn more client trust and get more contact requests'}
-                    </p>
-                    <p className="text-[11px] text-orange-500 font-semibold mt-0.5">
-                      {ar ? 'اختياري — لكنه يُحدث فارقاً كبيراً ✓' : 'Optional — but makes a big difference ✓'}
-                    </p>
+                <div className="mt-2 rounded-2xl overflow-hidden" dir="rtl">
+                  <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+                  <div className="px-4 py-3.5" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                        style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+                        📸
+                      </div>
+                      <div>
+                        <p className="text-white font-black text-[14px] leading-tight">
+                          {ar ? 'صورتك = ثقة فورية من العميل' : 'Your photo = instant client trust'}
+                        </p>
+                        <p className="text-orange-300 text-[11.5px] font-semibold mt-0.5">
+                          {ar ? 'يختار بعينه قبل أن يتصل — اجعل صورتك تتكلم' : 'Clients choose with their eyes — make your photo speak'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 mb-3">
+                      {(ar ? [
+                        '✦ الفنيون بصورة شخصية يحصلون على أكثر من ضعف التواصل',
+                        '✦ صورة وجهك الحقيقية تبني الثقة قبل أي كلمة',
+                        '✦ ارفع صورة احترافية واضحة — وليس أي صورة عشوائية',
+                      ] : [
+                        '✦ Technicians with a photo get 2× more client contacts',
+                        '✦ A real face photo builds trust before any words',
+                        '✦ Upload a clear, professional photo — not just any image',
+                      ]).map((t, i) => (
+                        <p key={i} className="text-white/85 text-[11.5px] font-semibold leading-snug">{t}</p>
+                      ))}
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                      style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+                      <span className="text-orange-300 text-[11px] font-bold">
+                        {ar ? '⚡ اختياري — لكنه يُحدث الفارق الأكبر' : '⚡ Optional — but makes the biggest difference'}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {(profilePreview || profilePhoto) && (
@@ -729,19 +756,42 @@ export default function Join() {
           {/* ── 6. Work Portfolio ─────────────────────────────────────── */}
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <SectionTitle icon={Image} step={6}>{ar ? 'معرض الأعمال (حتى 6 صور)' : 'Work Portfolio (up to 6 photos)'}</SectionTitle>
-            <div className="mb-3 flex items-start gap-2.5 bg-orange-50 border-2 border-orange-200 rounded-xl px-3.5 py-3">
-              <span className="text-lg leading-none flex-shrink-0 mt-0.5">📸</span>
-              <div>
-                <p className="text-xs font-extrabold text-orange-900 leading-snug mb-1">
-                  {ar
-                    ? 'الفنيون الذين يضيفون صور أعمالهم يحصلون على فرص أكبر بكثير للتواصل مع العملاء'
-                    : 'Technicians with portfolio photos get significantly more client contacts'}
-                </p>
-                <p className="text-[11px] text-orange-700 font-semibold leading-snug">
-                  {ar
-                    ? 'أضف صوراً من أعمالك السابقة — تركيبات، إصلاحات، مشاريع منجزة. العميل يريد أن يرى عملك قبل أن يتصل.'
-                    : 'Add photos of your previous work — installations, repairs, completed projects. Clients want to see your work before calling.'}
-                </p>
+            <div className="mb-3 rounded-2xl overflow-hidden" dir="rtl">
+              <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+              <div className="px-4 py-3.5" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+                    🖼️
+                  </div>
+                  <div>
+                    <p className="text-white font-black text-[14px] leading-tight">
+                      {ar ? 'أعمالك تتكلم — دعها تُقنع بدلاً عنك' : 'Your work speaks — let it convince clients for you'}
+                    </p>
+                    <p className="text-orange-300 text-[11.5px] font-semibold mt-0.5">
+                      {ar ? 'العميل يريد دليلاً على جودتك قبل أن يتصل' : 'Clients want proof of quality before calling'}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1.5 mb-3">
+                  {(ar ? [
+                    '✦ أضف أحسن أعمالك — تركيبات، إصلاحات، مشاريع منجزة',
+                    '✦ صور الأعمال الحقيقية تُغني عن آلاف الكلمات',
+                    '✦ الفنيون بمعرض أعمال يُفضَّلون دائماً على غيرهم',
+                  ] : [
+                    '✦ Add your best work — installations, repairs, completed projects',
+                    '✦ Real work photos speak louder than thousands of words',
+                    '✦ Technicians with portfolios are always chosen over those without',
+                  ]).map((t, i) => (
+                    <p key={i} className="text-white/85 text-[11.5px] font-semibold leading-snug">{t}</p>
+                  ))}
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+                  <span className="text-orange-300 text-[11px] font-bold">
+                    {ar ? '⚡ اختياري — لكنه يُحدث الفارق الأكبر' : '⚡ Optional — but makes the biggest difference'}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">

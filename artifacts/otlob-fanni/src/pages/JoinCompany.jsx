@@ -412,15 +412,42 @@ export default function JoinCompany() {
                   className="text-sm font-bold text-[#FF7900] hover:underline" disabled={uploading > 0}>
                   {(logoPreview || companyLogo) ? (ar ? 'تغيير الشعار' : 'Change Logo') : (ar ? '🏢 أضف شعار شركتك' : '🏢 Add Your Company Logo')}
                 </button>
-                <div className="mt-2 flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 text-right">
-                  <span className="text-lg flex-shrink-0 leading-none">⭐</span>
-                  <div>
-                    <p className="text-xs font-bold text-orange-900 leading-snug">
-                      {ar ? 'الشركات التي تعرض شعارها تبدو أكثر احترافية وتكسب ثقة العملاء بشكل أسرع' : 'Companies with a logo appear more professional and gain client trust faster'}
-                    </p>
-                    <p className="text-[11px] text-orange-500 font-semibold mt-0.5">
-                      {ar ? 'اختياري — لكنه يُحدث فارقاً كبيراً ✓' : 'Optional — but makes a big difference ✓'}
-                    </p>
+                <div className="mt-2 rounded-2xl overflow-hidden" dir="rtl">
+                  <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+                  <div className="px-4 py-3.5" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                        style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+                        🏢
+                      </div>
+                      <div>
+                        <p className="text-white font-black text-[14px] leading-tight">
+                          {ar ? 'شعارك = هوية شركتك الأولى' : 'Your logo = your company\'s first identity'}
+                        </p>
+                        <p className="text-orange-300 text-[11.5px] font-semibold mt-0.5">
+                          {ar ? 'الانطباع الأول يُصنع في ثوانٍ — اجعله احترافياً' : 'First impressions form in seconds — make yours count'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 mb-3">
+                      {(ar ? [
+                        '✦ الشركات بشعار تبدو أكثر احترافية وتكسب الثقة أسرع',
+                        '✦ شعارك يُميزك عن المنافسين في نظرة واحدة',
+                        '✦ ارفع شعاراً واضحاً بخلفية نظيفة وجودة عالية',
+                      ] : [
+                        '✦ Companies with a logo look far more professional',
+                        '✦ Your logo sets you apart from competitors at a glance',
+                        '✦ Upload a clean, high-quality logo on a clear background',
+                      ]).map((t, i) => (
+                        <p key={i} className="text-white/85 text-[11.5px] font-semibold leading-snug">{t}</p>
+                      ))}
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                      style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+                      <span className="text-orange-300 text-[11px] font-bold">
+                        {ar ? '⚡ اختياري — لكنه يُحدث الفارق الأكبر' : '⚡ Optional — but makes the biggest difference'}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {(logoPreview || companyLogo) && (
@@ -766,19 +793,42 @@ export default function JoinCompany() {
           {/* ── 6. Work Portfolio ───────────────────────────────────── */}
           <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-gray-200 [border-top:3px_solid_#FF7900]">
             <SectionTitle icon={Image} step={6}>{ar ? 'معرض الأعمال (اختياري)' : 'Work Portfolio (Optional)'}</SectionTitle>
-            <div className="mb-3 flex items-start gap-2.5 bg-orange-50 border-2 border-orange-200 rounded-xl px-3.5 py-3">
-              <span className="text-lg leading-none flex-shrink-0 mt-0.5">📸</span>
-              <div>
-                <p className="text-xs font-extrabold text-orange-900 leading-snug mb-1">
-                  {ar
-                    ? 'الشركات التي تعرض صور مشاريعها تكسب ثقة العملاء بشكل أسرع بكثير'
-                    : 'Companies that show project photos earn client trust much faster'}
-                </p>
-                <p className="text-[11px] text-orange-700 font-semibold leading-snug">
-                  {ar
-                    ? 'أضف صوراً من مشاريعك المنجزة — تركيبات، صيانة، مقاولات. العميل يريد أن يرى نتائج عملك قبل أن يتصل.'
-                    : 'Add photos of completed projects — installations, maintenance, contracting work. Clients want to see results before calling.'}
-                </p>
+            <div className="mb-3 rounded-2xl overflow-hidden" dir="rtl">
+              <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+              <div className="px-4 py-3.5" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+                    🏗️
+                  </div>
+                  <div>
+                    <p className="text-white font-black text-[14px] leading-tight">
+                      {ar ? 'مشاريعك تتكلم — أظهر نتائجك للعالم' : 'Your projects speak — show the world your results'}
+                    </p>
+                    <p className="text-orange-300 text-[11.5px] font-semibold mt-0.5">
+                      {ar ? 'العميل يختار الشركة التي يرى عملها بوضوح' : 'Clients choose the company whose work they can clearly see'}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1.5 mb-3">
+                  {(ar ? [
+                    '✦ أضف صور مشاريعك المنجزة — تركيبات، صيانة، مقاولات',
+                    '✦ صور المشاريع الحقيقية تبني المصداقية بشكل لا مثيل له',
+                    '✦ الشركات بمعرض أعمال تُعيَّن قبل غيرها دائماً',
+                  ] : [
+                    '✦ Add completed project photos — installations, maintenance, contracting',
+                    '✦ Real project photos build credibility like nothing else',
+                    '✦ Companies with portfolios are always chosen first',
+                  ]).map((t, i) => (
+                    <p key={i} className="text-white/85 text-[11.5px] font-semibold leading-snug">{t}</p>
+                  ))}
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+                  <span className="text-orange-300 text-[11px] font-bold">
+                    {ar ? '⚡ اختياري — لكنه يُحدث الفارق الأكبر' : '⚡ Optional — but makes the biggest difference'}
+                  </span>
+                </div>
               </div>
             </div>
             <p className="text-xs text-gray-400 mb-3">

@@ -275,17 +275,42 @@ export default function JoinSupplier() {
                   ? (ar ? 'تغيير الشعار' : 'Change Logo')
                   : (ar ? '🏪 أضف شعار نشاطك' : '🏪 Add Your Business Logo')}
               </button>
-              <div className="mt-2 flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 text-right">
-                <span className="text-lg flex-shrink-0 leading-none">⭐</span>
-                <div>
-                  <p className="text-xs font-bold text-orange-900 leading-snug">
-                    {ar
-                      ? 'الأنشطة التي تعرض شعارها تبدو أكثر احترافية وتكسب ثقة الفنيين والشركات بشكل أسرع'
-                      : 'Businesses with a logo appear more professional and gain trust from technicians & companies faster'}
-                  </p>
-                  <p className="text-[11px] text-orange-500 font-semibold mt-0.5">
-                    {ar ? 'اختياري — لكنه يُحدث فارقاً كبيراً ✓' : 'Optional — but makes a big difference ✓'}
-                  </p>
+              <div className="mt-2 rounded-2xl overflow-hidden" dir="rtl">
+                <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+                <div className="px-4 py-3.5" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                      style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+                      🏪
+                    </div>
+                    <div>
+                      <p className="text-white font-black text-[14px] leading-tight">
+                        {ar ? 'شعارك = أول ما يراه الفنيون والشركات' : 'Your logo = first thing technicians see'}
+                      </p>
+                      <p className="text-orange-300 text-[11.5px] font-semibold mt-0.5">
+                        {ar ? 'نشاطٌ بشعار يُعامَل كمؤسسة لا كبائع عشوائي' : 'A business with a logo looks like a real institution'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 mb-3">
+                    {(ar ? [
+                      '✦ الأنشطة بشعار تحصل على ثقة الفنيين والشركات أسرع',
+                      '✦ شعارك يعكس جدية نشاطك التجاري ومصداقيته',
+                      '✦ ارفع شعاراً بجودة عالية وخلفية نظيفة',
+                    ] : [
+                      '✦ Businesses with logos earn technician & company trust faster',
+                      '✦ Your logo reflects the seriousness of your business',
+                      '✦ Upload a high-quality logo with a clean background',
+                    ]).map((t, i) => (
+                      <p key={i} className="text-white/85 text-[11.5px] font-semibold leading-snug">{t}</p>
+                    ))}
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                    style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+                    <span className="text-orange-300 text-[11px] font-bold">
+                      {ar ? '⚡ اختياري — لكنه يُحدث الفارق الأكبر' : '⚡ Optional — but makes the biggest difference'}
+                    </span>
+                  </div>
                 </div>
               </div>
               {(logoPreview || logo) && (
@@ -481,19 +506,42 @@ export default function JoinSupplier() {
             </Field>
 
             {/* Shop images — max 3 */}
-            <div className="flex items-start gap-2.5 bg-orange-50 border-2 border-orange-200 rounded-xl px-3.5 py-3">
-              <span className="text-lg leading-none flex-shrink-0 mt-0.5">📸</span>
-              <div>
-                <p className="text-xs font-extrabold text-orange-900 leading-snug mb-1">
-                  {ar
-                    ? 'الأنشطة التي تضيف صوراً للمحل والمنتجات تجذب الفنيين والشركات بشكل أسرع'
-                    : 'Suppliers with shop and product photos attract technicians and companies much faster'}
-                </p>
-                <p className="text-[11px] text-orange-700 font-semibold leading-snug">
-                  {ar
-                    ? 'أضف صوراً واضحة للمحل من الداخل أو للمنتجات التي تبيعها — الفنيون يثقون أكثر بمن يعرض بضاعته.'
-                    : 'Add clear photos of your shop interior or the products you sell — technicians trust suppliers who show their goods.'}
-                </p>
+            <div className="rounded-2xl overflow-hidden" dir="rtl">
+              <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+              <div className="px-4 py-3.5" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+                    📦
+                  </div>
+                  <div>
+                    <p className="text-white font-black text-[14px] leading-tight">
+                      {ar ? 'أظهر بضاعتك — من يرى يثق، من يثق يشتري' : 'Show your goods — seeing is believing, believing is buying'}
+                    </p>
+                    <p className="text-orange-300 text-[11.5px] font-semibold mt-0.5">
+                      {ar ? 'الفنيون يختارون المورد الذي يرون منتجاته بوضوح' : 'Technicians choose the supplier whose products they can see'}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1.5 mb-3">
+                  {(ar ? [
+                    '✦ أضف صوراً للمحل من الداخل أو للمنتجات التي تبيعها',
+                    '✦ صور المنتجات الحقيقية تبني الثقة وتُغني عن الوصف',
+                    '✦ الموردون بصور يُفضَّلون على غيرهم دائماً',
+                  ] : [
+                    '✦ Add photos of your shop interior or the products you sell',
+                    '✦ Real product photos build trust and eliminate doubt',
+                    '✦ Suppliers with photos are always preferred over those without',
+                  ]).map((t, i) => (
+                    <p key={i} className="text-white/85 text-[11.5px] font-semibold leading-snug">{t}</p>
+                  ))}
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+                  <span className="text-orange-300 text-[11px] font-bold">
+                    {ar ? '⚡ اختياري — لكنه يُحدث الفارق الأكبر' : '⚡ Optional — but makes the biggest difference'}
+                  </span>
+                </div>
               </div>
             </div>
             <Field label={ar ? 'صور المحل أو المنتجات (اختياري — حتى 3 صور)' : 'Shop / Product Photos (Optional — max 3)'}>

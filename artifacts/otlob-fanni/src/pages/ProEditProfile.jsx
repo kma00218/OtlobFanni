@@ -86,7 +86,28 @@ function AvatarUploader({ value, onChange }) {
         )}
       </div>
       <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
-      <p className="text-xs text-slate-400 font-semibold">اضغط لتغيير الصورة</p>
+      <p className="text-xs text-slate-400 font-semibold mb-2">اضغط لتغيير الصورة</p>
+      <div className="w-full rounded-2xl overflow-hidden">
+        <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+        <div className="px-3.5 py-3" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base flex-shrink-0"
+              style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+              📸
+            </div>
+            <p className="text-white font-black text-[13px] leading-tight">صورتك = ثقة فورية من العميل</p>
+          </div>
+          <div className="space-y-1 mb-2">
+            {['✦ صورة وجهك الحقيقية تبني الثقة قبل أي كلمة', '✦ ارفع صورة واضحة واحترافية بجودة عالية'].map((t, i) => (
+              <p key={i} className="text-white/80 text-[11px] font-semibold leading-snug">{t}</p>
+            ))}
+          </div>
+          <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5"
+            style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+            <span className="text-orange-300 text-[10.5px] font-bold">⚡ يُحدث الفارق الأكبر</span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -106,7 +127,7 @@ function WorkImagesUploader({ value = [], onChange, max = 5 }) {
   const remove = idx => onChange(value.filter((_, i) => i !== idx))
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#FF7900]/10 flex items-center justify-center">
             <ImagePlus className="w-3.5 h-3.5 text-[#FF7900]" />
@@ -114,6 +135,27 @@ function WorkImagesUploader({ value = [], onChange, max = 5 }) {
           <span className="text-sm font-bold text-[#071B33]">صور الأعمال</span>
         </div>
         <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">{value.length}/{max}</span>
+      </div>
+      <div className="rounded-2xl overflow-hidden mb-3">
+        <div style={{ height: 3, background: 'linear-gradient(90deg, #FF7900, #FFB347, #FF7900)' }} />
+        <div className="px-3.5 py-3" style={{ background: 'linear-gradient(145deg, #071B33 0%, #0d2544 100%)' }}>
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base flex-shrink-0"
+              style={{ background: 'rgba(255,121,0,0.22)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+              🖼️
+            </div>
+            <p className="text-white font-black text-[13px] leading-tight">أعمالك تتكلم — دعها تُقنع بدلاً عنك</p>
+          </div>
+          <div className="space-y-1 mb-2">
+            {['✦ أضف أحسن أعمالك — تركيبات، إصلاحات، مشاريع منجزة', '✦ الفنيون بمعرض أعمال يُفضَّلون دائماً على غيرهم'].map((t, i) => (
+              <p key={i} className="text-white/80 text-[11px] font-semibold leading-snug">{t}</p>
+            ))}
+          </div>
+          <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5"
+            style={{ background: 'rgba(255,121,0,0.18)', border: '1px solid rgba(255,121,0,0.35)' }}>
+            <span className="text-orange-300 text-[10.5px] font-bold">⚡ يُحدث الفارق الأكبر</span>
+          </div>
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-2">
         {value.map((path, i) => (
