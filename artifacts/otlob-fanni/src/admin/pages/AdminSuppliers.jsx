@@ -302,7 +302,7 @@ export default function AdminSuppliers() {
           </button>
           {(row.whatsapp || row.phone) && (
             <button
-              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.businessName || row.business_name || ''}! 🎉 تم نشر نشاطكم الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنكم الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/supplier/${row.id}\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.businessName || row.business_name || ''}! 🎉 تم نشر نشاطكم الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنكم الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/supplier/${row.id}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
               className="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded-lg transition-colors"
               title="رسالة الترحيب 🎉">
               <MessageCircle className="w-3.5 h-3.5" />
