@@ -110,7 +110,7 @@ export async function batchExtractTags(
       .where(
         and(
           eq(techniciansTable.isApproved, true),
-          or(isNull(techniciansTable.aiTags), sql`array_length(${techniciansTable.aiTags}, 1) = 0`)
+          or(isNull(techniciansTable.aiTags), sql`cardinality(${techniciansTable.aiTags}) = 0`)
         )
       )
       .limit(limit);
@@ -127,7 +127,7 @@ export async function batchExtractTags(
       .where(
         and(
           or(eq(companyApplicationsTable.status, "approved"), eq(companyApplicationsTable.status, "published")),
-          or(isNull(companyApplicationsTable.aiTags), sql`array_length(${companyApplicationsTable.aiTags}, 1) = 0`)
+          or(isNull(companyApplicationsTable.aiTags), sql`cardinality(${companyApplicationsTable.aiTags}) = 0`)
         )
       )
       .limit(limit);
@@ -144,7 +144,7 @@ export async function batchExtractTags(
       .where(
         and(
           eq(supplierApplicationsTable.status, "published"),
-          or(isNull(supplierApplicationsTable.aiTags), sql`array_length(${supplierApplicationsTable.aiTags}, 1) = 0`)
+          or(isNull(supplierApplicationsTable.aiTags), sql`cardinality(${supplierApplicationsTable.aiTags}) = 0`)
         )
       )
       .limit(limit);
