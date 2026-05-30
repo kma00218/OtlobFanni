@@ -110,36 +110,47 @@ function InstallFAB() {
   if (isInstalled) return null;
   if (location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile') return null;
 
-  const handleInstall = async () => {
-    if (!installPrompt) return;
-    track('install');
-    installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === 'accepted') { setIsInstalled(true); setInstallPrompt(null); setShowModal(false); }
+  const handleFABClick = async () => {
+    if (installPrompt) {
+      // Android Chrome — trigger system prompt directly, no modal needed
+      track('install_direct');
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') { setIsInstalled(true); setInstallPrompt(null); }
+    } else {
+      // iOS or Android without prompt — show guidance modal
+      setShowModal(true);
+    }
   };
+
+  const hasDirectInstall = !!installPrompt;
 
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}
+        onClick={handleFABClick}
         className="fixed bottom-24 z-50 flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform font-bold text-white text-sm"
         style={{
-          background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
+          background: hasDirectInstall
+            ? 'linear-gradient(135deg, #34A853 0%, #1a7a36 100%)'
+            : 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
           left: '50%',
           transform: 'translateX(-50%)',
-          boxShadow: '0 4px 20px rgba(255,121,0,0.4)',
+          boxShadow: hasDirectInstall
+            ? '0 4px 20px rgba(52,168,83,0.45)'
+            : '0 4px 20px rgba(255,121,0,0.4)',
         }}
       >
         <Download className="w-4 h-4" />
-        {lang === 'ar' ? 'ثبّت التطبيق' : 'Install App'}
+        {hasDirectInstall
+          ? (lang === 'ar' ? '⚡ ثبّت الآن' : '⚡ Install Now')
+          : (lang === 'ar' ? 'ثبّت التطبيق' : 'Install App')}
       </button>
 
       {showModal && (
         <InstallGuideModal
           ar={lang === 'ar'}
           onClose={() => setShowModal(false)}
-          installPrompt={installPrompt}
-          onInstall={handleInstall}
         />
       )}
     </>

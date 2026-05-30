@@ -52,11 +52,5 @@
       "form_factor": "wide"
     }
   ],
-  "prefer_related_applications": true,
-  "related_applications": [
-    {
-      "platform": "play",
-      "id": "com.otlobfanni.app"
-    }
-  ]
+  "prefer_related_applications": false
 }
