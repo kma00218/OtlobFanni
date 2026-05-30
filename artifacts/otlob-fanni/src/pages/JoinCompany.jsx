@@ -3,7 +3,7 @@ import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import { sections, categories } from '../data/services'
-import { CheckCircle, Camera, X, Upload, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook, Info, Copy, Check, ChevronDown, MapPin as MapPinIcon } from 'lucide-react'
+import { CheckCircle, Camera, X, Upload, Plus, Lock, Building2, Briefcase, Clock, FileText, Image, Facebook, Info, Copy, Check, ChevronDown, MapPin as MapPinIcon } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 import LocationPicker from '../components/LocationPicker'
 

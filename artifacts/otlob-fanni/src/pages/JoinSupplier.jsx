@@ -4,7 +4,7 @@ import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import LocationPicker from '../components/LocationPicker'
 import { SUPPLY_TYPES } from '../data/suppliers'
-import { CheckCircle, Camera, X, Upload, Building2, Phone, FileText, Facebook, Copy, Check, Package, MapPin as MapPinIcon, Info } from 'lucide-react'
+import { CheckCircle, Camera, X, Upload, Plus, Building2, Phone, FileText, Facebook, Copy, Check, Package, MapPin as MapPinIcon, Info } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 
 const inp = 'w-full px-4 py-3 rounded-xl border-2 border-gray-800 bg-blue-50 text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 focus:border-[#FF7900] transition-colors placeholder:text-gray-400'
