@@ -147,7 +147,6 @@ export default function CityTechnicians() {
   }
 
   const matchesSupplier = (s) => {
-    if (selectedCatId) return false  // suppliers don't have category IDs
     if (!q) return true
     const fields = [
       s.businessName, s.business_name,
