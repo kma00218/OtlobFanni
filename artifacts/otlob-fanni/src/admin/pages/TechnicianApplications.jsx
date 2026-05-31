@@ -302,7 +302,12 @@ export default function TechnicianApplications() {
       key: 'requestNumber', label: 'رقم الطلب',
       render: (v, row) => (
         <div className="flex flex-col gap-0.5">
-          {v ? <span className="text-xs font-mono text-slate-400 tracking-wider">{v}</span> : <span className="text-xs text-slate-600">—</span>}
+          {v ? (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-xs font-mono font-bold text-blue-700 tracking-wider bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg">{v}</span>
+              <span className="text-[9px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-md tracking-widest">ID</span>
+            </span>
+          ) : <span className="text-xs text-slate-400">—</span>}
           {row?.referredByName && (
             <div className="flex flex-col gap-0.5 mt-0.5">
               <span className="text-[10px] bg-orange-100 text-[#FF7900] border border-orange-200 px-1.5 py-0.5 rounded font-bold whitespace-nowrap">

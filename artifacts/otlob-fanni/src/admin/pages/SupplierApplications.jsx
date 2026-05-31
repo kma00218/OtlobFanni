@@ -252,7 +252,12 @@ export default function SupplierApplications() {
       },
     },
     { key: 'createdAt', label: 'تاريخ التقديم', render: (v) => v ? new Date(v).toLocaleDateString('en-GB') : '—' },
-    { key: 'requestNumber', label: 'رقم الطلب', render: (v) => <span className="text-xs font-mono text-slate-400">{v || '—'}</span> },
+    { key: 'requestNumber', label: 'رقم الطلب', render: (v) => v ? (
+      <span className="inline-flex items-center gap-1">
+        <span className="text-xs font-mono font-bold text-blue-700 tracking-wider bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg">{v}</span>
+        <span className="text-[9px] font-black bg-blue-600 text-white px-1.5 py-0.5 rounded-md tracking-widest">ID</span>
+      </span>
+    ) : <span className="text-xs text-slate-400">—</span> },
     {
       key: '__actions', label: '',
       render: (_, row) => (
