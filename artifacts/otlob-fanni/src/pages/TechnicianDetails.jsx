@@ -483,19 +483,31 @@ export default function TechnicianDetails() {
             </div>
             <button
               onClick={() => setShowRequest(true)}
-              className="w-full flex items-center gap-3.5 bg-white rounded-2xl px-4 py-3.5 active:scale-[0.98] transition-transform"
-              style={{ border: '1.5px solid #99F6E4', boxShadow: '0 2px 0 #0D9488, 0 4px 14px rgba(13,148,136,0.15)' }}>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, #0D9488, #0F766E)', boxShadow: '0 2px 8px rgba(13,148,136,0.35)' }}>
-                <ClipboardList className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1 text-right">
-                <p className="font-black text-[#0D9488] text-sm leading-tight">
-                  {ar ? 'اطلب خدمة الآن' : 'Request Service Now'}
-                </p>
-                <p className="text-[12px] text-gray-600 mt-0.5 font-semibold">
-                  {ar ? 'أخبر الفني بما تحتاجه' : 'Tell the technician what you need'}
-                </p>
+              className="w-full rounded-3xl active:translate-y-[3px] transition-all duration-100 select-none"
+              style={{
+                background: 'linear-gradient(135deg, #FF7900 0%, #FF5500 100%)',
+                boxShadow: '0 6px 0 #C44E00, 0 8px 28px rgba(255,121,0,0.45)',
+                padding: '0',
+              }}>
+              <div className="flex items-center gap-4 px-5 py-4 relative overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'rgba(0,0,0,0.18)', backdropFilter: 'blur(4px)' }}>
+                  <ClipboardList className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1 text-right">
+                  <p className="font-black text-white text-base leading-tight tracking-tight">
+                    {ar ? '🔧 اطلب خدمة الآن' : '🔧 Request Service Now'}
+                  </p>
+                  <p className="text-[13px] text-white/80 mt-0.5 font-semibold">
+                    {ar ? 'أخبر الفني بما تحتاجه' : 'Tell the technician what you need'}
+                  </p>
+                </div>
+                <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <span className="text-white font-black text-sm leading-none">{ar ? '←' : '→'}</span>
+                </div>
               </div>
             </button>
             <button
