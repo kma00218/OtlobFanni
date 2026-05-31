@@ -269,17 +269,20 @@ export default function SupplierDetails() {
               )}
             </div>
 
-            {/* Supply type chip */}
+            {/* Supply type icon grid */}
             {supplyLabel && (
               <div className="mb-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
                   {ar ? 'نوع المستلزمات' : 'Supply Type'}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="inline-flex items-center gap-1.5 text-[#0e5c6d] text-xs font-black px-3 py-1.5 rounded-xl"
-                    style={{ background: 'linear-gradient(135deg, rgba(14,92,109,0.12), rgba(14,124,143,0.04))', border: '1.5px solid rgba(14,92,109,0.25)' }}>
-                    {supplyEmoji} {supplyLabel}
-                  </span>
+                <div className="grid grid-cols-4 gap-3">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.22)' }}>
+                      <span className="text-3xl leading-none">{supplyEmoji}</span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-700 text-center leading-tight">{supplyLabel}</span>
+                  </div>
                 </div>
               </div>
             )}
