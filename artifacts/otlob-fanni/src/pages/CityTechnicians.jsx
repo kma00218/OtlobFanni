@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import BackHeader from '../components/BackHeader'
 import TechnicianCard from '../components/TechnicianCard'
-import { MapPin, Globe, Search, Building2, Phone, ChevronLeft, ChevronRight, Package } from 'lucide-react'
+import { MapPin, Globe, Search, Building2, ChevronLeft, ChevronRight, Package } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
+import { categories as allCategoriesData } from '../data/services'
 
 function CompanyRow({ company, ar, onOpen }) {
   const name = company.companyName || ''
@@ -55,6 +56,7 @@ export default function CityTechnicians() {
   const [visibleTechs, setVisibleTechs]         = useState(20)
   const [visibleCompanies, setVisibleCompanies] = useState(20)
   const [visibleSuppliers, setVisibleSuppliers] = useState(20)
+  const [selectedCatId, setSelectedCatId]       = useState(null)
 
   const isLibya = id === 'libya'
 
@@ -84,6 +86,21 @@ export default function CityTechnicians() {
 
   const cityName = city ? (ar ? city.nameAr : city.nameEn) : (ar ? 'المدينة' : 'City')
   const cityTotal = techs.length + companies.length + suppliers.length
+
+  // Collect unique category IDs present in this city
+  const citySpecialties = useMemo(() => {
+    const ids = new Set()
+    techs.forEach(t => {
+      if (t.categoryId) ids.add(t.categoryId)
+      if (Array.isArray(t.extraSpecialties)) t.extraSpecialties.forEach(s => s && ids.add(s))
+    })
+    companies.forEach(c => { if (c.categoryId) ids.add(c.categoryId) })
+    const catMap = Object.fromEntries(allCategoriesData.map(c => [c.id, c]))
+    return [...ids]
+      .map(id => catMap[id])
+      .filter(Boolean)
+      .sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99))
+  }, [techs, companies])
   const isWeakCity = !isLibya && !loading && cityTotal < 3
 
   useSeoMeta({
@@ -99,6 +116,11 @@ export default function CityTechnicians() {
   const q = search.trim().toLowerCase()
 
   const matchesTech = (t) => {
+    if (selectedCatId) {
+      const inMain = t.categoryId === selectedCatId
+      const inExtra = Array.isArray(t.extraSpecialties) && t.extraSpecialties.includes(selectedCatId)
+      if (!inMain && !inExtra) return false
+    }
     if (!q) return true
     const fields = [
       t.nameAr, t.nameEn,
@@ -112,6 +134,7 @@ export default function CityTechnicians() {
   }
 
   const matchesCompany = (c) => {
+    if (selectedCatId && c.categoryId !== selectedCatId) return false
     if (!q) return true
     const fields = [
       c.companyName, c.company_name,
@@ -124,6 +147,7 @@ export default function CityTechnicians() {
   }
 
   const matchesSupplier = (s) => {
+    if (selectedCatId) return false  // suppliers don't have category IDs
     if (!q) return true
     const fields = [
       s.businessName, s.business_name,
@@ -145,6 +169,7 @@ export default function CityTechnicians() {
     setVisibleTechs(20)
     setVisibleCompanies(20)
     setVisibleSuppliers(20)
+    setSelectedCatId(null)
   }, [search, id])
 
   const shownTechs      = filteredTechs.slice(0, visibleTechs)
@@ -208,6 +233,64 @@ export default function CityTechnicians() {
             )}
           </div>
         </div>
+
+        {/* ── Specialty filter icons ── */}
+        {!loading && citySpecialties.length > 0 && (
+          <div
+            className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {citySpecialties.map(cat => {
+              const active = selectedCatId === cat.id
+              const name = ar ? cat.nameAr : (cat.nameEn || cat.nameAr)
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCatId(active ? null : cat.id)
+                    setVisibleTechs(20)
+                    setVisibleCompanies(20)
+                    setVisibleSuppliers(20)
+                  }}
+                  className="flex-shrink-0 flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
+                >
+                  <div
+                    className="w-14 h-14 rounded-2xl overflow-hidden transition-all"
+                    style={{
+                      border: active ? '2.5px solid #FF7900' : '1.5px solid rgba(0,0,0,0.08)',
+                      boxShadow: active ? '0 0 0 3px rgba(255,121,0,0.18)' : 'none',
+                    }}
+                  >
+                    <img
+                      src={`/icons/categories/${cat.id}.png`}
+                      alt={name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <span
+                    className="text-[10px] font-bold text-center w-14 leading-tight line-clamp-2 transition-colors"
+                    style={{ color: active ? '#FF7900' : '#071B33' }}
+                  >
+                    {name}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* active filter badge */}
+        {selectedCatId && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">{ar ? 'فلتر:' : 'Filter:'}</span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF7900] bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full">
+              {ar
+                ? allCategoriesData.find(c => c.id === selectedCatId)?.nameAr
+                : allCategoriesData.find(c => c.id === selectedCatId)?.nameEn}
+              <button onClick={() => setSelectedCatId(null)} className="text-gray-400 hover:text-gray-600 leading-none">✕</button>
+            </span>
+          </div>
+        )}
 
         {loading ? (
           <SkeletonListCards count={4} />
