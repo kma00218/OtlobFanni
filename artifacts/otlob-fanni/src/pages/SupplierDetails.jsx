@@ -407,13 +407,15 @@ export default function SupplierDetails() {
                 </div>
               </div>
             </button>
-            <button
-              onClick={() => setShowReport(true)}
-              className="w-full mt-2 flex items-center justify-center gap-1.5 text-slate-700 text-xs font-bold py-2.5 rounded-2xl transition-all"
-              style={{ background: '#F0F4F8', border: '1px solid #D8E0EA' }}>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-              {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
-            </button>
+            <div className="mt-5 pt-4" style={{ borderTop: '1px dashed #D8E0EA' }}>
+              <button
+                onClick={() => setShowReport(true)}
+                className="w-full flex items-center justify-center gap-1.5 text-slate-400 text-xs font-medium py-2 rounded-xl transition-all hover:text-slate-600"
+                style={{ background: 'transparent', border: '1px dashed #C8D3E0' }}>
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                {ar ? 'تحديث أو إبلاغ' : 'Update or Report'}
+              </button>
+            </div>
           </div>
         </div>
 
