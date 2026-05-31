@@ -305,10 +305,10 @@ export default function CompanyDetails() {
             {/* Name + ID */}
             <h1 className="font-black text-[#071B33] text-2xl leading-tight mt-3 mb-2">{name}</h1>
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              <span className="inline-flex items-center gap-2 text-[#071B33] text-[11px] font-black px-3 py-1.5 rounded-xl"
-                style={{ background: 'linear-gradient(135deg, #EDF0F8, #E4E9F2)', border: '1px solid #C8D3E6' }}>
+              <span className="inline-flex items-center gap-2 text-blue-700 text-[11px] font-black px-3 py-1.5 rounded-xl"
+                style={{ background: 'linear-gradient(135deg, #EBF3FF, #DBEAFE)', border: '2px solid #93C5FD' }}>
                 <span className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 text-white text-[8px] font-black"
-                  style={{ background: '#071B33' }}>ID</span>
+                  style={{ background: '#2563EB' }}>ID</span>
                 COM-{createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear()}-{String(company.id).replace(/\D/g,'').slice(-6)}
               </span>
               {createdAt && (
