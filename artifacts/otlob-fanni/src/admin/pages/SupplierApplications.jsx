@@ -117,7 +117,7 @@ export default function SupplierApplications() {
   const reload = () => {
     setLoading(true)
     api.admin.supplierApplications.list()
-      .then(rows => { setData(rows.filter(r => r.status !== 'published')); setLoading(false) })
+      .then(rows => { setData(rows); setLoading(false) })
       .catch(() => setLoading(false))
   }
 
@@ -386,6 +386,7 @@ export default function SupplierApplications() {
           { id: 'all',      label: `الكل (${data.length})` },
           { id: 'pending',  label: `قيد المراجعة (${data.filter(r => r.status === 'pending').length})` },
           { id: 'approved', label: `مقبول (${data.filter(r => r.status === 'approved').length})` },
+          { id: 'published', label: `منشور ✓ (${data.filter(r => r.status === 'published').length})` },
           { id: 'rejected', label: `مرفوض (${data.filter(r => r.status === 'rejected').length})` },
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}

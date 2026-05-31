@@ -125,7 +125,7 @@ export default function CompanyApplications() {
   const reload = () => {
     setLoading(true)
     api.admin.companyApplications.list()
-      .then(rows => { setData(rows.filter(r => r.status !== 'published')); setLoading(false) })
+      .then(rows => { setData(rows); setLoading(false) })
       .catch(() => setLoading(false))
   }
 
@@ -483,6 +483,7 @@ export default function CompanyApplications() {
             <option value="">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
             <option value="approved">مقبول — بانتظار النشر</option>
+            <option value="published">منشور ✓</option>
             <option value="rejected">مرفوض</option>
           </select>
         }
