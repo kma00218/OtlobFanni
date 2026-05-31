@@ -57,6 +57,7 @@ export default function TechnicianApplications() {
   const [editMode, setEditMode]           = useState(false)
   const [editForm, setEditForm]           = useState({})
   const [editSaving, setEditSaving]       = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -66,19 +67,37 @@ export default function TechnicianApplications() {
 
   const openTechEdit = () => {
     setEditForm({
-      full_name:   viewItem.fullName    || viewItem.full_name   || '',
-      phone:       viewItem.phone       || '',
-      whatsapp:    viewItem.whatsapp    || '',
-      city:        viewItem.city        || '',
-      area:        viewItem.area        || '',
-      specialty:   viewItem.specialty   || '',
-      description: viewItem.description || '',
-      price_from:  viewItem.priceFrom   || viewItem.price_from  || '',
-      price_to:    viewItem.priceTo     || viewItem.price_to    || '',
-      facebook:    viewItem.facebook    || '',
-      instagram:   viewItem.instagram   || '',
+      full_name:     viewItem.fullName    || viewItem.full_name   || '',
+      phone:         viewItem.phone       || '',
+      whatsapp:      viewItem.whatsapp    || '',
+      city:          viewItem.city        || '',
+      area:          viewItem.area        || '',
+      specialty:     viewItem.specialty   || '',
+      description:   viewItem.description || '',
+      price_from:    viewItem.priceFrom   || viewItem.price_from  || '',
+      price_to:      viewItem.priceTo     || viewItem.price_to    || '',
+      facebook:      viewItem.facebook    || '',
+      instagram:     viewItem.instagram   || '',
+      profile_photo: viewItem.profilePhoto || viewItem.profile_photo || '',
     })
     setEditMode(true)
+  }
+
+  const handlePhotoUpload = async (file, fieldName) => {
+    setUploadingPhoto(true)
+    try {
+      const urlRes = await fetch('/api/storage/uploads/request-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+      })
+      if (!urlRes.ok) throw new Error('Failed to get upload URL')
+      const { uploadURL, objectPath } = await urlRes.json()
+      await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file })
+      const servingUrl = `${window.location.origin}/api/storage${objectPath}`
+      setEditForm(f => ({ ...f, [fieldName]: servingUrl }))
+    } catch { showToast('فشل رفع الصورة', 'error') }
+    finally { setUploadingPhoto(false) }
   }
 
   const handleTechEditSave = async (e) => {
@@ -583,7 +602,25 @@ export default function TechnicianApplications() {
                     <label className="text-xs text-slate-500 mb-1 block">الوصف / نبذة</label>
                     <textarea className={inp} rows={2} value={editForm.description} onChange={e => setEditForm(f => ({...f, description: e.target.value}))} />
                   </div>
-                  <button type="submit" disabled={editSaving}
+                  <div>
+                    <label className="text-xs text-slate-500 mb-1.5 block">الصورة الشخصية</label>
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-slate-200 flex-shrink-0 bg-slate-100">
+                        {editForm.profile_photo
+                          ? <img src={editForm.profile_photo} alt="" className="w-full h-full object-cover" />
+                          : <div className="w-full h-full flex items-center justify-center text-slate-400 text-[10px]">لا صورة</div>}
+                      </div>
+                      <label className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border-2 border-dashed cursor-pointer transition-colors text-sm font-bold ${uploadingPhoto ? 'opacity-50 pointer-events-none border-slate-300 text-slate-400' : 'border-amber-300 text-amber-700 hover:bg-amber-50'}`}>
+                        <Image className="w-4 h-4" />
+                        {uploadingPhoto ? 'جاري الرفع...' : 'رفع صورة جديدة'}
+                        <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f, 'profile_photo') }} />
+                      </label>
+                      {editForm.profile_photo && (
+                        <button type="button" onClick={() => setEditForm(f => ({...f, profile_photo: ''}))} className="text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 rounded-lg border border-red-200 hover:bg-red-50 transition-colors">حذف</button>
+                      )}
+                    </div>
+                  </div>
+                  <button type="submit" disabled={editSaving || uploadingPhoto}
                     className="w-full bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-xl disabled:opacity-50 hover:bg-[#e56e00] transition-colors flex items-center justify-center gap-2">
                     <Save className="w-4 h-4" />
                     {editSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}

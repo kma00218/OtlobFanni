@@ -54,6 +54,7 @@ export default function SupplierApplications() {
   const [editMode, setEditMode]     = useState(false)
   const [editForm, setEditForm]     = useState({})
   const [editSaving, setEditSaving] = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -73,8 +74,26 @@ export default function SupplierApplications() {
       description:   viewItem.description  || '',
       facebook:      viewItem.facebook     || '',
       instagram:     viewItem.instagram    || '',
+      logo:          viewItem.logo         || '',
     })
     setEditMode(true)
+  }
+
+  const handlePhotoUpload = async (file, fieldName) => {
+    setUploadingPhoto(true)
+    try {
+      const urlRes = await fetch('/api/storage/uploads/request-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+      })
+      if (!urlRes.ok) throw new Error('Failed to get upload URL')
+      const { uploadURL, objectPath } = await urlRes.json()
+      await fetch(uploadURL, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file })
+      const servingUrl = `${window.location.origin}/api/storage${objectPath}`
+      setEditForm(f => ({ ...f, [fieldName]: servingUrl }))
+    } catch { showToast('فشل رفع الصورة', 'error') }
+    finally { setUploadingPhoto(false) }
   }
 
   const handleSupplierEditSave = async (e) => {
@@ -492,7 +511,25 @@ export default function SupplierApplications() {
                   <textarea className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
                     rows={2} value={editForm.description} onChange={e => setEditForm(f => ({...f, description: e.target.value}))} />
                 </div>
-                <button type="submit" disabled={editSaving}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1.5 block">الشعار / الصورة</label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-slate-600 flex-shrink-0 bg-slate-800">
+                      {editForm.logo
+                        ? <img src={editForm.logo} alt="" className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center text-slate-500 text-[10px]">لا صورة</div>}
+                    </div>
+                    <label className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border-2 border-dashed cursor-pointer transition-colors text-sm font-bold ${uploadingPhoto ? 'opacity-50 pointer-events-none border-slate-600 text-slate-500' : 'border-[#FF7900]/50 text-[#FF7900] hover:bg-[#FF7900]/10'}`}>
+                      <Package className="w-4 h-4" />
+                      {uploadingPhoto ? 'جاري الرفع...' : 'رفع صورة جديدة'}
+                      <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f, 'logo') }} />
+                    </label>
+                    {editForm.logo && (
+                      <button type="button" onClick={() => setEditForm(f => ({...f, logo: ''}))} className="text-red-400 hover:text-red-500 text-xs font-bold px-2 py-1 rounded-lg border border-red-800 hover:bg-red-900/30 transition-colors">حذف</button>
+                    )}
+                  </div>
+                </div>
+                <button type="submit" disabled={editSaving || uploadingPhoto}
                   className="w-full bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-xl disabled:opacity-50 hover:bg-[#e56e00] transition-colors flex items-center justify-center gap-2">
                   <CheckCircle className="w-4 h-4" />
                   {editSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}

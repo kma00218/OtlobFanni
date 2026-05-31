@@ -261,6 +261,7 @@ router.put("/admin/supplier-applications/:id/fields", async (req, res): Promise<
   if (b.description    !== undefined) updates.description   = b.description;
   if (b.facebook       !== undefined) updates.facebook      = b.facebook;
   if (b.instagram      !== undefined) updates.instagram     = b.instagram;
+  if (b.logo           !== undefined) updates.logo          = b.logo;
   if (!Object.keys(updates).length) { res.status(400).json({ error: "No fields to update" }); return; }
   const [app] = await db.update(supplierApplicationsTable).set(updates).where(eq(supplierApplicationsTable.id, raw)).returning();
   if (!app) { res.status(404).json({ error: "Not found" }); return; }
