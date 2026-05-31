@@ -468,8 +468,8 @@ export default function TechnicianDetails() {
             </div>
             <button
               onClick={() => setShowShare(true)}
-              className="w-full mt-1 flex items-center justify-center gap-2 text-white text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
-              style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
+              className="w-full mt-1 flex items-center justify-center gap-2 text-sm font-black py-3 rounded-2xl active:scale-[0.98] transition-transform"
+              style={{ background: '#F0F4F8', color: '#475569', border: '1.5px solid #D8E2EF', boxShadow: '0 2px 8px rgba(71,85,105,0.08)' }}>
               <Send className="w-4 h-4" />
               {ar ? 'مشاركة الملف الشخصي' : 'Share Profile'}
             </button>
