@@ -94,7 +94,12 @@ export default function CityTechnicians() {
       if (t.categoryId) ids.add(t.categoryId)
       if (Array.isArray(t.extraSpecialties)) t.extraSpecialties.forEach(s => s && ids.add(s))
     })
-    companies.forEach(c => { if (c.categoryId) ids.add(c.categoryId) })
+    companies.forEach(c => {
+      if (c.specialty)   ids.add(c.specialty)
+      if (c.categoryId)  ids.add(c.categoryId)
+      if (Array.isArray(c.extraSpecialties))  c.extraSpecialties.forEach(s => s && ids.add(s))
+      if (Array.isArray(c.extra_specialties)) c.extra_specialties.forEach(s => s && ids.add(s))
+    })
     const catMap = Object.fromEntries(allCategoriesData.map(c => [c.id, c]))
     return [...ids]
       .map(id => catMap[id])
@@ -134,7 +139,12 @@ export default function CityTechnicians() {
   }
 
   const matchesCompany = (c) => {
-    if (selectedCatId && c.categoryId !== selectedCatId) return false
+    if (selectedCatId) {
+      const inMain  = c.specialty === selectedCatId || c.categoryId === selectedCatId
+      const inExtra = (Array.isArray(c.extraSpecialties)  && c.extraSpecialties.includes(selectedCatId))
+                   || (Array.isArray(c.extra_specialties) && c.extra_specialties.includes(selectedCatId))
+      if (!inMain && !inExtra) return false
+    }
     if (!q) return true
     const fields = [
       c.companyName, c.company_name,
