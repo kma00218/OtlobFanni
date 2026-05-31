@@ -4,7 +4,7 @@ import BackHeader from '../components/BackHeader'
 import { useRoute } from 'wouter'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import {
-  MapPin, Phone, MessageSquare, Zap, Briefcase,
+  MapPin, Phone, MessageSquare, Zap, Briefcase, Wrench,
   Clock, DollarSign, Image as ImageIcon, Building2,
   Facebook, Instagram, CheckCircle, Heart, Star, Send, X, Share2, ClipboardList, Sparkles,
 } from 'lucide-react'
@@ -214,6 +214,9 @@ export default function CompanyDetails() {
   const allCatNames = primaryCatName
     ? [primaryCatName, ...extraCatNames.filter(n => n !== primaryCatName)]
     : extraCatNames
+  const allCategoryIds = specialty
+    ? [specialty, ...extraIds.filter(id => id !== specialty)]
+    : [...extraIds]
   const city      = company.city || ''
   const area      = company.area || ''
   const phone     = company.phone || ''
@@ -317,21 +320,28 @@ export default function CompanyDetails() {
               )}
             </div>
 
-            {/* Specialty chips */}
+            {/* Specialty icon grid */}
             {allCatNames.length > 0 && (
               <div className="mb-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
                   {ar ? 'التخصصات' : 'Specialties'}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {allCatNames.map((n, i) => (
-                    <span key={i}
-                      className="inline-flex items-center gap-1.5 text-[#FF7900] text-xs font-black px-3 py-1.5 rounded-xl"
-                      style={{ background: 'linear-gradient(135deg, rgba(26,86,219,0.1), rgba(26,86,219,0.03))', border: '1.5px solid rgba(26,86,219,0.22)' }}>
-                      <Building2 className="w-3.5 h-3.5 flex-shrink-0" />
-                      {n}
-                    </span>
-                  ))}
+                <div className="grid grid-cols-4 gap-3">
+                  {allCatNames.map((name, i) => {
+                    const catId = allCategoryIds[i]
+                    return (
+                      <div key={i} className="flex flex-col items-center gap-1.5">
+                        <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0"
+                          style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.22)' }}>
+                          {catId
+                            ? <img src={`/icons/categories/${catId}.png`} alt={name} className="w-full h-full object-cover" onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }} />
+                            : <div className="w-full h-full flex items-center justify-center"><Wrench className="w-7 h-7 text-[#FF7900]" /></div>
+                          }
+                        </div>
+                        <span className="text-[11px] font-bold text-slate-700 text-center leading-tight">{name}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
