@@ -277,15 +277,13 @@ export default function SupplierDetails() {
                 </p>
                 <div className="grid grid-cols-4 gap-3">
                   <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.22)' }}>
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0">
                       <img
                         src={`/icons/supplies/${supplyType}.png`}
                         alt={supplyLabel}
-                        className="w-10 h-10 object-contain"
-                        onError={e => { e.currentTarget.style.display='none'; e.currentTarget.nextSibling.style.display='flex' }}
+                        className="w-full h-full object-cover"
+                        onError={e => { e.currentTarget.src = '/icons/supplies/other.png' }}
                       />
-                      <span className="text-3xl leading-none hidden items-center justify-center">{supplyEmoji}</span>
                     </div>
                     <span className="text-[11px] font-bold text-slate-700 text-center leading-tight">{supplyLabel}</span>
                   </div>
