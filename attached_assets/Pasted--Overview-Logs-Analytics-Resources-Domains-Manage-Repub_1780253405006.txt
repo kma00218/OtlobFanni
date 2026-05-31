@@ -1,0 +1,213 @@
+
+
+
+Overview
+
+Logs
+
+Analytics
+
+Resources
+
+Domains
+
+Manage
+
+Republish
+
+Adjust settings
+
+Run security scan
+Production
+Status
+khaled published about 3 hours ago
+
+Visibility
+Public
+SEO Rating
+HEALTHY
+Geography
+North America
+Type
+Autoscale
+(2 vCPU / 4 GiB RAM / 3 Max)
+See all usage
+Database
+Production database connected
+Earn $10 for every friend who joins Replit Core
+
+Share your link. When a friend signs up and upgrades to Replit Core, you'll both get $10 in credits.
+replit.com/refer/dphotonly
+
+Copy link
+e0c9ec54
+dphotonly
+khaled
+published about 3 hours ago
+107e891d
+dphotonly
+khaled
+published about 4 hours ago
+0ca7300b
+dphotonly
+khaled
+published about 4 hours ago
+afda147a
+dphotonly
+khaled
+published about 4 hours ago
+b4ce9f49
+dphotonly
+khaled
+published about 4 hours ago
+6c7fb7fc
+dphotonly
+khaled
+published about 4 hours ago
+f0f53c0d
+dphotonly
+khaled
+published about 5 hours ago
+2999bbf3
+dphotonly
+khaled
+published about 15 hours ago
+1b4d6455
+dphotonly
+khaled
+published about 16 hours ago
+1e16641d
+dphotonly
+khaled
+published about 20 hours ago
+bf2e6f04
+dphotonly
+khaled
+published about 21 hours ago
+07444062
+dphotonly
+khaled
+published about 21 hours ago
+a55b723b
+dphotonly
+khaled
+published about 22 hours ago
+40a4df93
+dphotonly
+khaled
+published about 23 hours ago
+ea54e95e
+dphotonly
+khaled
+published 1 day ago
+ea072eb6
+dphotonly
+khaled
+published 1 day ago
+dd9d1b19
+dphotonly
+khaled
+published 1 day ago
+d5ec0ddc
+dphotonly
+khaled
+published 1 day ago
+b2921bdf
+dphotonly
+khaled
+published 1 day ago
+a3ada9b3
+dphotonly
+khaled
+published 1 day ago
+
+Add image upload functionality to admin application forms
+
+
+
+Show previous messages
+
+3 messages & 16 actions
+
+Checkpoint made
+3 hours ago
+
+Worked for 1 minute
+Time worked
+1 minute
+Work done
+9 actions
+Items read
+30 lines
+Code changed
++14
+-14
+Agent Usage
+$0.25
+
+Couldn't publish your app
+aeyou sure i can edit or change nay thing in the files of the application of the techcicians and service companies and su0pier providers even before i accrot them ? answr only
+
+26 minutes ago
+
+1 message & 1 action
+but i tried an could not how ?
+
+24 minutes ago
+
+3 messages & 6 actions
+
+Worked for 29 seconds
+yes but i cannot edit the phooto for example , i can edit of the most file bit not the photo? checn and let me know the answer befoe doing anything
+
+20 minutes ago
+
+2 messages & 7 actions
+
+Worked for 24 seconds
+in facat i can do it and change the photos and any thing in the files which is good in the after publishing but not before the acceptance , before the accptane i can only edit the fields you mentioned above. you got my point
+
+13 minutes ago
+
+1 message & 1 action
+ok
+
+12 minutes ago
+
+24 messages & 96 actions
+
+Checkpoint made
+6 minutes ago
+
+Worked for 6 minutes
+do you suggest any improvment to the APP suitbakle for its current sitatuins , let me nkw only
+
+4 minutes ago
+
+1 message & 1 action
+but this still too earyl as the app still not an order system , answer only and do not do anything
+
+2 minutes ago
+
+1 message & 1 action
+do yousuggest anything to be added to the whom screen?
+
+1 minute ago
+
+Planning home screen adjustments
+دعني أرى الشاشة الرئيسية أولاً:
+
+
+2 actions
+دعني أرى بقية الشاشة أيضاً:
+
+
+2 actions
+بناءً على ما أراه، الشاشة الرئيسية شاملة وجيدة — لكن أقترح هذا:
+
+ما يمكن إضافته:
+
+1. "كيف يعمل" — 3 خطوات بسيطة
+زائر جديد لا يفهم فوراً ماذا يفعل التطبيق. خطوات بسيطة (ابحث → أرسل طلب → تواصل عبر واتساب) تحل هذا مباشرة.
+
+2. شريط الفنيين المميزين / الأحدث
