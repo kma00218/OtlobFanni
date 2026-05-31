@@ -476,7 +476,7 @@ export default function TechnicianDetails() {
             {/* ── Customer section ── */}
             <div className="flex items-center gap-3 mt-4 mb-2">
               <div className="flex-1 h-px" style={{ background: '#EEF2F8' }} />
-              <span className="text-[11px] font-bold text-gray-500 tracking-widest uppercase">
+              <span className="text-sm font-black text-[#071B33] tracking-wide px-1">
                 {ar ? 'كعميل' : 'As a Customer'}
               </span>
               <div className="flex-1 h-px" style={{ background: '#EEF2F8' }} />
