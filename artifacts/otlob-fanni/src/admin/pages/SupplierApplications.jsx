@@ -3,7 +3,7 @@ import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
 import {
   Eye, Trash2, Phone, FileText, Facebook, Instagram, MapPin,
-  MessageCircle, Building2, CheckCircle, Package, X,
+  MessageCircle, Building2, CheckCircle, Package, X, Pencil,
 } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 import { SUPPLY_TYPES, supplyTypeLabel } from '../../data/suppliers'
@@ -51,9 +51,43 @@ export default function SupplierApplications() {
   const [rejectModal, setRejectModal] = useState({ open: false, id: null, reason: '', isView: false })
   const [tab, setTab]             = useState('all')
   const [actionMenu, setActionMenu] = useState(null)
+  const [editMode, setEditMode]     = useState(false)
+  const [editForm, setEditForm]     = useState({})
+  const [editSaving, setEditSaving] = useState(false)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  useEffect(() => { setEditMode(false) }, [viewItem?.id])
+
+  const openSupplierEdit = () => {
+    setEditForm({
+      business_name: viewItem.businessName || viewItem.business_name || '',
+      contact_name:  viewItem.contactName  || viewItem.contact_name  || '',
+      phone:         viewItem.phone        || '',
+      whatsapp:      viewItem.whatsapp     || '',
+      city:          viewItem.city         || '',
+      area:          viewItem.area         || '',
+      supply_type:   viewItem.supplyType   || viewItem.supply_type   || '',
+      description:   viewItem.description  || '',
+      facebook:      viewItem.facebook     || '',
+      instagram:     viewItem.instagram    || '',
+    })
+    setEditMode(true)
+  }
+
+  const handleSupplierEditSave = async (e) => {
+    e.preventDefault()
+    setEditSaving(true)
+    try {
+      const updated = await api.admin.supplierApplications.editFields(viewItem.id, editForm)
+      setData(prev => prev.map(r => r.id === viewItem.id ? { ...r, ...updated } : r))
+      setViewItem(prev => ({ ...prev, ...updated }))
+      setEditMode(false)
+      showToast('تم حفظ التعديلات بنجاح')
+    } catch { showToast('حدث خطأ أثناء الحفظ', 'error') }
+    finally { setEditSaving(false) }
   }
 
   const getSupplyLabel = (row) => {
@@ -384,7 +418,7 @@ export default function SupplierApplications() {
         <FormModal open title={viewItem.businessName || viewItem.business_name || 'طلب مورّد'} onClose={() => setViewItem(null)} size="lg" hideFooter>
           <div className="space-y-5 text-sm">
 
-            {/* Status badge */}
+            {/* Status badge + edit toggle */}
             <div className="flex items-center gap-3">
               <span className={`text-xs px-3 py-1 rounded-full font-bold ${(STATUS[viewItem.status] || STATUS.pending).cls}`}>
                 {(STATUS[viewItem.status] || STATUS.pending).label}
@@ -392,7 +426,79 @@ export default function SupplierApplications() {
               {viewItem.requestNumber && (
                 <span className="text-xs font-mono text-slate-400">{viewItem.requestNumber}</span>
               )}
+              <button type="button"
+                onClick={() => editMode ? setEditMode(false) : openSupplierEdit()}
+                className={`mr-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl font-bold border transition-colors ${
+                  editMode
+                    ? 'bg-slate-600 text-slate-300 border-slate-500 hover:bg-slate-500'
+                    : 'bg-[#FF7900]/15 text-[#FF7900] border-[#FF7900]/30 hover:bg-[#FF7900]/25'
+                }`}>
+                <Pencil className="w-3 h-3" />
+                {editMode ? 'إلغاء' : 'تعديل'}
+              </button>
             </div>
+
+            {/* Edit form */}
+            {editMode && (
+              <form onSubmit={handleSupplierEditSave} className="bg-slate-700/60 border border-[#FF7900]/30 rounded-2xl p-4 space-y-3">
+                <p className="text-xs font-bold text-[#FF7900] mb-1">✏️ تعديل بيانات الطلب</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">اسم النشاط</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
+                      value={editForm.business_name} onChange={e => setEditForm(f => ({...f, business_name: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">اسم المسؤول</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
+                      value={editForm.contact_name} onChange={e => setEditForm(f => ({...f, contact_name: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">الهاتف</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]" dir="ltr"
+                      value={editForm.phone} onChange={e => setEditForm(f => ({...f, phone: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">واتساب</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]" dir="ltr"
+                      value={editForm.whatsapp} onChange={e => setEditForm(f => ({...f, whatsapp: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">المدينة</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
+                      value={editForm.city} onChange={e => setEditForm(f => ({...f, city: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">نوع المستلزمات</label>
+                    <select className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
+                      value={editForm.supply_type} onChange={e => setEditForm(f => ({...f, supply_type: e.target.value}))}>
+                      <option value="">— اختر</option>
+                      {SUPPLY_TYPES.map(t => <option key={t.id} value={t.id}>{t.nameAr || t.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">فيسبوك</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]" dir="ltr"
+                      value={editForm.facebook} onChange={e => setEditForm(f => ({...f, facebook: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">إنستغرام</label>
+                    <input className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]" dir="ltr"
+                      value={editForm.instagram} onChange={e => setEditForm(f => ({...f, instagram: e.target.value}))} />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">الوصف</label>
+                  <textarea className="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
+                    rows={2} value={editForm.description} onChange={e => setEditForm(f => ({...f, description: e.target.value}))} />
+                </div>
+                <button type="submit" disabled={editSaving}
+                  className="w-full bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-xl disabled:opacity-50 hover:bg-[#e56e00] transition-colors flex items-center justify-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  {editSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+                </button>
+              </form>
+            )}
 
             {/* Business info */}
             <div className="bg-slate-800/60 rounded-2xl p-4 space-y-3">

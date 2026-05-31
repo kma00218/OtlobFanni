@@ -198,6 +198,27 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
   res.json({ ...app, resolvedCategoryId });
 });
 
+router.put("/technician-applications/:id/fields", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const b = req.body;
+  const updates: Record<string, unknown> = {};
+  if (b.full_name    !== undefined) updates.fullName    = b.full_name;
+  if (b.phone        !== undefined) updates.phone       = b.phone;
+  if (b.whatsapp     !== undefined) updates.whatsapp    = b.whatsapp;
+  if (b.city         !== undefined) updates.city        = b.city;
+  if (b.area         !== undefined) updates.area        = b.area;
+  if (b.specialty    !== undefined) updates.specialty   = b.specialty;
+  if (b.description  !== undefined) updates.description = b.description;
+  if (b.price_from   !== undefined) updates.priceFrom   = parseFloat(b.price_from)  || 0;
+  if (b.price_to     !== undefined) updates.priceTo     = parseFloat(b.price_to)    || 0;
+  if (b.facebook     !== undefined) updates.facebook    = b.facebook;
+  if (b.instagram    !== undefined) updates.instagram   = b.instagram;
+  if (!Object.keys(updates).length) { res.status(400).json({ error: "No fields to update" }); return; }
+  const [app] = await db.update(technicianApplicationsTable).set(updates).where(eq(technicianApplicationsTable.id, raw)).returning();
+  if (!app) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(app);
+});
+
 router.delete("/technician-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   await db.delete(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, raw));
@@ -316,6 +337,28 @@ router.patch("/company-applications/:id", async (req, res): Promise<void> => {
   }
 
   res.json({ ...app, resolvedCategoryId });
+});
+
+router.put("/company-applications/:id/fields", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const b = req.body;
+  const updates: Record<string, unknown> = {};
+  if (b.company_name  !== undefined) updates.companyName   = b.company_name;
+  if (b.contact_name  !== undefined) updates.contactName   = b.contact_name;
+  if (b.phone         !== undefined) updates.phone         = b.phone;
+  if (b.whatsapp      !== undefined) updates.whatsapp      = b.whatsapp;
+  if (b.city          !== undefined) updates.city          = b.city;
+  if (b.area          !== undefined) updates.area          = b.area;
+  if (b.specialty     !== undefined) updates.specialty     = b.specialty;
+  if (b.description   !== undefined) updates.description   = b.description;
+  if (b.price_from    !== undefined) updates.priceFrom     = parseFloat(b.price_from) || 0;
+  if (b.price_to      !== undefined) updates.priceTo       = parseFloat(b.price_to)   || 0;
+  if (b.facebook      !== undefined) updates.facebook      = b.facebook;
+  if (b.instagram     !== undefined) updates.instagram     = b.instagram;
+  if (!Object.keys(updates).length) { res.status(400).json({ error: "No fields to update" }); return; }
+  const [app] = await db.update(companyApplicationsTable).set(updates).where(eq(companyApplicationsTable.id, raw)).returning();
+  if (!app) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(app);
 });
 
 router.delete("/company-applications/:id", async (req, res): Promise<void> => {

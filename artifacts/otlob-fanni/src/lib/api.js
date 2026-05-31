@@ -24,6 +24,7 @@ async function request(method, path, body) {
 const get  = (path)         => request('GET',    path)
 const post = (path, body)   => request('POST',   path, body)
 const patch = (path, body)  => request('PATCH',  path, body)
+const put  = (path, body)   => request('PUT',    path, body)
 const del  = (path)         => request('DELETE', path)
 
 /**
@@ -152,17 +153,19 @@ export const api = {
     stats: () => get('/admin/stats'),
 
     technicianApplications: {
-      list:    ()                      => get('/admin/technician-applications'),
-      update:  (id, status, opts = {}) => patch(`/admin/technician-applications/${id}`, { status, ...opts }),
-      publish: (id)                    => patch(`/admin/technician-applications/${id}`, { status: 'published' }),
-      delete:  (id)                    => del(`/admin/technician-applications/${id}`),
+      list:        ()                      => get('/admin/technician-applications'),
+      update:      (id, status, opts = {}) => patch(`/admin/technician-applications/${id}`, { status, ...opts }),
+      publish:     (id)                    => patch(`/admin/technician-applications/${id}`, { status: 'published' }),
+      delete:      (id)                    => del(`/admin/technician-applications/${id}`),
+      editFields:  (id, data)              => put(`/admin/technician-applications/${id}/fields`, data),
     },
 
     companyApplications: {
-      list:    ()                      => get('/admin/company-applications'),
-      update:  (id, status, opts = {}) => patch(`/admin/company-applications/${id}`, { status, ...opts }),
-      publish: (id)                    => patch(`/admin/company-applications/${id}`, { status: 'published' }),
-      delete:  (id)                    => del(`/admin/company-applications/${id}`),
+      list:        ()                      => get('/admin/company-applications'),
+      update:      (id, status, opts = {}) => patch(`/admin/company-applications/${id}`, { status, ...opts }),
+      publish:     (id)                    => patch(`/admin/company-applications/${id}`, { status: 'published' }),
+      delete:      (id)                    => del(`/admin/company-applications/${id}`),
+      editFields:  (id, data)              => put(`/admin/company-applications/${id}/fields`, data),
     },
 
     technicians: {
@@ -237,9 +240,10 @@ export const api = {
     },
 
     supplierApplications: {
-      list:    ()                      => get('/admin/supplier-applications'),
-      update:  (id, status, opts = {}) => patch(`/admin/supplier-applications/${id}`, { status, ...opts }),
-      delete:  (id)                    => del(`/admin/supplier-applications/${id}`),
+      list:       ()                      => get('/admin/supplier-applications'),
+      update:     (id, status, opts = {}) => patch(`/admin/supplier-applications/${id}`, { status, ...opts }),
+      delete:     (id)                    => del(`/admin/supplier-applications/${id}`),
+      editFields: (id, data)              => put(`/admin/supplier-applications/${id}/fields`, data),
     },
     profileUpdates: {
       list:   ()                       => get('/admin/profile-update-requests'),

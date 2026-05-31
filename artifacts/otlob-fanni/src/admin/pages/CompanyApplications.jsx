@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Instagram, Info, Building2, Shield, MessageCircle, MapPin, DollarSign, Zap, CheckCircle } from 'lucide-react'
+import { Eye, Trash2, AlertCircle, Phone, Briefcase, Clock, FileText, Image, Lock, Facebook, Instagram, Info, Building2, Shield, MessageCircle, MapPin, DollarSign, Zap, CheckCircle, Pencil } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
 
@@ -46,9 +46,45 @@ export default function CompanyApplications() {
   const [rejectModal, setRejectModal]         = useState({ open: false, id: null, reason: '', isView: false })
   const [tab, setTab]                         = useState('all')
   const [actionMenu, setActionMenu]           = useState(null)
+  const [editMode, setEditMode]               = useState(false)
+  const [editForm, setEditForm]               = useState({})
+  const [editSaving, setEditSaving]           = useState(false)
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
+  }
+
+  useEffect(() => { setEditMode(false) }, [viewItem?.id])
+
+  const openCompEdit = () => {
+    setEditForm({
+      company_name: viewItem.companyName  || viewItem.company_name  || '',
+      contact_name: viewItem.contactName  || viewItem.contact_name  || '',
+      phone:        viewItem.phone        || '',
+      whatsapp:     viewItem.whatsapp     || '',
+      city:         viewItem.city         || '',
+      area:         viewItem.area         || '',
+      specialty:    viewItem.specialty    || '',
+      description:  viewItem.description  || '',
+      price_from:   viewItem.priceFrom    || viewItem.price_from    || '',
+      price_to:     viewItem.priceTo      || viewItem.price_to      || '',
+      facebook:     viewItem.facebook     || '',
+      instagram:    viewItem.instagram    || '',
+    })
+    setEditMode(true)
+  }
+
+  const handleCompEditSave = async (e) => {
+    e.preventDefault()
+    setEditSaving(true)
+    try {
+      const updated = await api.admin.companyApplications.editFields(viewItem.id, editForm)
+      setData(prev => prev.map(r => r.id === viewItem.id ? { ...r, ...updated } : r))
+      setViewItem(prev => ({ ...prev, ...updated }))
+      setEditMode(false)
+      showToast('تم حفظ التعديلات بنجاح')
+    } catch { showToast('حدث خطأ أثناء الحفظ', 'error') }
+    finally { setEditSaving(false) }
   }
 
   const catLabel = (id) => {
@@ -462,8 +498,96 @@ export default function CompanyApplications() {
           const phone       = viewItem.phone || ''
           const whatsapp    = viewItem.whatsapp || phone
 
+          const inp = "w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF7900]"
+
           return (
             <div className="space-y-4">
+
+              {/* Edit toggle */}
+              <div className="flex items-center justify-between">
+                {editMode
+                  ? <span className="text-xs font-bold text-amber-600">✏️ وضع التعديل — غيّر ما تريد ثم احفظ</span>
+                  : <span />
+                }
+                <button type="button"
+                  onClick={() => editMode ? setEditMode(false) : openCompEdit()}
+                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl font-bold border transition-colors ${
+                    editMode
+                      ? 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
+                      : 'bg-[#FF7900]/10 text-[#FF7900] border-[#FF7900]/30 hover:bg-[#FF7900]/20'
+                  }`}>
+                  <Pencil className="w-3 h-3" />
+                  {editMode ? 'إلغاء التعديل' : 'تعديل الملف'}
+                </button>
+              </div>
+
+              {/* Edit form */}
+              {editMode && (
+                <form onSubmit={handleCompEditSave} className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">اسم الشركة</label>
+                      <input className={inp} value={editForm.company_name} onChange={e => setEditForm(f => ({...f, company_name: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">اسم المسؤول</label>
+                      <input className={inp} value={editForm.contact_name} onChange={e => setEditForm(f => ({...f, contact_name: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">رقم الهاتف</label>
+                      <input className={inp} dir="ltr" value={editForm.phone} onChange={e => setEditForm(f => ({...f, phone: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">واتساب</label>
+                      <input className={inp} dir="ltr" value={editForm.whatsapp} onChange={e => setEditForm(f => ({...f, whatsapp: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">المدينة</label>
+                      <input className={inp} value={editForm.city} onChange={e => setEditForm(f => ({...f, city: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">المنطقة / الحي</label>
+                      <input className={inp} value={editForm.area} onChange={e => setEditForm(f => ({...f, area: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">التخصص</label>
+                      <select className={inp} value={editForm.specialty} onChange={e => setEditForm(f => ({...f, specialty: e.target.value}))}>
+                        <option value="">— اختر</option>
+                        {SECTIONS.map(sec => {
+                          const cats = SERVICES_CATS.filter(c => c.sectionId === sec.id)
+                          if (!cats.length) return null
+                          return <optgroup key={sec.id} label={sec.nameAr}>{cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}</optgroup>
+                        })}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">السعر الأدنى (د.ل)</label>
+                      <input type="number" className={inp} value={editForm.price_from} onChange={e => setEditForm(f => ({...f, price_from: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">السعر الأقصى (د.ل)</label>
+                      <input type="number" className={inp} value={editForm.price_to} onChange={e => setEditForm(f => ({...f, price_to: e.target.value}))} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">فيسبوك</label>
+                      <input className={inp} dir="ltr" value={editForm.facebook} onChange={e => setEditForm(f => ({...f, facebook: e.target.value}))} />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="text-xs text-slate-500 mb-1 block">إنستغرام</label>
+                      <input className={inp} dir="ltr" value={editForm.instagram} onChange={e => setEditForm(f => ({...f, instagram: e.target.value}))} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 mb-1 block">الوصف / نبذة</label>
+                    <textarea className={inp} rows={2} value={editForm.description} onChange={e => setEditForm(f => ({...f, description: e.target.value}))} />
+                  </div>
+                  <button type="submit" disabled={editSaving}
+                    className="w-full bg-[#FF7900] text-white text-sm font-bold py-2.5 rounded-xl disabled:opacity-50 hover:bg-[#e56e00] transition-colors flex items-center justify-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    {editSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+                  </button>
+                </form>
+              )}
 
               {/* ── بطاقة الشركة الرئيسية ── */}
               <div className="rounded-2xl border border-blue-200 overflow-hidden shadow-sm">

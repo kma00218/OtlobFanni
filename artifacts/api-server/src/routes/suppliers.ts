@@ -246,6 +246,27 @@ router.patch("/admin/supplier-applications/:id", async (req, res): Promise<void>
   res.json(app);
 });
 
+// ── Admin: Edit supplier application fields ───────────────────────────────────
+router.put("/admin/supplier-applications/:id/fields", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const b = req.body;
+  const updates: Record<string, unknown> = {};
+  if (b.business_name  !== undefined) updates.businessName  = b.business_name;
+  if (b.contact_name   !== undefined) updates.contactName   = b.contact_name;
+  if (b.phone          !== undefined) updates.phone         = b.phone;
+  if (b.whatsapp       !== undefined) updates.whatsapp      = b.whatsapp;
+  if (b.city           !== undefined) updates.city          = b.city;
+  if (b.area           !== undefined) updates.area          = b.area;
+  if (b.supply_type    !== undefined) updates.supplyType    = b.supply_type;
+  if (b.description    !== undefined) updates.description   = b.description;
+  if (b.facebook       !== undefined) updates.facebook      = b.facebook;
+  if (b.instagram      !== undefined) updates.instagram     = b.instagram;
+  if (!Object.keys(updates).length) { res.status(400).json({ error: "No fields to update" }); return; }
+  const [app] = await db.update(supplierApplicationsTable).set(updates).where(eq(supplierApplicationsTable.id, raw)).returning();
+  if (!app) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(app);
+});
+
 // ── Admin: Delete supplier application ───────────────────────────────────────
 router.delete("/admin/supplier-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
