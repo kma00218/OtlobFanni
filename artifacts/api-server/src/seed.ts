@@ -123,6 +123,7 @@ const EXTRA_CATEGORIES = [
   { id: 'loader',               nameAr: 'سائق كاشيك / لودر',               nameEn: 'Loader Operator',                        iconName: 'workers',              sortOrder: 72, isActive: true, sectionId: 'construction'        },
   { id: 'heavy_equipment',      nameAr: 'معدات ثقيلة',                     nameEn: 'Heavy Equipment',                        iconName: 'generator',            sortOrder: 73, isActive: true, sectionId: 'construction'        },
   { id: 'crusher_materials',    nameAr: 'كسارة ومواد بناء',                nameEn: 'Crusher & Building Materials',           iconName: 'backup_power',         sortOrder: 74, isActive: true, sectionId: 'construction'        },
+  { id: 'elevators',            nameAr: 'مصاعد كهربائية',                  nameEn: 'Electric Elevators',                     iconName: 'elevators',            sortOrder: 75, isActive: true, sectionId: 'construction'        },
 
   // ── 4. Tech & Security ────────────────────────────────────────────────────────
   { id: 'satellite',            nameAr: 'ستلايت ورسيفر',                   nameEn: 'Satellite & Receiver',                   iconName: 'satellite',            sortOrder: 32, isActive: true, sectionId: 'tech_security'       },
