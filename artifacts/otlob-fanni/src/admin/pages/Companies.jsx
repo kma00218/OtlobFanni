@@ -5,7 +5,7 @@ import FormModal from '../components/FormModal'
 import {
   Eye, Pencil, Building2, Phone, MapPin, Briefcase, Clock,
   Facebook, Image, FileText, Lock, Shield, Info, XCircle, Upload, X,
-  Plus, Trash2, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle
+  Plus, Trash2, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle, LogIn
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
@@ -361,6 +361,15 @@ export default function Companies() {
               <AlertTriangle className="w-3.5 h-3.5" />
             </button>
           )}
+          <button
+            onClick={() => {
+              localStorage.setItem('pro_session', JSON.stringify({ entityType: 'company', entityId: row.id, displayName: row.companyName || row.company_name || '' }))
+              window.open('/pro', '_blank')
+            }}
+            className="p-1.5 hover:bg-teal-500/10 text-teal-400 rounded-lg transition-colors"
+            title="دخول مباشر كهذه الشركة">
+            <LogIn className="w-3.5 h-3.5" />
+          </button>
           <button onClick={() => openEdit(row)}
             className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
             <Pencil className="w-3.5 h-3.5" />

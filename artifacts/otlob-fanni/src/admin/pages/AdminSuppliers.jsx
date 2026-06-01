@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles, UserPlus, MessageCircle } from 'lucide-react'
+import { Package, Phone, MapPin, FileText, Facebook, Image, X, Upload, Instagram, ExternalLink, Plus, Trash2, Share2, AlertTriangle, Eye, Pencil, EyeOff, Sparkles, UserPlus, MessageCircle, LogIn } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
 import AiBatchButton from '../components/AiBatchButton'
@@ -289,6 +289,15 @@ export default function AdminSuppliers() {
             className="p-1.5 hover:bg-blue-500/10 text-blue-500 rounded-lg transition-colors"
             title="عرض">
             <Eye className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => {
+              localStorage.setItem('pro_session', JSON.stringify({ entityType: 'supplier', entityId: row.id, displayName: row.businessName || row.business_name || '' }))
+              window.open('/pro', '_blank')
+            }}
+            className="p-1.5 hover:bg-teal-500/10 text-teal-400 rounded-lg transition-colors"
+            title="دخول مباشر كهذا المورد">
+            <LogIn className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => openEdit(row)}
             className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors"

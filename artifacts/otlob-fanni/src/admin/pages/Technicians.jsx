@@ -3,7 +3,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle,
+  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle, LogIn,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
@@ -1027,6 +1027,15 @@ export default function Technicians() {
                             </button>
                           ) : null
                         })()}
+                        <button
+                          onClick={() => {
+                            localStorage.setItem('pro_session', JSON.stringify({ entityType: 'technician', entityId: row.id, displayName: row.nameAr || row.name_ar || row.fullName || '' }))
+                            window.open('/pro', '_blank')
+                          }}
+                          className="p-1.5 hover:bg-teal-500/10 text-teal-400 rounded-lg transition-colors"
+                          title="دخول مباشر كهذا الفني">
+                          <LogIn className="w-3.5 h-3.5" />
+                        </button>
                         <button onClick={() => openEdit(row)} className="p-1.5 hover:bg-amber-500/10 text-amber-400 rounded-lg transition-colors" title="تعديل">
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
