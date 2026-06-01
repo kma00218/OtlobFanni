@@ -300,7 +300,7 @@ export default function RequestFormModal({
               </button>
             </div>
           ) : (
-            <div className="px-5 py-5 space-y-5">
+            <div className="px-5 py-5 space-y-5" style={{ background: '#F5F7FA' }}>
 
               {/* ── Name + Phone row ── */}
               <div className="grid grid-cols-2 gap-3">
@@ -310,10 +310,10 @@ export default function RequestFormModal({
                     value={form.customerName}
                     onChange={e => setForm(f => ({ ...f, customerName: e.target.value }))}
                     placeholder={ar ? 'أحمد محمد' : 'Ahmed Mohamed'}
-                    className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-300 focus:outline-none transition-all"
-                    style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0' }}
-                    onFocus={e => e.target.style.borderColor = '#FF7900'}
-                    onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                    className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
+                    style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                    onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+                    onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
                     dir={ar ? 'rtl' : 'ltr'}
                   />
                 </InputField>
@@ -323,10 +323,10 @@ export default function RequestFormModal({
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                     placeholder="09XXXXXXXX"
-                    className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-300 focus:outline-none transition-all"
-                    style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0' }}
-                    onFocus={e => e.target.style.borderColor = '#FF7900'}
-                    onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                    className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
+                    style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                    onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+                    onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
                     dir="ltr"
                   />
                 </InputField>
@@ -339,10 +339,10 @@ export default function RequestFormModal({
                   value={form.cityName}
                   onChange={e => setForm(f => ({ ...f, cityName: e.target.value }))}
                   placeholder={ar ? 'طرابلس، السياحية...' : 'Tripoli, Hay Andalus...'}
-                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-300 focus:outline-none transition-all"
-                  style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0' }}
-                  onFocus={e => e.target.style.borderColor = '#FF7900'}
-                  onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
+                  style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                  onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+                  onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
                   dir={ar ? 'rtl' : 'ltr'}
                 />
               </InputField>
@@ -364,8 +364,9 @@ export default function RequestFormModal({
                           border: `2px solid ${t.color}`,
                           boxShadow: `0 4px 16px ${t.color}25`,
                         } : {
-                          background: '#F8FAFC',
-                          border: '1.5px solid #E8EDF2',
+                          background: '#FFFFFF',
+                          border: '2px solid #94A3B8',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                         }}>
                         {selected && (
                           <div className="absolute top-1.5 left-1.5 w-4 h-4 rounded-full flex items-center justify-center"
@@ -374,7 +375,7 @@ export default function RequestFormModal({
                           </div>
                         )}
                         <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
-                          style={{ background: selected ? `${t.color}20` : '#EEF2F7' }}>
+                          style={{ background: selected ? `${t.color}20` : '#F1F5F9' }}>
                           <Icon className="w-4.5 h-4.5" style={{ color: selected ? t.color : '#94A3B8', width: 18, height: 18 }} />
                         </div>
                         <span className="text-[10px] font-extrabold leading-tight"
@@ -394,10 +395,10 @@ export default function RequestFormModal({
                   value={form.preferredDatetime}
                   onChange={e => setForm(f => ({ ...f, preferredDatetime: e.target.value }))}
                   placeholder={ar ? 'مثال: الخميس صباحاً أو 15/6 بعد الظهر' : 'e.g. Thursday morning or June 15 PM'}
-                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-300 focus:outline-none transition-all"
-                  style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0' }}
-                  onFocus={e => e.target.style.borderColor = '#FF7900'}
-                  onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
+                  style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                  onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+                  onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
                   dir={ar ? 'rtl' : 'ltr'}
                 />
               </InputField>
@@ -411,10 +412,10 @@ export default function RequestFormModal({
                     ? 'اشرح المشكلة أو الخدمة المطلوبة بالتفصيل...'
                     : 'Describe the issue or service needed in detail...'}
                   rows={3}
-                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-300 focus:outline-none transition-all resize-none"
-                  style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0' }}
-                  onFocus={e => e.target.style.borderColor = '#FF7900'}
-                  onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all resize-none"
+                  style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                  onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+                  onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
                   dir={ar ? 'rtl' : 'ltr'}
                 />
               </InputField>
