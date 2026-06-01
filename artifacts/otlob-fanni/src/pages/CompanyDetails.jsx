@@ -31,8 +31,6 @@ function useFavorites(storageKey) {
   return { favs, toggle, isFav: (id) => favs.includes(id) }
 }
 
-const CAT_LABEL    = Object.fromEntries(categories.map(c => [c.id, c.nameAr]))
-const CAT_LABEL_EN = Object.fromEntries(categories.map(c => [c.id, c.nameEn || c.nameAr]))
 
 const DAY_AR = {
   Saturday:'السبت', Sunday:'الأحد', Monday:'الاثنين',
@@ -114,6 +112,12 @@ export default function CompanyDetails() {
   const [showShare,   setShowShare]   = useState(false)
   const [showReport,  setShowReport]  = useState(false)
   const [showRequest, setShowRequest] = useState(false)
+  const [apiCats,     setApiCats]     = useState([])
+  useEffect(() => { api.categories().then(setApiCats).catch(() => {}) }, [])
+  const catMap = Object.fromEntries([...categories, ...apiCats].map(c => [c.id, c]))
+  const CAT_LABEL    = Object.fromEntries(Object.entries(catMap).map(([id, c]) => [id, c.nameAr || c.name_ar || id]))
+  const CAT_LABEL_EN = Object.fromEntries(Object.entries(catMap).map(([id, c]) => [id, c.nameEn || c.name_en || c.nameAr || c.name_ar || id]))
+  const CAT_ICON_MAP = Object.fromEntries(Object.entries(catMap).map(([id, c]) => [id, c.iconName || c.icon_name || id]))
   const { isFav, toggle: toggleFav } = useFavorites('fav_companies')
 
   const _seoCoName  = company?.company_name || company?.companyName || ''
@@ -328,13 +332,14 @@ export default function CompanyDetails() {
                 </p>
                 <div className="grid grid-cols-4 gap-3">
                   {allCatNames.map((name, i) => {
-                    const catId = allCategoryIds[i]
+                    const catId   = allCategoryIds[i]
+                    const iconKey = CAT_ICON_MAP[catId] || catId
                     return (
                       <div key={i} className="flex flex-col items-center gap-1.5">
                         <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0"
                           style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.22)' }}>
                           {catId
-                            ? <img src={`/icons/categories/${catId}.png`} alt={name} className="w-full h-full object-cover" onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }} />
+                            ? <img src={`/icons/categories/${iconKey}.png`} alt={name} className="w-full h-full object-cover" onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }} />
                             : <div className="w-full h-full flex items-center justify-center"><Wrench className="w-7 h-7 text-[#FF7900]" /></div>
                           }
                         </div>

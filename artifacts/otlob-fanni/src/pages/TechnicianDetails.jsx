@@ -116,6 +116,9 @@ function normalizeTech(t, cities = [], categories = []) {
     allCategoryIds:     cat
       ? [t.category_id || t.categoryId || '', ...extraIds.filter(id => id !== (t.category_id || t.categoryId))]
       : [...extraIds],
+    allCategoryIconNames: cat
+      ? [cat.iconName || cat.icon_name || t.category_id || t.categoryId || '', ...extraCats.map(c => c.iconName || c.icon_name || c.id || '')]
+      : extraCats.map(c => c.iconName || c.icon_name || c.id || ''),
     photoUrl:       getFileUrl(t.profile_photo || t.profilePhoto || null),
     workImages:     (t.work_images || t.workImages || []).map(getFileUrl),
     rating:         Number(t.rating || 0),
@@ -346,13 +349,14 @@ export default function TechnicianDetails() {
                 </p>
                 <div className="grid grid-cols-4 gap-3">
                   {allCatNames.map((name, i) => {
-                    const catId = tech.allCategoryIds?.[i]
+                    const catId      = tech.allCategoryIds?.[i]
+                    const iconName   = tech.allCategoryIconNames?.[i] || catId
                     return (
                       <div key={i} className="flex flex-col items-center gap-1.5">
                         <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0"
                           style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.22)' }}>
                           {catId
-                            ? <img src={`/icons/categories/${catId}.png`} alt={name} className="w-full h-full object-cover" onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }} />
+                            ? <img src={`/icons/categories/${iconName}.png`} alt={name} className="w-full h-full object-cover" onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }} />
                             : <div className="w-full h-full flex items-center justify-center"><Wrench className="w-7 h-7 text-[#FF7900]" /></div>
                           }
                         </div>
