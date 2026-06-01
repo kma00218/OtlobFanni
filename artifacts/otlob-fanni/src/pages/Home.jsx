@@ -126,34 +126,44 @@ export default function Home() {
       {/* Ticker bar */}
       <style>{`
         @keyframes ticker-scroll {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .ticker-wrap {
+          background: #071B33;
+          height: 36px;
+          overflow: hidden;
+          position: relative;
+          cursor: pointer;
+          user-select: none;
+          display: flex;
+          align-items: center;
         }
         .ticker-track {
           display: flex;
           flex-direction: row;
-          direction: ltr;
           width: max-content;
-          animation: ticker-scroll 70s linear infinite;
+          animation: ticker-scroll 35s linear infinite;
           will-change: transform;
         }
+        .ticker-track:hover { animation-play-state: running; }
         .ticker-item {
           white-space: nowrap;
-          padding: 0 3rem;
+          padding: 0 2.5rem;
           font-size: 13px;
           font-weight: 600;
           color: white;
           display: inline-flex;
           align-items: center;
-          direction: rtl;
+          gap: 0.75rem;
         }
-        .ticker-sep { margin: 0 1rem; color: #FF7900; }
+        .ticker-sep { color: #FF7900; flex-shrink: 0; }
       `}</style>
       <Link href="/join-us">
-        <div style={{ background: '#071B33', height: '36px', overflow: 'hidden', position: 'relative', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center' }}>
+        <div className="ticker-wrap">
           <div className="ticker-track">
-            {[0, 1].map(i => (
-              <div key={i} className="ticker-item">
+            {[0, 1, 2, 3].map(i => (
+              <span key={i} className="ticker-item">
                 🇱🇾 يجري الآن بناء أكبر دليل فنيين وشركات خدمات في ليبيا — التسجيل مفتوح مجاناً
                 <span className="ticker-sep">✦</span>
                 🔧 سجّل بياناتك مجاناً وابدأ في استقبال الطلبات
@@ -165,7 +175,8 @@ export default function Home() {
                 📍 خدمة متاحة في طرابلس، بنغازي، مصراتة، والمزيد
                 <span className="ticker-sep">✦</span>
                 💼 هل أنت شركة خدمات؟ اعرض خدماتك الآن مجاناً
-              </div>
+                <span className="ticker-sep" style={{ marginLeft: '1rem' }}>◆</span>
+              </span>
             ))}
           </div>
         </div>
