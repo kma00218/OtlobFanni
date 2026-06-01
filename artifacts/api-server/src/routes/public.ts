@@ -247,6 +247,14 @@ router.get("/category-counts", async (_req, res): Promise<void> => {
       SELECT id, unnest(extra_specialties) AS cat_id
       FROM technicians
       WHERE is_approved = true AND is_active = true
+      UNION ALL
+      SELECT id, specialty AS cat_id
+      FROM company_applications
+      WHERE status = 'published' AND specialty IS NOT NULL AND specialty <> ''
+      UNION ALL
+      SELECT id, unnest(extra_specialties) AS cat_id
+      FROM company_applications
+      WHERE status = 'published'
     ) t
     GROUP BY cat_id
   `);
