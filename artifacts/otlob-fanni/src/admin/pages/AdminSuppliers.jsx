@@ -622,12 +622,22 @@ export default function AdminSuppliers() {
                 <label className="block text-xs font-semibold text-slate-600 mb-1">اسم المسؤول *</label>
                 <input className={inp} required value={form.contact_name} onChange={e => set('contact_name', e.target.value)} />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">نوع المستلزمات</label>
-                <select className={sel} value={form.supply_type} onChange={e => set('supply_type', e.target.value)}>
-                  <option value="">اختر...</option>
-                  {SUPPLY_TYPES.map(t => <option key={t.id} value={t.id}>{t.emoji} {t.nameAr}</option>)}
-                </select>
+              <div className="col-span-full">
+                <label className="block text-xs font-semibold text-slate-600 mb-2">نوع المستلزمات</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {SUPPLY_TYPES.map(t => (
+                    <button key={t.id} type="button"
+                      onClick={() => set('supply_type', form.supply_type === t.id ? '' : t.id)}
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
+                        form.supply_type === t.id
+                          ? 'border-[#FF7900] bg-orange-50 text-[#FF7900]'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                      }`}>
+                      <span className="text-base">{t.emoji}</span>
+                      <span className="truncate">{t.nameAr}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">الهاتف *</label>

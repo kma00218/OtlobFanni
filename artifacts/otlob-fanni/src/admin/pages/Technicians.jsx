@@ -268,18 +268,49 @@ function DetailModal({ tech, cities, categories, onClose, onEdit }) {
 function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, cities, categories, isSuperAdmin, cityId }) {
   const [photoUploading, setPhotoUploading] = useState(false)
   const [galleryUploading, setGalleryUploading] = useState(false)
+  const [selectedCats, setSelectedCats] = useState([])
+  const [suggestedSpecs, setSuggestedSpecs] = useState({})
+  const [newDepts, setNewDepts] = useState([])
+  const [chipInputs, setChipInputs] = useState({})
+
+  useEffect(() => {
+    if (open) {
+      const primary = form.category_id || ''
+      const extras = form.extra_specialties || []
+      setSelectedCats([primary, ...extras].filter(Boolean))
+      setSuggestedSpecs({})
+      setNewDepts([])
+      setChipInputs({})
+    }
+  }, [open])
+
   if (!open) return null
 
   const inp = "form-input"
   const lbl = "form-label"
 
-  const selectedCat = SERVICES_CATS.find(c => c.id === form.category_id)
-  const selectedSectionId = selectedCat?.sectionId || ''
-
-  const catsBySection = SECTIONS.map(sec => ({
-    ...sec,
-    cats: SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more'),
-  })).filter(s => s.cats.length > 0)
+  const toggleCat = (id) => {
+    setSelectedCats(prev => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+      setForm(f => ({ ...f, category_id: next[0] || '', extra_specialties: next.slice(1) }))
+      return next
+    })
+  }
+  const addSuggested = (sId) => {
+    const val = (chipInputs[sId] || '').trim()
+    if (!val) return
+    setSuggestedSpecs(p => ({ ...p, [sId]: [...(p[sId] || []), val] }))
+    setChipInputs(p => ({ ...p, [sId]: '' }))
+  }
+  const removeSuggested = (sId, idx) =>
+    setSuggestedSpecs(p => ({ ...p, [sId]: (p[sId] || []).filter((_, i) => i !== idx) }))
+  const addNewDept = () => {
+    const val = (chipInputs['__new_dept__'] || '').trim()
+    if (!val) return
+    setNewDepts(p => [...p, val])
+    setChipInputs(p => ({ ...p, '__new_dept__': '' }))
+  }
+  const removeNewDept = (idx) => setNewDepts(p => p.filter((_, i) => i !== idx))
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
@@ -383,26 +414,39 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                 <input value={form.area} onChange={e => setForm(f => ({...f, area: e.target.value}))} className={inp} placeholder="مثال: سوق الجمعة" />
               </div>
               <div className="sm:col-span-2">
-                <label className={lbl}>التخصص *</label>
-                <select required value={form.category_id} onChange={e => setForm(f => ({...f, category_id: e.target.value}))} className={inp}>
-                  <option value="">اختر التخصص</option>
-                  {catsBySection.map(sec => (
-                    <optgroup key={sec.id} label={sec.nameAr}>
-                      {sec.cats.map(c => (
-                        <option key={c.id} value={c.id}>{c.nameAr}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                  <option value="more_services">✏️ تخصص آخر (مخصص)</option>
-                </select>
-                {selectedSectionId && (
-                  <p className="text-xs text-[#FF7900]/70 mt-1.5">
-                    القسم الرئيسي: {SECTIONS.find(s => s.id === selectedSectionId)?.nameAr || selectedSectionId}
-                  </p>
+                <label className={lbl}>التخصصات</label>
+                <p className="text-[11px] text-slate-400 mb-2">
+                  افتح أي قسم واختر تخصصاتك —{' '}
+                  <span className="text-[#FF7900] font-bold">أول اختيار هو التخصص الرئيسي</span>
+                </p>
+                {selectedCats.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {selectedCats.map((id, idx) => {
+                      const cat = SERVICES_CATS.find(c => c.id === id)
+                      if (!cat) return null
+                      return (
+                        <span key={id} className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+                          style={idx === 0
+                            ? { background: 'linear-gradient(135deg,#FF7900,#c45e00)', color: 'white' }
+                            : { background: 'rgba(255,121,0,0.1)', color: '#c45e00' }}>
+                          {idx === 0 && '★ '}{cat.nameAr}
+                        </span>
+                      )
+                    })}
+                  </div>
                 )}
-                {form.category_id === 'more_services' && (
-                  <p className="text-xs text-amber-400/80 mt-1.5">تخصص مخصص — لم يختر الفني من القائمة الرئيسية</p>
-                )}
+                <SpecialtyAccordion
+                  selectedIds={selectedCats}
+                  onToggle={toggleCat}
+                  suggestedSpecialties={suggestedSpecs}
+                  onAddSuggested={addSuggested}
+                  onRemoveSuggested={removeSuggested}
+                  newDeptSuggestions={newDepts}
+                  onAddNewDept={addNewDept}
+                  onRemoveNewDept={removeNewDept}
+                  chipInputValues={chipInputs}
+                  onChipInput={(key, val) => setChipInputs(p => ({ ...p, [key]: val }))}
+                />
               </div>
             </div>
           </Section>
@@ -707,6 +751,7 @@ export default function Technicians() {
       phone:            row.phone           || '',
       whatsapp:         row.whatsapp        || '',
       category_id:      row.categoryId      || row.category_id      || '',
+      extra_specialties: row.extraSpecialties || row.extra_specialties || [],
       city_id:          row.cityId          || row.city_id          || '',
       area:             row.area            || '',
       experience_years: row.experienceYears ?? row.experience_years ?? 0,

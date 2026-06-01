@@ -42,7 +42,7 @@ const DAY_OPTIONS = [
 const emptyForm = {
   company_name: '', contact_name: '', phone: '', whatsapp: '',
   commercial_reg: '', city: '', area: '', address: '',
-  specialty: '', years_active: '', description: '', certifications: '',
+  specialty: '', extra_specialties: [], years_active: '', description: '', certifications: '',
   price_from: '', price_to: '', available_now: false, emergency: false,
   working_days: [],
   hours_from: '', hours_to: '', service_radius: '', facebook: '', instagram: '',
@@ -68,6 +68,10 @@ export default function Companies() {
   const [toast, setToast]           = useState(null)
   const [credsSending, setCredsSending] = useState(null)
   const [aiModal, setAiModal]           = useState(null)
+  const [editSelectedCats, setEditSelectedCats] = useState([])
+  const [editSuggestedSpecs, setEditSuggestedSpecs] = useState({})
+  const [editNewDepts, setEditNewDepts] = useState([])
+  const [editChipInputs, setEditChipInputs] = useState({})
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500)
@@ -165,34 +169,64 @@ export default function Companies() {
 
   const openEdit = (row) => {
     setEditItem(row)
+    const primary = row.specialty || ''
+    const extras  = row.extraSpecialties || row.extra_specialties || []
+    setEditSelectedCats([primary, ...extras].filter(Boolean))
+    setEditSuggestedSpecs({})
+    setEditNewDepts([])
+    setEditChipInputs({})
     setForm({
-      company_name:   row.companyName   || '',
-      contact_name:   row.contactName   || '',
-      phone:          row.phone         || '',
-      whatsapp:       row.whatsapp      || '',
-      commercial_reg: row.commercialReg || '',
-      city:           row.city          || '',
-      area:           row.area          || '',
-      address:        row.address       || '',
-      specialty:      row.specialty     || '',
-      years_active:   row.yearsActive   || '',
-      description:    row.description   || '',
-      certifications: row.certifications|| '',
-      price_from:     row.priceFrom     || '',
-      price_to:       row.priceTo       || '',
-      available_now:  row.availableNow  ?? false,
-      emergency:      row.emergency     ?? false,
-      hours_from:     row.hoursFrom     || '',
-      hours_to:       row.hoursTo       || '',
-      service_radius: row.serviceRadius || '',
-      facebook:       row.facebook      || '',
-      instagram:      row.instagram     || '',
-      working_days:   row.workingDays   || [],
-      company_logo:   row.companyLogo   || '',
-      work_images:    row.workImages    || [],
+      company_name:    row.companyName   || '',
+      contact_name:    row.contactName   || '',
+      phone:           row.phone         || '',
+      whatsapp:        row.whatsapp      || '',
+      commercial_reg:  row.commercialReg || '',
+      city:            row.city          || '',
+      area:            row.area          || '',
+      address:         row.address       || '',
+      specialty:       primary,
+      extra_specialties: extras,
+      years_active:    row.yearsActive   || '',
+      description:     row.description   || '',
+      certifications:  row.certifications|| '',
+      price_from:      row.priceFrom     || '',
+      price_to:        row.priceTo       || '',
+      available_now:   row.availableNow  ?? false,
+      emergency:       row.emergency     ?? false,
+      hours_from:      row.hoursFrom     || '',
+      hours_to:        row.hoursTo       || '',
+      service_radius:  row.serviceRadius || '',
+      facebook:        row.facebook      || '',
+      instagram:       row.instagram     || '',
+      working_days:    row.workingDays   || [],
+      company_logo:    row.companyLogo   || '',
+      work_images:     row.workImages    || [],
     })
     setViewItem(null)
   }
+
+  const companyToggleCat = (id) => {
+    setEditSelectedCats(prev => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+      setForm(f => ({ ...f, specialty: next[0] || '', extra_specialties: next.slice(1) }))
+      return next
+    })
+  }
+  const companyAddSuggested = (sId) => {
+    const val = (editChipInputs[sId] || '').trim()
+    if (!val) return
+    setEditSuggestedSpecs(p => ({ ...p, [sId]: [...(p[sId] || []), val] }))
+    setEditChipInputs(p => ({ ...p, [sId]: '' }))
+  }
+  const companyRemoveSuggested = (sId, idx) =>
+    setEditSuggestedSpecs(p => ({ ...p, [sId]: (p[sId] || []).filter((_, i) => i !== idx) }))
+  const companyAddNewDept = () => {
+    const val = (editChipInputs['__new_dept__'] || '').trim()
+    if (!val) return
+    setEditNewDepts(p => [...p, val])
+    setEditChipInputs(p => ({ ...p, '__new_dept__': '' }))
+  }
+  const companyRemoveNewDept = (idx) => setEditNewDepts(p => p.filter((_, i) => i !== idx))
 
   const openAdd = () => {
     setForm(emptyForm)
@@ -796,22 +830,40 @@ export default function Companies() {
                 onChange={e => setForm(f => ({ ...f, commercial_reg: e.target.value }))}
                 className="form-input" />
             </div>
-            <div>
-              <label className="form-label">التخصص</label>
-              <select value={form.specialty}
-                onChange={e => setForm(f => ({ ...f, specialty: e.target.value }))}
-                className="form-input">
-                <option value="">اختر التخصص</option>
-                {catsBySection.map(sec => (
-                  <optgroup key={sec.id} label={sec.nameAr}>
-                    {sec.cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
-                  </optgroup>
-                ))}
-                <option value="more_services">✏️ تخصص آخر (مخصص)</option>
-              </select>
-              {form.specialty === 'more_services' && (
-                <p className="text-xs text-amber-400/80 mt-1.5">تخصص مخصص — لم تختر الشركة من القائمة الرئيسية</p>
+            <div className="col-span-full">
+              <label className="form-label">التخصصات</label>
+              <p className="text-[11px] text-slate-400 mb-2">
+                افتح أي قسم واختر تخصصاتك —{' '}
+                <span className="text-[#FF7900] font-bold">أول اختيار هو التخصص الرئيسي</span>
+              </p>
+              {editSelectedCats.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {editSelectedCats.map((id, idx) => {
+                    const cat = SERVICES_CATS.find(c => c.id === id)
+                    if (!cat) return null
+                    return (
+                      <span key={id} className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+                        style={idx === 0
+                          ? { background: 'linear-gradient(135deg,#FF7900,#c45e00)', color: 'white' }
+                          : { background: 'rgba(255,121,0,0.1)', color: '#c45e00' }}>
+                        {idx === 0 && '★ '}{cat.nameAr}
+                      </span>
+                    )
+                  })}
+                </div>
               )}
+              <SpecialtyAccordion
+                selectedIds={editSelectedCats}
+                onToggle={companyToggleCat}
+                suggestedSpecialties={editSuggestedSpecs}
+                onAddSuggested={companyAddSuggested}
+                onRemoveSuggested={companyRemoveSuggested}
+                newDeptSuggestions={editNewDepts}
+                onAddNewDept={companyAddNewDept}
+                onRemoveNewDept={companyRemoveNewDept}
+                chipInputValues={editChipInputs}
+                onChipInput={(key, val) => setEditChipInputs(p => ({ ...p, [key]: val }))}
+              />
             </div>
             <div>
               <label className="form-label">المدينة</label>
