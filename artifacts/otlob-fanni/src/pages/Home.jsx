@@ -125,60 +125,70 @@ export default function Home() {
 
       {/* Ticker bar */}
       <style>{`
-        @keyframes ticker-scroll {
+        @keyframes ofTicker {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        .ticker-wrap {
+        .of-ticker-outer {
           background: #071B33;
           height: 36px;
           overflow: hidden;
           position: relative;
           cursor: pointer;
           user-select: none;
-          display: flex;
-          align-items: center;
         }
-        .ticker-track {
-          display: flex;
-          flex-direction: row;
-          width: max-content;
-          animation: ticker-scroll 140s linear infinite;
-          will-change: transform;
-        }
-        .ticker-track:hover { animation-play-state: running; }
-        .ticker-item {
-          white-space: nowrap;
-          padding: 0 2.5rem;
-          font-size: 13px;
-          font-weight: 600;
-          color: white;
+        .of-ticker-inner {
           display: inline-flex;
           align-items: center;
-          gap: 0.75rem;
+          height: 36px;
+          white-space: nowrap;
+          animation: ofTicker 70s linear infinite;
+          will-change: transform;
         }
-        .ticker-sep { color: #FF7900; flex-shrink: 0; }
+        .of-ticker-msg {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #fff;
+          padding: 0 40px;
+          direction: rtl;
+        }
+        .of-sep { color: #FF7900; }
       `}</style>
       <Link href="/join-us">
-        <div className="ticker-wrap">
-          <div className="ticker-track">
-            {[0, 1, 2, 3].map(i => (
-              <span key={i} className="ticker-item">
-                🇱🇾 يجري الآن بناء أكبر دليل فنيين وشركات خدمات في ليبيا — التسجيل مفتوح مجاناً
-                <span className="ticker-sep">✦</span>
-                🔧 سجّل بياناتك مجاناً وابدأ في استقبال الطلبات
-                <span className="ticker-sep">✦</span>
-                📦 تصفّح مستلزمات ومعدات من أفضل الموردين في ليبيا
-                <span className="ticker-sep">✦</span>
-                ⭐ انضم إلى آلاف الفنيين الموثوقين على المنصة
-                <span className="ticker-sep">✦</span>
-                📍 خدمة متاحة في طرابلس، بنغازي، مصراتة، والمزيد
-                <span className="ticker-sep">✦</span>
-                💼 هل أنت شركة خدمات؟ اعرض خدماتك الآن مجاناً
-                <span className="ticker-sep" style={{ marginLeft: '1rem' }}>◆</span>
+        <div className="of-ticker-outer">
+          <span className="of-ticker-inner">
+            {[0, 1].map(i => (
+              <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="of-ticker-msg">
+                  🇱🇾 يجري الآن بناء أكبر دليل فنيين وشركات خدمات في ليبيا — التسجيل مفتوح مجاناً
+                </span>
+                <span className="of-sep">✦</span>
+                <span className="of-ticker-msg">
+                  🔧 سجّل بياناتك مجاناً وابدأ في استقبال الطلبات
+                </span>
+                <span className="of-sep">✦</span>
+                <span className="of-ticker-msg">
+                  📦 تصفّح مستلزمات ومعدات من أفضل الموردين في ليبيا
+                </span>
+                <span className="of-sep">✦</span>
+                <span className="of-ticker-msg">
+                  ⭐ انضم إلى آلاف الفنيين الموثوقين على المنصة
+                </span>
+                <span className="of-sep">✦</span>
+                <span className="of-ticker-msg">
+                  📍 خدمة متاحة في طرابلس، بنغازي، مصراتة، والمزيد
+                </span>
+                <span className="of-sep">✦</span>
+                <span className="of-ticker-msg">
+                  💼 هل أنت شركة خدمات؟ اعرض خدماتك الآن مجاناً
+                </span>
+                <span className="of-sep" style={{ padding: '0 20px' }}>◆</span>
               </span>
             ))}
-          </div>
+          </span>
         </div>
       </Link>
 
