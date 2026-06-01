@@ -53,6 +53,7 @@ export const categories = [
   { id: 'heavy_equipment',   sectionId: 'construction', nameAr: 'معدات ثقيلة',         nameEn: 'Heavy Equipment',     iconName: 'generator',   sortOrder: 73 },
   { id: 'crusher_materials', sectionId: 'construction', nameAr: 'كسارة ومواد بناء',    nameEn: 'Crusher & Building Materials', iconName: 'backup_power', sortOrder: 74 },
   { id: 'elevators',         sectionId: 'construction', nameAr: 'مصاعد كهربائية',       nameEn: 'Electric Elevators',          iconName: 'elevators',    sortOrder: 75 },
+  { id: 'eng_consultancy',   sectionId: 'construction', nameAr: 'مقاولات واستشارات هندسية', nameEn: 'Engineering Consultancy',  iconName: 'eng_consultancy', sortOrder: 76 },
 
   // ── 4. تقنية وأمن ─────────────────────────────────────────────────────────
   { id: 'cctv',          sectionId: 'tech_security', nameAr: 'كاميرات مراقبة',     nameEn: 'CCTV',                   iconName: 'cctv',         sortOrder: 30 },
