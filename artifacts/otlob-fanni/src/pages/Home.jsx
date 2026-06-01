@@ -143,7 +143,7 @@ export default function Home() {
           display: flex;
           flex-direction: row;
           width: max-content;
-          animation: ticker-scroll 35s linear infinite;
+          animation: ticker-scroll 140s linear infinite;
           will-change: transform;
         }
         .ticker-track:hover { animation-play-state: running; }
