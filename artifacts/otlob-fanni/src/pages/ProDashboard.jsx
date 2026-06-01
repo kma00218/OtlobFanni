@@ -4,6 +4,7 @@ import {
   Briefcase, FileText, Users, BarChart2, User, LogOut, ChevronLeft,
   Receipt, ArrowRight, Lock, Sparkles, ClipboardList, Phone, MapPin,
   Clock, CheckCircle, XCircle, MessageCircle, RefreshCw,
+  Handshake, Plus, Share2, Calendar, DollarSign, Send, ChevronDown,
 } from 'lucide-react'
 import { api } from '../lib/api'
 
@@ -19,6 +20,107 @@ const TOOLS = [
   { id: 'clients',     labelAr: 'عملائي',         icon: <Users     className="w-6 h-6 text-white" />, bg: 'from-[#0EA5E9] to-[#0369A1]' },
   { id: 'stats',       labelAr: 'إحصائياتي',      icon: <BarChart2 className="w-6 h-6 text-white"/>, bg: 'from-[#10B981] to-[#065f46]' },
 ]
+
+const DEAL_STATUS_CONFIG = {
+  pending:   { label: 'بانتظار العميل', color: 'bg-amber-100 text-amber-700',    dot: 'bg-amber-500' },
+  confirmed: { label: 'مؤكدة ✓',        color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  disputed:  { label: 'مختلف عليها',    color: 'bg-red-100 text-red-700',        dot: 'bg-red-500' },
+  cancelled: { label: 'ملغية',          color: 'bg-gray-100 text-gray-500',      dot: 'bg-gray-400' },
+}
+
+const SERVICE_TYPES_AR = [
+  'صيانة كهربائية', 'صيانة سباكة', 'تكييف وتبريد', 'نجارة وأثاث',
+  'دهانات وديكور', 'أعمال بناء', 'خدمات تنظيف', 'حراسة وأمن',
+  'خدمات تقنية', 'أعمال حدادة', 'أعمال ألومنيوم', 'خدمات أخرى',
+]
+
+function DealCard({ deal }) {
+  const [expanded, setExpanded] = useState(false)
+  const [copied, setCopied]     = useState(false)
+  const cfg = DEAL_STATUS_CONFIG[deal.status] || DEAL_STATUS_CONFIG.pending
+  const confirmUrl = `${window.location.origin}/deal-confirm/${deal.confirmToken || ''}`
+  const waMsg = `مرحباً! يرجى تأكيد الصفقة عبر الرابط التالي 👇\n${confirmUrl}`
+  const waUrl = `https://wa.me/${deal.userPhone.replace(/\D/g, '').replace(/^0/, '218')}?text=${encodeURIComponent(waMsg)}`
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(confirmUrl).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: '1px solid #F0F2F5' }}>
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-[#071B33] text-sm">{deal.serviceType}</p>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              {deal.userPhone && (
+                <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <Phone className="w-3 h-3" /> {deal.userPhone}
+                </span>
+              )}
+              {deal.userName && <span className="text-xs text-gray-400">{deal.userName}</span>}
+              <span className="text-xs text-gray-500 flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> {deal.serviceDate}
+              </span>
+              {deal.serviceValue && (
+                <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <DollarSign className="w-3 h-3" /> {Number(deal.serviceValue).toLocaleString('ar-LY')} د.ل
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${cfg.color}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+              {cfg.label}
+            </span>
+            <button onClick={() => setExpanded(p => !p)} className="p-1 rounded-lg hover:bg-gray-50">
+              <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="px-4 pb-4 space-y-2.5 border-t border-gray-50 pt-3">
+          {deal.description && (
+            <p className="text-xs text-gray-600 bg-gray-50 rounded-xl px-3 py-2">{deal.description}</p>
+          )}
+
+          {deal.status === 'confirmed' && (
+            <div className="flex gap-3">
+              <div className="flex-1 bg-[#FF7900]/5 border border-[#FF7900]/20 rounded-xl px-3 py-2 text-center">
+                <p className="text-[10px] text-gray-400">نقاطك</p>
+                <p className="font-black text-[#FF7900] text-lg">{deal.proPoints}</p>
+              </div>
+              <div className="flex-1 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2 text-center">
+                <p className="text-[10px] text-gray-400">نقاط العميل</p>
+                <p className="font-black text-blue-600 text-lg">{deal.userPoints}</p>
+              </div>
+            </div>
+          )}
+
+          {deal.status === 'pending' && deal.confirmToken && (
+            <div className="flex gap-2">
+              <a href={waUrl} target="_blank" rel="noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-green-50 text-green-700 border border-green-200 active:scale-95 transition-all">
+                <Send className="w-3 h-3" /> أرسل عبر واتساب
+              </a>
+              <button onClick={copyLink}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 active:scale-95 transition-all">
+                <Share2 className="w-3 h-3" /> {copied ? 'تم!' : 'نسخ الرابط'}
+              </button>
+            </div>
+          )}
+
+          <p className="text-[10px] text-gray-300">{new Date(deal.createdAt).toLocaleString('ar-LY')}</p>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const STATUS_CONFIG = {
   new:       { label: 'جديد',        color: 'bg-blue-100 text-blue-700',   dot: 'bg-blue-500' },
@@ -142,12 +244,22 @@ function RequestCard({ req, onStatusChange }) {
   )
 }
 
+const DEAL_FORM_DEFAULT = {
+  userPhone: '', userName: '', serviceType: '', serviceValue: '', serviceDate: '', description: ''
+}
+
 export default function ProDashboard() {
   const [, navigate] = useLocation()
-  const [session,   setSession]   = useState(null)
-  const [requests,  setRequests]  = useState([])
-  const [reqLoading, setReqLoading] = useState(false)
-  const [activeTab, setActiveTab]  = useState('profile')
+  const [session,      setSession]     = useState(null)
+  const [requests,     setRequests]    = useState([])
+  const [reqLoading,   setReqLoading]  = useState(false)
+  const [activeTab,    setActiveTab]   = useState('profile')
+  const [deals,        setDeals]       = useState([])
+  const [dealsLoading, setDealsLoading] = useState(false)
+  const [showDealForm, setShowDealForm] = useState(false)
+  const [dealForm,     setDealForm]    = useState(DEAL_FORM_DEFAULT)
+  const [submitting,   setSubmitting]  = useState(false)
+  const [dealErr,      setDealErr]     = useState('')
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -166,8 +278,19 @@ export default function ProDashboard() {
     finally { setReqLoading(false) }
   }, [])
 
+  const loadDeals = useCallback(async (sess) => {
+    if (!sess) return
+    setDealsLoading(true)
+    try {
+      const data = await api.deals.mine(sess.entityId, sess.entityType)
+      setDeals(data)
+    } catch { setDeals([]) }
+    finally { setDealsLoading(false) }
+  }, [])
+
   useEffect(() => {
     if (session && activeTab === 'requests') loadRequests(session)
+    if (session && activeTab === 'deals')    loadDeals(session)
   }, [session, activeTab])
 
   const logout = () => { localStorage.removeItem('pro_session'); navigate('/pro-login') }
@@ -177,9 +300,40 @@ export default function ProDashboard() {
   const typeLabel  = TYPE_LABEL[session.entityType] || 'مهني'
   const initials   = (session.displayName || '').trim().slice(0, 1)
   const newCount   = requests.filter(r => r.status === 'new').length
+  const pendingDeals = deals.filter(d => d.status === 'pending').length
 
   const handleStatusChange = (id, newStatus) => {
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
+  }
+
+  const submitDeal = async (e) => {
+    e.preventDefault()
+    setDealErr('')
+    if (!dealForm.userPhone || !dealForm.serviceType || !dealForm.serviceDate) {
+      setDealErr('يرجى ملء الحقول المطلوبة: رقم الهاتف، نوع الخدمة، تاريخ الخدمة')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const newDeal = await api.deals.create({
+        proId:        session.entityId,
+        proType:      session.entityType,
+        proName:      session.displayName,
+        userPhone:    dealForm.userPhone.trim(),
+        userName:     dealForm.userName.trim() || undefined,
+        serviceType:  dealForm.serviceType,
+        serviceValue: dealForm.serviceValue ? Number(dealForm.serviceValue) : undefined,
+        serviceDate:  dealForm.serviceDate,
+        description:  dealForm.description.trim() || undefined,
+      })
+      setDeals(prev => [newDeal, ...prev])
+      setShowDealForm(false)
+      setDealForm(DEAL_FORM_DEFAULT)
+    } catch {
+      setDealErr('حدث خطأ أثناء الإرسال، يرجى المحاولة مجدداً')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -226,20 +380,32 @@ export default function ProDashboard() {
       <div className="flex mx-4 mb-1 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
         <button
           onClick={() => setActiveTab('profile')}
-          className={`flex-1 py-3 text-sm font-bold transition-all rounded-xl ${
+          className={`flex-1 py-3 text-xs font-bold transition-all rounded-xl ${
             activeTab === 'profile' ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
           }`}>
-          الملف الشخصي
+          ملفي
         </button>
         <button
           onClick={() => { setActiveTab('requests'); if (session) loadRequests(session) }}
-          className={`flex-1 py-3 text-sm font-bold transition-all rounded-xl relative ${
+          className={`flex-1 py-3 text-xs font-bold transition-all rounded-xl relative ${
             activeTab === 'requests' ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
           }`}>
-          طلبات العملاء
+          الطلبات
           {newCount > 0 && (
             <span className="absolute -top-1 -left-1 w-5 h-5 bg-[#FF7900] text-white text-[10px] font-black rounded-full flex items-center justify-center">
               {newCount > 9 ? '9+' : newCount}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => { setActiveTab('deals'); if (session) loadDeals(session) }}
+          className={`flex-1 py-3 text-xs font-bold transition-all rounded-xl relative ${
+            activeTab === 'deals' ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
+          }`}>
+          صفقاتي
+          {pendingDeals > 0 && (
+            <span className="absolute -top-1 -left-1 w-5 h-5 bg-amber-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+              {pendingDeals > 9 ? '9+' : pendingDeals}
             </span>
           )}
         </button>
@@ -308,6 +474,140 @@ export default function ProDashboard() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── DEALS TAB ── */}
+        {activeTab === 'deals' && (
+          <div className="space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, #071B33, #1e3a5f)' }}>
+                  <Handshake className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="font-black text-[#071B33] text-sm">صفقاتي</p>
+                  <p className="text-[11px] text-gray-400">{deals.length} صفقة</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => loadDeals(session)}
+                  className="p-2 rounded-xl bg-white hover:bg-gray-50 transition-colors shadow-sm border border-gray-100">
+                  <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${dealsLoading ? 'animate-spin' : ''}`} />
+                </button>
+                <button onClick={() => setShowDealForm(p => !p)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm active:scale-95 transition-all"
+                  style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
+                  <Plus className="w-3.5 h-3.5" /> صفقة جديدة
+                </button>
+              </div>
+            </div>
+
+            {/* New Deal Form */}
+            {showDealForm && (
+              <form onSubmit={submitDeal}
+                className="bg-white rounded-3xl p-5 space-y-3 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                <p className="font-black text-[#071B33] text-sm">تسجيل صفقة جديدة</p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 mb-1">رقم هاتف العميل *</label>
+                    <input type="tel" required placeholder="09XXXXXXXX"
+                      value={dealForm.userPhone}
+                      onChange={e => setDealForm(p => ({ ...p, userPhone: e.target.value }))}
+                      className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                      style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }} />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 mb-1">اسم العميل</label>
+                    <input type="text" placeholder="اختياري"
+                      value={dealForm.userName}
+                      onChange={e => setDealForm(p => ({ ...p, userName: e.target.value }))}
+                      className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                      style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 mb-1">نوع الخدمة *</label>
+                  <select required
+                    value={dealForm.serviceType}
+                    onChange={e => setDealForm(p => ({ ...p, serviceType: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                    style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }}>
+                    <option value="">اختر نوع الخدمة</option>
+                    {SERVICE_TYPES_AR.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 mb-1">تاريخ الخدمة *</label>
+                    <input type="date" required
+                      value={dealForm.serviceDate}
+                      onChange={e => setDealForm(p => ({ ...p, serviceDate: e.target.value }))}
+                      className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                      style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }} />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 mb-1">قيمة الخدمة (د.ل)</label>
+                    <input type="number" min="0" placeholder="اختياري"
+                      value={dealForm.serviceValue}
+                      onChange={e => setDealForm(p => ({ ...p, serviceValue: e.target.value }))}
+                      className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
+                      style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 mb-1">تفاصيل الخدمة</label>
+                  <textarea rows={2} placeholder="وصف مختصر للعمل المنجز..."
+                    value={dealForm.description}
+                    onChange={e => setDealForm(p => ({ ...p, description: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 resize-none"
+                    style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }} />
+                </div>
+
+                {dealErr && <p className="text-xs text-red-600 font-semibold">{dealErr}</p>}
+
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3 text-xs text-blue-700">
+                  <p className="font-bold mb-0.5">كيف يعمل النظام؟</p>
+                  <p>بعد التسجيل ستحصل على رابط تأكيد — أرسله للعميل عبر واتساب، وبمجرد تأكيده تحصل على <strong>+10 نقاط</strong></p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => { setShowDealForm(false); setDealErr(''); setDealForm(DEAL_FORM_DEFAULT) }}
+                    className="flex-1 py-3 rounded-2xl font-bold text-gray-500 text-sm bg-gray-100 active:scale-95 transition-all">
+                    إلغاء
+                  </button>
+                  <button type="submit" disabled={submitting}
+                    className="flex-1 py-3 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-all"
+                    style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
+                    {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    تسجيل الصفقة
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Deals list */}
+            {dealsLoading ? (
+              <div className="flex justify-center py-14">
+                <div className="w-7 h-7 border-2 border-[#071B33] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : deals.length === 0 ? (
+              <div className="text-center py-14 bg-white rounded-3xl shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                <Handshake className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                <p className="font-bold text-gray-400">لا توجد صفقات بعد</p>
+                <p className="text-xs text-gray-300 mt-1">سجّل أول صفقة مع عميلك واكسب نقاطاً</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {deals.map(d => <DealCard key={d.id} deal={d} />)}
+              </div>
+            )}
           </div>
         )}
 

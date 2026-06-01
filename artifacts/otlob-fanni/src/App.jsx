@@ -50,6 +50,7 @@ const ProDashboard = lazy(() => import("./pages/ProDashboard"));
 const ProSoon = lazy(() => import("./pages/ProSoon"));
 const ProProfile = lazy(() => import("./pages/ProProfile"));
 const ProEditProfile = lazy(() => import("./pages/ProEditProfile"));
+const DealConfirm = lazy(() => import("./pages/DealConfirm"));
 
 // Admin — lazy loaded as a separate chunk
 const AdminLogin = lazy(() => import("./admin/AdminLogin"));
@@ -255,6 +256,7 @@ function AppContent() {
               <Route path="/pro/soon" component={ProSoon} />
               <Route path="/pro/edit-profile" component={ProEditProfile} />
               <Route path="/pro/profile" component={ProProfile} />
+              <Route path="/deal-confirm/:token" component={DealConfirm} />
               <Route path="/pro" component={ProDashboard} />
               <Route path="/about" component={About} />
               <Route path="/terms" component={Terms} />

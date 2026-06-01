@@ -5,7 +5,7 @@ import {
   techniciansTable, citiesTable, categoriesTable, adsTable,
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
-  proCredentialsTable, referralsTable, profileUpdateRequestsTable,
+  proCredentialsTable, referralsTable, profileUpdateRequestsTable, dealsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
@@ -1093,6 +1093,28 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
   const allowed = ['new', 'contacted', 'completed', 'cancelled'];
   if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
   const [r] = await db.update(serviceRequestsTable).set({ status }).where(eq(serviceRequestsTable.id, id)).returning();
+  if (!r) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(r);
+});
+
+// ── DEALS (Admin) ─────────────────────────────────────────────────────────────
+router.get("/deals", async (req, res): Promise<void> => {
+  const { status, proType } = req.query as Record<string, string>;
+  const conditions = [];
+  if (status)  conditions.push(eq(dealsTable.status, status));
+  if (proType) conditions.push(eq(dealsTable.proType, proType));
+  const deals = await db.select().from(dealsTable)
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(dealsTable.createdAt));
+  res.json(deals);
+});
+
+router.patch("/deals/:id/status", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { status } = req.body;
+  const allowed = ['pending', 'confirmed', 'disputed', 'cancelled'];
+  if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
+  const [r] = await db.update(dealsTable).set({ status }).where(eq(dealsTable.id, id)).returning();
   if (!r) { res.status(404).json({ error: "Not found" }); return; }
   res.json(r);
 });

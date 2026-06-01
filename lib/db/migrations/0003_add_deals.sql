@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS deals (
+  id               TEXT PRIMARY KEY,
+  pro_id           TEXT NOT NULL,
+  pro_type         TEXT NOT NULL,
+  pro_name         TEXT,
+  user_phone       TEXT NOT NULL,
+  user_name        TEXT,
+  service_type     TEXT NOT NULL,
+  service_value    NUMERIC(10, 2),
+  service_date     TEXT NOT NULL,
+  description      TEXT,
+  pro_confirmed    BOOLEAN NOT NULL DEFAULT TRUE,
+  user_confirmed   BOOLEAN DEFAULT NULL,
+  user_response    TEXT,
+  status           TEXT NOT NULL DEFAULT 'pending',
+  pro_points       TEXT DEFAULT '0',
+  user_points      TEXT DEFAULT '0',
+  confirm_token    TEXT,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  confirmed_at     TIMESTAMPTZ
+);

@@ -6,6 +6,7 @@ import {
   adRequestsTable, serviceRequestsTable, reviewsTable,
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
   referralsTable, analyticsEventsTable, profileUpdateRequestsTable,
+  dealsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
@@ -670,6 +671,67 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
   const [r] = await db.update(serviceRequestsTable).set({ status }).where(eq(serviceRequestsTable.id, raw)).returning();
   if (!r) { res.status(404).json({ error: "Not found" }); return; }
   res.json(r);
+});
+
+// ── DEALS ─────────────────────────────────────────────────────────────────────
+
+// Create a deal (pro initiates)
+router.post("/deals", async (req, res): Promise<void> => {
+  const { proId, proType, proName, userPhone, userName, serviceType, serviceValue, serviceDate, description } = req.body;
+  if (!proId || !proType || !userPhone || !serviceType || !serviceDate) {
+    res.status(400).json({ error: "Missing required fields" }); return;
+  }
+  const id = crypto.randomBytes(8).toString("hex");
+  const confirmToken = crypto.randomBytes(16).toString("hex");
+  const [deal] = await db.insert(dealsTable).values({
+    id, proId, proType, proName: proName || null,
+    userPhone, userName: userName || null,
+    serviceType, serviceValue: serviceValue ? String(serviceValue) : null,
+    serviceDate, description: description || null,
+    proConfirmed: true, status: "pending", confirmToken,
+  }).returning();
+  res.status(201).json(deal);
+});
+
+// Get deal by confirm token (for user confirmation page)
+router.get("/deals/confirm/:token", async (req, res): Promise<void> => {
+  const { token } = req.params;
+  const [deal] = await db.select().from(dealsTable).where(eq(dealsTable.confirmToken, token));
+  if (!deal) { res.status(404).json({ error: "Deal not found" }); return; }
+  res.json(deal);
+});
+
+// User confirms or disputes a deal
+router.post("/deals/confirm/:token", async (req, res): Promise<void> => {
+  const { token } = req.params;
+  const { confirmed, userName } = req.body;
+  const [deal] = await db.select().from(dealsTable).where(eq(dealsTable.confirmToken, token));
+  if (!deal) { res.status(404).json({ error: "Deal not found" }); return; }
+  if (deal.userConfirmed !== null) { res.status(409).json({ error: "Already responded" }); return; }
+
+  const status = confirmed ? "confirmed" : "disputed";
+  const proPoints = confirmed ? "10" : "0";
+  const userPoints = confirmed ? "5" : "0";
+  const [updated] = await db.update(dealsTable).set({
+    userConfirmed: confirmed,
+    userName: userName || deal.userName,
+    status,
+    proPoints,
+    userPoints,
+    confirmToken: null,
+    confirmedAt: new Date(),
+  }).where(eq(dealsTable.id, deal.id)).returning();
+  res.json(updated);
+});
+
+// Get my deals (pro)
+router.get("/deals/mine", async (req, res): Promise<void> => {
+  const { proId, proType } = req.query as Record<string, string>;
+  if (!proId || !proType) { res.status(400).json({ error: "Missing params" }); return; }
+  const deals = await db.select().from(dealsTable)
+    .where(and(eq(dealsTable.proId, proId), eq(dealsTable.proType, proType)))
+    .orderBy(desc(dealsTable.createdAt));
+  res.json(deals);
 });
 
 // ── Recently Joined ───────────────────────────────────────────────────────────

@@ -271,6 +271,18 @@ export const api = {
     getPendingRequest:   (entityType, entityId)                      => get(`/pro/pending-request?entityType=${entityType}&entityId=${entityId}`),
   },
 
+  deals: {
+    create:        (data)           => post('/deals', data),
+    mine:          (proId, proType) => get(`/deals/mine?proId=${encodeURIComponent(proId)}&proType=${encodeURIComponent(proType)}`),
+    getByToken:    (token)          => get(`/deals/confirm/${token}`),
+    respond:       (token, data)    => post(`/deals/confirm/${token}`, data),
+    adminList:     (params = {})    => {
+      const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([,v])=>v))).toString()
+      return get('/admin/deals' + (qs ? '?' + qs : ''))
+    },
+    adminSetStatus: (id, status)    => patch(`/admin/deals/${id}/status`, { status }),
+  },
+
   popularCategories: () => get('/categories/popular'),
   submitReferral: (data) => post('/referrals', data),
 
