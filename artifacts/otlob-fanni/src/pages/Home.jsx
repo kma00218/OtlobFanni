@@ -260,7 +260,6 @@ export default function Home() {
             >
               {citiesForFilter.map(city => {
                 const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
-                const isStrong = (city.total || 0) >= 3
                 return (
                   <button
                     key={city.id}
@@ -270,7 +269,7 @@ export default function Home() {
                   >
                     <span style={{ fontSize: '14px' }}>📍</span>
                     {label}
-                    {isStrong && (
+                    {(city.total || 0) > 0 && (
                       <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
                         {city.total}
                       </span>
