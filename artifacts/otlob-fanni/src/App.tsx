@@ -54,61 +54,111 @@ function InstallFAB() {
   const [location, navigate] = useLocation();
   const { lang } = useLang();
   const [installPrompt, setInstallPrompt] = useState<any>(null);
-  const [isInstalled, setIsInstalled] = useState(() => {
-    // Check if already running as installed PWA
-    return window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true;
-  });
+  const [isInstalled, setIsInstalled] = useState(() =>
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true
+  );
+  const [showGuide, setShowGuide] = useState(false);
+  const [dismissed, setDismissed] = useState(() => sessionStorage.getItem('install-dismissed') === '1');
+  const ar = lang === 'ar';
 
   useEffect(() => {
     const handler = (e: any) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
-
-    // Listen for app being installed
     window.addEventListener('appinstalled', () => setIsInstalled(true));
-
-    // Also watch display-mode changes
     const mq = window.matchMedia('(display-mode: standalone)');
     const mqHandler = (e: MediaQueryListEvent) => { if (e.matches) setIsInstalled(true); };
     mq.addEventListener('change', mqHandler);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
       mq.removeEventListener('change', mqHandler);
     };
   }, []);
 
-  // Hide if app is already installed
-  if (isInstalled) return null;
-
-  // Hide on /more page (install section is already visible there)
+  if (isInstalled || dismissed) return null;
   if (location === '/more') return null;
 
-  const handleClick = async () => {
+  const handleInstall = async () => {
     if (installPrompt) {
       installPrompt.prompt();
-      return;
+    } else {
+      setShowGuide(true);
     }
-    navigate('/more');
-    setTimeout(() => {
-      document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
-    }, 300);
+  };
+
+  const handleDismiss = () => {
+    sessionStorage.setItem('install-dismissed', '1');
+    setDismissed(true);
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className="fixed bottom-24 z-50 flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform font-bold text-white text-sm"
-      style={{
-        background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        boxShadow: '0 4px 20px rgba(255,121,0,0.4)',
-      }}
-    >
-      <Download className="w-4 h-4" />
-      {lang === 'ar' ? 'ثبّت التطبيق' : 'Install App'}
-    </button>
+    <>
+      {/* Install Banner */}
+      <div
+        className="fixed bottom-20 z-50 mx-3"
+        style={{ left: 0, right: 0 }}
+      >
+        <div
+          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl"
+          style={{
+            background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)',
+            boxShadow: '0 6px 24px rgba(255,121,0,0.45)',
+          }}
+        >
+          <div className="text-2xl flex-shrink-0">📲</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-black text-sm leading-tight">
+              {ar ? 'ثبّت التطبيق مجاناً' : 'Install App for Free'}
+            </p>
+            <p className="text-white/75 text-[11px] font-medium mt-0.5">
+              {ar ? 'أسرع وأسهل بدون متجر' : 'Faster & easier, no store needed'}
+            </p>
+          </div>
+          <button
+            onClick={handleInstall}
+            className="flex-shrink-0 bg-white font-black text-[#FF7900] text-xs px-3 py-1.5 rounded-xl active:scale-95 transition-transform"
+          >
+            {ar ? 'ثبّت' : 'Install'}
+          </button>
+          <button onClick={handleDismiss} className="text-white/60 hover:text-white text-lg leading-none flex-shrink-0">×</button>
+        </div>
+      </div>
+
+      {/* Step-by-step guide modal for when native prompt unavailable */}
+      {showGuide && (
+        <div className="fixed inset-0 z-[200] flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
+          <div className="bg-white w-full rounded-t-3xl p-6 pb-10" dir={ar ? 'rtl' : 'ltr'}>
+            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
+            <p className="text-[#071B33] font-black text-lg mb-4 text-center">
+              {ar ? '📲 كيف تثبّت التطبيق؟' : '📲 How to Install?'}
+            </p>
+            <div className="space-y-3">
+              {(ar ? [
+                { n: '1', text: 'افتح قائمة المتصفح (النقاط الثلاث ⋮ في الأعلى)' },
+                { n: '2', text: 'اختر "إضافة إلى الشاشة الرئيسية"' },
+                { n: '3', text: 'اضغط "إضافة" وسيظهر التطبيق على شاشتك' },
+              ] : [
+                { n: '1', text: 'Tap the browser menu (⋮ three dots at top)' },
+                { n: '2', text: 'Select "Add to Home Screen"' },
+                { n: '3', text: 'Tap "Add" — the app icon will appear on your screen' },
+              ]).map(s => (
+                <div key={s.n} className="flex items-center gap-3 bg-orange-50 rounded-xl px-4 py-3">
+                  <span className="w-7 h-7 rounded-full bg-[#FF7900] text-white font-black text-sm flex items-center justify-center flex-shrink-0">{s.n}</span>
+                  <p className="text-[#071B33] text-sm font-semibold">{s.text}</p>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowGuide(false)}
+              className="w-full mt-5 py-3 rounded-2xl font-black text-white text-sm"
+              style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}
+            >
+              {ar ? 'فهمت ✓' : 'Got it ✓'}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
