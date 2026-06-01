@@ -6,7 +6,15 @@ import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
 import api from '../../lib/api'
 import { sections } from '../../data/services'
 
-const ICONS = ['Zap','Droplets','Wind','Paintbrush','Hammer','Sparkles','Truck','Camera','Wifi','Wrench','Tv','Flame','Square','Droplet','Thermometer','Gauge','Lock','Building2','AirVent','Grid3X3','Star','Package','Settings','Home']
+function slugify(str) {
+  return (str || '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_]/g, '')
+    .replace(/_+/g, '_')
+    .slice(0, 40) || ('cat_' + Date.now())
+}
 
 export default function Categories() {
   const { logActivity } = useAdmin()
@@ -15,7 +23,7 @@ export default function Categories() {
   const [search, setSearch]   = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editItem, setEditItem]   = useState(null)
-  const [form, setForm]     = useState({ name_ar: '', name_en: '', icon: 'Wrench', sort_order: 0, section_id: '' })
+  const [form, setForm]     = useState({ name_ar: '', name_en: '', icon_name: '', sort_order: 0, section_id: '' })
   const [saving, setSaving] = useState(false)
   const [toast, setToast]   = useState(null)
 
@@ -25,7 +33,7 @@ export default function Categories() {
     id:         row.id,
     name_ar:    row.name_ar    || row.nameAr    || '',
     name_en:    row.name_en    || row.nameEn    || '',
-    icon:       row.icon       || row.iconName  || 'Wrench',
+    icon_name:  row.icon_name  || row.iconName  || row.icon || '',
     section_id: row.section_id || row.sectionId || '',
     sort_order: row.sort_order ?? row.sortOrder  ?? 0,
     is_active:  row.is_active  ?? row.isActive  ?? true,
@@ -47,26 +55,39 @@ export default function Categories() {
 
   const filtered = data.filter(r => !search || r.name_ar?.includes(search) || r.name_en?.toLowerCase().includes(search.toLowerCase()))
 
-  const openAdd  = () => { setEditItem(null); setForm({ name_ar: '', name_en: '', icon: 'Wrench', sort_order: data.length + 1, section_id: '' }); setModalOpen(true) }
+  const openAdd  = () => {
+    setEditItem(null)
+    setForm({ name_ar: '', name_en: '', icon_name: '', sort_order: data.length + 1, section_id: '' })
+    setModalOpen(true)
+  }
   const openEdit = (row) => {
     setEditItem(row)
-    setForm({ name_ar: row.name_ar, name_en: row.name_en, icon: row.icon || 'Wrench', sort_order: row.sort_order || 0, section_id: row.section_id || '' })
+    setForm({ name_ar: row.name_ar, name_en: row.name_en, icon_name: row.icon_name || '', sort_order: row.sort_order || 0, section_id: row.section_id || '' })
     setModalOpen(true)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setSaving(true)
     try {
-      const payload = { ...form, sort_order: parseInt(form.sort_order) || 0 }
+      const payload = {
+        name_ar:   form.name_ar,
+        name_en:   form.name_en,
+        icon_name: form.icon_name || slugify(form.name_en || form.name_ar),
+        sort_order: parseInt(form.sort_order) || 0,
+        section_id: form.section_id || null,
+      }
       if (editItem) {
         await api.admin.categories.update(editItem.id, payload)
+        logActivity?.('update_category', editItem.id)
         showToast('تم تعديل التخصص')
       } else {
-        await api.admin.categories.create({ id: 'k_' + Date.now(), is_active: true, ...payload })
+        const newId = slugify(form.name_en || form.name_ar)
+        await api.admin.categories.create({ id: newId, is_active: true, ...payload })
+        logActivity?.('create_category', newId)
         showToast('تم إضافة التخصص')
       }
       setModalOpen(false); reload()
-    } catch (err) { showToast(err.message, 'error') }
+    } catch (err) { showToast(err.message || 'حدث خطأ', 'error') }
     setSaving(false)
   }
 
@@ -89,7 +110,17 @@ export default function Categories() {
   }
 
   const columns = [
-    { key: 'icon', label: 'الأيقونة', width: '80px', render: (v) => <span className="text-[#FF7900] font-mono text-xs bg-[#FF7900]/10 px-2 py-1 rounded-lg">{v || 'Wrench'}</span> },
+    {
+      key: 'icon_name', label: 'أيقونة', width: '64px',
+      render: (v, row) => (
+        <img
+          src={`/icons/categories/${v || row.id}.png`}
+          alt=""
+          className="w-9 h-9 rounded-xl object-cover"
+          onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
+        />
+      )
+    },
     { key: 'name_ar', label: 'الاسم عربي',     render: (v) => <span className="font-medium text-white">{v}</span> },
     { key: 'name_en', label: 'الاسم إنجليزي',  render: (v) => <span dir="ltr" className="text-[#8888A8]">{v}</span> },
     { key: 'section_id', label: 'القسم', render: (v) => <span className="text-xs text-[#8888A8]">{getSectionLabel(v)}</span> },
@@ -139,10 +170,25 @@ export default function Categories() {
             </select>
           </div>
           <div>
-            <label className="form-label">الأيقونة</label>
-            <select value={form.icon} onChange={e => setForm(f => ({...f, icon: e.target.value}))} className="form-input">
-              {ICONS.map(i => <option key={i} value={i}>{i}</option>)}
-            </select>
+            <label className="form-label">اسم ملف الأيقونة</label>
+            <div className="flex items-center gap-2">
+              <input
+                value={form.icon_name}
+                onChange={e => setForm(f => ({...f, icon_name: e.target.value.replace(/\s/g,'_').toLowerCase()}))}
+                className="form-input flex-1"
+                placeholder="مثال: eng_consultancy"
+                dir="ltr"
+              />
+              {form.icon_name && (
+                <img
+                  src={`/icons/categories/${form.icon_name}.png`}
+                  alt=""
+                  className="w-10 h-10 rounded-xl object-cover flex-shrink-0 border border-white/10"
+                  onError={e => { e.currentTarget.style.display = 'none' }}
+                />
+              )}
+            </div>
+            <p className="text-[11px] text-[#6666A0] mt-1">اسم ملف الأيقونة بدون الامتداد، مثل: <span dir="ltr" className="font-mono">electricity</span> أو <span dir="ltr" className="font-mono">eng_consultancy</span></p>
           </div>
           <div><label className="form-label">الترتيب</label><input type="number" min="0" value={form.sort_order} onChange={e => setForm(f => ({...f, sort_order: e.target.value}))} className="form-input" /></div>
         </div>
