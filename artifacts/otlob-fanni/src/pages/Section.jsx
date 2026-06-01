@@ -28,8 +28,13 @@ export default function Section() {
       return
     }
     api.categories()
-      .then(all => setSectionCats(all.filter(c => c.sectionId === id && c.isActive !== false)))
-      .catch(() => setSectionCats([]))
+      .then(dbCats => {
+        const dbIds = new Set(dbCats.map(c => c.id))
+        const staticForSection = allCategories.filter(c => c.sectionId === id && !dbIds.has(c.id))
+        const merged = [...dbCats.filter(c => c.sectionId === id), ...staticForSection]
+        setSectionCats(merged.filter(c => c.isActive !== false))
+      })
+      .catch(() => setSectionCats(allCategories.filter(c => c.sectionId === id && c.isActive !== false)))
       .finally(() => setLoadingCats(false))
   }, [id])
 
