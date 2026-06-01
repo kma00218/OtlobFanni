@@ -11,6 +11,7 @@ import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
 import AiBatchButton from '../components/AiBatchButton'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
+import SpecialtyAccordion from '../../components/SpecialtyAccordion'
 
 const EXP_LABEL = {
   less1: 'أقل من سنة', '1-2': '1-2 سنوات', '3-5': '3-5 سنوات',

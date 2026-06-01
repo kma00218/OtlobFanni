@@ -3,12 +3,13 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Star, CheckCircle,
   XCircle, Eye, X, Phone, MapPin, Briefcase, Clock, Facebook, Instagram,
-  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle, LogIn,
+  Image, Shield, Zap, User, Settings2, Upload, Share2, AlertTriangle, Sparkles, UserPlus, MessageCircle, LogIn, ChevronDown,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../../lib/api'
 import AiTagsModal from '../components/AiTagsModal'
 import AiBatchButton from '../components/AiBatchButton'
 import { sections as SECTIONS, categories as SERVICES_CATS } from '../../data/services'
+import SpecialtyAccordion from '../../components/SpecialtyAccordion'
 
 const PAGE_SIZE = 15
 

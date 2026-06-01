@@ -2,25 +2,12 @@ import { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'wouter'
 import {
   ArrowRight, Camera, X, Plus, CheckCircle, AlertCircle,
-  Send, ImagePlus, User, Building2, Package, ChevronDown,
+  Send, ImagePlus, User, Building2, Package,
   Star,
 } from 'lucide-react'
 import api, { getFileUrl, uploadFile } from '../lib/api'
-import { sections, categories } from '../data/services'
 import { SUPPLY_TYPES } from '../data/suppliers'
-
-// ── Section gradients (match JoinCompany) ────────────────────────────────────
-const SECTION_GRADIENT = {
-  home_services:     ['#FF7900', '#e85e00'],
-  car_services:      ['#1E40AF', '#0f2472'],
-  construction:      ['#D97706', '#b35500'],
-  tech_security:     ['#6366F1', '#4338CA'],
-  moving_general:    ['#8B5CF6', '#6D28D9'],
-  gardens_pools:     ['#10B981', '#047857'],
-  energy_generators: ['#F59E0B', '#D97706'],
-  business_services: ['#0EA5E9', '#0369A1'],
-  more_services:     ['#6B7280', '#374151'],
-}
+import SpecialtyAccordion from '../components/SpecialtyAccordion'
 
 function getCurrentValues(profile, entityType) {
   if (!profile) return {}
