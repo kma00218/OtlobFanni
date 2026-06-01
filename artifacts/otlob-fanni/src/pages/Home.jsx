@@ -136,12 +136,14 @@ export default function Home() {
           position: relative;
           cursor: pointer;
           user-select: none;
+          direction: ltr;
         }
         .of-ticker-inner {
           display: inline-flex;
           align-items: center;
           height: 36px;
           white-space: nowrap;
+          direction: ltr;
           animation: ofTicker 70s linear infinite;
           will-change: transform;
         }
