@@ -8,6 +8,8 @@ export const serviceRequestsTable = pgTable("service_requests", {
   ownerType:         text("owner_type"),
   customerName:      text("customer_name").notNull(),
   phone:             text("phone"),
+  whatsappPhone:     text("whatsapp_phone"),
+  callPhone:         text("call_phone"),
   cityId:            text("city_id"),
   cityName:          text("city_name"),
   requestType:       text("request_type"),

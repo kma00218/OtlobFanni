@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { X, CheckCircle, Loader2, Camera, XCircle, Wrench, Building2, Package,
          Zap, Search, Hammer, MessageSquare, DollarSign, Phone, User, MapPin,
-         Calendar, FileText, ChevronRight, Send, Star, ShieldCheck, Clock } from 'lucide-react'
+         Calendar, FileText, ChevronRight, Send, Star, ShieldCheck, Clock,
+         MessageCircle } from 'lucide-react'
 import { api } from '../lib/api'
 
 /* ─────────────── Request types per entity ─────────────── */
@@ -59,7 +60,8 @@ function buildWhatsAppMsg(form, ownerName, profileUrl, ar, photoUrls) {
   if (ar) {
     return `🔧 طلب خدمة جديد — اطلب فني\n\n` +
       `👤 الاسم: ${form.customerName}\n` +
-      `📞 الهاتف: ${form.phone}\n` +
+      `📱 واتساب: ${form.whatsappPhone}\n` +
+      `📞 للاتصال: ${form.callPhone}\n` +
       `📍 المدينة: ${form.cityName || '—'}\n` +
       `🛠 نوع الطلب: ${form.requestType}\n` +
       (form.preferredDatetime ? `🗓 الوقت المفضل: ${form.preferredDatetime}\n` : '') +
@@ -69,13 +71,60 @@ function buildWhatsAppMsg(form, ownerName, profileUrl, ar, photoUrls) {
   }
   return `🔧 New Service Request — OtlobFanni\n\n` +
     `👤 Name: ${form.customerName}\n` +
-    `📞 Phone: ${form.phone}\n` +
+    `📱 WhatsApp: ${form.whatsappPhone}\n` +
+    `📞 Call: ${form.callPhone}\n` +
     `📍 City: ${form.cityName || '—'}\n` +
     `🛠 Type: ${form.requestType}\n` +
     (form.preferredDatetime ? `🗓 Preferred Time: ${form.preferredDatetime}\n` : '') +
     (form.description ? `📝 Details: ${form.description}\n` : '') +
     photos +
     `\n🔗 Profile: ${profileUrl}`
+}
+
+/* ─────────────── Libyan phone input (inline, styled to match form) ─────────────── */
+function LibyaPhoneField({ value, onChange, label, icon: Icon, required, ar }) {
+  const local = (value || '').replace(/^\+218/, '').replace(/^00218/, '').replace(/^218/, '')
+
+  function handleChange(e) {
+    let raw = e.target.value.replace(/\D/g, '')
+    if (raw.startsWith('218')) raw = raw.slice(3)
+    if (raw.startsWith('0'))   raw = raw.slice(1)
+    onChange(raw ? '+218' + raw : '')
+  }
+
+  return (
+    <div className="space-y-2">
+      <label className="flex items-center gap-1.5 text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">
+        {Icon && <Icon className="w-3 h-3" />}
+        {label}
+        {required && <span className="text-[#FF7900]">*</span>}
+      </label>
+      <div
+        className="flex rounded-xl overflow-hidden transition-all"
+        style={{ border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', background: '#FFFFFF' }}
+        onFocusCapture={e => { e.currentTarget.style.borderColor = '#FF7900'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+        onBlurCapture={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
+        dir="ltr"
+      >
+        <span className="flex items-center px-3 bg-slate-50 text-[#071B33] font-black text-sm border-r border-slate-200 select-none whitespace-nowrap">
+          🇱🇾 +218
+        </span>
+        <input
+          type="tel"
+          value={local}
+          onChange={handleChange}
+          placeholder="91 0000000"
+          inputMode="numeric"
+          maxLength={9}
+          dir="ltr"
+          className="flex-1 bg-transparent outline-none px-3 py-3 text-sm font-semibold text-[#071B33] placeholder-slate-400"
+        />
+      </div>
+      <p className="text-[10px] text-slate-400 px-0.5" dir={ar ? 'rtl' : 'ltr'}>
+        {ar ? 'الرقم المحلي فقط (91، 92، 94...)' : 'Local number only (91, 92, 94…)'}
+      </p>
+    </div>
+  )
 }
 
 /* ─────────────── InputField ─────────────── */
@@ -104,8 +153,8 @@ export default function RequestFormModal({
   const MAX_PHOTOS = 3
 
   const [form, setForm] = useState({
-    customerName: '', phone: '', cityName: '', requestType: '',
-    description: '', preferredDatetime: '',
+    customerName: '', whatsappPhone: '', callPhone: '',
+    cityName: '', requestType: '', description: '', preferredDatetime: '',
   })
   const [photos, setPhotos]     = useState([])
   const [submitting, setSub]    = useState(false)
@@ -134,13 +183,19 @@ export default function RequestFormModal({
     setPhotos(p => { const n = [...p]; URL.revokeObjectURL(n[i].preview); n.splice(i,1); return n })
   }
 
+  const validateLibyaPhone = (v) => {
+    const digits = (v || '').replace(/\D/g,'')
+    return digits.length >= 10
+  }
+
   const handleSubmit = async () => {
-    if (!form.customerName.trim()) { setError(ar ? 'الاسم مطلوب' : 'Name required'); return }
-    if (!form.phone.trim())        { setError(ar ? 'رقم الهاتف مطلوب' : 'Phone required'); return }
-    if (!form.requestType)         { setError(ar ? 'اختر نوع الطلب' : 'Select request type'); return }
+    if (!form.customerName.trim())            { setError(ar ? 'الاسم مطلوب' : 'Name required'); return }
+    if (!validateLibyaPhone(form.whatsappPhone)) { setError(ar ? 'رقم الواتساب مطلوب (91، 92، 94...)' : 'WhatsApp number required'); return }
+    if (!validateLibyaPhone(form.callPhone))     { setError(ar ? 'رقم الاتصال مطلوب (91، 92، 94...)' : 'Call number required'); return }
+    if (!form.requestType)                    { setError(ar ? 'اختر نوع الطلب' : 'Select request type'); return }
     setError(''); setSub(true)
 
-    const clean  = (ownerWhatsapp || '').replace(/\D/g, '')
+    const clean  = (ownerWhatsapp || form.whatsappPhone || '').replace(/\D/g, '')
     const waNum  = clean.startsWith('218') ? clean : clean.startsWith('0') ? '218' + clean.slice(1) : '218' + clean
     const waWin  = window.open('about:blank', '_blank')
 
@@ -152,7 +207,9 @@ export default function RequestFormModal({
       await api.createServiceRequest({
         ownerId, ownerType,
         customerName:      form.customerName.trim(),
-        phone:             form.phone.trim(),
+        whatsappPhone:     form.whatsappPhone,
+        callPhone:         form.callPhone,
+        phone:             form.whatsappPhone,
         cityName:          form.cityName.trim(),
         requestType:       form.requestType,
         description:       form.description.trim(),
@@ -171,7 +228,7 @@ export default function RequestFormModal({
 
   const handleClose = () => {
     photos.forEach(p => URL.revokeObjectURL(p.preview))
-    setForm({ customerName:'', phone:'', cityName:'', requestType:'', description:'', preferredDatetime:'' })
+    setForm({ customerName:'', whatsappPhone:'', callPhone:'', cityName:'', requestType:'', description:'', preferredDatetime:'' })
     setPhotos([]); setDone(false); setError(''); onClose()
   }
 
@@ -205,7 +262,6 @@ export default function RequestFormModal({
         <div className="flex-shrink-0 px-5 pt-3 pb-5" style={{ background: meta.gradient }}>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              {/* Entity avatar */}
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(255,255,255,0.18)', border: '1.5px solid rgba(255,255,255,0.3)' }}>
                 <EntityIcon className="w-6 h-6 text-white" />
@@ -242,7 +298,6 @@ export default function RequestFormModal({
             </button>
           </div>
 
-          {/* Decorative line */}
           <div className="mt-4 flex items-center gap-1.5">
             <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.2)' }} />
             <p className="text-white/50 text-[10px] font-semibold tracking-wider">
@@ -283,13 +338,14 @@ export default function RequestFormModal({
                   {ar ? 'ملخص الطلب' : 'Request Summary'}
                 </p>
                 {[
-                  { label: ar ? 'الاسم' : 'Name',        val: form.customerName },
-                  { label: ar ? 'الهاتف' : 'Phone',      val: form.phone },
-                  { label: ar ? 'نوع الطلب' : 'Type',   val: form.requestType },
+                  { label: ar ? 'الاسم' : 'Name',           val: form.customerName },
+                  { label: ar ? 'واتساب' : 'WhatsApp',      val: form.whatsappPhone },
+                  { label: ar ? 'للاتصال' : 'Call',         val: form.callPhone },
+                  { label: ar ? 'نوع الطلب' : 'Type',       val: form.requestType },
                 ].map(({ label, val }) => val ? (
                   <div key={label} className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-500">{label}</span>
-                    <span className="text-xs font-extrabold text-[#071B33]">{val}</span>
+                    <span className="text-xs font-extrabold text-[#071B33]" dir="ltr">{val}</span>
                   </div>
                 ) : null)}
               </div>
@@ -302,34 +358,39 @@ export default function RequestFormModal({
           ) : (
             <div className="px-5 py-5 space-y-5" style={{ background: '#F5F7FA' }}>
 
-              {/* ── Name + Phone row ── */}
+              {/* ── Name ── */}
+              <InputField label={ar ? 'الاسم' : 'Name'} icon={User} required>
+                <input
+                  type="text"
+                  value={form.customerName}
+                  onChange={e => setForm(f => ({ ...f, customerName: e.target.value }))}
+                  placeholder={ar ? 'أحمد محمد' : 'Ahmed Mohamed'}
+                  className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
+                  style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                  onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
+                  onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
+                  dir={ar ? 'rtl' : 'ltr'}
+                />
+              </InputField>
+
+              {/* ── WhatsApp + Call phones ── */}
               <div className="grid grid-cols-2 gap-3">
-                <InputField label={ar ? 'الاسم' : 'Name'} icon={User} required>
-                  <input
-                    type="text"
-                    value={form.customerName}
-                    onChange={e => setForm(f => ({ ...f, customerName: e.target.value }))}
-                    placeholder={ar ? 'أحمد محمد' : 'Ahmed Mohamed'}
-                    className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
-                    style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
-                    onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
-                    onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
-                    dir={ar ? 'rtl' : 'ltr'}
-                  />
-                </InputField>
-                <InputField label={ar ? 'الهاتف' : 'Phone'} icon={Phone} required>
-                  <input
-                    type="tel"
-                    value={form.phone}
-                    onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                    placeholder="09XXXXXXXX"
-                    className="w-full rounded-xl px-3.5 py-3 text-sm font-semibold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-all"
-                    style={{ background: '#FFFFFF', border: '2px solid #94A3B8', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
-                    onFocus={e => { e.target.style.borderColor = '#FF7900'; e.target.style.boxShadow = '0 0 0 3px rgba(255,121,0,0.15)' }}
-                    onBlur={e => { e.target.style.borderColor = '#94A3B8'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)' }}
-                    dir="ltr"
-                  />
-                </InputField>
+                <LibyaPhoneField
+                  value={form.whatsappPhone}
+                  onChange={v => setForm(f => ({ ...f, whatsappPhone: v }))}
+                  label={ar ? 'واتساب' : 'WhatsApp'}
+                  icon={MessageCircle}
+                  required
+                  ar={ar}
+                />
+                <LibyaPhoneField
+                  value={form.callPhone}
+                  onChange={v => setForm(f => ({ ...f, callPhone: v }))}
+                  label={ar ? 'للاتصال' : 'Call'}
+                  icon={Phone}
+                  required
+                  ar={ar}
+                />
               </div>
 
               {/* ── City ── */}
@@ -347,7 +408,7 @@ export default function RequestFormModal({
                 />
               </InputField>
 
-              {/* ── Request Type — Icon Cards ── */}
+              {/* ── Request Type ── */}
               <InputField label={ar ? 'نوع الطلب' : 'Request Type'} icon={FileText} required>
                 <div className="grid grid-cols-3 gap-2">
                   {types.map((t) => {
@@ -423,7 +484,6 @@ export default function RequestFormModal({
               {/* ── Photo Upload ── */}
               <InputField label={ar ? `صور المشكلة (حتى ${MAX_PHOTOS})` : `Photos (up to ${MAX_PHOTOS})`} icon={Camera}>
                 <div className="flex gap-2 flex-wrap">
-                  {/* Thumbnails */}
                   {photos.map((p, i) => (
                     <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0"
                       style={{ border: '2px solid #E2E8F0' }}>
@@ -435,64 +495,48 @@ export default function RequestFormModal({
                       </button>
                     </div>
                   ))}
-                  {/* Add button */}
                   {photos.length < MAX_PHOTOS && (
-                    <label className="w-20 h-20 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer flex-shrink-0 transition-colors hover:border-[#FF7900] hover:bg-[#FF7900]/5"
-                      style={{ border: '2px dashed #CBD5E1', background: '#F8FAFC' }}>
+                    <button type="button" onClick={() => fileRef.current?.click()}
+                      className="w-20 h-20 rounded-xl flex flex-col items-center justify-center gap-1 transition-all active:scale-95"
+                      style={{ border: '2px dashed #CBD5E1', background: '#FFFFFF' }}>
                       <Camera className="w-5 h-5 text-slate-400" />
                       <span className="text-[9px] font-bold text-slate-400">
-                        {ar ? 'أضف' : 'Add'}
+                        {ar ? 'إضافة' : 'Add'}
                       </span>
-                      <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
-                    </label>
+                    </button>
                   )}
                 </div>
+                <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
               </InputField>
 
               {/* ── Error ── */}
               {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl"
-                  style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+                <div className="flex items-center gap-2 px-4 py-3 rounded-2xl"
+                  style={{ background: 'rgba(239,68,68,0.08)', border: '1.5px solid rgba(239,68,68,0.2)' }}>
                   <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <p className="text-red-600 text-xs font-bold">{error}</p>
+                  <p className="text-sm font-semibold text-red-600">{error}</p>
                 </div>
               )}
-
-              {/* ── Trust line ── */}
-              <div className="flex items-center justify-center gap-2 py-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                <p className="text-[11px] text-slate-400 font-semibold">
-                  {ar
-                    ? 'بياناتك محمية ولن تُشارك مع أي طرف آخر'
-                    : 'Your data is protected and will not be shared'}
-                </p>
-              </div>
-
-              {/* ── Submit ── */}
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="w-full text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all disabled:opacity-60 text-sm"
-                style={{
-                  background: 'linear-gradient(135deg, #FF7900 0%, #FF9500 100%)',
-                  boxShadow: '0 6px 24px rgba(255,121,0,0.4)',
-                }}>
-                {submitting ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" />{ar ? 'جاري الإرسال...' : 'Sending...'}</>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    {ar ? 'إرسال الطلب عبر واتساب' : 'Send via WhatsApp'}
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white/80">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                  </>
-                )}
-              </button>
-              <div className="pb-2" />
             </div>
           )}
         </div>
+
+        {/* ── FOOTER ── */}
+        {!done && (
+          <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100" style={{ background: '#FFFFFF' }}>
+            <button
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="w-full py-4 rounded-2xl text-white font-black text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)', boxShadow: '0 6px 20px rgba(255,121,0,0.35)' }}>
+              {submitting ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> {ar ? 'جاري الإرسال...' : 'Sending...'}</>
+              ) : (
+                <><Send className="w-5 h-5" /> {ar ? 'ثبّت الطلب وافتح واتساب' : 'Confirm & Open WhatsApp'}</>
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
