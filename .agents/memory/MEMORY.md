@@ -1,2 +1,1 @@
-- [DB + Static categories merge](categories-merge.md) — useAllCategories hook in src/hooks/useAllCategories.js merges DB + static; use everywhere categories are listed
-- [Service Requests system](service-requests.md) — fully implemented: DB table, API endpoints, RequestFormModal, 3 profile page buttons, ProDashboard tab, AdminServiceRequests page
+- [Icon seed root cause](icon-seed-root-cause.md) — seed.ts overwrites icon_name on every restart; always fix seed.ts not just the DB
