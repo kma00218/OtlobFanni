@@ -212,8 +212,7 @@ export default function CompanyDetails() {
   const specialty = company.specialty || ''
   const extraIds = company.extra_specialties || company.extraSpecialties || []
   const extraCatNames = extraIds
-    .map(id => ar ? (CAT_LABEL[id] || '') : (CAT_LABEL_EN[id] || ''))
-    .filter(Boolean)
+    .map(id => ar ? (CAT_LABEL[id] || id) : (CAT_LABEL_EN[id] || CAT_LABEL[id] || id))
   const primaryCatName = ar ? (CAT_LABEL[specialty] || specialty) : (CAT_LABEL_EN[specialty] || specialty)
   const allCatNames = primaryCatName
     ? [primaryCatName, ...extraCatNames.filter(n => n !== primaryCatName)]
