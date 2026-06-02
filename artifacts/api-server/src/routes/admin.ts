@@ -1097,7 +1097,58 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
   res.json(r);
 });
 
-// ── DEALS (Admin) ─────────────────────────────────────────────────────────────
+// ── AI Icon Generation ─────────────────────────────────────────────────────────
+router.post("/categories/generate-icon", async (req, res): Promise<void> => {
+  try {
+    const { nameAr, nameEn } = req.body as { nameAr?: string; nameEn?: string };
+    if (!nameAr && !nameEn) { res.status(400).json({ error: "Name required" }); return; }
+
+    const aiBaseUrl = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+    const aiApiKey  = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+    if (!aiBaseUrl || !aiApiKey) { res.status(503).json({ error: "AI not configured" }); return; }
+
+    const label = [nameEn, nameAr].filter(Boolean).join(' / ');
+    const prompt = `Simple flat icon for a home services app category called "${label}". Minimal, colorful, clean illustration on a pure white background. No text, no letters. Single centered icon. Professional mobile app style.`;
+
+    const imgRes = await fetch(`${aiBaseUrl}/images/generations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${aiApiKey}` },
+      body: JSON.stringify({ model: 'gpt-image-1', prompt, n: 1, size: '1024x1024', output_format: 'b64_json' }),
+    });
+
+    if (!imgRes.ok) {
+      const err = await imgRes.text();
+      res.status(500).json({ error: "Image generation failed", details: err });
+      return;
+    }
+
+    const imgData = await imgRes.json() as { data: Array<{ b64_json: string }> };
+    const b64 = imgData.data?.[0]?.b64_json;
+    if (!b64) { res.status(500).json({ error: "No image returned" }); return; }
+
+    const buffer = Buffer.from(b64, 'base64');
+
+    const pathsStr  = process.env.PUBLIC_OBJECT_SEARCH_PATHS || '';
+    const firstPath = pathsStr.split(',').map(p => p.trim()).filter(Boolean)[0];
+    if (!firstPath) { res.status(503).json({ error: "Storage not configured" }); return; }
+
+    const normalized  = firstPath.startsWith('/') ? firstPath : `/${firstPath}`;
+    const parts       = normalized.split('/').filter(Boolean);
+    const bucketName  = parts[0];
+    const prefix      = parts.slice(1).join('/');
+    const filename    = `cat_ai_${Date.now()}`;
+    const objectName  = prefix ? `${prefix}/category-icons/${filename}.png` : `category-icons/${filename}.png`;
+
+    const bucket = objectStorageClient.bucket(bucketName);
+    await bucket.file(objectName).save(buffer, { contentType: 'image/png', resumable: false });
+
+    res.json({ url: `/api/storage/public-objects/category-icons/${filename}.png` });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    res.status(500).json({ error: msg });
+  }
+});
+
 router.get("/deals", async (req, res): Promise<void> => {
   const { status, proType } = req.query as Record<string, string>;
   const conditions = [];

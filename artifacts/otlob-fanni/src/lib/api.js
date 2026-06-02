@@ -183,10 +183,11 @@ export const api = {
     },
 
     categories: {
-      list:   ()         => get('/admin/categories'),
-      create: (data)     => post('/admin/categories', data),
-      update: (id, data) => patch(`/admin/categories/${id}`, data),
-      delete: (id)       => del(`/admin/categories/${id}`),
+      list:         ()         => get('/admin/categories'),
+      create:       (data)     => post('/admin/categories', data),
+      update:       (id, data) => patch(`/admin/categories/${id}`, data),
+      delete:       (id)       => del(`/admin/categories/${id}`),
+      generateIcon: (data)     => post('/admin/categories/generate-icon', data),
     },
 
     ads: {

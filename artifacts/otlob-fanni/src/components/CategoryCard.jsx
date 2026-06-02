@@ -7,7 +7,8 @@ export default function CategoryCard({ category, count = 0 }) {
   const name  = lang === 'ar' ? category.nameAr : category.nameEn
   const href  = category.id === 'more' ? '/category/more_services' : `/category/${category.id}`
   const iconKey = category.iconName || category.icon_name || category.id
-  const iconSrc = `/icons/categories/${iconKey}.png`
+  const isUrl = iconKey && (iconKey.startsWith('http') || iconKey.startsWith('/api/'))
+  const iconSrc = isUrl ? iconKey : `/icons/categories/${iconKey}.png`
 
   return (
     <Link href={href} onClick={() => track('category_click', category.id)}>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import DataTable from '../components/DataTable'
 import FormModal from '../components/FormModal'
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Sparkles, Grid3X3, X, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Sparkles, Grid3X3, X, Check, Wand2, Loader2 } from 'lucide-react'
 import api from '../../lib/api'
 import { sections } from '../../data/services'
 
@@ -180,6 +180,7 @@ export default function Categories() {
   const [saving, setSaving] = useState(false)
   const [toast, setToast]   = useState(null)
   const [iconPickerOpen, setIconPickerOpen] = useState(false)
+  const [generatingIcon, setGeneratingIcon] = useState(false)
 
   const showToast = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000) }
 
@@ -269,12 +270,31 @@ export default function Categories() {
     else showToast('لا يوجد اقتراح مناسب، اختر يدوياً', 'error')
   }
 
+  const generateAiIcon = async () => {
+    if (!form.name_ar && !form.name_en) { showToast('أدخل اسم التخصص أولاً', 'error'); return }
+    setGeneratingIcon(true)
+    try {
+      const res = await api.admin.categories.generateIcon({ nameAr: form.name_ar, nameEn: form.name_en })
+      setForm(f => ({ ...f, icon_name: res.url }))
+      showToast('تم توليد الصورة بنجاح ✨')
+    } catch (err) {
+      showToast(err.message || 'فشل توليد الصورة', 'error')
+    } finally {
+      setGeneratingIcon(false)
+    }
+  }
+
+  const resolveIconSrc = (v, row) => {
+    const key = v || row?.id || 'more'
+    return (key.startsWith('http') || key.startsWith('/api/')) ? key : `/icons/categories/${key}.png`
+  }
+
   const columns = [
     {
       key: 'icon_name', label: 'أيقونة', width: '64px',
       render: (v, row) => (
         <img
-          src={`/icons/categories/${v || row.id}.png`}
+          src={resolveIconSrc(v, row)}
           alt=""
           className="w-9 h-9 rounded-xl object-cover"
           onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
@@ -368,12 +388,12 @@ export default function Categories() {
 
             {/* Current icon preview + actions */}
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+              <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {form.icon_name ? (
                   <img
-                    src={`/icons/categories/${form.icon_name}.png`}
+                    src={resolveIconSrc(form.icon_name, null)}
                     alt=""
-                    className="w-10 h-10 rounded-lg object-cover"
+                    className="w-12 h-12 rounded-lg object-cover"
                     onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
                   />
                 ) : (
@@ -381,25 +401,36 @@ export default function Categories() {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white/50 text-[11px] font-mono truncate">
+                <p className="text-white/50 text-[10px] font-mono truncate mb-1.5">
                   {form.icon_name || 'لم يتم اختيار أيقونة'}
                 </p>
-                <div className="flex gap-2 mt-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   <button
                     type="button"
                     onClick={() => setIconPickerOpen(true)}
-                    className="flex items-center gap-1.5 text-[11px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 px-2 py-1.5 rounded-lg transition-colors"
                   >
                     <Grid3X3 className="w-3 h-3" />
-                    استعراض الأيقونات
+                    استعراض
                   </button>
                   <button
                     type="button"
                     onClick={autoSuggest}
-                    className="flex items-center gap-1.5 text-[11px] font-bold text-[#FF7900] hover:text-orange-300 bg-[#FF7900]/10 hover:bg-[#FF7900]/20 px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#FF7900] hover:text-orange-300 bg-[#FF7900]/10 hover:bg-[#FF7900]/20 px-2 py-1.5 rounded-lg transition-colors"
                   >
                     <Sparkles className="w-3 h-3" />
-                    اقتراح ذكي
+                    اقتراح
+                  </button>
+                  <button
+                    type="button"
+                    onClick={generateAiIcon}
+                    disabled={generatingIcon}
+                    className="flex items-center gap-1 text-[11px] font-bold text-purple-400 hover:text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed px-2 py-1.5 rounded-lg transition-colors"
+                  >
+                    {generatingIcon
+                      ? <><Loader2 className="w-3 h-3 animate-spin" /> جاري التوليد...</>
+                      : <><Wand2 className="w-3 h-3" /> توليد بالذكاء الاصطناعي</>
+                    }
                   </button>
                 </div>
               </div>
@@ -414,7 +445,7 @@ export default function Categories() {
               dir="ltr"
             />
             <p className="text-[11px] text-[#6666A0] mt-1">
-              اكتب اسم الأيقونة يدوياً، أو استخدم الاقتراح الذكي، أو استعرض الكل واختر
+              ولّد صورة بالذكاء الاصطناعي، أو اختر من المكتبة، أو اكتب الاسم يدوياً
             </p>
           </div>
 
