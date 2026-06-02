@@ -422,14 +422,14 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                 {selectedCats.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-3">
                     {selectedCats.map((id, idx) => {
-                      const cat = SERVICES_CATS.find(c => c.id === id)
-                      if (!cat) return null
+                      const cat = SERVICES_CATS.find(c => c.id === id) || categories.find(c => c.id === id)
+                      const label = cat ? (cat.nameAr || cat.name_ar) : id
                       return (
                         <span key={id} className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
                           style={idx === 0
                             ? { background: 'linear-gradient(135deg,#FF7900,#c45e00)', color: 'white' }
                             : { background: 'rgba(255,121,0,0.1)', color: '#c45e00' }}>
-                          {idx === 0 && '★ '}{cat.nameAr}
+                          {idx === 0 && '★ '}{label}
                         </span>
                       )
                     })}
@@ -446,6 +446,7 @@ function TechFormModal({ open, onClose, title, form, setForm, onSubmit, saving, 
                   onRemoveNewDept={removeNewDept}
                   chipInputValues={chipInputs}
                   onChipInput={(key, val) => setChipInputs(p => ({ ...p, [key]: val }))}
+                  extraCategories={categories}
                 />
               </div>
             </div>
@@ -883,11 +884,14 @@ export default function Technicians() {
           <select value={filterCat} onChange={e => { setFilterCat(e.target.value); setPage(1) }} className="select-field">
             <option value="">كل التخصصات</option>
             {SECTIONS.map(sec => {
-              const cats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
+              const staticCats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
+              const staticIds = new Set(staticCats.map(c => c.id))
+              const dbExtra = categories.filter(c => (c.sectionId === sec.id || c.section_id === sec.id) && !staticIds.has(c.id))
+              const cats = [...staticCats, ...dbExtra]
               if (!cats.length) return null
               return (
                 <optgroup key={sec.id} label={sec.nameAr}>
-                  {cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+                  {cats.map(c => <option key={c.id} value={c.id}>{c.nameAr || c.name_ar}</option>)}
                 </optgroup>
               )
             })}

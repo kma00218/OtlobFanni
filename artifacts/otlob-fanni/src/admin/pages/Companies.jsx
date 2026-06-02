@@ -480,12 +480,15 @@ export default function Companies() {
             <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
               className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30 bg-slate-50">
               <option value="">كل التخصصات</option>
-              {catsBySection.map(sec => {
-                const cats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
+              {SECTIONS.map(sec => {
+                const staticCats = SERVICES_CATS.filter(c => c.sectionId === sec.id && c.id !== 'more')
+                const staticIds = new Set(staticCats.map(c => c.id))
+                const dbExtra = categories.filter(c => (c.sectionId === sec.id || c.section_id === sec.id) && !staticIds.has(c.id))
+                const cats = [...staticCats, ...dbExtra]
                 if (!cats.length) return null
                 return (
                   <optgroup key={sec.id} label={sec.nameAr}>
-                    {cats.map(c => <option key={c.id} value={c.id}>{c.nameAr}</option>)}
+                    {cats.map(c => <option key={c.id} value={c.id}>{c.nameAr || c.name_ar}</option>)}
                   </optgroup>
                 )
               })}

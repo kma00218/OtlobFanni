@@ -25,6 +25,7 @@ export default function SpecialtyAccordion({
   onRemoveNewDept,
   chipInputValues = {},
   onChipInput,
+  extraCategories = [],
 }) {
   const [expandedSections, setExpandedSections] = useState([])
   const toggleSection = id =>
@@ -34,7 +35,12 @@ export default function SpecialtyAccordion({
     <div className="rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100 shadow-sm">
       {sections.map(section => {
         const isMore = section.id === 'more_services'
-        const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more')
+        const staticCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more')
+        const staticIds = new Set(staticCats.map(c => c.id))
+        const dbCatsForSection = isMore ? [] : extraCategories.filter(c =>
+          (c.sectionId === section.id || c.section_id === section.id) && !staticIds.has(c.id) && c.id !== 'more'
+        )
+        const sectionCats = [...staticCats, ...dbCatsForSection]
         const selectedCount = isMore
           ? newDeptSuggestions.length
           : sectionCats.filter(c => selectedIds.includes(c.id)).length
@@ -130,7 +136,7 @@ export default function SpecialtyAccordion({
                               onChange={() => onToggle(c.id)}
                             />
                             <span className={`flex-1 text-sm font-medium ${checked ? 'text-[#071B33] font-bold' : 'text-slate-600'}`}>
-                              {c.nameAr}
+                              {c.nameAr || c.name_ar}
                             </span>
                             {isPrimary && (
                               <span
