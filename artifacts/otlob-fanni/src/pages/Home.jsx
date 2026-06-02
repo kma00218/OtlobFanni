@@ -119,7 +119,7 @@ export default function Home() {
   const popularIds = new Set(topCategories.map(c => c.id))
   const remainingCats = allCategoriesData
     .filter(c => c.id !== 'more' && !popularIds.has(c.id))
-    .map(c => ({ id: c.id, nameAr: c.nameAr, nameEn: c.nameEn }))
+    .map(c => ({ id: c.id, nameAr: c.nameAr, nameEn: c.nameEn, iconName: c.iconName }))
   const allSortedCategories = [...topCategories, ...remainingCats]
 
   return (

@@ -1,1 +1,2 @@
-- [Icon seed root cause](icon-seed-root-cause.md) — seed.ts overwrites icon_name on every restart; always fix seed.ts not just the DB
+- [Icon name mapping rules](icon-name-rules.md) — iconName must match PNG filename exactly; services.js, seed.ts, and DB must all stay in sync
+- [Service request system](service-request-system.md) — full lead system (RequestFormModal, 3 profile pages, ProDashboard tab, AdminServiceRequests) is already built
