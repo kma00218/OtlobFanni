@@ -334,13 +334,21 @@ export default function CompanyDetails() {
                   {allCatNames.map((name, i) => {
                     const catId   = allCategoryIds[i]
                     const iconKey = CAT_ICON_MAP[catId] || catId
+                    const isUrl   = iconKey && (iconKey.startsWith('http') || iconKey.startsWith('/api/'))
+                    const iconSrc = isUrl ? iconKey : `/icons/categories/${iconKey}.png`
                     return (
                       <div key={i} className="flex flex-col items-center gap-1.5">
-                        <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0"
+                        <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center"
                           style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.12), rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.22)' }}>
                           {catId
-                            ? <img src={`/icons/categories/${iconKey}.png`} alt={name} className="w-full h-full object-cover" onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }} />
-                            : <div className="w-full h-full flex items-center justify-center"><Wrench className="w-7 h-7 text-[#FF7900]" /></div>
+                            ? <img src={iconSrc} alt={name} className="w-full h-full object-cover"
+                                onError={e => {
+                                  const img = e.currentTarget
+                                  if (img.dataset.fallback === '1') { img.style.display = 'none'; return }
+                                  img.dataset.fallback = '1'
+                                  img.src = catId !== iconKey ? `/icons/categories/${catId}.png` : '/icons/categories/more.png'
+                                }} />
+                            : <Wrench className="w-7 h-7 text-[#FF7900]" />
                           }
                         </div>
                         <span className="text-[11px] font-bold text-slate-700 text-center leading-tight">{name}</span>
