@@ -235,7 +235,7 @@ export default function RequestFormModal({
   const EntityIcon = meta.icon
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="fixed inset-0 z-[100] flex items-end justify-center" dir={ar ? 'rtl' : 'ltr'}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 transition-opacity duration-300"
