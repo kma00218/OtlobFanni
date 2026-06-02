@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
-import { sections, categories } from '../data/services'
+import { sections } from '../data/services'
+import { useAllCategories } from '../hooks/useAllCategories'
 import { CheckCircle, Camera, X, Plus, Upload, Lock, User, Briefcase, Clock, FileText, Image, Info, Copy, Check, ChevronDown, MapPin as MapPinIcon } from 'lucide-react'
 import api, { uploadFile, getFileUrl } from '../lib/api'
 import LocationPicker from '../components/LocationPicker'
@@ -117,6 +118,7 @@ export default function Join() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const photoInputRef = useRef(null)
+  const categories = useAllCategories()
 
   const [cities, setCities] = useState([])
   useEffect(() => { api.cities().then(setCities).catch(() => {}) }, [])
@@ -564,7 +566,7 @@ export default function Join() {
                 <div className="rounded-xl border-2 border-gray-800 overflow-hidden bg-blue-50 divide-y divide-gray-200">
                   {sections.map((section) => {
                     const isMore = section.id === 'more_services'
-                    const sectionCats = isMore ? [] : categories.filter(c => c.sectionId === section.id && c.id !== 'more')
+                    const sectionCats = isMore ? [] : categories.filter(c => (c.sectionId || c.section_id) === section.id && c.id !== 'more')
                     const selectedCount = isMore ? newDeptSuggestions.length : sectionCats.filter(c => selectedCategories.includes(c.id)).length
                     const isOpen = expandedSections.includes(section.id)
                     const [c1, c2] = SECTION_GRADIENT[section.id] || ['#6B7280', '#374151']

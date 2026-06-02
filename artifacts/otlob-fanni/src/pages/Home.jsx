@@ -3,7 +3,8 @@ import { useLang } from '../context/LanguageContext'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
-import { sections, categories as allCategoriesData } from '../data/services'
+import { sections } from '../data/services'
+import { useAllCategories } from '../hooks/useAllCategories'
 import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
@@ -62,6 +63,7 @@ export default function Home() {
   const [, navigate] = useLocation()
   const logoClickCount = useRef(0)
   const logoClickTimer = useRef(null)
+  const allCategoriesData = useAllCategories()
   const [recent, setRecent] = useState([])
   const [recentLoading, setRecentLoading] = useState(true)
   const [stats, setStats] = useState(null)

@@ -1,0 +1,2 @@
+- [DB + Static categories merge](categories-merge.md) — useAllCategories hook in src/hooks/useAllCategories.js merges DB + static; use everywhere categories are listed
+- [Service Requests system](service-requests.md) — fully implemented: DB table, API endpoints, RequestFormModal, 3 profile page buttons, ProDashboard tab, AdminServiceRequests page

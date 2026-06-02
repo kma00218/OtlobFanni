@@ -7,7 +7,8 @@ import TechnicianCard from '../components/TechnicianCard'
 import { MapPin, Globe, Search, Building2, ChevronLeft, ChevronRight, Package } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
-import { categories as allCategoriesData } from '../data/services'
+import { categories as staticCategoriesData } from '../data/services'
+import { useAllCategories } from '../hooks/useAllCategories'
 
 function CompanyRow({ company, ar, onOpen }) {
   const name = company.companyName || ''
@@ -47,6 +48,7 @@ export default function CityTechnicians() {
   const { lang } = useLang()
   const ar = lang === 'ar'
 
+  const allCategoriesData = useAllCategories()
   const [city, setCity] = useState(null)
   const [techs, setTechs] = useState([])
   const [companies, setCompanies] = useState([])

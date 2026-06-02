@@ -4,6 +4,7 @@ import CategoryCard from '../components/CategoryCard'
 import { sections } from '../data/services'
 import AdBanner from '../components/AdBanner'
 import BackHeader from '../components/BackHeader'
+import { useAllCategories } from '../hooks/useAllCategories'
 import api from '../lib/api'
 import { Link } from 'wouter'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -12,11 +13,10 @@ export default function AllSpecialties() {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const [counts, setCounts] = useState({})
-  const [allCats, setAllCats] = useState([])
+  const allCats = useAllCategories()
 
   useEffect(() => {
     api.categoryCounts().then(setCounts).catch(() => {})
-    api.categories().then(setAllCats).catch(() => {})
   }, [])
 
   return (
