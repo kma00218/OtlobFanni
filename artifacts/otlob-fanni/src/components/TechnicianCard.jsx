@@ -69,10 +69,18 @@ export default function TechnicianCard({ technician }) {
           {specialty && (
             <div className="flex items-center gap-1.5 mb-2">
               <img
-                src={`/icons/categories/${technician.categoryId || technician.category_id}.png`}
+                src={(() => {
+                  const k = technician.categoryIconName || technician.categoryId || technician.category_id || ''
+                  return k.startsWith('http') || k.startsWith('/api/') ? k : `/icons/categories/${k}.png`
+                })()}
                 alt=""
                 className="w-6 h-6 rounded-lg object-cover flex-shrink-0"
-                onError={e => { e.currentTarget.style.display = 'none' }}
+                onError={e => {
+                  const img = e.currentTarget
+                  if (img.dataset.fallback === '1') { img.style.display = 'none'; return }
+                  img.dataset.fallback = '1'
+                  img.src = `/icons/categories/${technician.categoryId || technician.category_id}.png`
+                }}
               />
               <span className="text-base font-extrabold text-[#FF7900] truncate">{specialty}</span>
             </div>

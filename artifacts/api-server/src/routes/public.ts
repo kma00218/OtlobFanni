@@ -296,6 +296,7 @@ router.get("/technicians", async (req, res): Promise<void> => {
       cityNameEn: citiesTable.nameEn,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     })
     .from(techniciansTable)
     .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
@@ -309,6 +310,7 @@ router.get("/technicians", async (req, res): Promise<void> => {
     city_name_en: r.cityNameEn ?? '',
     categoryAr: r.categoryAr ?? '',
     categoryEn: r.categoryEn ?? '',
+    categoryIconName: r.categoryIconName ?? '',
   }));
 
   res.json(techs);
@@ -323,6 +325,7 @@ router.get("/companies", async (req, res): Promise<void> => {
       company: companyApplicationsTable,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     })
     .from(companyApplicationsTable)
     .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
@@ -333,6 +336,7 @@ router.get("/companies", async (req, res): Promise<void> => {
     ...r.company,
     categoryAr: r.categoryAr ?? r.company.specialty ?? '',
     categoryEn: r.categoryEn ?? r.company.specialty ?? '',
+    categoryIconName: r.categoryIconName ?? '',
   }));
 
   if (specialty) companies = companies.filter(c =>
@@ -367,6 +371,7 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
       company: companyApplicationsTable,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     })
     .from(companyApplicationsTable)
     .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
@@ -376,6 +381,7 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
     ...row.company,
     categoryAr: row.categoryAr ?? row.company.specialty ?? '',
     categoryEn: row.categoryEn ?? row.company.specialty ?? '',
+    categoryIconName: row.categoryIconName ?? '',
   });
 });
 
@@ -470,6 +476,7 @@ router.get("/search", async (req, res): Promise<void> => {
         cityNameEn: citiesTable.nameEn,
         categoryAr: categoriesTable.nameAr,
         categoryEn: categoriesTable.nameEn,
+        categoryIconName: categoriesTable.iconName,
       })
       .from(techniciansTable)
       .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
@@ -486,6 +493,7 @@ router.get("/search", async (req, res): Promise<void> => {
         company: companyApplicationsTable,
         categoryAr: categoriesTable.nameAr,
         categoryEn: categoriesTable.nameEn,
+        categoryIconName: categoriesTable.iconName,
       })
       .from(companyApplicationsTable)
       .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
@@ -524,6 +532,7 @@ router.get("/search", async (req, res): Promise<void> => {
       profilePhoto: r.tech.profilePhoto,
       categoryAr: r.categoryAr ?? '',
       categoryEn: r.categoryEn ?? '',
+      categoryIconName: r.categoryIconName ?? '',
       cityNameAr: r.cityNameAr ?? '',
       cityNameEn: r.cityNameEn ?? '',
       extraSpecialties: r.tech.extraSpecialties ?? [],
@@ -534,6 +543,7 @@ router.get("/search", async (req, res): Promise<void> => {
       city: r.company.city,
       categoryAr: r.categoryAr ?? '',
       categoryEn: r.categoryEn ?? '',
+      categoryIconName: r.categoryIconName ?? '',
       companyLogo: r.company.companyLogo,
       extra_specialties: (r.company as any).extra_specialties ?? [],
       specialty: r.company.specialty ?? '',
@@ -579,6 +589,7 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
       cityNameEn: citiesTable.nameEn,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     })
     .from(techniciansTable)
     .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
@@ -598,6 +609,7 @@ router.get("/technicians/search", async (req, res): Promise<void> => {
     profilePhoto: r.tech.profilePhoto,
     categoryAr: r.categoryAr ?? '',
     categoryEn: r.categoryEn ?? '',
+    categoryIconName: r.categoryIconName ?? '',
     cityNameAr: r.cityNameAr ?? '',
     cityNameEn: r.cityNameEn ?? '',
   }));
@@ -614,6 +626,7 @@ router.get("/technicians/:id", async (req, res): Promise<void> => {
       cityNameEn: citiesTable.nameEn,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     })
     .from(techniciansTable)
     .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
@@ -626,6 +639,7 @@ router.get("/technicians/:id", async (req, res): Promise<void> => {
     city_name_en: row.cityNameEn ?? '',
     categoryAr: row.categoryAr ?? '',
     categoryEn: row.categoryEn ?? '',
+    categoryIconName: row.categoryIconName ?? '',
   });
 });
 
@@ -1369,21 +1383,23 @@ router.get("/pro/me", async (req, res): Promise<void> => {
       cityNameEn: citiesTable.nameEn,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     }).from(techniciansTable)
       .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
       .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
       .where(or(eq(techniciansTable.id, entityId), eq(techniciansTable.applicationId, entityId)))
       .limit(1);
-    if (row) profile = { ...row.tech, cityNameAr: row.cityNameAr, cityNameEn: row.cityNameEn, categoryAr: row.categoryAr, categoryEn: row.categoryEn };
+    if (row) profile = { ...row.tech, cityNameAr: row.cityNameAr, cityNameEn: row.cityNameEn, categoryAr: row.categoryAr, categoryEn: row.categoryEn, categoryIconName: row.categoryIconName };
   } else if (entityType === 'company') {
     const [row] = await db.select({
       company: companyApplicationsTable,
       categoryAr: categoriesTable.nameAr,
       categoryEn: categoriesTable.nameEn,
+      categoryIconName: categoriesTable.iconName,
     }).from(companyApplicationsTable)
       .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
       .where(eq(companyApplicationsTable.id, entityId));
-    if (row) profile = { ...row.company, categoryAr: row.categoryAr, categoryEn: row.categoryEn };
+    if (row) profile = { ...row.company, categoryAr: row.categoryAr, categoryEn: row.categoryEn, categoryIconName: row.categoryIconName };
   } else if (entityType === 'supplier') {
     const [row] = await db.select().from(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, entityId));
     if (row) profile = row as Record<string, unknown>;

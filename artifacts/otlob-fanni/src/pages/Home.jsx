@@ -357,26 +357,36 @@ export default function Home() {
               className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1"
               style={{ scrollbarWidth: 'none' }}
             >
-              {allSortedCategories.map(cat => (
+              {allSortedCategories.map(cat => {
+                const _iconKey = cat.iconName || cat.icon_name || cat.id
+                const _isUrl   = _iconKey && (_iconKey.startsWith('http') || _iconKey.startsWith('/api/'))
+                const _iconSrc = _isUrl ? _iconKey : `/icons/categories/${_iconKey}.png`
+                return (
                 <button
                   key={cat.id}
                   onClick={() => navigate(`/category/${cat.id}`)}
                   className="flex-shrink-0 flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
                 >
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-sm"
-                    style={{ border: '1.5px solid rgba(255,121,0,0.18)' }}>
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-sm flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg,rgba(255,121,0,0.10),rgba(255,149,0,0.04))', border: '1.5px solid rgba(255,121,0,0.18)' }}>
                     <img
-                      src={`/icons/categories/${cat.id}.png`}
+                      src={_iconSrc}
                       alt={ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
                       className="w-full h-full object-cover"
-                      onError={e => { e.currentTarget.parentElement.style.background = 'rgba(255,121,0,0.08)' }}
+                      onError={e => {
+                        const img = e.currentTarget
+                        if (img.dataset.fallback === '1') { img.style.display = 'none'; return }
+                        img.dataset.fallback = '1'
+                        img.src = `/icons/categories/${cat.id}.png`
+                      }}
                     />
                   </div>
                   <span className="text-[11px] font-bold text-[#071B33] text-center w-16 leading-tight line-clamp-2">
                     {ar ? cat.nameAr : (cat.nameEn || cat.nameAr)}
                   </span>
                 </button>
-              ))}
+              )
+              })}
             </div>
           </div>
         )}
