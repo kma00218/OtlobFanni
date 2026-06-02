@@ -108,7 +108,11 @@ ${allUrls.map(u => `  <url>
 
 // ── Categories ───────────────────────────────────────────────────────────────
 router.get("/categories", async (_req, res): Promise<void> => {
-  const categories = await db.select().from(categoriesTable).orderBy(categoriesTable.sortOrder);
+  const categories = await db
+    .select()
+    .from(categoriesTable)
+    .where(eq(categoriesTable.isActive, true))
+    .orderBy(categoriesTable.sortOrder);
   res.set("Cache-Control", "no-cache, no-store, must-revalidate");
   res.json(categories);
 });
