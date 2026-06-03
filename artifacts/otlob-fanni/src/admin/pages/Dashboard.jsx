@@ -524,7 +524,9 @@ export default function Dashboard() {
                     <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{categoriesMap[c.categoryId] || c.specialty || c.categoryId || '—'}</td>
                     <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">{citiesMap[c.cityId] || citiesMap[c.city] || c.city || '—'}</td>
                     <td className="px-5 py-3.5">
-                      {c.status === 'approved'
+                      {c.status === 'published'
+                        ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-orange-50 text-orange-600 ring-1 ring-orange-200">● منشور</span>
+                        : c.status === 'approved'
                         ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">● مقبول</span>
                         : c.status === 'rejected'
                         ? <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold bg-red-50 text-red-500 ring-1 ring-red-200">● مرفوض</span>
