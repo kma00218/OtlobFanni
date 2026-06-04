@@ -624,6 +624,42 @@ uri = "file://artifacts/otlob-fanni/public/icons/categories/eng_consultancy.png"
 type = "image"
 title = "engineering consultancy icon"
 
+[[generated]]
+id = "dlOr4R2oeaUeTC3XbJ5qU"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/screen_repair.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "54EzV5WuLIhduiQ5eQ_5r"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/electronics.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "yU8HJkxcUCQRZeMPUfUIL"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/software_dev.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "pgW7w2Y7ae86RqzkEkC1U"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/tech_support.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "9b9VBXS_y02Dk67uJeSXb"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/pos_systems.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "wtFywBSNsz-pKJTGZtS-q"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/social_media_mgmt.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"

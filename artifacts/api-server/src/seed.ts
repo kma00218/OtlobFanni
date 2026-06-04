@@ -131,6 +131,12 @@ const EXTRA_CATEGORIES = [
   { id: 'computer',             nameAr: 'صيانة كمبيوتر',                   nameEn: 'Computer Maintenance',                   iconName: 'computer',             sortOrder: 34, isActive: true, sectionId: 'tech_security'       },
   { id: 'mobile_repair',        nameAr: 'صيانة هواتف',                     nameEn: 'Mobile Repair',                          iconName: 'mobile_repair',        sortOrder: 35, isActive: true, sectionId: 'tech_security'       },
   { id: 'access_control',       nameAr: 'أنظمة دخول وبوابات',              nameEn: 'Access Control',                         iconName: 'access_control',       sortOrder: 36, isActive: true, sectionId: 'tech_security'       },
+  { id: 'screen_repair',        nameAr: 'صيانة الشاشات',                   nameEn: 'Screen Repair',                          iconName: 'screen_repair',        sortOrder: 37, isActive: true, sectionId: 'tech_security'       },
+  { id: 'electronics',          nameAr: 'صيانة الإلكترونيات',              nameEn: 'Electronics Repair',                     iconName: 'electronics',          sortOrder: 38, isActive: true, sectionId: 'tech_security'       },
+  { id: 'software_dev',         nameAr: 'تطوير مواقع وتطبيقات',            nameEn: 'Web & App Development',                  iconName: 'software_dev',         sortOrder: 39, isActive: true, sectionId: 'tech_security'       },
+  { id: 'tech_support',         nameAr: 'دعم تقني',                        nameEn: 'Technical Support',                      iconName: 'tech_support',         sortOrder: 40, isActive: true, sectionId: 'tech_security'       },
+  { id: 'pos_systems',          nameAr: 'أنظمة POS',                       nameEn: 'POS Systems',                            iconName: 'pos_systems',          sortOrder: 41, isActive: true, sectionId: 'tech_security'       },
+  { id: 'social_media_mgmt',    nameAr: 'تصميم وإدارة صفحات',              nameEn: 'Social Media Management',                iconName: 'social_media_mgmt',    sortOrder: 42, isActive: true, sectionId: 'tech_security'       },
 
   // ── 5. Moving & General Services ──────────────────────────────────────────────
   { id: 'workers',              nameAr: 'عمالة يومية',                     nameEn: 'Daily Workers',                          iconName: 'workers',              sortOrder: 39, isActive: true, sectionId: 'moving_general'     },

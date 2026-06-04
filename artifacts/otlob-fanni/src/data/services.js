@@ -56,13 +56,19 @@ export const categories = [
   { id: 'eng_consultancy',   sectionId: 'construction', nameAr: 'مقاولات واستشارات هندسية', nameEn: 'Engineering Consultancy', iconName: 'eng_consultancy',  sortOrder: 76 },
 
   // ── 4. تقنية وأمن ─────────────────────────────────────────────────────────
-  { id: 'cctv',          sectionId: 'tech_security', nameAr: 'كاميرات مراقبة',     nameEn: 'CCTV',                   iconName: 'cctv',          sortOrder: 30 },
-  { id: 'networks',      sectionId: 'tech_security', nameAr: 'شبكات وإنترنت',      nameEn: 'Networks & Internet',    iconName: 'networks',      sortOrder: 31 },
-  { id: 'satellite',     sectionId: 'tech_security', nameAr: 'ستلايت ورسيفر',      nameEn: 'Satellite & Receiver',   iconName: 'satellite',     sortOrder: 32 },
-  { id: 'alarm',         sectionId: 'tech_security', nameAr: 'أنظمة إنذار',        nameEn: 'Alarm Systems',          iconName: 'alarm',         sortOrder: 33 },
-  { id: 'computer',      sectionId: 'tech_security', nameAr: 'صيانة كمبيوتر',      nameEn: 'Computer Maintenance',   iconName: 'computer',      sortOrder: 34 },
-  { id: 'mobile_repair', sectionId: 'tech_security', nameAr: 'صيانة هواتف',        nameEn: 'Mobile Repair',          iconName: 'mobile_repair', sortOrder: 35 },
-  { id: 'access_control',sectionId: 'tech_security', nameAr: 'أنظمة دخول وبوابات', nameEn: 'Access Control',         iconName: 'access_control',sortOrder: 36 },
+  { id: 'cctv',               sectionId: 'tech_security', nameAr: 'كاميرات مراقبة',         nameEn: 'CCTV',                       iconName: 'cctv',               sortOrder: 30 },
+  { id: 'networks',           sectionId: 'tech_security', nameAr: 'شبكات وإنترنت',          nameEn: 'Networks & Internet',        iconName: 'networks',           sortOrder: 31 },
+  { id: 'satellite',          sectionId: 'tech_security', nameAr: 'ستلايت ورسيفر',          nameEn: 'Satellite & Receiver',       iconName: 'satellite',          sortOrder: 32 },
+  { id: 'alarm',              sectionId: 'tech_security', nameAr: 'أنظمة إنذار',            nameEn: 'Alarm Systems',              iconName: 'alarm',              sortOrder: 33 },
+  { id: 'computer',           sectionId: 'tech_security', nameAr: 'صيانة كمبيوتر',          nameEn: 'Computer Maintenance',       iconName: 'computer',           sortOrder: 34 },
+  { id: 'mobile_repair',      sectionId: 'tech_security', nameAr: 'صيانة هواتف',            nameEn: 'Mobile Repair',              iconName: 'mobile_repair',      sortOrder: 35 },
+  { id: 'access_control',     sectionId: 'tech_security', nameAr: 'أنظمة دخول وبوابات',     nameEn: 'Access Control',             iconName: 'access_control',     sortOrder: 36 },
+  { id: 'screen_repair',      sectionId: 'tech_security', nameAr: 'صيانة الشاشات',          nameEn: 'Screen Repair',              iconName: 'screen_repair',      sortOrder: 37 },
+  { id: 'electronics',        sectionId: 'tech_security', nameAr: 'صيانة الإلكترونيات',     nameEn: 'Electronics Repair',         iconName: 'electronics',        sortOrder: 38 },
+  { id: 'software_dev',       sectionId: 'tech_security', nameAr: 'تطوير مواقع وتطبيقات',   nameEn: 'Web & App Development',      iconName: 'software_dev',       sortOrder: 39 },
+  { id: 'tech_support',       sectionId: 'tech_security', nameAr: 'دعم تقني',               nameEn: 'Technical Support',          iconName: 'tech_support',       sortOrder: 40 },
+  { id: 'pos_systems',        sectionId: 'tech_security', nameAr: 'أنظمة POS',              nameEn: 'POS Systems',                iconName: 'pos_systems',        sortOrder: 41 },
+  { id: 'social_media_mgmt',  sectionId: 'tech_security', nameAr: 'تصميم وإدارة صفحات',     nameEn: 'Social Media Management',    iconName: 'social_media_mgmt',  sortOrder: 42 },
 
   // ── 5. نقل وخدمات عامة ────────────────────────────────────────────────────
   { id: 'moving',                 sectionId: 'moving_general', nameAr: 'نقل أثاث',          nameEn: 'Furniture Moving',                iconName: 'moving',               sortOrder: 37 },
