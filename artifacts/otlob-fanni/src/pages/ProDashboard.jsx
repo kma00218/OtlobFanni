@@ -394,10 +394,19 @@ export default function ProDashboard() {
     finally { setDealsLoading(false) }
   }, [])
 
+  // Load both on session ready (for stats strip accuracy)
   useEffect(() => {
-    if (session && activeTab === 'requests') loadRequests(session)
-    if (session && activeTab === 'deals')    loadDeals(session)
-  }, [session, activeTab])
+    if (!session) return
+    loadRequests(session)
+    loadDeals(session)
+  }, [session])
+
+  // Reload when switching tabs (refresh)
+  useEffect(() => {
+    if (!session) return
+    if (activeTab === 'requests') loadRequests(session)
+    if (activeTab === 'deals')    loadDeals(session)
+  }, [activeTab])
 
   const logout = () => { localStorage.removeItem('pro_session'); navigate('/pro-login') }
 
@@ -535,7 +544,7 @@ export default function ProDashboard() {
           />
           <StatCard
             label={cfg.statsLabels.points}
-            value={deals.filter(d => d.status === 'confirmed').reduce((s, d) => s + (d.proPoints || 0), 0) || '—'}
+            value={deals.filter(d => d.status === 'confirmed').reduce((s, d) => s + Number(d.proPoints || 0), 0) || '—'}
             icon={<Star className="w-4 h-4" />}
             accent="#F59E0B"
           />
