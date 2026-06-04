@@ -5,13 +5,51 @@ import {
   Receipt, ArrowRight, Lock, Sparkles, ClipboardList, Phone, MapPin,
   Clock, CheckCircle, XCircle, MessageCircle, RefreshCw,
   Handshake, Plus, Share2, Calendar, DollarSign, Send, ChevronDown,
+  TrendingUp, Star, Package, Building2, Wrench, Filter,
 } from 'lucide-react'
 import { api } from '../lib/api'
 
-const TYPE_LABEL = {
-  technician: 'فني',
-  company:    'شركة خدمية',
-  supplier:   'مورد مستلزمات',
+// ── Type-specific config ────────────────────────────────────────────────────
+const TYPE_CONFIG = {
+  technician: {
+    label:            'فني',
+    icon:             <Wrench className="w-5 h-5" />,
+    color:            '#FF7900',
+    requestsTab:      'الطلبات',
+    requestsTitle:    'طلبات العملاء',
+    requestsEmpty:    'ستظهر هنا طلبات الخدمة الواردة من ملفك الشخصي',
+    dealsTab:         'صفقاتي',
+    dealsTitle:       'سجل الصفقات',
+    dealsEmpty:       'سجّل أول صفقة مع عميلك واكسب نقاطاً',
+    newDealBtn:       'صفقة جديدة',
+    statsLabels:      { requests: 'طلبات واردة', deals: 'صفقات مكتملة', points: 'نقاطي' },
+  },
+  company: {
+    label:            'شركة خدمية',
+    icon:             <Building2 className="w-5 h-5" />,
+    color:            '#0EA5E9',
+    requestsTab:      'طلبات الشركة',
+    requestsTitle:    'طلبات خدمة الشركة',
+    requestsEmpty:    'ستظهر هنا طلبات الخدمة الموجهة لشركتك',
+    dealsTab:         'العقود',
+    dealsTitle:       'عقود وصفقات الشركة',
+    dealsEmpty:       'سجّل أول عقد أو صفقة لشركتك',
+    newDealBtn:       'تسجيل عقد',
+    statsLabels:      { requests: 'طلبات الشركة', deals: 'عقود مؤكدة', points: 'نقاط الشركة' },
+  },
+  supplier: {
+    label:            'مورد مستلزمات',
+    icon:             <Package className="w-5 h-5" />,
+    color:            '#10B981',
+    requestsTab:      'الاستفسارات',
+    requestsTitle:    'استفسارات العملاء',
+    requestsEmpty:    'ستظهر هنا استفسارات العملاء عن مستلزماتك',
+    dealsTab:         'الطلبيات',
+    dealsTitle:       'طلبيات التوريد',
+    dealsEmpty:       'سجّل أول طلبية توريد لعميلك',
+    newDealBtn:       'طلبية جديدة',
+    statsLabels:      { requests: 'استفسارات', deals: 'طلبيات مؤكدة', points: 'نقاطي' },
+  },
 }
 
 const TOOLS = [
@@ -22,18 +60,42 @@ const TOOLS = [
 ]
 
 const DEAL_STATUS_CONFIG = {
-  pending:   { label: 'بانتظار العميل', color: 'bg-amber-100 text-amber-700',    dot: 'bg-amber-500' },
-  confirmed: { label: 'مؤكدة ✓',        color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  disputed:  { label: 'مختلف عليها',    color: 'bg-red-100 text-red-700',        dot: 'bg-red-500' },
-  cancelled: { label: 'ملغية',          color: 'bg-gray-100 text-gray-500',      dot: 'bg-gray-400' },
+  pending:   { label: 'بانتظار التأكيد', color: 'bg-amber-100 text-amber-700',    dot: 'bg-amber-500' },
+  confirmed: { label: 'مؤكدة ✓',         color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  disputed:  { label: 'مختلف عليها',     color: 'bg-red-100 text-red-700',        dot: 'bg-red-500' },
+  cancelled: { label: 'ملغية',           color: 'bg-gray-100 text-gray-500',      dot: 'bg-gray-400' },
 }
 
-const SERVICE_TYPES_AR = [
-  'صيانة كهربائية', 'صيانة سباكة', 'تكييف وتبريد', 'نجارة وأثاث',
-  'دهانات وديكور', 'أعمال بناء', 'خدمات تنظيف', 'حراسة وأمن',
-  'خدمات تقنية', 'أعمال حدادة', 'أعمال ألومنيوم', 'خدمات أخرى',
-]
+const REQUEST_STATUS_CONFIG = {
+  new:       { label: 'جديد',        color: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500' },
+  contacted: { label: 'تم التواصل', color: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500' },
+  completed: { label: 'مكتمل',       color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  cancelled: { label: 'ملغي',        color: 'bg-red-100 text-red-700',         dot: 'bg-red-500' },
+}
 
+// ── Stat Card ───────────────────────────────────────────────────────────────
+function StatCard({ label, value, icon, accent }) {
+  return (
+    <div className="flex-1 rounded-2xl px-3 py-3 flex flex-col items-center gap-1 min-w-0"
+      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+        style={{ background: `${accent}22` }}>
+        <span style={{ color: accent }}>{icon}</span>
+      </div>
+      <p className="font-black text-white text-xl leading-none">{value}</p>
+      <p className="text-[10px] text-white/50 text-center leading-tight">{label}</p>
+    </div>
+  )
+}
+
+// ── WA Icon ─────────────────────────────────────────────────────────────────
+const WaIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+)
+
+// ── Deal Card ────────────────────────────────────────────────────────────────
 function DealCard({ deal }) {
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied]     = useState(false)
@@ -88,7 +150,6 @@ function DealCard({ deal }) {
           {deal.description && (
             <p className="text-xs text-gray-600 bg-gray-50 rounded-xl px-3 py-2">{deal.description}</p>
           )}
-
           {deal.status === 'confirmed' && (
             <div className="flex gap-3">
               <div className="flex-1 bg-[#FF7900]/5 border border-[#FF7900]/20 rounded-xl px-3 py-2 text-center">
@@ -101,7 +162,6 @@ function DealCard({ deal }) {
               </div>
             </div>
           )}
-
           {deal.status === 'pending' && deal.confirmToken && (
             <div className="flex gap-2">
               <a href={waUrl} target="_blank" rel="noreferrer"
@@ -114,7 +174,6 @@ function DealCard({ deal }) {
               </button>
             </div>
           )}
-
           <p className="text-[10px] text-gray-300">{new Date(deal.createdAt).toLocaleString('ar-LY')}</p>
         </div>
       )}
@@ -122,22 +181,10 @@ function DealCard({ deal }) {
   )
 }
 
-const STATUS_CONFIG = {
-  new:       { label: 'جديد',        color: 'bg-blue-100 text-blue-700',   dot: 'bg-blue-500' },
-  contacted: { label: 'تم التواصل', color: 'bg-amber-100 text-amber-700',  dot: 'bg-amber-500' },
-  completed: { label: 'مكتمل',       color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  cancelled: { label: 'ملغي',        color: 'bg-red-100 text-red-700',     dot: 'bg-red-500' },
-}
-
-const WaIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
-)
-
+// ── Request Card ─────────────────────────────────────────────────────────────
 function RequestCard({ req, onStatusChange }) {
   const [updating, setUpdating] = useState(false)
-  const status = STATUS_CONFIG[req.status] || STATUS_CONFIG.new
+  const status = REQUEST_STATUS_CONFIG[req.status] || REQUEST_STATUS_CONFIG.new
 
   const changeStatus = async (newStatus) => {
     setUpdating(true)
@@ -158,7 +205,6 @@ function RequestCard({ req, onStatusChange }) {
 
   return (
     <div className="bg-white rounded-2xl p-4 space-y-3 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
-      {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <p className="font-bold text-[#071B33] text-sm">{req.customerName}</p>
@@ -181,7 +227,6 @@ function RequestCard({ req, onStatusChange }) {
         </span>
       </div>
 
-      {/* Request type + description */}
       {req.requestType && (
         <div className="bg-[#FF7900]/5 rounded-xl px-3 py-2">
           <p className="text-xs font-bold text-[#FF7900]">{req.requestType}</p>
@@ -189,53 +234,47 @@ function RequestCard({ req, onStatusChange }) {
         </div>
       )}
 
-      {/* Photos */}
       {req.photoUrls && req.photoUrls.length > 0 && (
         <div className="flex gap-2 flex-wrap">
           {req.photoUrls.map((url, i) => (
             <a key={i} href={url} target="_blank" rel="noreferrer"
-              className="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0 hover:opacity-90 transition-opacity">
+              className="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0">
               <img src={url} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display='none' }} />
             </a>
           ))}
         </div>
       )}
 
-      {/* Preferred datetime */}
       {req.preferredDatetime && (
         <p className="text-xs text-gray-500 flex items-center gap-1.5">
           <Clock className="w-3 h-3" /> {req.preferredDatetime}
         </p>
       )}
 
-      {/* Created at */}
-      <p className="text-[10px] text-gray-300">
-        {new Date(req.createdAt).toLocaleString('ar-LY')}
-      </p>
+      <p className="text-[10px] text-gray-300">{new Date(req.createdAt).toLocaleString('ar-LY')}</p>
 
-      {/* Actions */}
       <div className="flex flex-wrap gap-2 pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
-        {req.phone && (
+        {req.phone && buildWaUrl() && (
           <a href={buildWaUrl()} target="_blank" rel="noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors">
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-green-50 text-green-700 border border-green-200">
             <WaIcon /> رد على واتساب
           </a>
         )}
         {req.status !== 'contacted' && req.status !== 'completed' && req.status !== 'cancelled' && (
           <button onClick={() => changeStatus('contacted')} disabled={updating}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 disabled:opacity-50 transition-colors">
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 disabled:opacity-50">
             <MessageCircle className="w-3 h-3" /> تم التواصل
           </button>
         )}
         {req.status !== 'completed' && req.status !== 'cancelled' && (
           <button onClick={() => changeStatus('completed')} disabled={updating}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 disabled:opacity-50 transition-colors">
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 disabled:opacity-50">
             <CheckCircle className="w-3 h-3" /> مكتمل
           </button>
         )}
         {req.status !== 'cancelled' && (
           <button onClick={() => changeStatus('cancelled')} disabled={updating}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-600 border border-red-200 disabled:opacity-50 transition-colors">
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-600 border border-red-200 disabled:opacity-50">
             <XCircle className="w-3 h-3" /> إلغاء
           </button>
         )}
@@ -244,28 +283,95 @@ function RequestCard({ req, onStatusChange }) {
   )
 }
 
+// ── Filter Chips ─────────────────────────────────────────────────────────────
+function FilterChips({ active, onChange, counts }) {
+  const filters = [
+    { key: 'all',       label: 'الكل',        count: counts.all },
+    { key: 'new',       label: 'جديد',        count: counts.new },
+    { key: 'contacted', label: 'تم التواصل', count: counts.contacted },
+    { key: 'completed', label: 'مكتمل',       count: counts.completed },
+    { key: 'cancelled', label: 'ملغي',        count: counts.cancelled },
+  ]
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+      {filters.map(f => (
+        <button key={f.key} onClick={() => onChange(f.key)}
+          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+            active === f.key
+              ? 'bg-[#071B33] text-white shadow-sm'
+              : 'bg-white text-gray-500 border border-gray-200'
+          }`}>
+          {f.label}
+          {f.count > 0 && (
+            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+              active === f.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+            }`}>{f.count}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// ── Deal Filter Chips ─────────────────────────────────────────────────────────
+function DealFilterChips({ active, onChange, counts }) {
+  const filters = [
+    { key: 'all',       label: 'الكل',          count: counts.all },
+    { key: 'pending',   label: 'بانتظار التأكيد', count: counts.pending },
+    { key: 'confirmed', label: 'مؤكدة',          count: counts.confirmed },
+    { key: 'cancelled', label: 'ملغية',          count: counts.cancelled },
+  ]
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+      {filters.map(f => (
+        <button key={f.key} onClick={() => onChange(f.key)}
+          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+            active === f.key
+              ? 'bg-[#071B33] text-white shadow-sm'
+              : 'bg-white text-gray-500 border border-gray-200'
+          }`}>
+          {f.label}
+          {f.count > 0 && (
+            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+              active === f.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+            }`}>{f.count}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 const DEAL_FORM_DEFAULT = {
   userPhone: '', userName: '', serviceType: '', serviceValue: '', serviceDate: '', description: ''
 }
 
+// ── Main Component ───────────────────────────────────────────────────────────
 export default function ProDashboard() {
   const [, navigate] = useLocation()
-  const [session,      setSession]     = useState(null)
-  const [requests,     setRequests]    = useState([])
-  const [reqLoading,   setReqLoading]  = useState(false)
-  const [activeTab,    setActiveTab]   = useState('profile')
-  const [deals,        setDeals]       = useState([])
-  const [dealsLoading, setDealsLoading] = useState(false)
-  const [showDealForm, setShowDealForm] = useState(false)
-  const [dealForm,     setDealForm]    = useState(DEAL_FORM_DEFAULT)
-  const [submitting,   setSubmitting]  = useState(false)
-  const [dealErr,      setDealErr]     = useState('')
+  const [session,        setSession]       = useState(null)
+  const [requests,       setRequests]      = useState([])
+  const [reqLoading,     setReqLoading]    = useState(false)
+  const [reqFilter,      setReqFilter]     = useState('all')
+  const [activeTab,      setActiveTab]     = useState('profile')
+  const [deals,          setDeals]         = useState([])
+  const [dealsLoading,   setDealsLoading]  = useState(false)
+  const [dealFilter,     setDealFilter]    = useState('all')
+  const [showDealForm,   setShowDealForm]  = useState(false)
+  const [dealForm,       setDealForm]      = useState(DEAL_FORM_DEFAULT)
+  const [submitting,     setSubmitting]    = useState(false)
+  const [dealErr,        setDealErr]       = useState('')
+  const [categories,     setCategories]    = useState([])
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
     if (!raw) { navigate('/pro-login'); return }
     try { setSession(JSON.parse(raw)) }
     catch { localStorage.removeItem('pro_session'); navigate('/pro-login') }
+
+    api.categories().then(cats => {
+      setCategories(cats.filter(c => c.isActive !== false))
+    }).catch(() => {})
   }, [])
 
   const loadRequests = useCallback(async (sess) => {
@@ -297,10 +403,31 @@ export default function ProDashboard() {
 
   if (!session) return null
 
-  const typeLabel  = TYPE_LABEL[session.entityType] || 'مهني'
-  const initials   = (session.displayName || '').trim().slice(0, 1)
-  const newCount   = requests.filter(r => r.status === 'new').length
+  const cfg         = TYPE_CONFIG[session.entityType] || TYPE_CONFIG.technician
+  const initials    = (session.displayName || '').trim().slice(0, 1)
+  const newCount    = requests.filter(r => r.status === 'new').length
   const pendingDeals = deals.filter(d => d.status === 'pending').length
+
+  // Request counts for filter chips
+  const reqCounts = {
+    all:       requests.length,
+    new:       requests.filter(r => r.status === 'new').length,
+    contacted: requests.filter(r => r.status === 'contacted').length,
+    completed: requests.filter(r => r.status === 'completed').length,
+    cancelled: requests.filter(r => r.status === 'cancelled').length,
+  }
+
+  // Deal counts for filter chips
+  const dealCounts = {
+    all:       deals.length,
+    pending:   deals.filter(d => d.status === 'pending').length,
+    confirmed: deals.filter(d => d.status === 'confirmed').length,
+    cancelled: deals.filter(d => d.status === 'cancelled').length,
+  }
+
+  // Filtered lists
+  const filteredRequests = reqFilter === 'all' ? requests : requests.filter(r => r.status === reqFilter)
+  const filteredDeals    = dealFilter === 'all' ? deals    : deals.filter(d => d.status === dealFilter)
 
   const handleStatusChange = (id, newStatus) => {
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
@@ -336,79 +463,110 @@ export default function ProDashboard() {
     }
   }
 
+  // Build category options grouped by section
+  const sectionNames = {
+    home_services:     'خدمات منزلية',
+    car_services:      'خدمات سيارات',
+    construction:      'بناء وتشطيب',
+    tech_security:     'تقنية وأمن',
+    moving_general:    'نقل وخدمات عامة',
+    gardens_pools:     'حدائق ومسابح',
+    energy_generators: 'الطاقة والمولدات',
+    business_services: 'الخدمات التجارية',
+    more_services:     'خدمات أخرى',
+  }
+  const catsBySection = categories.reduce((acc, c) => {
+    const sec = c.sectionId || 'more_services'
+    if (!acc[sec]) acc[sec] = []
+    acc[sec].push(c)
+    return acc
+  }, {})
+
   return (
     <div className="min-h-[100dvh] flex flex-col max-w-[480px] mx-auto" dir="rtl"
       style={{ background: 'linear-gradient(160deg, #0a1628 0%, #0f2440 40%, #0d1f38 100%)' }}>
 
       {/* ── Header ─────────────────────────────────── */}
-      <div className="px-5 pt-14 pb-6 relative overflow-hidden">
+      <div className="px-5 pt-14 pb-5 relative overflow-hidden">
         <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full opacity-20 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #FF7900 0%, transparent 70%)' }} />
+          style={{ background: `radial-gradient(circle, ${cfg.color} 0%, transparent 70%)` }} />
         <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
 
-        {/* nav row */}
-        <div className="flex items-center justify-between mb-8 relative z-10">
+        <div className="flex items-center justify-between mb-6 relative z-10">
           <button onClick={() => navigate('/more')}
-            className="flex items-center gap-1.5 text-white/50 text-sm active:opacity-70 hover:text-white/80 transition-colors">
-            <ArrowRight className="w-4 h-4" />
-            العودة
+            className="flex items-center gap-1.5 text-white/50 text-sm active:opacity-70">
+            <ArrowRight className="w-4 h-4" /> العودة
           </button>
           <button onClick={logout}
-            className="flex items-center gap-1.5 text-white/40 text-xs active:opacity-70 hover:text-white/70 transition-colors">
-            <LogOut className="w-3.5 h-3.5" />
-            خروج
+            className="flex items-center gap-1.5 text-white/40 text-xs active:opacity-70">
+            <LogOut className="w-3.5 h-3.5" /> خروج
           </button>
         </div>
 
-        {/* identity */}
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 font-black text-2xl text-white shadow-lg shadow-black/30"
-            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}>
-            {initials || <Briefcase className="w-7 h-7" />}
+        <div className="flex items-center gap-4 relative z-10 mb-5">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 font-black text-2xl text-white shadow-lg"
+            style={{ background: `linear-gradient(135deg, ${cfg.color} 0%, ${cfg.color}99 100%)` }}>
+            {initials || cfg.icon}
           </div>
-          <div>
-            <span className="inline-block text-[10px] font-bold text-[#FF7900] bg-[#FF7900]/15 border border-[#FF7900]/30 px-2 py-0.5 rounded-full mb-1">
-              {typeLabel}
+          <div className="flex-1 min-w-0">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1"
+              style={{ color: cfg.color, background: `${cfg.color}22`, border: `1px solid ${cfg.color}44` }}>
+              {cfg.icon}
+              {cfg.label}
             </span>
-            <h1 className="text-white font-extrabold text-xl leading-tight tracking-tight">{session.displayName}</h1>
+            <h1 className="text-white font-extrabold text-xl leading-tight tracking-tight truncate">{session.displayName}</h1>
           </div>
+        </div>
+
+        {/* ── Stats Strip ── */}
+        <div className="flex gap-2 relative z-10">
+          <StatCard
+            label={cfg.statsLabels.requests}
+            value={requests.length || '—'}
+            icon={<ClipboardList className="w-4 h-4" />}
+            accent={cfg.color}
+          />
+          <StatCard
+            label={cfg.statsLabels.deals}
+            value={dealCounts.confirmed || '—'}
+            icon={<Handshake className="w-4 h-4" />}
+            accent="#10B981"
+          />
+          <StatCard
+            label={cfg.statsLabels.points}
+            value={deals.filter(d => d.status === 'confirmed').reduce((s, d) => s + (d.proPoints || 0), 0) || '—'}
+            icon={<Star className="w-4 h-4" />}
+            accent="#F59E0B"
+          />
         </div>
       </div>
 
       {/* ── Tab Bar ────────────────────────────────── */}
-      <div className="flex mx-4 mb-1 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={`flex-1 py-3 text-xs font-bold transition-all rounded-xl ${
-            activeTab === 'profile' ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
-          }`}>
-          ملفي
-        </button>
-        <button
-          onClick={() => { setActiveTab('requests'); if (session) loadRequests(session) }}
-          className={`flex-1 py-3 text-xs font-bold transition-all rounded-xl relative ${
-            activeTab === 'requests' ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
-          }`}>
-          الطلبات
-          {newCount > 0 && (
-            <span className="absolute -top-1 -left-1 w-5 h-5 bg-[#FF7900] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-              {newCount > 9 ? '9+' : newCount}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => { setActiveTab('deals'); if (session) loadDeals(session) }}
-          className={`flex-1 py-3 text-xs font-bold transition-all rounded-xl relative ${
-            activeTab === 'deals' ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
-          }`}>
-          صفقاتي
-          {pendingDeals > 0 && (
-            <span className="absolute -top-1 -left-1 w-5 h-5 bg-amber-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
-              {pendingDeals > 9 ? '9+' : pendingDeals}
-            </span>
-          )}
-        </button>
+      <div className="flex mx-4 mb-1 rounded-2xl overflow-hidden p-1 gap-1"
+        style={{ background: 'rgba(255,255,255,0.08)' }}>
+        {[
+          { key: 'profile',  label: 'ملفي',            badge: 0 },
+          { key: 'requests', label: cfg.requestsTab,    badge: newCount },
+          { key: 'deals',    label: cfg.dealsTab,       badge: pendingDeals },
+        ].map(tab => (
+          <button key={tab.key}
+            onClick={() => {
+              setActiveTab(tab.key)
+              if (tab.key === 'requests' && session) loadRequests(session)
+              if (tab.key === 'deals'    && session) loadDeals(session)
+            }}
+            className={`flex-1 py-2.5 text-xs font-bold transition-all rounded-xl relative ${
+              activeTab === tab.key ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
+            }`}>
+            {tab.label}
+            {tab.badge > 0 && (
+              <span className="absolute -top-1 -left-1 w-5 h-5 bg-[#FF7900] text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                {tab.badge > 9 ? '9+' : tab.badge}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* ── Body ───────────────────────────────────── */}
@@ -418,34 +576,64 @@ export default function ProDashboard() {
         {/* ── PROFILE TAB ── */}
         {activeTab === 'profile' && (
           <div className="space-y-4">
+
+            {/* Quick summary cards */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-2xl p-4 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                    style={{ background: `${cfg.color}15` }}>
+                    <ClipboardList className="w-4 h-4" style={{ color: cfg.color }} />
+                  </div>
+                  <p className="text-xs font-bold text-gray-500">{cfg.statsLabels.requests}</p>
+                </div>
+                <p className="font-black text-[#071B33] text-2xl">{requests.length}</p>
+                {newCount > 0 && (
+                  <p className="text-[11px] text-[#FF7900] font-bold mt-0.5">{newCount} جديد</p>
+                )}
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-50">
+                    <Handshake className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <p className="text-xs font-bold text-gray-500">{cfg.statsLabels.deals}</p>
+                </div>
+                <p className="font-black text-[#071B33] text-2xl">{dealCounts.confirmed}</p>
+                {pendingDeals > 0 && (
+                  <p className="text-[11px] text-amber-500 font-bold mt-0.5">{pendingDeals} بانتظار التأكيد</p>
+                )}
+              </div>
+            </div>
+
             {/* Profile hero card */}
             <button type="button" onClick={() => navigate('/pro/profile')}
-              className="w-full rounded-3xl overflow-hidden shadow-2xl shadow-black/30 active:scale-[0.97] transition-transform select-none group"
+              className="w-full rounded-3xl overflow-hidden shadow-lg active:scale-[0.97] transition-transform select-none group"
               style={{ WebkitTapHighlightColor: 'transparent' }}>
-              <div className="relative px-6 py-6 flex items-center gap-5"
-                style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 60%, #9a4800 100%)' }}>
+              <div className="relative px-5 py-5 flex items-center gap-4"
+                style={{ background: `linear-gradient(135deg, ${cfg.color} 0%, ${cfg.color}cc 100%)` }}>
                 <div className="absolute inset-0 opacity-10"
                   style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(255,255,255,.15) 20px,rgba(255,255,255,.15) 21px),repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(255,255,255,.15) 20px,rgba(255,255,255,.15) 21px)' }} />
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 relative z-10 backdrop-blur-sm">
-                  <User className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 relative z-10">
+                  <User className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 text-right relative z-10">
-                  <p className="text-white/80 text-xs font-semibold mb-0.5">متاح الآن</p>
-                  <p className="text-white font-extrabold text-lg leading-tight">ملفي الشخصي</p>
-                  <p className="text-white/70 text-xs mt-0.5">عرض ملفك وتغيير كلمة المرور</p>
+                  <p className="text-white font-extrabold text-base leading-tight">ملفي الشخصي</p>
+                  <p className="text-white/70 text-xs mt-0.5">عرض الملف وتعديل البيانات وكلمة المرور</p>
                 </div>
-                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 relative z-10 group-active:bg-white/30 transition-colors">
-                  <ChevronLeft className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 relative z-10">
+                  <ChevronLeft className="w-4 h-4 text-white" />
                 </div>
               </div>
             </button>
 
             {/* Coming soon tools */}
             <div className="rounded-3xl overflow-hidden shadow-sm bg-white">
-              <div className="px-5 pt-5 pb-4 flex items-center justify-between border-b border-slate-100">
+              <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
-                    <Lock className="w-3.5 h-3.5 text-slate-400" />
+                    <TrendingUp className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                   <div>
                     <p className="font-extrabold text-[#071B33] text-sm">أدوات الباقة المهنية</p>
@@ -453,18 +641,17 @@ export default function ProDashboard() {
                   </div>
                 </div>
                 <span className="text-[10px] font-extrabold text-[#FF7900] bg-[#FF7900]/10 border border-[#FF7900]/20 px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  قريباً
+                  <Sparkles className="w-3 h-3" /> قريباً
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-px bg-slate-100">
                 {TOOLS.map(tool => (
-                  <div key={tool.id} className="bg-white px-4 py-5 flex flex-col items-center gap-3 select-none">
+                  <div key={tool.id} className="bg-white px-4 py-5 flex flex-col items-center gap-3">
                     <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tool.bg} flex items-center justify-center opacity-40`}>
                       {tool.icon}
                     </div>
                     <div className="text-center">
-                      <p className="font-bold text-slate-400 text-sm leading-tight">{tool.labelAr}</p>
+                      <p className="font-bold text-slate-400 text-sm">{tool.labelAr}</p>
                       <div className="flex items-center justify-center gap-1 mt-1">
                         <Lock className="w-2.5 h-2.5 text-slate-300" />
                         <p className="text-[10px] text-slate-300 font-semibold">قريباً</p>
@@ -477,10 +664,57 @@ export default function ProDashboard() {
           </div>
         )}
 
+        {/* ── REQUESTS TAB ── */}
+        {activeTab === 'requests' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{ background: `linear-gradient(135deg, ${cfg.color}, ${cfg.color}aa)` }}>
+                  <ClipboardList className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="font-black text-[#071B33] text-sm">{cfg.requestsTitle}</p>
+                  <p className="text-[11px] text-gray-400">{requests.length} طلب</p>
+                </div>
+              </div>
+              <button onClick={() => loadRequests(session)}
+                className="p-2 rounded-xl bg-white border border-gray-100 shadow-sm">
+                <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${reqLoading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+
+            {/* Filter chips */}
+            {requests.length > 0 && (
+              <FilterChips active={reqFilter} onChange={setReqFilter} counts={reqCounts} />
+            )}
+
+            {reqLoading ? (
+              <div className="flex justify-center py-14">
+                <div className="w-7 h-7 border-2 border-t-transparent rounded-full animate-spin"
+                  style={{ borderColor: `${cfg.color} transparent transparent transparent` }} />
+              </div>
+            ) : filteredRequests.length === 0 ? (
+              <div className="text-center py-14 bg-white rounded-3xl shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                <ClipboardList className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                <p className="font-bold text-gray-400">
+                  {reqFilter !== 'all' ? `لا توجد طلبات بحالة "${REQUEST_STATUS_CONFIG[reqFilter]?.label}"` : 'لا توجد طلبات بعد'}
+                </p>
+                <p className="text-xs text-gray-300 mt-1">{cfg.requestsEmpty}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredRequests.map(r => (
+                  <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── DEALS TAB ── */}
         {activeTab === 'deals' && (
-          <div className="space-y-4">
-            {/* Header */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -488,28 +722,37 @@ export default function ProDashboard() {
                   <Handshake className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <p className="font-black text-[#071B33] text-sm">صفقاتي</p>
-                  <p className="text-[11px] text-gray-400">{deals.length} صفقة</p>
+                  <p className="font-black text-[#071B33] text-sm">{cfg.dealsTitle}</p>
+                  <p className="text-[11px] text-gray-400">{deals.length} إجمالي</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => loadDeals(session)}
-                  className="p-2 rounded-xl bg-white hover:bg-gray-50 transition-colors shadow-sm border border-gray-100">
+                  className="p-2 rounded-xl bg-white border border-gray-100 shadow-sm">
                   <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${dealsLoading ? 'animate-spin' : ''}`} />
                 </button>
                 <button onClick={() => setShowDealForm(p => !p)}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm active:scale-95 transition-all"
                   style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
-                  <Plus className="w-3.5 h-3.5" /> صفقة جديدة
+                  <Plus className="w-3.5 h-3.5" /> {cfg.newDealBtn}
                 </button>
               </div>
             </div>
+
+            {/* Deal filter chips */}
+            {deals.length > 0 && (
+              <DealFilterChips active={dealFilter} onChange={setDealFilter} counts={dealCounts} />
+            )}
 
             {/* New Deal Form */}
             {showDealForm && (
               <form onSubmit={submitDeal}
                 className="bg-white rounded-3xl p-5 space-y-3 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
-                <p className="font-black text-[#071B33] text-sm">تسجيل صفقة جديدة</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-black text-[#071B33] text-sm">تسجيل {cfg.newDealBtn}</p>
+                  <button type="button" onClick={() => { setShowDealForm(false); setDealErr(''); setDealForm(DEAL_FORM_DEFAULT) }}
+                    className="text-gray-400 text-xs">إغلاق</button>
+                </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -538,7 +781,13 @@ export default function ProDashboard() {
                     className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-[#FF7900]/30"
                     style={{ background: '#F8F9FA', border: '1.5px solid #E2E8F0' }}>
                     <option value="">اختر نوع الخدمة</option>
-                    {SERVICE_TYPES_AR.map(t => <option key={t} value={t}>{t}</option>)}
+                    {Object.entries(catsBySection).map(([secId, cats]) => (
+                      <optgroup key={secId} label={sectionNames[secId] || secId}>
+                        {cats.map(c => (
+                          <option key={c.id} value={c.nameAr}>{c.nameAr}</option>
+                        ))}
+                      </optgroup>
+                    ))}
                   </select>
                 </div>
 
@@ -586,7 +835,7 @@ export default function ProDashboard() {
                     className="flex-1 py-3 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-all"
                     style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
                     {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                    تسجيل الصفقة
+                    تسجيل
                   </button>
                 </div>
               </form>
@@ -597,56 +846,17 @@ export default function ProDashboard() {
               <div className="flex justify-center py-14">
                 <div className="w-7 h-7 border-2 border-[#071B33] border-t-transparent rounded-full animate-spin" />
               </div>
-            ) : deals.length === 0 ? (
+            ) : filteredDeals.length === 0 ? (
               <div className="text-center py-14 bg-white rounded-3xl shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
                 <Handshake className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                <p className="font-bold text-gray-400">لا توجد صفقات بعد</p>
-                <p className="text-xs text-gray-300 mt-1">سجّل أول صفقة مع عميلك واكسب نقاطاً</p>
+                <p className="font-bold text-gray-400">
+                  {dealFilter !== 'all' ? `لا توجد بيانات لهذا الفلتر` : 'لا توجد بيانات بعد'}
+                </p>
+                <p className="text-xs text-gray-300 mt-1">{cfg.dealsEmpty}</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {deals.map(d => <DealCard key={d.id} deal={d} />)}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── REQUESTS TAB ── */}
-        {activeTab === 'requests' && (
-          <div className="space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)' }}>
-                  <ClipboardList className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="font-black text-[#071B33] text-sm">طلبات العملاء</p>
-                  <p className="text-[11px] text-gray-400">{requests.length} طلب</p>
-                </div>
-              </div>
-              <button onClick={() => loadRequests(session)}
-                className="p-2 rounded-xl bg-white hover:bg-gray-50 transition-colors shadow-sm border border-gray-100">
-                <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${reqLoading ? 'animate-spin' : ''}`} />
-              </button>
-            </div>
-
-            {reqLoading ? (
-              <div className="flex justify-center py-14">
-                <div className="w-7 h-7 border-2 border-[#FF7900] border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : requests.length === 0 ? (
-              <div className="text-center py-14 bg-white rounded-3xl shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
-                <ClipboardList className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                <p className="font-bold text-gray-400">لا توجد طلبات بعد</p>
-                <p className="text-xs text-gray-300 mt-1">ستظهر هنا طلبات الخدمة من ملفك الشخصي</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {requests.map(r => (
-                  <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} />
-                ))}
+                {filteredDeals.map(d => <DealCard key={d.id} deal={d} />)}
               </div>
             )}
           </div>
