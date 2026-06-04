@@ -660,6 +660,12 @@ uri = "file://artifacts/otlob-fanni/public/icons/categories/social_media_mgmt.pn
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "y-bA9fFd8BoKdf0mkHHPw"
+uri = "file://artifacts/otlob-fanni/public/icons/categories/surveying.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"

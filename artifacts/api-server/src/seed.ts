@@ -124,6 +124,7 @@ const EXTRA_CATEGORIES = [
   { id: 'heavy_equipment',      nameAr: 'معدات ثقيلة',                     nameEn: 'Heavy Equipment',                        iconName: 'heavy_equipment',      sortOrder: 73, isActive: true, sectionId: 'construction'        },
   { id: 'crusher_materials',    nameAr: 'كسارة ومواد بناء',                nameEn: 'Crusher & Building Materials',           iconName: 'crusher_materials',    sortOrder: 74, isActive: true, sectionId: 'construction'        },
   { id: 'elevators',            nameAr: 'مصاعد كهربائية',                  nameEn: 'Electric Elevators',                     iconName: 'elevators',            sortOrder: 75, isActive: true, sectionId: 'construction'        },
+  { id: 'surveying',            nameAr: 'مساحة وتقسيم أراضي',              nameEn: 'Land Surveying',                         iconName: 'surveying',            sortOrder: 77, isActive: true, sectionId: 'construction'        },
 
   // ── 4. Tech & Security ────────────────────────────────────────────────────────
   { id: 'satellite',            nameAr: 'ستلايت ورسيفر',                   nameEn: 'Satellite & Receiver',                   iconName: 'satellite',            sortOrder: 32, isActive: true, sectionId: 'tech_security'       },
