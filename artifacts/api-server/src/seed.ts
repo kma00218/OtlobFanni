@@ -217,7 +217,9 @@ export async function seedDatabase(): Promise<void> {
       WHERE id IN (
         'k1','k2','k3','k4','k5','k6','k7','k8','k9','k10','k11','k12','k13','k14','k15',
         'generators',
-        'more_services'
+        'more_services',
+        'custom_1780263635444',
+        'custom_1780263637044'
       )
     `);
 
