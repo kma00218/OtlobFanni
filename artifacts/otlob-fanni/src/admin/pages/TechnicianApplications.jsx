@@ -211,7 +211,7 @@ export default function TechnicianApplications() {
   }
 
   const openPublishedWhatsApp = ({ name, phone, requestNumber }) => {
-    const msg = `مبروك ${name}! 🎉 تم نشر ملفك الآن على منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع أصدقائك وعملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`
+    const msg = `مبروك ${name}! 🎉 تم نشر ملفك الآن على منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع أصدقائك وعملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n━━━━━━━━━━━━━━━━━━━\n🔗 روابط التسجيل في المنصة\nادعُ أصدقاءك للانضمام إلى اطلب فني:\n\n🔧 سجّل فنياً:\nhttps://otlobfanni.ly/join\n\n🏢 سجّل شركة خدمية:\nhttps://otlobfanni.ly/join-company\n\n📦 سجّل مورد مستلزمات:\nhttps://otlobfanni.ly/join-supplier\n━━━━━━━━━━━━━━━━━━━\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`
     window.open(`https://wa.me/${(phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 

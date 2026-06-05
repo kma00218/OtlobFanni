@@ -366,7 +366,7 @@ export default function Companies() {
           )}
           {(row.whatsapp || row.phone) && (
             <button
-              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.companyName || row.company_name || ''}! 🎉 تم نشر شركتكم الآن على منصة اطلب فني 🇱🇾\n\nيمكنكم الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/company/${row.id}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الشركات الجديدة\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
+              onClick={() => window.open(`https://wa.me/${((row.whatsapp || row.phone) || '').replace(/\D/g, '')}?text=${encodeURIComponent(`مبروك ${row.companyName || row.company_name || ''}! 🎉 تم نشر شركتكم الآن على منصة اطلب فني 🇱🇾\n\nيمكنكم الآن مشاركة نشاطكم مع عملائكم عبر هذا الرابط:\n👉 https://otlobfanni.ly/company/${row.id}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n━━━━━━━━━━━━━━━━━━━\n🔗 روابط التسجيل في المنصة\nادعُ أصدقاءك للانضمام إلى اطلب فني:\n\n🔧 سجّل فنياً:\nhttps://otlobfanni.ly/join\n\n🏢 سجّل شركة خدمية:\nhttps://otlobfanni.ly/join-company\n\n📦 سجّل مورد مستلزمات:\nhttps://otlobfanni.ly/join-supplier\n━━━━━━━━━━━━━━━━━━━\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الشركات الجديدة\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`)}`, '_blank')}
               className="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded-lg transition-colors"
               title="رسالة الترحيب 🎉">
               <MessageCircle className="w-3.5 h-3.5" />
