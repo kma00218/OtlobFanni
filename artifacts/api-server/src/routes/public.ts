@@ -379,7 +379,7 @@ router.get("/companies/:id", async (req, res): Promise<void> => {
     })
     .from(companyApplicationsTable)
     .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
-    .where(and(eq(companyApplicationsTable.id, raw), eq(companyApplicationsTable.status, "published")));
+    .where(and(eq(companyApplicationsTable.id, raw), inArray(companyApplicationsTable.status, ["approved", "published"])));
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
   res.json({
     ...row.company,
