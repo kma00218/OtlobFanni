@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Users, UserPlus, Building2, Package, Copy, Check, Plus, Trash2, Edit2, Link2, X, ToggleLeft, ToggleRight, ChevronDown, ChevronUp } from 'lucide-react'
 import api from '../../lib/api'
+import LibyaPhoneInput from '../../components/LibyaPhoneInput'
 
 const BASE_URL = 'https://otlobfanni.ly'
 
@@ -75,22 +76,16 @@ function AmbassadorForm({ initial, onSave, onCancel, saving }) {
         </div>
         <div>
           <label className="text-xs font-bold text-gray-600 mb-1 block">الهاتف</label>
-          <input
-            value={form.phone}
-            onChange={e => set('phone', e.target.value)}
-            placeholder="0912345678"
-            dir="ltr"
-            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#FF7900]"
+          <LibyaPhoneInput
+            value={form.phone || ''}
+            onChange={v => set('phone', v)}
           />
         </div>
         <div>
           <label className="text-xs font-bold text-gray-600 mb-1 block">واتساب</label>
-          <input
-            value={form.whatsapp}
-            onChange={e => set('whatsapp', e.target.value)}
-            placeholder="0912345678"
-            dir="ltr"
-            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#FF7900]"
+          <LibyaPhoneInput
+            value={form.whatsapp || ''}
+            onChange={v => set('whatsapp', v)}
           />
         </div>
       </div>
