@@ -886,13 +886,19 @@ router.post("/technician-applications", async (req, res): Promise<void> => {
   let referredByName: string | null = null;
   let referredByType: string | null = null;
   if (body.referred_by) {
+    const ref = body.referred_by;
     const [techRef] = await db.select({ fullName: technicianApplicationsTable.fullName })
-      .from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, body.referred_by));
+      .from(technicianApplicationsTable).where(or(eq(technicianApplicationsTable.requestNumber, ref), eq(technicianApplicationsTable.id, ref)));
     if (techRef) { referredByName = techRef.fullName; referredByType = "technician"; }
     else {
       const [compRef] = await db.select({ companyName: companyApplicationsTable.companyName })
-        .from(companyApplicationsTable).where(eq(companyApplicationsTable.id, body.referred_by));
+        .from(companyApplicationsTable).where(or(eq(companyApplicationsTable.requestNumber, ref), eq(companyApplicationsTable.id, ref)));
       if (compRef) { referredByName = compRef.companyName; referredByType = "company"; }
+      else {
+        const [supRef] = await db.select({ businessName: supplierApplicationsTable.businessName })
+          .from(supplierApplicationsTable).where(or(eq(supplierApplicationsTable.requestNumber, ref), eq(supplierApplicationsTable.id, ref)));
+        if (supRef) { referredByName = supRef.businessName; referredByType = "supplier"; }
+      }
     }
   }
 
@@ -955,13 +961,19 @@ router.post("/company-applications", async (req, res): Promise<void> => {
   let refByName: string | null = null;
   let refByType: string | null = null;
   if (body.referred_by) {
+    const ref = body.referred_by;
     const [techRef] = await db.select({ fullName: technicianApplicationsTable.fullName })
-      .from(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, body.referred_by));
+      .from(technicianApplicationsTable).where(or(eq(technicianApplicationsTable.requestNumber, ref), eq(technicianApplicationsTable.id, ref)));
     if (techRef) { refByName = techRef.fullName; refByType = "technician"; }
     else {
       const [compRef] = await db.select({ companyName: companyApplicationsTable.companyName })
-        .from(companyApplicationsTable).where(eq(companyApplicationsTable.id, body.referred_by));
+        .from(companyApplicationsTable).where(or(eq(companyApplicationsTable.requestNumber, ref), eq(companyApplicationsTable.id, ref)));
       if (compRef) { refByName = compRef.companyName; refByType = "company"; }
+      else {
+        const [supRef] = await db.select({ businessName: supplierApplicationsTable.businessName })
+          .from(supplierApplicationsTable).where(or(eq(supplierApplicationsTable.requestNumber, ref), eq(supplierApplicationsTable.id, ref)));
+        if (supRef) { refByName = supRef.businessName; refByType = "supplier"; }
+      }
     }
   }
 

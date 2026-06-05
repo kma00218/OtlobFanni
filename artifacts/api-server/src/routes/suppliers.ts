@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { autoExtractTagsInBackground } from "../lib/aiTags";
 import { db } from "@workspace/db";
-import { supplierApplicationsTable, citiesTable, reviewsTable } from "@workspace/db/schema";
+import { supplierApplicationsTable, citiesTable, reviewsTable, technicianApplicationsTable, companyApplicationsTable } from "@workspace/db/schema";
 import { eq, desc, and, or, ilike } from "drizzle-orm";
 
 const router: IRouter = Router();
@@ -17,6 +17,25 @@ router.post("/supplier-applications", async (req, res): Promise<void> => {
   const num  = String(Math.floor(100000 + Math.random() * 900000));
   const requestNumber = `SUP-${year}-${num}`;
   const id = "sup" + Date.now() + Math.random().toString(36).slice(2, 5);
+
+  let refByName: string | null = null;
+  let refByType: string | null = null;
+  if (body.referred_by) {
+    const ref = body.referred_by;
+    const [techRef] = await db.select({ fullName: technicianApplicationsTable.fullName })
+      .from(technicianApplicationsTable).where(or(eq(technicianApplicationsTable.requestNumber, ref), eq(technicianApplicationsTable.id, ref)));
+    if (techRef) { refByName = techRef.fullName; refByType = "technician"; }
+    else {
+      const [compRef] = await db.select({ companyName: companyApplicationsTable.companyName })
+        .from(companyApplicationsTable).where(or(eq(companyApplicationsTable.requestNumber, ref), eq(companyApplicationsTable.id, ref)));
+      if (compRef) { refByName = compRef.companyName; refByType = "company"; }
+      else {
+        const [supRef] = await db.select({ businessName: supplierApplicationsTable.businessName })
+          .from(supplierApplicationsTable).where(or(eq(supplierApplicationsTable.requestNumber, ref), eq(supplierApplicationsTable.id, ref)));
+        if (supRef) { refByName = supRef.businessName; refByType = "supplier"; }
+      }
+    }
+  }
 
   const [app] = await db.insert(supplierApplicationsTable).values({
     id,
