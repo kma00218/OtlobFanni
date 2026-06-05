@@ -290,7 +290,7 @@ export default function Home() {
                     key={city.id}
                     onClick={() => navigate(`/city/${city.id}`)}
                     className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border transition-colors active:scale-95"
-                    style={{ background: 'white', border: '1.5px solid #E2E8F0', color: '#071B33' }}
+                    style={{ background: '#FFF5EC', border: '1.5px solid #FFD6B0', color: '#071B33' }}
                   >
                     <span style={{ fontSize: '14px' }}>📍</span>
                     {label}
