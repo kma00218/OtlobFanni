@@ -1,0 +1,126 @@
+Implement T008 — Request Notifications System
+
+Goal:
+Ensure that professionals (technicians, service companies, suppliers) and Admin can immediately see new incoming service requests.
+
+Requirements:
+
+1. Professional Dashboard Notifications
+
+For each professional account:
+
+- Add unread/new request tracking.
+- Add a red badge on the "الطلبات" tab.
+- Display the number of unread requests.
+
+Example:
+
+الطلبات 🔴 3
+
+2. Read Status
+
+Add a boolean field:
+
+is_read
+
+Default:
+
+false
+
+When a professional opens/views a request:
+
+is_read = true
+
+The badge count must update automatically.
+
+3. Real-Time Refresh
+
+When a new request is created:
+
+- Refresh the request counter automatically.
+- Update the badge without requiring a page reload if possible.
+
+4. Sound Notification
+
+When a new request arrives while the professional is logged in and viewing the dashboard:
+
+- Play a short notification sound once.
+- Do not repeat continuously.
+
+5. Admin Notifications
+
+Admin must receive the same notification system.
+
+Add:
+
+- Unread request counter
+- Red badge
+- New request indicator
+
+Example:
+
+الطلبات 🔴 7
+
+6. Admin Dashboard Summary
+
+Add a small statistics widget:
+
+طلبات اليوم
+طلبات جديدة غير مقروءة
+إجمالي الطلبات
+
+Example:
+
+طلبات اليوم: 14
+غير مقروءة: 5
+إجمالي الطلبات: 312
+
+7. Request Activity Feed
+
+Show latest requests on Admin Dashboard:
+
+- Customer name
+- City
+- Service type
+- Created time
+
+Example:
+
+محمد | طرابلس | كهرباء | قبل 5 دقائق
+
+8. Performance
+
+Use existing service_requests table.
+
+Do not rebuild the request system.
+
+Do not create duplicate tables.
+
+9. Do NOT implement
+
+- Firebase
+- Push notifications
+- SMS
+- Email
+- WhatsApp notifications
+
+Only:
+
+- Badge counters
+- Read/unread tracking
+- Admin counters
+- Dashboard statistics
+- Notification sound
+
+10. Final Verification
+
+Verify:
+
+- New request increases badge count.
+- Opening request marks it as read.
+- Admin sees unread count.
+- Professional sees unread count.
+- Sound notification works.
+- Dashboard statistics update correctly.
+
+Stop after completing T008 only.
