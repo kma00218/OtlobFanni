@@ -1,6 +1,7 @@
 import { useParams, useLocation } from 'wouter'
 import { Wrench, Building2, Package, ArrowLeft } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import logo from '/logo.png'
 
 export default function RefLanding() {
   const { code } = useParams()
@@ -51,9 +52,7 @@ export default function RefLanding() {
 
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-[#FF7900] flex items-center justify-center mb-3 shadow-lg shadow-orange-900/30">
-            <Wrench className="w-8 h-8 text-white" />
-          </div>
+          <img src={logo} alt="اطلب فني" className="w-20 h-20 rounded-3xl shadow-lg shadow-black/30 mb-3" />
           <h1 className="text-2xl font-black text-white">اطلب فني</h1>
           <p className="text-white/50 text-sm mt-1">Otlob Fanni</p>
         </div>
