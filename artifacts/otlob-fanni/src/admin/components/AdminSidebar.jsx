@@ -4,7 +4,7 @@ import { useAdmin } from '../../context/AdminContext'
 import {
   LayoutDashboard, Wrench, Building2, Tag, MapPin, FileCheck,
   Megaphone, Users, Settings, Activity, LogOut, X, Shield, Newspaper, Search,
-  Image as ImageIcon, Package, Flag, UserPlus, FilePen, ClipboardList, Handshake,
+  Image as ImageIcon, Package, Flag, UserPlus, FilePen, ClipboardList, Handshake, Link2,
 } from 'lucide-react'
 import api from '../../lib/api'
 
@@ -46,7 +46,8 @@ const NAV_GROUPS = [
     id: 'marketing',
     label: 'التسويق',
     items: [
-      { path: '/admin/poster', label: 'توليد منشور', icon: ImageIcon },
+      { path: '/admin/affiliates', label: 'الإحالات والسفراء', icon: Link2 },
+      { path: '/admin/poster',     label: 'توليد منشور',      icon: ImageIcon },
     ]
   },
   {

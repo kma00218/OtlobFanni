@@ -234,6 +234,15 @@ export const api = {
       delete:    (id)            => del(`/admin/referrals/${id}`),
     },
 
+    ambassadors: {
+      list:   ()           => get('/admin/ambassadors'),
+      create: (data)       => post('/admin/ambassadors', data),
+      update: (id, data)   => patch(`/admin/ambassadors/${id}`, data),
+      delete: (id)         => del(`/admin/ambassadors/${id}`),
+    },
+
+    affiliateStats: () => get('/admin/affiliate-stats'),
+
     companies: {
       list:         ()             => get('/admin/companies'),
       create:       (data)        => post('/admin/companies', data),

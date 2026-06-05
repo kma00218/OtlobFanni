@@ -6,6 +6,7 @@ import {
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
   proCredentialsTable, referralsTable, profileUpdateRequestsTable, dealsTable,
+  ambassadorsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
@@ -1173,6 +1174,88 @@ router.patch("/deals/:id/status", async (req, res): Promise<void> => {
   const [r] = await db.update(dealsTable).set({ status }).where(eq(dealsTable.id, id)).returning();
   if (!r) { res.status(404).json({ error: "Not found" }); return; }
   res.json(r);
+});
+
+// ── Ambassadors ───────────────────────────────────────────────────────────────
+router.get("/ambassadors", async (_req, res): Promise<void> => {
+  const rows = await db.select().from(ambassadorsTable).orderBy(desc(ambassadorsTable.createdAt));
+  res.json(rows);
+});
+
+router.post("/ambassadors", async (req, res): Promise<void> => {
+  const { name, phone, whatsapp, code, notes } = req.body;
+  if (!name || !code) { res.status(400).json({ error: "name and code required" }); return; }
+  const id = "amb_" + Date.now() + Math.random().toString(36).slice(2, 5);
+  const [row] = await db.insert(ambassadorsTable).values({
+    id, name, phone: phone || null, whatsapp: whatsapp || null,
+    code: code.toUpperCase(), notes: notes || null,
+    isActive: true,
+  }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/ambassadors/:id", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const b = req.body;
+  const updates: Record<string, unknown> = {};
+  if (b.name      !== undefined) updates.name      = b.name;
+  if (b.phone     !== undefined) updates.phone     = b.phone;
+  if (b.whatsapp  !== undefined) updates.whatsapp  = b.whatsapp;
+  if (b.code      !== undefined) updates.code      = String(b.code).toUpperCase();
+  if (b.notes     !== undefined) updates.notes     = b.notes;
+  if (b.isActive  !== undefined) updates.isActive  = b.isActive;
+  const [row] = await db.update(ambassadorsTable).set(updates).where(eq(ambassadorsTable.id, id)).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
+});
+
+router.delete("/ambassadors/:id", async (req, res): Promise<void> => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  await db.delete(ambassadorsTable).where(eq(ambassadorsTable.id, id));
+  res.sendStatus(204);
+});
+
+// ── Affiliate Stats ────────────────────────────────────────────────────────────
+router.get("/affiliate-stats", async (_req, res): Promise<void> => {
+  const [techApps, compApps, supApps, ambs] = await Promise.all([
+    db.select({ referredBy: technicianApplicationsTable.referredBy, name: technicianApplicationsTable.referredByName, type: technicianApplicationsTable.referredByType })
+      .from(technicianApplicationsTable).where(sql`${technicianApplicationsTable.referredBy} IS NOT NULL`),
+    db.select({ referredBy: companyApplicationsTable.referredBy, name: companyApplicationsTable.referredByName, type: companyApplicationsTable.referredByType })
+      .from(companyApplicationsTable).where(sql`${companyApplicationsTable.referredBy} IS NOT NULL`),
+    db.select({ referredBy: supplierApplicationsTable.referredBy })
+      .from(supplierApplicationsTable).where(sql`${supplierApplicationsTable.referredBy} IS NOT NULL`),
+    db.select().from(ambassadorsTable),
+  ]);
+
+  const ambMap = new Map(ambs.map(a => [a.code, a]));
+  const map: Record<string, { code: string; name: string; type: string; technicians: number; companies: number; suppliers: number }> = {};
+
+  const ensure = (code: string, name: string | null, type: string | null) => {
+    if (!code) return;
+    if (!map[code]) {
+      const amb = ambMap.get(code);
+      map[code] = {
+        code,
+        name: amb ? amb.name : (name || code),
+        type: amb ? 'ambassador' : (type || 'unknown'),
+        technicians: 0, companies: 0, suppliers: 0,
+      };
+    }
+  };
+
+  techApps.forEach(r => { ensure(r.referredBy!, r.name, r.type); if (map[r.referredBy!]) map[r.referredBy!].technicians++; });
+  compApps.forEach(r => { ensure(r.referredBy!, r.name, r.type); if (map[r.referredBy!]) map[r.referredBy!].companies++; });
+  supApps.forEach(r => { ensure(r.referredBy!, null, null); if (map[r.referredBy!]) map[r.referredBy!].suppliers++; });
+
+  const referrers = Object.values(map).map(r => ({ ...r, total: r.technicians + r.companies + r.suppliers }));
+  const totals = {
+    technicians: referrers.reduce((s, r) => s + r.technicians, 0),
+    companies:   referrers.reduce((s, r) => s + r.companies, 0),
+    suppliers:   referrers.reduce((s, r) => s + r.suppliers, 0),
+    total:       referrers.reduce((s, r) => s + r.total, 0),
+  };
+
+  res.json({ referrers, totals });
 });
 
 export default router;
