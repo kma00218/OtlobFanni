@@ -51,6 +51,7 @@ const ProSoon = lazy(() => import("./pages/ProSoon"));
 const ProProfile = lazy(() => import("./pages/ProProfile"));
 const ProEditProfile = lazy(() => import("./pages/ProEditProfile"));
 const DealConfirm = lazy(() => import("./pages/DealConfirm"));
+const RefLanding = lazy(() => import("./pages/RefLanding"));
 
 
 // Admin — lazy loaded as a separate chunk
@@ -236,6 +237,7 @@ function AppContent() {
               <Route path="/technician/:id" component={TechnicianDetails} />
               <Route path="/companies" component={Companies} />
               <Route path="/company/:id" component={CompanyDetails} />
+              <Route path="/ref/:code" component={RefLanding} />
               <Route path="/join" component={Join} />
               <Route path="/join-company" component={JoinCompany} />
               <Route path="/join-supplier" component={JoinSupplier} />

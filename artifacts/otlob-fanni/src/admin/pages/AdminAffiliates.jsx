@@ -29,9 +29,9 @@ function CopyLinkButton({ code }) {
   const [copied, setCopied] = useState(false)
   return (
     <button
-      onClick={() => copyToClipboard(`${BASE_URL}/join?ref=${code}`, setCopied)}
-      className={`flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600 hover:bg-[#FF7900]/10 hover:text-[#FF7900]'}`}
-      title="نسخ رابط الإحالة"
+      onClick={() => copyToClipboard(`${BASE_URL}/ref/${code}`, setCopied)}
+      className={`flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'bg-emerald-100 text-emerald-700' : 'bg-[#FF7900]/10 text-[#FF7900] hover:bg-[#FF7900]/20'}`}
+      title="نسخ الرابط الموحّد"
     >
       {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
       {copied ? 'تم النسخ' : 'نسخ الرابط'}
@@ -105,14 +105,9 @@ function AmbassadorForm({ initial, onSave, onCancel, saving }) {
       </div>
       {form.code && (
         <div className="bg-white rounded-xl border border-gray-200 p-3 space-y-1.5">
-          <p className="text-[10px] font-bold text-gray-400 uppercase">روابط الإحالة</p>
-          {[
-            { label: '🔧 فني', path: '/join' },
-            { label: '🏢 شركة خدمية', path: '/join-company' },
-            { label: '📦 مورد مستلزمات', path: '/join-supplier' },
-          ].map(l => (
-            <p key={l.path} className="text-xs font-mono text-[#FF7900] break-all">{BASE_URL}{l.path}?ref={form.code}</p>
-          ))}
+          <p className="text-[10px] font-bold text-gray-400 uppercase">الرابط الموحّد</p>
+          <p className="text-xs font-mono text-[#FF7900] break-all">{BASE_URL}/ref/{form.code}</p>
+          <p className="text-[10px] text-gray-400">رابط واحد — الزائر يختار نوع حسابه بنفسه</p>
         </div>
       )}
       <div className="flex gap-2 justify-end">
@@ -178,7 +173,7 @@ function AmbassadorCard({ amb, stats, onDelete, onToggle, onEdit, updating }) {
           className="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
         >
           <Link2 className="w-3 h-3" />
-          الروابط الثلاثة
+          روابط منفصلة
           {showLinks ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         </button>
         {waNum && (
@@ -193,21 +188,30 @@ function AmbassadorCard({ amb, stats, onDelete, onToggle, onEdit, updating }) {
       </div>
 
       {showLinks && (
-        <div className="bg-gray-50 rounded-xl p-3 space-y-1.5 text-xs font-mono">
-          {[
-            { label: '🔧 فني', path: '/join' },
-            { label: '🏢 شركة خدمية', path: '/join-company' },
-            { label: '📦 مورد مستلزمات', path: '/join-supplier' },
-          ].map(l => {
-            const url = `${BASE_URL}${l.path}?ref=${amb.code}`
-            return (
-              <div key={l.path} className="flex items-center gap-2">
-                <span className="text-gray-500 text-[10px] w-24 flex-shrink-0">{l.label}:</span>
-                <span className="text-[#FF7900] break-all flex-1">{url}</span>
-                <button onClick={() => copyToClipboard(url, () => {})} className="flex-shrink-0 p-1 rounded hover:bg-gray-200"><Copy className="w-3 h-3 text-gray-400" /></button>
-              </div>
-            )
-          })}
+        <div className="bg-gray-50 rounded-xl p-3 space-y-2 text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400 text-[10px] w-6">🔗</span>
+            <span className="text-[#FF7900] break-all flex-1">{BASE_URL}/ref/{amb.code}</span>
+            <button onClick={() => copyToClipboard(`${BASE_URL}/ref/${amb.code}`, () => {})} className="flex-shrink-0 p-1 rounded hover:bg-gray-200"><Copy className="w-3 h-3 text-gray-400" /></button>
+          </div>
+          <p className="text-[10px] text-gray-400 pr-6">رابط موحّد — يفتح صفحة اختيار النوع</p>
+          <div className="border-t border-gray-200 pt-2 space-y-1.5">
+            <p className="text-[10px] font-bold text-gray-400">أو روابط مباشرة حسب النوع:</p>
+            {[
+              { label: '🔧 فني', path: '/join' },
+              { label: '🏢 شركة', path: '/join-company' },
+              { label: '📦 مورد', path: '/join-supplier' },
+            ].map(l => {
+              const url = `${BASE_URL}${l.path}?ref=${amb.code}`
+              return (
+                <div key={l.path} className="flex items-center gap-2">
+                  <span className="text-gray-500 text-[10px] w-14 flex-shrink-0">{l.label}:</span>
+                  <span className="text-gray-500 break-all flex-1 text-[10px]">{url}</span>
+                  <button onClick={() => copyToClipboard(url, () => {})} className="flex-shrink-0 p-1 rounded hover:bg-gray-200"><Copy className="w-3 h-3 text-gray-400" /></button>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
