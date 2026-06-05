@@ -114,6 +114,7 @@ export const api = {
     : Promise.resolve([]),
 
   updateServiceRequest: (id, status) => patch(`/service-requests/${id}/status`, { status }),
+  markRequestRead:      (id)         => patch(`/service-requests/${id}/read`, {}),
 
   createServiceRequest: (data) => post('/service-requests', data),
   myServiceRequests: (entityType, entityId) =>
@@ -207,6 +208,7 @@ export const api = {
       list:   (qs = '')     => get(`/admin/service-requests${qs}`),
       update: (id, status)  => patch(`/admin/service-requests/${id}/status`, { status }),
       delete: (id)          => del(`/admin/service-requests/${id}`),
+      markRead: (id)        => patch(`/service-requests/${id}/read`, {}),
     },
 
     adminUsers: {

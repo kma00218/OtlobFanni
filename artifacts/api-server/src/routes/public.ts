@@ -701,6 +701,18 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
   res.json(r);
 });
 
+// ── Mark service request as read (pro opens details) ──────────────────────────
+router.patch("/service-requests/:id/read", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const now = new Date();
+  const [r] = await db.update(serviceRequestsTable)
+    .set({ isRead: true, lastViewedAt: now })
+    .where(eq(serviceRequestsTable.id, raw))
+    .returning({ id: serviceRequestsTable.id });
+  if (!r) { res.status(404).json({ error: "Not found" }); return; }
+  res.json({ ok: true });
+});
+
 // ── DEALS ─────────────────────────────────────────────────────────────────────
 
 // Create a deal (pro initiates)

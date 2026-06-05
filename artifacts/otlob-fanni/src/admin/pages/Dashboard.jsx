@@ -293,6 +293,47 @@ export default function Dashboard() {
         <StatCard title="الإعلانات النشطة"  value={stats.activeAds}          icon={Megaphone}    gradient="rose"   loading={loading} />
       </div>
 
+      {/* ── SERVICE REQUESTS STATS ─────────────────────────── */}
+      <SectionLabel icon={ClipboardList} label="طلبات الخدمة" color="text-[#FF7900]" />
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-2xl p-4 flex items-center gap-4" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="w-5 h-5 text-[#FF7900]" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">طلبات اليوم</p>
+            {loading
+              ? <div className="h-7 w-10 bg-slate-200 rounded animate-pulse mt-1" />
+              : <p className="font-black text-2xl text-[#FF7900]">{(stats.todayRequests ?? 0).toLocaleString('en-US')}</p>
+            }
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 flex items-center gap-4" style={{ border: stats.newRequests > 0 ? '1px solid #FF7900' : '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${stats.newRequests > 0 ? 'bg-orange-100 border border-orange-200' : 'bg-slate-50 border border-slate-100'}`}>
+            <div className={`w-3 h-3 rounded-full ${stats.newRequests > 0 ? 'bg-[#FF7900] animate-pulse' : 'bg-slate-300'}`} />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">غير مقروءة</p>
+            {loading
+              ? <div className="h-7 w-10 bg-slate-200 rounded animate-pulse mt-1" />
+              : <p className={`font-black text-2xl ${stats.newRequests > 0 ? 'text-[#FF7900]' : 'text-slate-400'}`}>{(stats.newRequests ?? 0).toLocaleString('en-US')}</p>
+            }
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 flex items-center gap-4" style={{ border: '1px solid #E8EDF2', boxShadow: '0 1px 6px rgba(7,27,51,0.06)' }}>
+          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0">
+            <ClipboardList className="w-5 h-5 text-slate-400" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">إجمالي الطلبات</p>
+            {loading
+              ? <div className="h-7 w-10 bg-slate-200 rounded animate-pulse mt-1" />
+              : <p className="font-black text-2xl text-[#071B33]">{(stats.totalRequests ?? 0).toLocaleString('en-US')}</p>
+            }
+          </div>
+        </div>
+      </div>
+
       {/* ── PENDING STATS ─────────────────────────────────── */}
       <SectionLabel icon={ClipboardList} label="الطلبات المعلّقة" color="text-amber-600" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

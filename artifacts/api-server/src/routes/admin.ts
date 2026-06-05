@@ -28,8 +28,11 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [approvedCompanies]  = await db.select({ count: count() }).from(companyApplicationsTable).where(or(eq(companyApplicationsTable.status, "approved"), eq(companyApplicationsTable.status, "published")));
   const [pendingAdReqs]      = await db.select({ count: count() }).from(adRequestsTable).where(eq(adRequestsTable.status, "pending"));
   const [approvedAdReqs]     = await db.select({ count: count() }).from(adRequestsTable).where(eq(adRequestsTable.status, "approved"));
-  const [newReqs]            = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "new"));
+  const [newReqs]            = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.isRead, false));
   const [completedReqs]      = await db.select({ count: count() }).from(serviceRequestsTable).where(eq(serviceRequestsTable.status, "completed"));
+  const todayStart           = new Date(); todayStart.setHours(0, 0, 0, 0);
+  const [todayReqs]          = await db.select({ count: count() }).from(serviceRequestsTable).where(sql`${serviceRequestsTable.createdAt} >= ${todayStart}`);
+  const [totalReqs]          = await db.select({ count: count() }).from(serviceRequestsTable);
   const [pendingSupplierApps]  = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "pending"));
   const [totalSupplierApps]    = await db.select({ count: count() }).from(supplierApplicationsTable);
   const [publishedSuppliers]   = await db.select({ count: count() }).from(supplierApplicationsTable).where(eq(supplierApplicationsTable.status, "published"));
@@ -38,7 +41,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [pendingReferrals]     = await db.select({ count: count() }).from(referralsTable).where(eq(referralsTable.status, "new"));
   const [pendingProfileUpds]   = await db.select({ count: count() }).from(profileUpdateRequestsTable).where(eq(profileUpdateRequestsTable.status, "pending"));
 
-  const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(5);
+  const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(10);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
   const recentCompanies  = await db.select().from(companyApplicationsTable).orderBy(desc(companyApplicationsTable.createdAt)).limit(5);
 
@@ -57,6 +60,8 @@ router.get("/stats", async (_req, res): Promise<void> => {
     pendingAdRequests:    Number(pendingAdReqs.count),
     approvedAdRequests:   Number(approvedAdReqs.count),
     newRequests:          Number(newReqs.count),
+    todayRequests:        Number(todayReqs.count),
+    totalRequests:        Number(totalReqs.count),
     completedRequests:    Number(completedReqs.count),
     pendingSupplierApps:  Number(pendingSupplierApps.count),
     totalSupplierApps:    Number(totalSupplierApps.count),

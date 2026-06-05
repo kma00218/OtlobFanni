@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ClipboardList, Phone, MapPin, Clock, CheckCircle, XCircle, MessageCircle, RefreshCw, Filter, ExternalLink } from 'lucide-react'
+import { ClipboardList, Phone, MapPin, Clock, CheckCircle, XCircle, MessageCircle, RefreshCw, Filter, ExternalLink, ChevronDown } from 'lucide-react'
 import api from '../../lib/api'
 
 const STATUS_CONFIG = {
@@ -27,13 +27,25 @@ const WaIcon = () => (
   </svg>
 )
 
-function RequestCard({ req, onStatusChange }) {
-  const [updating, setUpdating] = useState(false)
-  const status = STATUS_CONFIG[req.status] || STATUS_CONFIG.new
+function RequestCard({ req, onStatusChange, onMarkRead }) {
+  const [updating,   setUpdating]   = useState(false)
+  const [expanded,   setExpanded]   = useState(false)
+  const [localRead,  setLocalRead]  = useState(req.isRead)
+  const status     = STATUS_CONFIG[req.status] || STATUS_CONFIG.new
   const ownerLabel = OWNER_TYPE_LABELS[req.ownerType] || req.ownerType
   const profilePath = req.ownerId && req.ownerType
     ? `/${OWNER_TYPE_ROUTES[req.ownerType] || req.ownerType}/${req.ownerId}`
     : null
+
+  const handleExpand = async () => {
+    const opening = !expanded
+    setExpanded(opening)
+    if (opening && !localRead) {
+      setLocalRead(true)
+      try { await api.admin.serviceRequests.markRead(req.id) } catch {}
+      onMarkRead?.(req.id)
+    }
+  }
 
   const changeStatus = async (newStatus) => {
     setUpdating(true)
@@ -53,116 +65,132 @@ function RequestCard({ req, onStatusChange }) {
     return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`
   }
 
+  const isUnread = !localRead
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-[#071B33] text-sm">{req.customerName}</span>
-            {req.ownerType && (
-              profilePath ? (
-                <a
-                  href={profilePath}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#071B33]/8 text-[#071B33] hover:bg-[#071B33]/15 transition-colors">
-                  → {ownerLabel} <ExternalLink className="w-2.5 h-2.5" />
-                </a>
-              ) : (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#071B33]/8 text-[#071B33]/60">
-                  → {ownerLabel}
+    <div className={`bg-white rounded-2xl shadow-sm overflow-hidden ${
+      isUnread ? 'ring-2 ring-[#FF7900]/30' : 'border border-gray-100'
+    }`} style={isUnread ? { border: '1px solid #FF7900' } : {}}>
+
+      {/* ── Collapsed header ── */}
+      <button type="button" onClick={handleExpand}
+        className="w-full p-4 flex items-start justify-between gap-3 text-right active:bg-gray-50 transition-colors">
+        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          {isUnread && (
+            <span className="w-2 h-2 rounded-full bg-[#FF7900] flex-shrink-0 mt-0.5 animate-pulse" />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-[#071B33] text-sm">{req.customerName}</span>
+              {req.ownerType && (
+                profilePath ? (
+                  <a href={profilePath} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
+                    className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#071B33]/8 text-[#071B33] hover:bg-[#071B33]/15 transition-colors">
+                    → {ownerLabel} <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                ) : (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#071B33]/8 text-[#071B33]/60">
+                    → {ownerLabel}
+                  </span>
+                )
+              )}
+            </div>
+            <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+              {req.cityName && (
+                <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> {req.cityName}
                 </span>
-              )
-            )}
+              )}
+              {req.requestType && (
+                <span className="text-xs text-[#FF7900] font-semibold">{req.requestType}</span>
+              )}
+              <span className="text-[10px] text-gray-300">
+                {new Date(req.createdAt).toLocaleDateString('ar-LY')}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3 mt-1 flex-wrap">
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full ${status.color}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+            {status.label}
+          </span>
+          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+        </div>
+      </button>
+
+      {/* ── Expanded details ── */}
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3" style={{ borderTop: '1px solid #F0F2F5' }}>
+          <div className="pt-3 flex flex-wrap items-center gap-3">
             {req.phone && (
               <span className="text-xs text-gray-500 flex items-center gap-1">
                 <Phone className="w-3 h-3" /> {req.phone}
               </span>
             )}
-            {req.cityName && (
-              <span className="text-xs text-gray-500 flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> {req.cityName}
-              </span>
+            <span className="text-[10px] text-gray-300">
+              {new Date(req.createdAt).toLocaleString('ar-LY')}
+            </span>
+          </div>
+
+          {req.description && (
+            <div className="bg-[#FF7900]/5 rounded-xl px-3 py-2">
+              <p className="text-xs text-gray-600">{req.description}</p>
+            </div>
+          )}
+
+          {req.photoUrls && req.photoUrls.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {req.photoUrls.map((url, i) => (
+                <a key={i} href={url} target="_blank" rel="noreferrer"
+                  className="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0 hover:opacity-90 transition-opacity">
+                  <img src={url} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display='none' }} />
+                </a>
+              ))}
+            </div>
+          )}
+
+          {req.preferredDatetime && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Clock className="w-3 h-3" /> {req.preferredDatetime}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex flex-wrap gap-2 pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
+            {profilePath && (
+              <a href={profilePath} target="_blank" rel="noreferrer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#071B33]/6 text-[#071B33] hover:bg-[#071B33]/12 border border-[#071B33]/15 transition-colors">
+                <ExternalLink className="w-3 h-3" /> عرض الملف
+              </a>
+            )}
+            {req.phone && (
+              <a href={buildWaUrl()} target="_blank" rel="noreferrer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors">
+                <WaIcon /> رد على واتساب
+              </a>
+            )}
+            {req.status !== 'contacted' && req.status !== 'completed' && req.status !== 'cancelled' && (
+              <button onClick={() => changeStatus('contacted')} disabled={updating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition-colors disabled:opacity-50">
+                <MessageCircle className="w-3 h-3" /> تم التواصل
+              </button>
+            )}
+            {req.status !== 'completed' && req.status !== 'cancelled' && (
+              <button onClick={() => changeStatus('completed')} disabled={updating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors disabled:opacity-50">
+                <CheckCircle className="w-3 h-3" /> مكتمل
+              </button>
+            )}
+            {req.status !== 'cancelled' && (
+              <button onClick={() => changeStatus('cancelled')} disabled={updating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50">
+                <XCircle className="w-3 h-3" /> إلغاء
+              </button>
             )}
           </div>
         </div>
-        <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0 ${status.color}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-          {status.label}
-        </span>
-      </div>
-
-      {/* Request type + description */}
-      {req.requestType && (
-        <div className="bg-[#FF7900]/5 rounded-xl px-3 py-2">
-          <p className="text-xs font-bold text-[#FF7900]">{req.requestType}</p>
-          {req.description && <p className="text-xs text-gray-600 mt-0.5">{req.description}</p>}
-        </div>
       )}
-
-      {/* Photos */}
-      {req.photoUrls && req.photoUrls.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {req.photoUrls.map((url, i) => (
-            <a key={i} href={url} target="_blank" rel="noreferrer"
-              className="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0 hover:opacity-90 transition-opacity">
-              <img src={url} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display='none' }} />
-            </a>
-          ))}
-        </div>
-      )}
-
-      {/* Preferred datetime */}
-      {req.preferredDatetime && (
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <Clock className="w-3 h-3" />
-          {req.preferredDatetime}
-        </div>
-      )}
-
-      {/* Created at */}
-      <p className="text-[10px] text-gray-300">
-        {new Date(req.createdAt).toLocaleString('ar-LY')}
-      </p>
-
-      {/* Actions */}
-      <div className="flex flex-wrap gap-2 pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
-        {/* View profile */}
-        {profilePath && (
-          <a href={profilePath} target="_blank" rel="noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#071B33]/6 text-[#071B33] hover:bg-[#071B33]/12 border border-[#071B33]/15 transition-colors">
-            <ExternalLink className="w-3 h-3" /> عرض الملف الشخصي
-          </a>
-        )}
-        {/* WhatsApp reply */}
-        {req.phone && (
-          <a href={buildWaUrl()} target="_blank" rel="noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors">
-            <WaIcon /> رد على واتساب
-          </a>
-        )}
-        {req.status !== 'contacted' && req.status !== 'completed' && req.status !== 'cancelled' && (
-          <button onClick={() => changeStatus('contacted')} disabled={updating}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition-colors disabled:opacity-50">
-            <MessageCircle className="w-3 h-3" /> تم التواصل
-          </button>
-        )}
-        {req.status !== 'completed' && req.status !== 'cancelled' && (
-          <button onClick={() => changeStatus('completed')} disabled={updating}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors disabled:opacity-50">
-            <CheckCircle className="w-3 h-3" /> مكتمل
-          </button>
-        )}
-        {req.status !== 'cancelled' && (
-          <button onClick={() => changeStatus('cancelled')} disabled={updating}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50">
-            <XCircle className="w-3 h-3" /> إلغاء
-          </button>
-        )}
-      </div>
     </div>
   )
 }
@@ -190,6 +218,10 @@ export default function AdminServiceRequests() {
 
   const handleStatusChange = (id, newStatus) => {
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
+  }
+
+  const handleMarkRead = (id) => {
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, isRead: true } : r))
   }
 
   const counts = { all: requests.length }
@@ -276,7 +308,7 @@ export default function AdminServiceRequests() {
       ) : (
         <div className="space-y-3">
           {requests.map(r => (
-            <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} />
+            <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} onMarkRead={handleMarkRead} />
           ))}
         </div>
       )}

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -19,6 +19,8 @@ export const serviceRequestsTable = pgTable("service_requests", {
   preferredDatetime: text("preferred_datetime"),
   photoUrls:         text("photo_urls").array(),
   status:            text("status").notNull().default("new"),
+  isRead:            boolean("is_read").notNull().default(false),
+  lastViewedAt:      timestamp("last_viewed_at", { withTimezone: true }),
   createdAt:         timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
