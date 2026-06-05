@@ -1,7 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Users, UserPlus, Building2, Package, Copy, Check, Plus, Trash2, Edit2, Link2, X, ToggleLeft, ToggleRight, ChevronDown, ChevronUp } from 'lucide-react'
 import api from '../../lib/api'
-import LibyaPhoneInput from '../../components/LibyaPhoneInput'
+function AdminPhoneInput({ value, onChange }) {
+  const local = value ? value.replace(/\s/g,'').replace(/^(\+218|00218|218)/, '') : ''
+  const handle = e => {
+    let raw = e.target.value.replace(/\D/g,'')
+    if (raw.startsWith('0')) raw = raw.slice(1)
+    onChange('+218' + raw)
+  }
+  return (
+    <div className="flex rounded-xl overflow-hidden border border-gray-200 focus-within:border-[#FF7900] focus-within:ring-2 focus-within:ring-[#FF7900]/20 transition-all" dir="ltr">
+      <span className="flex items-center px-3 bg-gray-100 text-[#071B33] font-bold text-sm border-r border-gray-200 select-none whitespace-nowrap">🇱🇾 +218</span>
+      <input type="tel" value={local} onChange={handle} placeholder="91 0000000" inputMode="numeric" maxLength={9} dir="ltr"
+        className="flex-1 bg-white outline-none px-3 py-2 text-sm text-[#071B33] placeholder-gray-400" />
+    </div>
+  )
+}
 
 const BASE_URL = 'https://otlobfanni.ly'
 
@@ -95,17 +109,11 @@ function AmbassadorForm({ initial, onSave, onCancel, saving }) {
         </div>
         <div>
           <label className="text-xs font-bold text-gray-600 mb-1 block">الهاتف</label>
-          <LibyaPhoneInput
-            value={form.phone || ''}
-            onChange={v => set('phone', v)}
-          />
+          <AdminPhoneInput value={form.phone || ''} onChange={v => set('phone', v)} />
         </div>
         <div>
           <label className="text-xs font-bold text-gray-600 mb-1 block">واتساب</label>
-          <LibyaPhoneInput
-            value={form.whatsapp || ''}
-            onChange={v => set('whatsapp', v)}
-          />
+          <AdminPhoneInput value={form.whatsapp || ''} onChange={v => set('whatsapp', v)} />
         </div>
       </div>
       <div>
