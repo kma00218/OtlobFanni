@@ -5,9 +5,10 @@ import {
   Receipt, ArrowRight, Lock, Sparkles, ClipboardList, Phone, MapPin,
   Clock, CheckCircle, XCircle, MessageCircle, RefreshCw,
   Handshake, Plus, Share2, Calendar, DollarSign, Send, ChevronDown,
-  TrendingUp, Star, Package, Building2, Wrench, Filter,
+  TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine,
 } from 'lucide-react'
 import { api } from '../lib/api'
+import ProEditTab from './ProEditTab'
 
 // ── Type-specific config ────────────────────────────────────────────────────
 const TYPE_CONFIG = {
@@ -362,6 +363,7 @@ export default function ProDashboard() {
   const [submitting,     setSubmitting]    = useState(false)
   const [dealErr,        setDealErr]       = useState('')
   const [categories,     setCategories]    = useState([])
+  const [cities,         setCities]        = useState([])
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -372,6 +374,8 @@ export default function ProDashboard() {
     api.categories().then(cats => {
       setCategories(cats.filter(c => c.isActive !== false))
     }).catch(() => {})
+
+    api.cities().then(setCities).catch(() => {})
   }, [])
 
   const loadRequests = useCallback(async (sess) => {
@@ -558,6 +562,7 @@ export default function ProDashboard() {
           { key: 'profile',  label: 'ملفي',            badge: 0 },
           { key: 'requests', label: cfg.requestsTab,    badge: newCount },
           { key: 'deals',    label: cfg.dealsTab,       badge: pendingDeals },
+          { key: 'edit',     label: 'تعديل',            badge: 0 },
         ].map(tab => (
           <button key={tab.key}
             onClick={() => {
@@ -870,6 +875,12 @@ export default function ProDashboard() {
             )}
           </div>
         )}
+
+        {/* ── EDIT TAB ── */}
+        {activeTab === 'edit' && session && (
+          <ProEditTab session={session} cities={cities} categories={categories} />
+        )}
+
       </div>
     </div>
   )

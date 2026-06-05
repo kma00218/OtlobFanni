@@ -299,13 +299,25 @@ export default function AdminProfileUpdates() {
   }
 
   const FILTERS = [
-    { key: 'pending',  label: 'قيد المراجعة' },
-    { key: 'approved', label: 'مقبولة' },
-    { key: 'rejected', label: 'مرفوضة' },
-    { key: 'all',      label: 'الكل' },
+    { key: 'pending',     label: 'قيد المراجعة' },
+    { key: 'images_only', label: '📷 صور فقط' },
+    { key: 'approved',   label: 'مقبولة' },
+    { key: 'rejected',   label: 'مرفوضة' },
+    { key: 'all',        label: 'الكل' },
   ]
 
-  const filtered = filter === 'all' ? requests : requests.filter(r => r.status === filter)
+  const IMAGE_KEYS = ['profilePhoto', 'companyLogo', 'logo', 'workImages', 'shopImages']
+  const isImageOnly = (r) => {
+    const ch = r.changes || {}
+    const keys = Object.keys(ch).filter(k => ch[k] !== undefined && ch[k] !== null)
+    return keys.length > 0 && keys.every(k => IMAGE_KEYS.includes(k))
+  }
+
+  const filtered = filter === 'all'
+    ? requests
+    : filter === 'images_only'
+      ? requests.filter(r => r.status === 'pending' && isImageOnly(r))
+      : requests.filter(r => r.status === filter)
   const pendingCount = requests.filter(r => r.status === 'pending').length
 
   return (

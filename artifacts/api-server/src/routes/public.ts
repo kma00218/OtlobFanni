@@ -1470,6 +1470,67 @@ router.get("/pro/pending-request", async (req, res): Promise<void> => {
   res.json(row || null);
 });
 
+// ── Phone standardization helper ─────────────────────────────────────────────
+function libyanPhone(input: string | null | undefined): string | null {
+  if (!input) return null
+  let n = String(input).replace(/[\s\-\(\)\.]/g, '')
+  if (n.startsWith('+218')) n = n.slice(4)
+  else if (n.startsWith('00218')) n = n.slice(5)
+  else if (n.startsWith('218') && n.length === 12) n = n.slice(3)
+  else if (n.startsWith('0')) n = n.slice(1)
+  if (!/^\d{9}$/.test(n)) return null
+  return '+218' + n
+}
+
+// ── Pro: Direct profile update (text fields only, no approval needed) ─────────
+router.patch("/pro/profile", async (req, res): Promise<void> => {
+  const { entityType, entityId, fields } = req.body
+  if (!entityType || !entityId || !fields || typeof fields !== 'object') {
+    res.status(400).json({ error: "entityType, entityId, fields required" }); return
+  }
+  const validTypes = ["technician", "company", "supplier"]
+  if (!validTypes.includes(entityType)) { res.status(400).json({ error: "Invalid entityType" }); return }
+
+  const f = { ...fields }
+
+  // Standardize phone numbers
+  if (f.phone !== undefined && f.phone !== '') {
+    const std = libyanPhone(f.phone)
+    if (!std) { res.status(400).json({ error: "رقم الهاتف غير صحيح. أدخل 9 أرقام فقط بدون صفر في البداية (مثال: 921101010)" }); return }
+    f.phone = std
+  }
+  if (f.whatsapp !== undefined && f.whatsapp !== '') {
+    const std = libyanPhone(f.whatsapp)
+    if (!std) { res.status(400).json({ error: "رقم الواتساب غير صحيح. أدخل 9 أرقام فقط بدون صفر في البداية (مثال: 921101010)" }); return }
+    f.whatsapp = std
+  }
+
+  if (entityType === 'technician') {
+    const ALLOWED = ['nameAr', 'phone', 'whatsapp', 'cityId', 'descriptionAr', 'extraSpecialties']
+    const updates: Record<string, unknown> = {}
+    for (const key of ALLOWED) { if (f[key] !== undefined) updates[key] = f[key] }
+    if (Object.keys(updates).length === 0) { res.status(400).json({ error: "لا توجد حقول للتحديث" }); return }
+    await db.update(techniciansTable).set(updates as any)
+      .where(or(eq(techniciansTable.id, entityId), eq(techniciansTable.applicationId, entityId)))
+
+  } else if (entityType === 'company') {
+    const ALLOWED = ['contactName', 'companyName', 'phone', 'whatsapp', 'city', 'description', 'extraSpecialties']
+    const updates: Record<string, unknown> = {}
+    for (const key of ALLOWED) { if (f[key] !== undefined) updates[key] = f[key] }
+    if (Object.keys(updates).length === 0) { res.status(400).json({ error: "لا توجد حقول للتحديث" }); return }
+    await db.update(companyApplicationsTable).set(updates as any).where(eq(companyApplicationsTable.id, entityId))
+
+  } else if (entityType === 'supplier') {
+    const ALLOWED = ['contactName', 'businessName', 'phone', 'whatsapp', 'city', 'description']
+    const updates: Record<string, unknown> = {}
+    for (const key of ALLOWED) { if (f[key] !== undefined) updates[key] = f[key] }
+    if (Object.keys(updates).length === 0) { res.status(400).json({ error: "لا توجد حقول للتحديث" }); return }
+    await db.update(supplierApplicationsTable).set(updates as any).where(eq(supplierApplicationsTable.id, entityId))
+  }
+
+  res.json({ ok: true })
+})
+
 // ── Submit Referral (public) ─────────────────────────────────────────────────
 router.post("/referrals", async (req, res): Promise<void> => {
   const { type, name, phone, specialty, city, notes } = req.body;

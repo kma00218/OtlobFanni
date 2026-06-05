@@ -197,7 +197,7 @@ export default function SupplierDetails() {
   const idBadge = requestNumber ||
     `SUP-${createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear()}-${String(id).replace(/\D/g, '').slice(-6)}`
 
-  const openWa    = () => window.open(`https://wa.me/${(whatsapp || phone).replace(/\D/g, '')}?text=${encodeURIComponent('السلام عليكم، وجدت نشاطكم على منصة اطلب فني وأرغب في الاستفسار عن المستلزمات.')}`, '_blank')
+  const openWa    = () => window.open(`https://wa.me/${(whatsapp || phone).replace(/\D/g,'').replace(/^0/,'218')}?text=${encodeURIComponent('السلام عليكم، وجدت نشاطكم على منصة اطلب فني وأرغب في الاستفسار عن المستلزمات.')}`, '_blank')
   const openPhone = () => window.open(`tel:${phone}`, '_self')
 
   return (

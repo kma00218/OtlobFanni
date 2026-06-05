@@ -270,6 +270,7 @@ export const api = {
       post('/pro/change-password', { entityType, entityId, currentPassword, newPassword }),
     requestUpdate:       (entityType, entityId, changes)             => post('/pro/request-update', { entityType, entityId, changes }),
     getPendingRequest:   (entityType, entityId)                      => get(`/pro/pending-request?entityType=${entityType}&entityId=${entityId}`),
+    updateProfile:       (entityType, entityId, fields)               => request('PATCH', '/pro/profile', { entityType, entityId, fields }),
   },
 
   deals: {
@@ -291,6 +292,41 @@ export const api = {
   supplier:                     (id)   => get(`/suppliers/${id}`),
   submitSupplierApplication:    (data) => post('/supplier-applications', data),
   trackSupplierApplication:     (rn)   => get(`/supplier-applications/track/${encodeURIComponent(rn)}`),
+}
+
+// ── Libyan Phone Utilities ────────────────────────────────────────────────────
+
+/**
+ * Parse any stored phone format → 9-digit local string (no country code, no leading 0).
+ * Handles: "+218921101010", "0921101010", "921101010"
+ */
+export function parseLocalPhone(stored) {
+  if (!stored) return ''
+  let n = String(stored).replace(/[\s\-\(\)\.]/g, '')
+  if (n.startsWith('+218')) n = n.slice(4)
+  else if (n.startsWith('00218')) n = n.slice(5)
+  else if (n.startsWith('218') && n.length >= 12) n = n.slice(3)
+  else if (n.startsWith('0')) n = n.slice(1)
+  return n
+}
+
+/**
+ * Validate a local 9-digit Libyan phone number (no leading 0, no country code).
+ */
+export function validateLocalPhone(local) {
+  return /^[1-9]\d{8}$/.test(local)
+}
+
+/**
+ * Display a stored phone in readable format: "+218 92 110 1010"
+ */
+export function formatPhoneDisplay(stored) {
+  if (!stored) return ''
+  let local = parseLocalPhone(stored)
+  if (local.length === 9) {
+    return `+218 ${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5)}`
+  }
+  return stored
 }
 
 export default api
