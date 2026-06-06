@@ -99,7 +99,7 @@ export default function Home() {
     api.cityStats()
       .then(data => {
         if (!Array.isArray(data)) return
-        setCitiesForFilter(data)
+        setCitiesForFilter([...data].sort((a, b) => (b.total || 0) - (a.total || 0)))
       })
       .catch(() => api.cities().then(data => {
         if (Array.isArray(data)) setCitiesForFilter(data.map(c => ({ ...c, total: 0 })))
