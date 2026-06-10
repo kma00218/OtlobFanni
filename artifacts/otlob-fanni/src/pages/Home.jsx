@@ -673,20 +673,18 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ══ قسم المزوّدين — انضم إلينا ══ */}
-          <div className="mt-4 rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(160deg, #0f2d1a 0%, #1a4a2a 100%)', boxShadow: '0 6px 24px rgba(52,199,89,0.2)' }}>
-            <div className="px-5 pt-5 pb-3 text-center">
-              <p className="text-[13px] font-bold text-white/60 mb-0.5">
-                {ar ? 'هل أنت مزوّد خدمات؟' : 'Are you a service provider?'}
+          {/* زر الانضمام المبسّط */}
+          <Link href="/join-us">
+            <div
+              className="mt-4 rounded-2xl px-5 py-4 active:scale-95 transition-transform duration-150 shadow-lg flex items-center justify-center gap-3"
+              style={{ background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)', boxShadow: '0 4px 16px rgba(52,199,89,0.4)' }}
+            >
+              <UserPlus className="w-5 h-5 text-white flex-shrink-0" />
+              <p className="text-white font-extrabold text-base leading-tight text-center">
+                {ar ? 'هل أنت فني أو شركة أو مورد؟ انضم مجاناً' : 'Technician, Company or Supplier? Join free'}
               </p>
-              <h2 className="text-xl font-black text-white leading-tight">
-                {ar ? 'انضم إلينا مجاناً' : 'Join us for free'}
-              </h2>
             </div>
-            <div className="px-4 pb-4">
-              <JoinCards ar={ar} />
-            </div>
-          </div>
+          </Link>
 
           {/* كل التخصصات */}
           <Link href="/categories">
