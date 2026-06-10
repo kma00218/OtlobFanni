@@ -217,10 +217,8 @@ export default function BottomNav() {
                 </div>
                 <span className={`text-[10px] font-bold leading-tight text-center w-14 truncate transition-colors duration-200 ${
                   active ? 'text-[#071B33]' : 'text-gray-400'
-                } ${isCities && rememberedCity ? 'text-[#0ea5e9]' : ''}`}>
-                  {isCities && rememberedCity
-                    ? (ar ? rememberedCity.nameAr : (rememberedCity.nameEn || rememberedCity.nameAr))
-                    : label}
+                }`}>
+                  {label}
                 </span>
               </div>
             );
