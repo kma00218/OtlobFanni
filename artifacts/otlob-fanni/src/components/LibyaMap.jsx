@@ -93,6 +93,12 @@ export default function LibyaMap({ stats = [], ar = true }) {
         { maxZoom: 12 }
       ).addTo(map)
 
+      // Tint tiles navy to match brand — only affects tile layer, not markers
+      const tilePane = map.getPanes().tilePane
+      if (tilePane) {
+        tilePane.style.filter = 'sepia(1) hue-rotate(195deg) saturate(1.4) brightness(0.75)'
+      }
+
       map.fitBounds([[19.3, 9.3], [33.5, 25.4]])
 
       layerGroupRef.current = L.layerGroup().addTo(map)
