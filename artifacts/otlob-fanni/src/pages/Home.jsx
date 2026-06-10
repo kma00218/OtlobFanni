@@ -338,7 +338,7 @@ export default function Home() {
                 ? '🔍 أنت عميل؟ ابحث عن فني، شركة خدمية، أو مورد مستلزمات'
                 : '🔍 Looking for a technician, company or supplier?'}
             </p>
-            <p className="text-sm font-black text-[#071B33] mb-1.5 px-0.5">
+            <p className="text-sm font-black text-[#FF7900] mb-1.5 px-0.5">
               {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
             </p>
             <div className="relative -mx-1">
