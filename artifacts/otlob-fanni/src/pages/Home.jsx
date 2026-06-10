@@ -112,10 +112,10 @@ function JoinCards({ ar }) {
               className="w-full flex flex-col items-center justify-center py-2 px-1"
               style={{ background: type.accent }}
             >
-              <p className="text-white font-black text-[10px] text-center leading-tight">
+              <p className="text-white font-black text-xs text-center leading-tight">
                 {ar ? type.ar : type.en}
               </p>
-              <p className="text-white/90 text-[9px] font-bold mt-0.5 text-center">
+              <p className="text-white/90 text-[11px] font-bold mt-0.5 text-center">
                 {ar ? type.subAr : type.subEn}
               </p>
             </div>
