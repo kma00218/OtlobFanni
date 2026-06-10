@@ -372,54 +372,63 @@ export default function Home() {
         {/* بطاقات الانضمام */}
         <JoinCards ar={ar} />
 
-        {/* ── اختر مدينتك أولاً ── */}
-        {citiesForFilter.length > 0 && (
-          <div>
-            <p className="text-sm font-extrabold text-[#071B33] mb-2 px-0.5">
-              {ar
-                ? '🔍 أنت عميل؟ ابحث عن فني، شركة خدمية، أو مورد مستلزمات'
-                : '🔍 Looking for a technician, company or supplier?'}
-            </p>
-            <p className="text-sm font-black text-[#FF7900] mb-1.5 px-0.5">
-              {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
-            </p>
-            <div className="relative -mx-1">
-              <div
-                className="flex gap-2 overflow-x-auto pb-0.5 px-1"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {citiesForFilter.map(city => {
-                  const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
-                  return (
-                    <button
-                      key={city.id}
-                      onClick={() => navigate(`/city/${city.id}`)}
-                      className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border transition-colors active:scale-95"
-                      style={{ background: '#FFE4C4', border: '1.5px solid #FFA94D', color: '#071B33' }}
-                    >
-                      <span style={{ fontSize: '14px' }}>📍</span>
-                      {label}
-                      {(city.total || 0) > 0 && (
-                        <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
-                          {city.total}
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
-                <div className="flex-shrink-0 w-6" />
+        {/* ── فاصل بين التسجيل وخانة العميل ── */}
+        <div className="flex items-center gap-3 my-1">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+            {ar ? 'أو' : 'OR'}
+          </span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* ── قسم العميل ── */}
+        <div className="text-center">
+          <p className="text-[13px] font-bold text-gray-400 mb-1">
+            {ar ? 'أنت عميل؟' : 'Are you a customer?'}
+          </p>
+          <p className="text-[15px] font-extrabold text-[#071B33] mb-3 leading-snug">
+            {ar
+              ? 'ابحث عن فني، شركة خدمية، أو مورد مستلزمات'
+              : 'Find a technician, company or supplier'}
+          </p>
+
+          {citiesForFilter.length > 0 && (
+            <>
+              <p className="text-[13px] font-black text-[#FF7900] mb-2">
+                {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
+              </p>
+              <div className="relative -mx-1">
+                <div
+                  className="flex gap-2 overflow-x-auto pb-0.5 px-1 justify-center"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {citiesForFilter.map(city => {
+                    const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
+                    return (
+                      <button
+                        key={city.id}
+                        onClick={() => navigate(`/city/${city.id}`)}
+                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:scale-95 transition-transform"
+                        style={{ background: '#FFF3E6', border: '1.5px solid #FFA94D', color: '#071B33' }}
+                      >
+                        {label}
+                        {(city.total || 0) > 0 && (
+                          <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
+                            {city.total}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+                <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-8"
+                  style={{ background: 'linear-gradient(to right, white 30%, transparent)' }} />
+                <div className="pointer-events-none absolute top-0 bottom-0 right-0 w-8"
+                  style={{ background: 'linear-gradient(to left, white 30%, transparent)' }} />
               </div>
-              <div
-                className="pointer-events-none absolute top-0 bottom-0 left-0 w-10"
-                style={{ background: 'linear-gradient(to right, #F8FAFC 40%, transparent)' }}
-              />
-              <div
-                className="pointer-events-none absolute top-0 bottom-0 right-0 w-10"
-                style={{ background: 'linear-gradient(to left, #F8FAFC 40%, transparent)' }}
-              />
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
 
         {/* ── ثم ابحث ── */}
         <SearchBar />
