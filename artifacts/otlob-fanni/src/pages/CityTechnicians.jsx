@@ -47,7 +47,7 @@ function TechGrid({ tech, ar, onOpen, isFav, onToggleFav, categoryName }) {
   const whatsapp = tech.whatsapp || phone
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col border-t-[3px] border-t-[#FF7900]"
       onClick={() => onOpen(tech.id)}>
       <div className="relative">
         {photo
@@ -112,7 +112,7 @@ function CompanyGrid({ company, ar, onOpen, isFav, onToggleFav }) {
   const whatsapp = company.whatsapp || phone
 
   return (
-    <div className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+    <div className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col border-t-[3px] border-t-[#1e40af]"
       onClick={() => onOpen(company.id)}>
       <div className="relative">
         {logo
@@ -170,7 +170,7 @@ function SupplierGrid({ supplier, ar, onOpen }) {
   const whatsapp = supplier.whatsapp || phone
 
   return (
-    <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+    <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col border-t-[3px] border-t-[#0e7c8f]"
       onClick={() => onOpen(supplier.id)}>
       <div className="relative">
         {logo
@@ -494,10 +494,15 @@ export default function CityTechnicians() {
           <>
             {filteredTechs.length > 0 && (
               <div>
-                <div className="px-1 pb-3 pt-1">
-                  <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    🔧 {ar ? 'الفنيون' : 'Technicians'} <span className="ms-1.5 bg-white/20 rounded-full px-1.5">{filteredTechs.length}</span>
-                  </span>
+                <div className="rounded-2xl mb-3 border-r-4 border-[#FF7900] overflow-hidden"
+                  style={{ background: 'linear-gradient(to left, rgba(255,121,0,0.09), rgba(255,121,0,0.02))' }}>
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl leading-none">🔧</span>
+                      <span className="text-[20px] font-black text-[#FF7900] leading-none">{ar ? 'الفنيون' : 'Technicians'}</span>
+                    </div>
+                    <span className="text-sm font-black bg-[#FF7900] text-white px-3 py-1 rounded-full leading-none">{filteredTechs.length}</span>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {shownTechs.map(tech => {
@@ -531,10 +536,15 @@ export default function CityTechnicians() {
 
             {filteredCompanies.length > 0 && (
               <div>
-                <div className="px-1 pb-3 pt-1">
-                  <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    🏢 {ar ? 'الشركات الخدمية' : 'Companies'} <span className="ms-1.5 bg-white/20 rounded-full px-1.5">{filteredCompanies.length}</span>
-                  </span>
+                <div className="rounded-2xl mb-3 border-r-4 border-[#1e40af] overflow-hidden"
+                  style={{ background: 'linear-gradient(to left, rgba(30,64,175,0.09), rgba(30,64,175,0.02))' }}>
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl leading-none">🏢</span>
+                      <span className="text-[20px] font-black text-[#1e40af] leading-none">{ar ? 'الشركات الخدمية' : 'Companies'}</span>
+                    </div>
+                    <span className="text-sm font-black bg-[#1e40af] text-white px-3 py-1 rounded-full leading-none">{filteredCompanies.length}</span>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {shownCompanies.map(company => (
@@ -559,10 +569,15 @@ export default function CityTechnicians() {
 
             {filteredSuppliers.length > 0 && (
               <div>
-                <div className="px-1 pb-3 pt-1">
-                  <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    📦 {ar ? 'مزودو المستلزمات' : 'Suppliers'} <span className="ms-1.5 bg-white/20 rounded-full px-1.5">{filteredSuppliers.length}</span>
-                  </span>
+                <div className="rounded-2xl mb-3 border-r-4 border-[#0e7c8f] overflow-hidden"
+                  style={{ background: 'linear-gradient(to left, rgba(14,124,143,0.09), rgba(14,124,143,0.02))' }}>
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl leading-none">📦</span>
+                      <span className="text-[20px] font-black text-[#0e7c8f] leading-none">{ar ? 'مزودو المستلزمات' : 'Suppliers'}</span>
+                    </div>
+                    <span className="text-sm font-black bg-[#0e7c8f] text-white px-3 py-1 rounded-full leading-none">{filteredSuppliers.length}</span>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {shownSuppliers.map(supplier => (

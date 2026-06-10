@@ -684,11 +684,15 @@ export default function CategoryTechnicians() {
             {filteredTechs.length > 0 && (
               <div>
                 {filteredCompanies.length > 0 && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-orange-50 border border-orange-100 rounded-xl">
-                    <Users className="w-4 h-4 text-[#FF7900]" />
-                    <p className="text-sm font-bold text-[#FF7900]">
-                      {ar ? `فنيون (${filteredTechs.length})` : `Technicians (${filteredTechs.length})`}
-                    </p>
+                  <div className="rounded-2xl mb-3 border-r-4 border-[#FF7900] overflow-hidden"
+                    style={{ background: 'linear-gradient(to left, rgba(255,121,0,0.09), rgba(255,121,0,0.02))' }}>
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl leading-none">🔧</span>
+                        <span className="text-[20px] font-black text-[#FF7900] leading-none">{ar ? 'الفنيون' : 'Technicians'}</span>
+                      </div>
+                      <span className="text-sm font-black bg-[#FF7900] text-white px-3 py-1 rounded-full leading-none">{filteredTechs.length}</span>
+                    </div>
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
@@ -722,11 +726,15 @@ export default function CategoryTechnicians() {
             {filteredCompanies.length > 0 && (
               <div>
                 {filteredTechs.length > 0 && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-blue-600 rounded-xl">
-                    <Building2 className="w-4 h-4 text-white" />
-                    <p className="text-sm font-bold text-white">
-                      {ar ? `شركات خدمية ومؤسسات (${filteredCompanies.length})` : `Companies (${filteredCompanies.length})`}
-                    </p>
+                  <div className="rounded-2xl mb-3 border-r-4 border-[#1e40af] overflow-hidden"
+                    style={{ background: 'linear-gradient(to left, rgba(30,64,175,0.09), rgba(30,64,175,0.02))' }}>
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl leading-none">🏢</span>
+                        <span className="text-[20px] font-black text-[#1e40af] leading-none">{ar ? 'الشركات الخدمية' : 'Companies'}</span>
+                      </div>
+                      <span className="text-sm font-black bg-[#1e40af] text-white px-3 py-1 rounded-full leading-none">{filteredCompanies.length}</span>
+                    </div>
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3">
