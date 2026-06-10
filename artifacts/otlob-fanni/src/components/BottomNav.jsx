@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useLang } from '../context/LanguageContext';
 import { Link, useLocation } from 'wouter';
 import api from '../lib/api';
@@ -103,9 +103,7 @@ export default function BottomNav() {
   const [citySearch, setCitySearch] = useState('');
   const [specSearch, setSpecSearch] = useState('');
 
-  // ── Active cross-filters ────────────────────────────────────────────────────
-  const [activeCity, setActiveCity] = useState(null);     // { id, nameAr, nameEn }
-  const [activeCat, setActiveCat] = useState(null);       // { id, nameAr }
+  // no cross-filter state — each picker is independent
 
   // ── Keyboard offset ─────────────────────────────────────────────────────────
   const [kbOffset, setKbOffset] = useState(0);
@@ -156,24 +154,14 @@ export default function BottomNav() {
   // ── Handlers ────────────────────────────────────────────────────────────────
   const closeAll = () => { setShowCities(false); setShowSpecs(false); setCitySearch(''); setSpecSearch(''); };
 
-  const handleCityClick = (cityId, city) => {
-    setActiveCity(city ? { id: cityId, nameAr: city.nameAr, nameEn: city.nameEn } : null);
+  const handleCityClick = (cityId) => {
     closeAll();
-    if (activeCat && cityId !== 'libya') {
-      navigate(`/category/${activeCat.id}?city=${encodeURIComponent(city?.nameAr || '')}`);
-    } else {
-      navigate(`/city/${cityId}`);
-    }
+    navigate(`/city/${cityId}`);
   };
 
   const handleCatClick = (cat) => {
-    setActiveCat({ id: cat.id, nameAr: cat.nameAr });
     closeAll();
-    if (activeCity && activeCity.id !== 'libya') {
-      navigate(`/category/${cat.id}?city=${encodeURIComponent(activeCity.nameAr)}`);
-    } else {
-      navigate(`/category/${cat.id}`);
-    }
+    navigate(`/category/${cat.id}`);
   };
 
   const sheetStyle = {
@@ -214,13 +202,6 @@ export default function BottomNav() {
                 `}>
                   {tab.svg}
                 </div>
-                {/* Active filter dot */}
-                {isCities && activeCity && (
-                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[#FF7900] border-2 border-white rounded-full" />
-                )}
-                {isSpecs && activeCat && (
-                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[#FF7900] border-2 border-white rounded-full" />
-                )}
                 <span className={`text-[9.5px] font-semibold leading-tight transition-colors duration-200 ${
                   active ? 'text-[#071B33]' : 'text-gray-400'
                 }`}>
@@ -280,17 +261,6 @@ export default function BottomNav() {
               </button>
             </div>
 
-            {/* Active specialty filter banner */}
-            {activeCat && (
-              <div className="mx-4 mb-2 flex-shrink-0 flex items-center justify-between bg-[#FF7900]/10 border border-[#FF7900]/20 rounded-xl px-3 py-2">
-                <p className="text-xs font-bold text-[#FF7900]">
-                  🔧 {ar ? 'اختر مدينة لفلترة:' : 'Filtering by:'} <span className="text-[#071B33]">{activeCat.nameAr}</span>
-                </p>
-                <button onClick={() => setActiveCat(null)} className="text-[10px] text-gray-400 font-bold underline">
-                  {ar ? 'إلغاء' : 'Clear'}
-                </button>
-              </div>
-            )}
 
             <div className="px-4 pb-2 flex-shrink-0">
               <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
@@ -339,12 +309,10 @@ export default function BottomNav() {
                     const sups = city.suppliers || 0;
                     const total = city.total || techs + comps + sups;
                     const hasAny = total > 0;
-                    const isActive = activeCity?.id === city.id;
                     return (
-                      <button key={city.id} onClick={() => handleCityClick(city.id, city)}
-                        className={`relative flex flex-col items-center justify-between border rounded-2xl px-3 py-3.5 shadow-sm active:scale-[0.97] transition-transform text-center overflow-hidden ${
-                          isActive ? 'bg-[#FF7900]/5 border-[#FF7900]/30' : 'bg-white border-gray-100'
-                        }`}>
+                      <button key={city.id} onClick={() => handleCityClick(city.id)}
+                        className="relative flex flex-col items-center justify-between bg-white border border-gray-100 rounded-2xl px-3 py-3.5 shadow-sm active:scale-[0.97] transition-transform text-center overflow-hidden"
+                      >
                         <div className="absolute inset-0 pointer-events-none rounded-2xl"
                           style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.04) 0%, transparent 60%)' }} />
                         {hasAny && (
@@ -409,17 +377,6 @@ export default function BottomNav() {
               </button>
             </div>
 
-            {/* Active city filter banner */}
-            {activeCity && (
-              <div className="mx-4 mb-2 flex-shrink-0 flex items-center justify-between bg-sky-50 border border-sky-100 rounded-xl px-3 py-2">
-                <p className="text-xs font-bold text-sky-700">
-                  📍 {ar ? 'اختر تخصصاً لفلترة:' : 'Filtering by:'} <span className="text-[#071B33]">{ar ? activeCity.nameAr : (activeCity.nameEn || activeCity.nameAr)}</span>
-                </p>
-                <button onClick={() => setActiveCity(null)} className="text-[10px] text-gray-400 font-bold underline">
-                  {ar ? 'إلغاء' : 'Clear'}
-                </button>
-              </div>
-            )}
 
             <div className="px-4 pb-2 flex-shrink-0">
               <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
@@ -441,19 +398,16 @@ export default function BottomNav() {
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     {group.cats.map(cat => {
-                      const isActive = activeCat?.id === cat.id;
                       return (
                         <button key={cat.id} onClick={() => handleCatClick(cat)}
-                          className={`relative flex flex-col items-center gap-1.5 border rounded-2xl px-2 py-3 active:scale-[0.96] transition-transform text-center ${
-                            isActive ? 'bg-[#FF7900]/5 border-[#FF7900]/40' : 'bg-white border-gray-100 shadow-sm'
-                          }`}>
+                          className="flex flex-col items-center gap-1.5 bg-white border border-gray-100 shadow-sm rounded-2xl px-2 py-3 active:scale-[0.96] transition-transform text-center">
                           <img
                             src={`/icons/categories/${cat.iconName}.png`}
                             alt={cat.nameAr}
                             className="w-10 h-10 object-contain"
                             onError={e => { e.target.style.display = 'none'; }}
                           />
-                          <p className={`text-[11.5px] font-bold leading-tight line-clamp-2 ${isActive ? 'text-[#FF7900]' : 'text-[#071B33]'}`}>
+                          <p className="text-[11.5px] font-bold leading-tight line-clamp-2 text-[#071B33]">
                             {ar ? cat.nameAr : cat.nameEn}
                           </p>
                         </button>
