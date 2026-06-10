@@ -527,7 +527,7 @@ export default function Home() {
         {/* بطاقات الانضمام */}
         <JoinCards ar={ar} />
 
-        <div>
+        <div className="mt-6">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-base font-bold text-foreground">
               {ar ? 'الأقسام الرئيسية' : 'Main Sections'}
