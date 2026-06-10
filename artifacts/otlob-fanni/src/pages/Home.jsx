@@ -57,101 +57,55 @@ function RecentCard({ item, ar }) {
   )
 }
 
-const JOIN_SLIDES = [
+const JOIN_TYPES = [
   {
     key: 'tech',
-    href: '/join-us',
     icon: Wrench,
     bg: 'linear-gradient(135deg, #FF7900 0%, #e05e00 100%)',
-    shadow: 'rgba(255,121,0,0.4)',
-    ar: { q: 'هل أنت فني؟', cta: 'سجّل مجاناً الآن ←' },
-    en: { q: 'Are you a Technician?', cta: 'Register for Free →' },
+    shadow: '0 4px 14px rgba(255,121,0,0.35)',
+    ar: 'فني',
+    en: 'Technician',
   },
   {
     key: 'company',
-    href: '/join-us',
     icon: Building2,
     bg: 'linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%)',
-    shadow: 'rgba(26,86,219,0.4)',
-    ar: { q: 'هل لديك شركة خدمات؟', cta: 'سجّل شركتك الآن ←' },
-    en: { q: 'Do you run a service company?', cta: 'Register your company →' },
+    shadow: '0 4px 14px rgba(26,86,219,0.35)',
+    ar: 'شركة خدمية',
+    en: 'Service Co.',
   },
   {
     key: 'supplier',
-    href: '/join-us',
     icon: Package,
     bg: 'linear-gradient(135deg, #0d9488 0%, #0a7065 100%)',
-    shadow: 'rgba(13,148,136,0.4)',
-    ar: { q: 'هل أنت مورّد مستلزمات؟', cta: 'انضم إلينا الآن ←' },
-    en: { q: 'Are you a supplies provider?', cta: 'Join us now →' },
+    shadow: '0 4px 14px rgba(13,148,136,0.35)',
+    ar: 'مورّد مستلزمات',
+    en: 'Supplier',
   },
 ]
 
-function JoinRotator({ ar }) {
-  const [idx, setIdx] = useState(0)
-  const [visible, setVisible] = useState(true)
-  const timerRef = useRef(null)
-
-  const rotate = (next) => {
-    setVisible(false)
-    setTimeout(() => {
-      setIdx(next)
-      setVisible(true)
-    }, 280)
-  }
-
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setIdx(prev => {
-        const next = (prev + 1) % JOIN_SLIDES.length
-        setVisible(false)
-        setTimeout(() => { setIdx(next); setVisible(true) }, 280)
-        return prev
-      })
-    }, 3800)
-    return () => clearInterval(timerRef.current)
-  }, [])
-
-  const slide = JOIN_SLIDES[idx]
-  const Icon = slide.icon
-  const text = ar ? slide.ar : slide.en
-
+function JoinCards({ ar }) {
   return (
-    <Link href={slide.href}>
-      <div
-        className="rounded-2xl px-5 py-3.5 active:scale-95 select-none cursor-pointer"
-        style={{
-          background: slide.bg,
-          boxShadow: `0 6px 24px ${slide.shadow}`,
-          transition: 'opacity 0.28s ease, transform 0.28s ease',
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(6px)',
-        }}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <Icon className="w-5 h-5 text-white" />
+    <div className="flex gap-2">
+      {JOIN_TYPES.map(type => {
+        const Icon = type.icon
+        return (
+          <Link key={type.key} href="/join-us" className="flex-1">
+            <div
+              className="flex flex-col items-center justify-center gap-2 rounded-2xl py-3 px-2 active:scale-95 transition-transform duration-150 select-none cursor-pointer"
+              style={{ background: type.bg, boxShadow: type.shadow }}
+            >
+              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                <Icon className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-white font-black text-xs text-center leading-tight">
+                {ar ? type.ar : type.en}
+              </p>
             </div>
-            <div className="min-w-0">
-              <p className="text-white font-black text-base leading-tight">{text.q}</p>
-              <p className="text-white/80 text-xs font-semibold mt-0.5">{text.cta}</p>
-            </div>
-          </div>
-          {/* dots */}
-          <div className="flex flex-col gap-1 flex-shrink-0">
-            {JOIN_SLIDES.map((_, i) => (
-              <button
-                key={i}
-                onClick={e => { e.preventDefault(); e.stopPropagation(); rotate(i) }}
-                className="w-1.5 rounded-full transition-all duration-300"
-                style={{ height: i === idx ? '18px' : '6px', background: i === idx ? 'white' : 'rgba(255,255,255,0.4)' }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </Link>
+          </Link>
+        )
+      })}
+    </div>
   )
 }
 
@@ -356,8 +310,8 @@ export default function Home() {
           )
         })()}
 
-        {/* بطاقة الانضمام الدوّارة */}
-        <JoinRotator ar={ar} />
+        {/* بطاقات الانضمام */}
+        <JoinCards ar={ar} />
 
         <SearchBar />
 
