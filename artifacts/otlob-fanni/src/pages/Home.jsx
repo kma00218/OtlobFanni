@@ -330,49 +330,52 @@ export default function Home() {
         {/* بطاقات الانضمام */}
         <JoinCards ar={ar} />
 
-        <SearchBar />
-
-        {/* ── أزرار المدن السريعة ── */}
+        {/* ── اختر مدينتك أولاً ── */}
         {citiesForFilter.length > 0 && (
-          <div className="relative -mx-1">
-            <div
-              className="flex gap-2 overflow-x-auto pb-0.5 px-1"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {citiesForFilter.map(city => {
-                const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
-                return (
-                  <button
-                    key={city.id}
-                    onClick={() => navigate(`/city/${city.id}`)}
-                    className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border transition-colors active:scale-95"
-                    style={{ background: '#FFE4C4', border: '1.5px solid #FFA94D', color: '#071B33' }}
-                  >
-                    <span style={{ fontSize: '14px' }}>📍</span>
-                    {label}
-                    {(city.total || 0) > 0 && (
-                      <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
-                        {city.total}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-              {/* extra right padding so last pill doesn't touch the fade */}
-              <div className="flex-shrink-0 w-6" />
+          <div>
+            <p className="text-[11px] font-extrabold text-[#071B33]/50 mb-1.5 px-0.5 tracking-wide uppercase">
+              {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
+            </p>
+            <div className="relative -mx-1">
+              <div
+                className="flex gap-2 overflow-x-auto pb-0.5 px-1"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {citiesForFilter.map(city => {
+                  const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
+                  return (
+                    <button
+                      key={city.id}
+                      onClick={() => navigate(`/city/${city.id}`)}
+                      className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border transition-colors active:scale-95"
+                      style={{ background: '#FFE4C4', border: '1.5px solid #FFA94D', color: '#071B33' }}
+                    >
+                      <span style={{ fontSize: '14px' }}>📍</span>
+                      {label}
+                      {(city.total || 0) > 0 && (
+                        <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
+                          {city.total}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+                <div className="flex-shrink-0 w-6" />
+              </div>
+              <div
+                className="pointer-events-none absolute top-0 bottom-0 left-0 w-10"
+                style={{ background: 'linear-gradient(to right, #F8FAFC 40%, transparent)' }}
+              />
+              <div
+                className="pointer-events-none absolute top-0 bottom-0 right-0 w-10"
+                style={{ background: 'linear-gradient(to left, #F8FAFC 40%, transparent)' }}
+              />
             </div>
-            {/* fade on the left (trailing edge in RTL) */}
-            <div
-              className="pointer-events-none absolute top-0 bottom-0 left-0 w-10"
-              style={{ background: 'linear-gradient(to right, #F8FAFC 40%, transparent)' }}
-            />
-            {/* subtle fade on the right (leading edge in RTL) */}
-            <div
-              className="pointer-events-none absolute top-0 bottom-0 right-0 w-10"
-              style={{ background: 'linear-gradient(to left, #F8FAFC 40%, transparent)' }}
-            />
           </div>
         )}
+
+        {/* ── ثم ابحث ── */}
+        <SearchBar />
 
         {/* ── كيف يعمل التطبيق ── */}
         <div className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-2xl"
