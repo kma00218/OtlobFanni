@@ -57,6 +57,42 @@ function RecentCard({ item, ar }) {
   )
 }
 
+const BROWSE_TYPES = [
+  {
+    key: 'tech',
+    img: '/join-cards/technician-v2.png',
+    accent: '#FF7900',
+    shadow: '0 6px 20px rgba(255,121,0,0.35)',
+    href: '/all-specialties',
+    ar: 'فنيون',
+    en: 'Technicians',
+    subAr: 'كهرباء، سباكة، نجارة...',
+    subEn: 'Electric, plumbing...',
+  },
+  {
+    key: 'company',
+    img: '/join-cards/company-v2.png',
+    accent: '#1a56db',
+    shadow: '0 6px 20px rgba(26,86,219,0.35)',
+    href: '/companies',
+    ar: 'شركات خدمات',
+    en: 'Service Companies',
+    subAr: 'صيانة، تكييف، نظافة...',
+    subEn: 'Maintenance, HVAC...',
+  },
+  {
+    key: 'supplier',
+    img: '/join-cards/supplier-v2.png',
+    accent: '#0d9488',
+    shadow: '0 6px 20px rgba(13,148,136,0.35)',
+    href: '/suppliers',
+    ar: 'موردون',
+    en: 'Suppliers',
+    subAr: 'أدوات، مواد، معدات...',
+    subEn: 'Tools, materials...',
+  },
+]
+
 const JOIN_TYPES = [
   {
     key: 'tech',
@@ -90,6 +126,29 @@ const JOIN_TYPES = [
   },
 ]
 
+function BrowseCards({ ar }) {
+  return (
+    <div className="flex gap-2">
+      {BROWSE_TYPES.map(type => (
+        <Link key={type.key} href={type.href} className="flex-1">
+          <div
+            className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer flex flex-col"
+            style={{ boxShadow: type.shadow }}
+          >
+            <div className="relative w-full" style={{ paddingBottom: '90%' }}>
+              <img src={type.img} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <div className="w-full flex flex-col items-center justify-center py-2 px-1" style={{ background: type.accent }}>
+              <p className="text-white font-black text-xs text-center leading-tight">{ar ? type.ar : type.en}</p>
+              <p className="text-white/90 text-[11px] font-bold mt-0.5 text-center">{ar ? type.subAr : type.subEn}</p>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  )
+}
+
 function JoinCards({ ar }) {
   return (
     <div className="flex gap-2">
@@ -99,25 +158,12 @@ function JoinCards({ ar }) {
             className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer flex flex-col"
             style={{ boxShadow: type.shadow }}
           >
-            {/* photo */}
             <div className="relative w-full" style={{ paddingBottom: '90%' }}>
-              <img
-                src={type.img}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              <img src={type.img} alt="" className="absolute inset-0 w-full h-full object-cover" />
             </div>
-            {/* CTA bar */}
-            <div
-              className="w-full flex flex-col items-center justify-center py-2 px-1"
-              style={{ background: type.accent }}
-            >
-              <p className="text-white font-black text-xs text-center leading-tight">
-                {ar ? type.ar : type.en}
-              </p>
-              <p className="text-white/90 text-[11px] font-bold mt-0.5 text-center">
-                {ar ? type.subAr : type.subEn}
-              </p>
+            <div className="w-full flex flex-col items-center justify-center py-2 px-1" style={{ background: type.accent }}>
+              <p className="text-white font-black text-xs text-center leading-tight">{ar ? type.ar : type.en}</p>
+              <p className="text-white/90 text-[11px] font-bold mt-0.5 text-center">{ar ? type.subAr : type.subEn}</p>
             </div>
           </div>
         </Link>
@@ -327,57 +373,63 @@ export default function Home() {
           )
         })()}
 
-        {/* بطاقات الانضمام */}
-        <JoinCards ar={ar} />
-
-        {/* ── اختر مدينتك أولاً ── */}
-        {citiesForFilter.length > 0 && (
-          <div>
-            <p className="text-sm font-extrabold text-[#071B33] mb-2 px-0.5">
-              {ar
-                ? '🔍 أنت عميل؟ ابحث عن فني، شركة خدمية، أو مورد مستلزمات'
-                : '🔍 Looking for a technician, company or supplier?'}
+        {/* ══ قسم العميل — الجزء الرئيسي ══ */}
+        <div className="rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d4d 100%)', boxShadow: '0 8px 32px rgba(7,27,51,0.25)' }}>
+          {/* عنوان */}
+          <div className="px-5 pt-5 pb-3 text-center">
+            <p className="text-[13px] font-bold text-white/60 mb-0.5">
+              {ar ? 'أنت عميل؟' : 'Are you a customer?'}
             </p>
-            <p className="text-sm font-black text-[#FF7900] mb-1.5 px-0.5">
-              {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
-            </p>
-            <div className="relative -mx-1">
-              <div
-                className="flex gap-2 overflow-x-auto pb-0.5 px-1"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {citiesForFilter.map(city => {
-                  const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
-                  return (
-                    <button
-                      key={city.id}
-                      onClick={() => navigate(`/city/${city.id}`)}
-                      className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border transition-colors active:scale-95"
-                      style={{ background: '#FFE4C4', border: '1.5px solid #FFA94D', color: '#071B33' }}
-                    >
-                      <span style={{ fontSize: '14px' }}>📍</span>
-                      {label}
-                      {(city.total || 0) > 0 && (
-                        <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
-                          {city.total}
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
-                <div className="flex-shrink-0 w-6" />
-              </div>
-              <div
-                className="pointer-events-none absolute top-0 bottom-0 left-0 w-10"
-                style={{ background: 'linear-gradient(to right, #F8FAFC 40%, transparent)' }}
-              />
-              <div
-                className="pointer-events-none absolute top-0 bottom-0 right-0 w-10"
-                style={{ background: 'linear-gradient(to left, #F8FAFC 40%, transparent)' }}
-              />
-            </div>
+            <h2 className="text-xl font-black text-white leading-tight">
+              {ar ? 'ابحث عن الخدمة التي تحتاجها' : 'Find the service you need'}
+            </h2>
           </div>
-        )}
+
+          {/* بطاقات التصفح */}
+          <div className="px-4 pb-2">
+            <BrowseCards ar={ar} />
+          </div>
+
+          {/* اختر مدينتك */}
+          {citiesForFilter.length > 0 && (
+            <div className="px-4 pb-4 pt-1">
+              <p className="text-[12px] font-extrabold text-[#FF7900] mb-2 flex items-center gap-1">
+                <span>📍</span>
+                {ar ? 'اختر مدينتك' : 'Choose your city'}
+              </p>
+              <div className="relative -mx-1">
+                <div
+                  className="flex gap-2 overflow-x-auto pb-0.5 px-1"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {citiesForFilter.map(city => {
+                    const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
+                    return (
+                      <button
+                        key={city.id}
+                        onClick={() => navigate(`/city/${city.id}`)}
+                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:scale-95 transition-transform"
+                        style={{ background: 'rgba(255,121,0,0.18)', border: '1.5px solid rgba(255,121,0,0.45)', color: '#FFB366' }}
+                      >
+                        {label}
+                        {(city.total || 0) > 0 && (
+                          <span className="text-[11px] font-bold text-[#FF7900] bg-orange-900/40 rounded-full px-2 py-0.5 leading-none">
+                            {city.total}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                  <div className="flex-shrink-0 w-6" />
+                </div>
+                <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-8"
+                  style={{ background: 'linear-gradient(to right, rgba(7,27,51,0.8) 0%, transparent 100%)' }} />
+                <div className="pointer-events-none absolute top-0 bottom-0 right-0 w-8"
+                  style={{ background: 'linear-gradient(to left, rgba(7,27,51,0.8) 0%, transparent 100%)' }} />
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* ── ثم ابحث ── */}
         <SearchBar />
@@ -625,20 +677,20 @@ export default function Home() {
             </div>
           </div>
 
-          {/* زر الانضمام */}
-          <Link href="/join-us">
-            <div
-              className="mt-3 rounded-2xl px-5 py-4 active:scale-95 transition-transform duration-150 shadow-lg flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
-                boxShadow: '0 4px 16px rgba(52,199,89,0.4)',
-              }}
-            >
-              <p className="text-white font-extrabold text-base leading-tight text-center">
-                {ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}
+          {/* ══ قسم المزوّدين — انضم إلينا ══ */}
+          <div className="mt-4 rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(160deg, #0f2d1a 0%, #1a4a2a 100%)', boxShadow: '0 6px 24px rgba(52,199,89,0.2)' }}>
+            <div className="px-5 pt-5 pb-3 text-center">
+              <p className="text-[13px] font-bold text-white/60 mb-0.5">
+                {ar ? 'هل أنت مزوّد خدمات؟' : 'Are you a service provider?'}
               </p>
+              <h2 className="text-xl font-black text-white leading-tight">
+                {ar ? 'انضم إلينا مجاناً' : 'Join us for free'}
+              </h2>
             </div>
-          </Link>
+            <div className="px-4 pb-4">
+              <JoinCards ar={ar} />
+            </div>
+          </div>
 
           {/* كل التخصصات */}
           <Link href="/categories">
