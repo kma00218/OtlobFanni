@@ -60,10 +60,10 @@ function RecentCard({ item, ar }) {
 const BROWSE_TYPES = [
   {
     key: 'tech',
-    img: '/join-cards/technician-v2.png',
+    icon: '🔧',
     accent: '#FF7900',
     shadow: '0 6px 20px rgba(255,121,0,0.35)',
-    href: '/all-specialties',
+    href: '/categories',
     ar: 'فنيون',
     en: 'Technicians',
     subAr: 'كهرباء، سباكة، نجارة...',
@@ -71,18 +71,18 @@ const BROWSE_TYPES = [
   },
   {
     key: 'company',
-    img: '/join-cards/company-v2.png',
+    icon: '🏢',
     accent: '#1a56db',
     shadow: '0 6px 20px rgba(26,86,219,0.35)',
     href: '/companies',
     ar: 'شركات خدمات',
-    en: 'Service Companies',
+    en: 'Service Cos.',
     subAr: 'صيانة، تكييف، نظافة...',
     subEn: 'Maintenance, HVAC...',
   },
   {
     key: 'supplier',
-    img: '/join-cards/supplier-v2.png',
+    icon: '📦',
     accent: '#0d9488',
     shadow: '0 6px 20px rgba(13,148,136,0.35)',
     href: '/suppliers',
@@ -132,16 +132,12 @@ function BrowseCards({ ar }) {
       {BROWSE_TYPES.map(type => (
         <Link key={type.key} href={type.href} className="flex-1">
           <div
-            className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer flex flex-col"
-            style={{ boxShadow: type.shadow }}
+            className="rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer flex flex-col items-center justify-center py-4 px-2 gap-2"
+            style={{ background: type.accent, boxShadow: type.shadow }}
           >
-            <div className="relative w-full" style={{ paddingBottom: '90%' }}>
-              <img src={type.img} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            </div>
-            <div className="w-full flex flex-col items-center justify-center py-2 px-1" style={{ background: type.accent }}>
-              <p className="text-white font-black text-xs text-center leading-tight">{ar ? type.ar : type.en}</p>
-              <p className="text-white/90 text-[11px] font-bold mt-0.5 text-center">{ar ? type.subAr : type.subEn}</p>
-            </div>
+            <span style={{ fontSize: '32px', lineHeight: 1 }}>{type.icon}</span>
+            <p className="text-white font-black text-xs text-center leading-tight">{ar ? type.ar : type.en}</p>
+            <p className="text-white/80 text-[10px] font-semibold text-center leading-tight">{ar ? type.subAr : type.subEn}</p>
           </div>
         </Link>
       ))}
