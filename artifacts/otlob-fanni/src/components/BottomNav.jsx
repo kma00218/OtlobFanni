@@ -81,8 +81,8 @@ export default function BottomNav() {
 
   useEffect(() => {
     if (showCities && !citiesLoaded) {
-      api.cities().then(data => {
-        const sorted = [...data].sort((a, b) => ((b.total || b.count || 0) - (a.total || a.count || 0)));
+      api.cityStats().then(data => {
+        const sorted = [...data].sort((a, b) => (b.total || 0) - (a.total || 0));
         setCities(sorted);
         setCitiesLoaded(true);
       }).catch(() => {});
@@ -224,9 +224,9 @@ export default function BottomNav() {
             {/* Cities list */}
             <div className="overflow-y-auto flex-1 px-4 pb-4" style={{ scrollbarWidth: 'none' }}>
               {!citiesLoaded ? (
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="h-14 bg-gray-100 rounded-2xl animate-pulse" />
+                    <div key={i} className="h-28 bg-gray-100 rounded-2xl animate-pulse" />
                   ))}
                 </div>
               ) : filteredCities.length === 0 ? (
@@ -234,33 +234,57 @@ export default function BottomNav() {
                   {ar ? 'لا توجد نتائج' : 'No results'}
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {filteredCities.map(city => {
                     const name = ar ? city.nameAr : (city.nameEn || city.nameAr);
-                    const count = city.total || city.count || 0;
+                    const techs = city.technicians || 0;
+                    const comps = city.companies || 0;
+                    const sups = city.suppliers || 0;
+                    const total = city.total || techs + comps + sups;
+                    const hasAny = total > 0;
                     return (
                       <button
                         key={city.id}
                         onClick={() => handleCityClick(city.id)}
-                        className="w-full flex items-center justify-between bg-gray-50 hover:bg-orange-50 border border-gray-100 rounded-2xl px-4 py-3 active:scale-[0.98] transition-all text-start"
+                        className="relative flex flex-col items-center justify-between bg-white border border-gray-100 rounded-2xl px-3 py-3.5 shadow-sm active:scale-[0.97] transition-transform text-center overflow-hidden"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#FF7900]/10 flex items-center justify-center flex-shrink-0">
-                            <svg className="w-4 h-4 text-[#FF7900]" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                            </svg>
-                          </div>
-                          <span className="font-bold text-[#071B33] text-sm">{name}</span>
+                        {/* subtle gradient tint */}
+                        <div className="absolute inset-0 pointer-events-none rounded-2xl"
+                          style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.04) 0%, transparent 60%)' }} />
+                        {/* total badge top-right */}
+                        {hasAny && (
+                          <span className="absolute top-2 left-2 text-[10px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none">
+                            {total}
+                          </span>
+                        )}
+                        {/* map pin */}
+                        <div className="w-8 h-8 rounded-xl bg-[#FF7900]/10 flex items-center justify-center mb-1.5 flex-shrink-0">
+                          <svg className="w-4 h-4 text-[#FF7900]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                          </svg>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {count > 0 && (
-                            <span className="text-xs font-bold bg-[#FF7900]/10 text-[#FF7900] px-2.5 py-1 rounded-full">
-                              {count}
+                        {/* city name */}
+                        <p className="font-black text-[#071B33] text-[15px] leading-tight mb-2">{name}</p>
+                        {/* breakdown badges */}
+                        <div className="flex items-center justify-center gap-1 flex-wrap">
+                          {techs > 0 && (
+                            <span className="flex items-center gap-0.5 text-[11px] font-bold bg-[#FF7900]/10 text-[#FF7900] px-1.5 py-0.5 rounded-full leading-none">
+                              🔧 {techs}
                             </span>
                           )}
-                          <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
+                          {comps > 0 && (
+                            <span className="flex items-center gap-0.5 text-[11px] font-bold bg-blue-50 text-[#1e40af] px-1.5 py-0.5 rounded-full leading-none">
+                              🏢 {comps}
+                            </span>
+                          )}
+                          {sups > 0 && (
+                            <span className="flex items-center gap-0.5 text-[11px] font-bold bg-teal-50 text-[#0e7c8f] px-1.5 py-0.5 rounded-full leading-none">
+                              📦 {sups}
+                            </span>
+                          )}
+                          {!hasAny && (
+                            <span className="text-[11px] text-gray-300 font-medium">{ar ? 'قريباً' : 'Soon'}</span>
+                          )}
                         </div>
                       </button>
                     );
