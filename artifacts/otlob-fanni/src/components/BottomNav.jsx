@@ -78,6 +78,20 @@ export default function BottomNav() {
   const [cities, setCities] = useState([]);
   const [citiesLoaded, setCitiesLoaded] = useState(false);
   const [search, setSearch] = useState('');
+  const [kbOffset, setKbOffset] = useState(0);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv || !showCities) { setKbOffset(0); return; }
+    const update = () => {
+      const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      setKbOffset(offset);
+    };
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    update();
+    return () => { vv.removeEventListener('resize', update); vv.removeEventListener('scroll', update); };
+  }, [showCities]);
 
   useEffect(() => {
     if (showCities && !citiesLoaded) {
@@ -161,7 +175,12 @@ export default function BottomNav() {
           <div className="absolute inset-0 bg-black/40" />
           <div
             className="relative bg-white rounded-t-3xl overflow-hidden flex flex-col"
-            style={{ maxHeight: '80dvh', paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}
+            style={{
+              maxHeight: '80dvh',
+              paddingBottom: 'env(safe-area-inset-bottom, 12px)',
+              transform: `translateY(-${kbOffset}px)`,
+              transition: kbOffset > 0 ? 'transform 0.2s ease-out' : 'transform 0.15s ease-in',
+            }}
             onClick={e => e.stopPropagation()}
           >
             {/* Handle */}
