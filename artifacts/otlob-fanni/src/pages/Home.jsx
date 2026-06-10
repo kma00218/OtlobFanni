@@ -333,6 +333,11 @@ export default function Home() {
         {/* ── اختر مدينتك أولاً ── */}
         {citiesForFilter.length > 0 && (
           <div>
+            <p className="text-sm font-extrabold text-[#071B33] mb-2 px-0.5">
+              {ar
+                ? '🔍 أنت عميل؟ ابحث عن فني، شركة خدمية، أو مورد مستلزمات'
+                : '🔍 Looking for a technician, company or supplier?'}
+            </p>
             <p className="text-[11px] font-extrabold text-[#071B33]/50 mb-1.5 px-0.5 tracking-wide uppercase">
               {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
             </p>
