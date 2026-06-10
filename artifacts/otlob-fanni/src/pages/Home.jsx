@@ -5,7 +5,7 @@ import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
 import { useAllCategories } from '../hooks/useAllCategories'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus, Wrench } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
@@ -51,6 +51,104 @@ function RecentCard({ item, ar }) {
           <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${badgeCls}`}>
             {badgeTxt}
           </span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+const JOIN_SLIDES = [
+  {
+    key: 'tech',
+    href: '/join',
+    icon: Wrench,
+    bg: 'linear-gradient(135deg, #FF7900 0%, #e05e00 100%)',
+    shadow: 'rgba(255,121,0,0.4)',
+    ar: { q: 'هل أنت فني؟', cta: 'سجّل مجاناً الآن ←' },
+    en: { q: 'Are you a Technician?', cta: 'Register for Free →' },
+  },
+  {
+    key: 'company',
+    href: '/join-company',
+    icon: Building2,
+    bg: 'linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%)',
+    shadow: 'rgba(26,86,219,0.4)',
+    ar: { q: 'هل لديك شركة خدمات؟', cta: 'سجّل شركتك الآن ←' },
+    en: { q: 'Do you run a service company?', cta: 'Register your company →' },
+  },
+  {
+    key: 'supplier',
+    href: '/join-supplier',
+    icon: Package,
+    bg: 'linear-gradient(135deg, #0d9488 0%, #0a7065 100%)',
+    shadow: 'rgba(13,148,136,0.4)',
+    ar: { q: 'هل أنت مورّد مستلزمات؟', cta: 'انضم إلينا الآن ←' },
+    en: { q: 'Are you a supplies provider?', cta: 'Join us now →' },
+  },
+]
+
+function JoinRotator({ ar }) {
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+  const timerRef = useRef(null)
+
+  const rotate = (next) => {
+    setVisible(false)
+    setTimeout(() => {
+      setIdx(next)
+      setVisible(true)
+    }, 280)
+  }
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setIdx(prev => {
+        const next = (prev + 1) % JOIN_SLIDES.length
+        setVisible(false)
+        setTimeout(() => { setIdx(next); setVisible(true) }, 280)
+        return prev
+      })
+    }, 3800)
+    return () => clearInterval(timerRef.current)
+  }, [])
+
+  const slide = JOIN_SLIDES[idx]
+  const Icon = slide.icon
+  const text = ar ? slide.ar : slide.en
+
+  return (
+    <Link href={slide.href}>
+      <div
+        className="rounded-2xl px-5 py-3.5 active:scale-95 select-none cursor-pointer"
+        style={{
+          background: slide.bg,
+          boxShadow: `0 6px 24px ${slide.shadow}`,
+          transition: 'opacity 0.28s ease, transform 0.28s ease',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(6px)',
+        }}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-white font-black text-base leading-tight">{text.q}</p>
+              <p className="text-white/80 text-xs font-semibold mt-0.5">{text.cta}</p>
+            </div>
+          </div>
+          {/* dots */}
+          <div className="flex flex-col gap-1 flex-shrink-0">
+            {JOIN_SLIDES.map((_, i) => (
+              <button
+                key={i}
+                onClick={e => { e.preventDefault(); e.stopPropagation(); rotate(i) }}
+                className="w-1.5 rounded-full transition-all duration-300"
+                style={{ height: i === idx ? '18px' : '6px', background: i === idx ? 'white' : 'rgba(255,255,255,0.4)' }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </Link>
@@ -258,21 +356,8 @@ export default function Home() {
           )
         })()}
 
-        {/* زر الانضمام */}
-        <Link href="/join-us">
-          <div
-            className="rounded-2xl px-5 py-3.5 text-center active:scale-95 transition-transform duration-150 select-none cursor-pointer"
-            style={{
-              background: 'linear-gradient(90deg, #34C759 0%, #248a3d 100%)',
-              boxShadow: '0 4px 20px rgba(52,199,89,0.35)',
-            }}
-          >
-            <p className="text-white font-extrabold text-base leading-tight flex items-center justify-center gap-2">
-              <span className="text-xl flex-shrink-0">👆</span>
-              <span>{ar ? 'انضم إلينا كفني أو كشركة خدمات أو كمزوّد مستلزمات' : 'Join us as a Technician, Service Company or Supplies Provider'}</span>
-            </p>
-          </div>
-        </Link>
+        {/* بطاقة الانضمام الدوّارة */}
+        <JoinRotator ar={ar} />
 
         <SearchBar />
 
