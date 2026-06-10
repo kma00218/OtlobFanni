@@ -99,6 +99,36 @@ export default function LibyaMap({ stats = [], ar = true }) {
         tilePane.style.filter = 'sepia(1) hue-rotate(195deg) saturate(1.4) brightness(0.75)'
       }
 
+      // ── Libya border polygon ──────────────────────────────────────────────
+      const LIBYA_POLY = [
+        // Mediterranean coast W → E
+        [33.14, 11.49], [33.40, 11.80], [33.53, 12.28], [33.35, 13.18],
+        [32.90, 13.87], [32.65, 14.27], [32.38, 15.09], [32.10, 15.72],
+        [31.21, 16.59], [30.83, 17.50], [30.75, 18.50], [31.00, 19.20],
+        [31.80, 20.07], [32.11, 20.07], [32.50, 21.00], [32.76, 22.64],
+        [32.08, 23.96], [31.50, 25.00],
+        // Egypt border S
+        [29.00, 25.00], [22.00, 25.00],
+        // Chad/Sudan border W
+        [19.50, 24.00], [19.50, 19.50], [19.50, 15.95],
+        // Niger border NW
+        [21.38, 11.97],
+        // Algeria border N
+        [23.00, 9.52], [26.50, 9.52], [30.10, 9.51],
+        // Tunisia border N → coast
+        [31.50, 9.56], [33.14, 11.49],
+      ]
+
+      L.polygon(LIBYA_POLY, {
+        color:       '#FF7900',
+        weight:      2.5,
+        opacity:     0.85,
+        fillColor:   '#FF7900',
+        fillOpacity: 0.06,
+        dashArray:   null,
+        lineJoin:    'round',
+      }).addTo(map)
+
       map.fitBounds([[19.3, 9.3], [33.5, 25.4]])
 
       layerGroupRef.current = L.layerGroup().addTo(map)
