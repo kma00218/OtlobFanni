@@ -154,8 +154,30 @@ export default function BottomNav() {
   // ── Handlers ────────────────────────────────────────────────────────────────
   const closeAll = () => { setShowCities(false); setShowSpecs(false); setCitySearch(''); setSpecSearch(''); };
 
-  const handleCityClick = (cityId) => {
+  // ── Remembered city (persists across navigation) ────────────────────────────
+  const [rememberedCity, setRememberedCity] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('otlob_city') || 'null'); } catch { return null; }
+  }); // { id, nameAr, nameEn }
+
+  const rememberCity = (id, city) => {
+    const val = id === 'libya' ? null : (city ? { id, nameAr: city.nameAr, nameEn: city.nameEn } : null);
+    setRememberedCity(val);
+    try { localStorage.setItem('otlob_city', JSON.stringify(val)); } catch {}
+  };
+
+  const getActiveCity = () => {
+    // Priority 1: current URL (/city/:id or /category/:id?city=X)
+    const cityPageMatch = location.match(/^\/city\/([^/?]+)/);
+    if (cityPageMatch && cityPageMatch[1] !== 'libya') return cityPageMatch[1];
+    const catPageMatch = location.match(/^\/category\/[^/?]+\?.*city=([^&]+)/);
+    if (catPageMatch) return decodeURIComponent(catPageMatch[1]);
+    // Priority 2: remembered city
+    return rememberedCity?.id || null;
+  };
+
+  const handleCityClick = (cityId, city) => {
     closeAll();
+    rememberCity(cityId, city);
     // If currently on a category page, stay on that category with the new city
     const catMatch = location.match(/^\/category\/([^/?]+)/);
     const catId = catMatch ? catMatch[1] : null;
@@ -168,11 +190,9 @@ export default function BottomNav() {
 
   const handleCatClick = (cat) => {
     closeAll();
-    // If currently on a city page, carry the city context automatically
-    const cityMatch = location.match(/^\/city\/([^/?]+)/);
-    const cityId = cityMatch ? cityMatch[1] : null;
-    if (cityId && cityId !== 'libya') {
-      navigate(`/category/${cat.id}?city=${cityId}`);
+    const activeCity = getActiveCity();
+    if (activeCity && activeCity !== 'libya') {
+      navigate(`/category/${cat.id}?city=${activeCity}`);
     } else {
       navigate(`/category/${cat.id}`);
     }
@@ -219,7 +239,9 @@ export default function BottomNav() {
                 <span className={`text-[9.5px] font-semibold leading-tight transition-colors duration-200 ${
                   active ? 'text-[#071B33]' : 'text-gray-400'
                 }`}>
-                  {label}
+                  {isCities && rememberedCity
+                    ? (ar ? rememberedCity.nameAr : (rememberedCity.nameEn || rememberedCity.nameAr))
+                    : label}
                 </span>
               </div>
             );
@@ -290,7 +312,7 @@ export default function BottomNav() {
 
             {/* Libya-wide shortcut */}
             <div className="px-4 pb-2 flex-shrink-0">
-              <button onClick={() => handleCityClick('libya', null)}
+              <button onClick={() => { rememberCity('libya', null); closeAll(); navigate('/city/libya'); }}
                 className="w-full flex items-center justify-between bg-gradient-to-r from-[#071B33] to-[#1a3a5c] text-white rounded-2xl px-4 py-2.5 active:scale-[0.98] transition-transform">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🇱🇾</span>
@@ -324,7 +346,7 @@ export default function BottomNav() {
                     const total = city.total || techs + comps + sups;
                     const hasAny = total > 0;
                     return (
-                      <button key={city.id} onClick={() => handleCityClick(city.id)}
+                      <button key={city.id} onClick={() => handleCityClick(city.id, city)}
                         className="relative flex flex-col items-center justify-between bg-white border border-gray-100 rounded-2xl px-3 py-3.5 shadow-sm active:scale-[0.97] transition-transform text-center overflow-hidden"
                       >
                         <div className="absolute inset-0 pointer-events-none rounded-2xl"
