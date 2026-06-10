@@ -369,32 +369,6 @@ export default function Home() {
           )
         })()}
 
-        {/* عنوان قسم الانضمام */}
-        <div className="flex items-center gap-3 mb-1">
-          <div className="flex-1 h-px bg-gray-200" />
-          <div className="text-center">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
-              {ar ? 'هل أنت مزود خدمة؟' : 'Are you a provider?'}
-            </p>
-            <p className="text-[22px] font-black text-[#071B33] leading-tight">
-              {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
-            </p>
-          </div>
-          <div className="flex-1 h-px bg-gray-200" />
-        </div>
-
-        {/* بطاقات الانضمام */}
-        <JoinCards ar={ar} />
-
-        {/* ── فاصل بين التسجيل وخانة العميل ── */}
-        <div className="flex items-center gap-3 my-1">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-            {ar ? 'أو' : 'OR'}
-          </span>
-          <div className="flex-1 h-px bg-gray-200" />
-        </div>
-
         {/* ── قسم العميل ── */}
         <div className="text-center">
           <p className="text-[28px] font-black text-[#FF7900] mb-1 leading-tight" style={{ letterSpacing: '-0.5px' }}>
@@ -444,9 +418,8 @@ export default function Home() {
           )}
         </div>
 
-        {/* ── ثم ابحث ── */}
+        {/* ── بحث ── */}
         <SearchBar />
-
 
         {/* ── التخصصات الأكثر طلباً ── */}
         {allSortedCategories.length > 0 && (
@@ -531,6 +504,28 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* ── فاصل بين قسم العميل وقسم الانضمام ── */}
+        <div className="flex items-center gap-3 my-2">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+            {ar ? 'أو' : 'OR'}
+          </span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* عنوان قسم الانضمام */}
+        <div className="text-center mb-1">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
+            {ar ? 'هل أنت مزود خدمة؟' : 'Are you a provider?'}
+          </p>
+          <p className="text-[22px] font-black text-[#071B33] leading-tight">
+            {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
+          </p>
+        </div>
+
+        {/* بطاقات الانضمام */}
+        <JoinCards ar={ar} />
 
         <div>
           <div className="flex justify-between items-center mb-3">
