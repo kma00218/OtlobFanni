@@ -221,9 +221,9 @@ export default function More() {
     <>
     <div className="bg-[#F2F2F7] min-h-screen pt-20 pb-28" dir={ar ? 'rtl' : 'ltr'}>
 
-      {/* Fixed header — Share+WA | Icon | Lang */}
-      <header className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-gray-100 z-50 flex items-center px-3 max-w-[480px] mx-auto">
-        <div className="flex items-end gap-2 flex-shrink-0">
+      {/* Fixed header — Share+WA | Icon (absolute center) | Lang */}
+      <header className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-gray-100 z-50 flex items-center justify-between px-3 max-w-[480px] mx-auto">
+        <div className="flex items-end gap-2 flex-shrink-0" style={{ position: 'relative', zIndex: 2 }}>
           <button onClick={handleShare} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0">
             <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ background: '#7B2FBE' }}>
               <Share2 className="h-5 w-5 text-white" />
@@ -245,10 +245,13 @@ export default function More() {
             <span className="text-[10px] font-semibold text-gray-500 leading-none">WhatsApp</span>
           </a>
         </div>
-        <div className="flex-1 flex justify-center items-center">
+
+        {/* Logo — absolutely centered, never shifts */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
           <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14" />
         </div>
-        <button onClick={toggleLang} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0">
+
+        <button onClick={toggleLang} className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150 flex-shrink-0" style={{ position: 'relative', zIndex: 2 }}>
           <div className="w-10 h-10 rounded-[12px] flex items-center justify-center font-extrabold text-base text-white" style={{ background: '#FF7900' }}>
             {lang === 'ar' ? 'EN' : 'AR'}
           </div>
