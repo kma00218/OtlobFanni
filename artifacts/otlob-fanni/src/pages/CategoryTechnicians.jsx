@@ -4,7 +4,7 @@ import { useSeoMeta } from '../hooks/useSeoMeta'
 import BackHeader from '../components/BackHeader'
 import ServiceImageIcon from '../components/ServiceImageIcon'
 import { categories } from '../data/services'
-import { useRoute, useLocation } from 'wouter'
+import { useRoute, useLocation, useSearch } from 'wouter'
 import { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
 import {
@@ -385,12 +385,9 @@ export default function CategoryTechnicians() {
   }
   const categoryIcon = iconMap[category?.iconName] || iconMap[categoryId] || '/icons/services/maintenance.svg'
 
-  const [cityChosen, setCityChosen] = useState(
-    () => window.location.search.includes('city=')
-  )
-  const [selectedCity, setSelectedCity] = useState(
-    () => new URLSearchParams(window.location.search).get('city') ?? ''
-  )
+  const searchStr = useSearch()
+  const selectedCity = new URLSearchParams(searchStr).get('city') ?? ''
+  const cityChosen   = searchStr.includes('city=')
   const [cities, setCities]             = useState([])
   const [selectedCityName, setSelectedCityName] = useState('')
 
@@ -418,16 +415,6 @@ export default function CategoryTechnicians() {
   const [nearMeLoading, setNearMeLoading] = useState(false)
   const [viewMode, setViewMode]           = useState('list')
 
-  // Sync state with URL when user presses browser back/forward
-  useEffect(() => {
-    const onPop = () => {
-      const city = new URLSearchParams(window.location.search).get('city') ?? ''
-      setSelectedCity(city)
-      setCityChosen(window.location.search.includes('city='))
-    }
-    window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
-  }, [])
 
   useEffect(() => {
     api.cities().then(setCities).catch(() => {})
@@ -437,7 +424,7 @@ export default function CategoryTechnicians() {
   useEffect(() => {
     if (!cities.length || !selectedCity) return
     const found = cities.find(c => c.id === selectedCity)
-    setSelectedCityName(ar ? (found?.name_ar || '') : (found?.name_en || ''))
+    setSelectedCityName(ar ? (found?.nameAr || found?.name_ar || '') : (found?.nameEn || found?.name_en || ''))
   }, [cities, selectedCity, ar])
 
   // After city is chosen, load results
@@ -458,8 +445,6 @@ export default function CategoryTechnicians() {
   }, [categoryId, cityChosen, selectedCity])
 
   const handleCitySelect = (cityId) => {
-    setSelectedCity(cityId)
-    setCityChosen(true)
     navigate(`/category/${categoryId}?city=${cityId}`)
   }
 
