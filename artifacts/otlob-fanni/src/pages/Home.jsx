@@ -533,77 +533,64 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* ── رشّح فني ── */}
-          <button
-            onClick={() => setShowReferral(true)}
-            className="mt-4 w-full flex items-center gap-3 rounded-2xl px-5 py-3.5 active:scale-[0.98] transition-transform select-none"
-            style={{ background: 'linear-gradient(90deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}
-          >
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <UserPlus className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 text-right">
-              <p className="text-white font-extrabold text-sm leading-tight">
-                {ar ? 'رشّح فنياً أو شركة خدمية أو مورد مستلزمات' : 'Suggest a Technician, Service Company or Parts Supplier'}
+          {/* ── بطاقات الإجراءات الثلاث في صف ── */}
+          <div className="mt-4 flex gap-2">
+            {/* رشّح */}
+            <button
+              onClick={() => setShowReferral(true)}
+              className="flex-1 flex flex-col items-center justify-center gap-2 rounded-2xl py-3 px-2 active:scale-95 transition-transform select-none"
+              style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 4px 14px rgba(255,121,0,0.35)' }}
+            >
+              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                <UserPlus className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-white font-black text-xs text-center leading-tight">
+                {ar ? 'رشّح فنياً' : 'Suggest'}
               </p>
-              <p className="text-white/70 text-xs font-medium mt-0.5">
-                {ar ? 'ساعدنا في توسيع الدليل' : 'Help us grow the directory'}
-              </p>
-            </div>
-            <UserPlus className="w-4 h-4 text-white/40 flex-shrink-0" />
-          </button>
+            </button>
 
-          {/* ── قناة تيليغرام ── */}
-          <a
-            href="https://t.me/otlobfanni"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 flex items-center gap-3 rounded-2xl px-5 py-3.5 active:scale-[0.98] transition-transform select-none"
-            style={{ background: 'linear-gradient(90deg, #229ED9 0%, #1a7fb5 100%)', boxShadow: '0 4px 16px rgba(34,158,217,0.3)' }}
-          >
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-            </div>
-            <div className="flex-1 text-right">
-              <p className="text-white font-extrabold text-sm leading-tight">
-                {ar ? 'تابعنا على تيليغرام' : 'Follow us on Telegram'}
+            {/* تيليغرام */}
+            <a
+              href="https://t.me/otlobfanni"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex flex-col items-center justify-center gap-2 rounded-2xl py-3 px-2 active:scale-95 transition-transform select-none"
+              style={{ background: 'linear-gradient(135deg, #229ED9 0%, #1a7fb5 100%)', boxShadow: '0 4px 14px rgba(34,158,217,0.35)' }}
+            >
+              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              </div>
+              <p className="text-white font-black text-xs text-center leading-tight">
+                {ar ? 'تيليغرام' : 'Telegram'}
               </p>
-              <p className="text-white/70 text-xs font-medium mt-0.5">t.me/otlobfanni</p>
-            </div>
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white/40 flex-shrink-0"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-          </a>
+            </a>
 
-          {/* ── شارك التطبيق ── */}
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'اطلب فني – Otlob Fanni',
-                  text: ar
-                    ? 'دليل الفنيين والشركات والموردين في ليبيا – اطلب فني'
-                    : "Libya's technician & company directory – Otlob Fanni",
-                  url: 'https://otlobfanni.ly',
-                })
-              } else {
-                navigator.clipboard?.writeText('https://otlobfanni.ly')
-              }
-            }}
-            className="mt-4 w-full flex items-center gap-3 rounded-2xl px-5 py-3.5 active:scale-[0.98] transition-transform select-none"
-            style={{ background: 'linear-gradient(90deg, #7B2FBE 0%, #5a1fa0 100%)', boxShadow: '0 4px 16px rgba(123,47,190,0.3)' }}
-          >
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <Share2 className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 text-right">
-              <p className="text-white font-extrabold text-sm leading-tight">
-                {ar ? 'شارك التطبيق مع أصدقائك' : 'Share the app with friends'}
+            {/* شارك */}
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'اطلب فني – Otlob Fanni',
+                    text: ar
+                      ? 'دليل الفنيين والشركات والموردين في ليبيا – اطلب فني'
+                      : "Libya's technician & company directory – Otlob Fanni",
+                    url: 'https://otlobfanni.ly',
+                  })
+                } else {
+                  navigator.clipboard?.writeText('https://otlobfanni.ly')
+                }
+              }}
+              className="flex-1 flex flex-col items-center justify-center gap-2 rounded-2xl py-3 px-2 active:scale-95 transition-transform select-none"
+              style={{ background: 'linear-gradient(135deg, #7B2FBE 0%, #5a1fa0 100%)', boxShadow: '0 4px 14px rgba(123,47,190,0.35)' }}
+            >
+              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                <Share2 className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-white font-black text-xs text-center leading-tight">
+                {ar ? 'شارك' : 'Share'}
               </p>
-              <p className="text-white/70 text-xs font-medium mt-0.5">
-                {ar ? 'ساعد في نشر اطلب فني في ليبيا' : 'Help spread Otlob Fanni in Libya'}
-              </p>
-            </div>
-            <Share2 className="w-4 h-4 text-white/40 flex-shrink-0" />
-          </button>
+            </button>
+          </div>
 
           {/* خريطة توزيع مقدمي الخدمات في ليبيا */}
           <div className="mt-4">
