@@ -60,7 +60,7 @@ function RecentCard({ item, ar }) {
 const JOIN_SLIDES = [
   {
     key: 'tech',
-    href: '/join',
+    href: '/join-us',
     icon: Wrench,
     bg: 'linear-gradient(135deg, #FF7900 0%, #e05e00 100%)',
     shadow: 'rgba(255,121,0,0.4)',
@@ -69,7 +69,7 @@ const JOIN_SLIDES = [
   },
   {
     key: 'company',
-    href: '/join-company',
+    href: '/join-us',
     icon: Building2,
     bg: 'linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%)',
     shadow: 'rgba(26,86,219,0.4)',
@@ -78,7 +78,7 @@ const JOIN_SLIDES = [
   },
   {
     key: 'supplier',
-    href: '/join-supplier',
+    href: '/join-us',
     icon: Package,
     bg: 'linear-gradient(135deg, #0d9488 0%, #0a7065 100%)',
     shadow: 'rgba(13,148,136,0.4)',
