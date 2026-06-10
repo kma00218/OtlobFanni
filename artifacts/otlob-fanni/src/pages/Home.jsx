@@ -479,49 +479,51 @@ export default function Home() {
         {/* إعلان أعلى الصفحة */}
         <AdBanner placement="home_top" dismissible />
 
-        {/* Recently Joined */}
-        {(recentLoading || recent.length > 0) && (
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-base font-bold text-foreground">
-                {ar ? 'انضموا مؤخراً' : 'Recently Joined'}
-              </h2>
-              <div className="flex items-center gap-1 text-[#FF7900]">
-                <Users className="w-3.5 h-3.5" />
-                <span className="text-xs font-semibold">{recent.length}</span>
+        {/* Recently Joined + divider + provider heading — grouped tight */}
+        <div className="flex flex-col gap-2">
+          {(recentLoading || recent.length > 0) && (
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-base font-bold text-foreground">
+                  {ar ? 'انضموا مؤخراً' : 'Recently Joined'}
+                </h2>
+                <div className="flex items-center gap-1 text-[#FF7900]">
+                  <Users className="w-3.5 h-3.5" />
+                  <span className="text-xs font-semibold">{recent.length}</span>
+                </div>
+              </div>
+              <div
+                className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1"
+                style={{ scrollbarWidth: 'none' }}
+              >
+                {recentLoading
+                  ? Array.from({ length: 5 }).map((_, i) => <SkeletonRecentCard key={i} />)
+                  : recent.map(item => (
+                      <RecentCard key={`${item.type}-${item.id}`} item={item} ar={ar} />
+                    ))
+                }
               </div>
             </div>
-            <div
-              className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1"
-              style={{ scrollbarWidth: 'none' }}
-            >
-              {recentLoading
-                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRecentCard key={i} />)
-                : recent.map(item => (
-                    <RecentCard key={`${item.type}-${item.id}`} item={item} ar={ar} />
-                  ))
-              }
-            </div>
+          )}
+
+          {/* ── فاصل بين قسم العميل وقسم الانضمام ── */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+              {ar ? 'أو' : 'OR'}
+            </span>
+            <div className="flex-1 h-px bg-gray-200" />
           </div>
-        )}
 
-        {/* ── فاصل بين قسم العميل وقسم الانضمام ── */}
-        <div className="flex items-center gap-3 my-2">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-            {ar ? 'أو' : 'OR'}
-          </span>
-          <div className="flex-1 h-px bg-gray-200" />
-        </div>
-
-        {/* عنوان قسم الانضمام */}
-        <div className="text-center mb-1">
-          <p className="text-[16px] font-black text-[#FF7900] mb-1 leading-tight" style={{ letterSpacing: '-0.3px' }}>
-            {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
-          </p>
-          <p className="text-[15px] font-extrabold text-[#071B33] leading-snug">
-            {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
-          </p>
+          {/* عنوان قسم الانضمام */}
+          <div className="text-center">
+            <p className="text-[16px] font-black text-[#FF7900] mb-0.5 leading-tight" style={{ letterSpacing: '-0.3px' }}>
+              {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
+            </p>
+            <p className="text-[15px] font-extrabold text-[#071B33] leading-snug">
+              {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
+            </p>
+          </div>
         </div>
 
         {/* بطاقات الانضمام */}
