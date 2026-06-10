@@ -684,6 +684,24 @@ uri = "file://artifacts/otlob-fanni/public/join-cards/supplier.png"
 type = "image"
 title = "electrical plumbing supplies flat lay"
 
+[[generated]]
+id = "wCnzNXCNEtAnmyioiZtqH"
+uri = "file://artifacts/otlob-fanni/public/join-cards/technician-v2.png"
+type = "image"
+title = "bright technician clear photo v2"
+
+[[generated]]
+id = "Bw7fcAtfpqKLgk6li4FTv"
+uri = "file://artifacts/otlob-fanni/public/join-cards/company-v2.png"
+type = "image"
+title = "two men handshake service company v2"
+
+[[generated]]
+id = "ByOpq71usFmAobrT_g0XO"
+uri = "file://artifacts/otlob-fanni/public/join-cards/supplier-v2.png"
+type = "image"
+title = "electrical plumbing supplies flat lay v2"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"

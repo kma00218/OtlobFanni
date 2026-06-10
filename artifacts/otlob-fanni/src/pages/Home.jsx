@@ -60,7 +60,7 @@ function RecentCard({ item, ar }) {
 const JOIN_TYPES = [
   {
     key: 'tech',
-    img: '/join-cards/technician.png',
+    img: '/join-cards/technician-v2.png',
     accent: '#FF7900',
     shadow: '0 6px 20px rgba(255,121,0,0.35)',
     ar: 'هل أنت فني؟',
@@ -70,7 +70,7 @@ const JOIN_TYPES = [
   },
   {
     key: 'company',
-    img: '/join-cards/company.png',
+    img: '/join-cards/company-v2.png',
     accent: '#1a56db',
     shadow: '0 6px 20px rgba(26,86,219,0.35)',
     ar: 'لديك شركة خدمية؟',
@@ -80,7 +80,7 @@ const JOIN_TYPES = [
   },
   {
     key: 'supplier',
-    img: '/join-cards/supplier.png',
+    img: '/join-cards/supplier-v2.png',
     accent: '#0d9488',
     shadow: '0 6px 20px rgba(13,148,136,0.35)',
     ar: 'مورّد مستلزمات؟',
