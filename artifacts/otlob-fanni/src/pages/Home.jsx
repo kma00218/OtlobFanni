@@ -61,32 +61,32 @@ const JOIN_TYPES = [
   {
     key: 'tech',
     img: '/join-cards/technician.png',
-    overlay: 'linear-gradient(180deg, rgba(180,70,0,0.35) 0%, rgba(180,70,0,0.75) 100%)',
-    shadow: '0 6px 20px rgba(255,121,0,0.45)',
-    ar: 'فني',
-    en: 'Technician',
+    accent: '#FF7900',
+    shadow: '0 6px 20px rgba(255,121,0,0.35)',
+    ar: 'هل أنت فني؟',
+    en: 'Are you a Technician?',
     subAr: 'سجّل مجاناً',
-    subEn: 'Free signup',
+    subEn: 'Register Free',
   },
   {
     key: 'company',
     img: '/join-cards/company.png',
-    overlay: 'linear-gradient(180deg, rgba(10,40,120,0.35) 0%, rgba(10,40,120,0.75) 100%)',
-    shadow: '0 6px 20px rgba(26,86,219,0.45)',
-    ar: 'شركة خدمية',
-    en: 'Service Co.',
+    accent: '#1a56db',
+    shadow: '0 6px 20px rgba(26,86,219,0.35)',
+    ar: 'لديك شركة؟',
+    en: 'Have a Company?',
     subAr: 'سجّل شركتك',
-    subEn: 'Register now',
+    subEn: 'Register Now',
   },
   {
     key: 'supplier',
     img: '/join-cards/supplier.png',
-    overlay: 'linear-gradient(180deg, rgba(5,80,75,0.35) 0%, rgba(5,80,75,0.75) 100%)',
-    shadow: '0 6px 20px rgba(13,148,136,0.45)',
-    ar: 'مورّد مستلزمات',
-    en: 'Supplier',
+    accent: '#0d9488',
+    shadow: '0 6px 20px rgba(13,148,136,0.35)',
+    ar: 'مورّد مستلزمات؟',
+    en: 'Are you a Supplier?',
     subAr: 'انضم إلينا',
-    subEn: 'Join us',
+    subEn: 'Join Us',
   },
 ]
 
@@ -96,26 +96,26 @@ function JoinCards({ ar }) {
       {JOIN_TYPES.map(type => (
         <Link key={type.key} href="/join-us" className="flex-1">
           <div
-            className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer"
-            style={{ height: '110px', boxShadow: type.shadow }}
+            className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer flex flex-col"
+            style={{ boxShadow: type.shadow }}
           >
-            {/* photo background */}
-            <img
-              src={type.img}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            {/* gradient overlay */}
+            {/* photo */}
+            <div className="relative w-full" style={{ paddingBottom: '90%' }}>
+              <img
+                src={type.img}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+            {/* CTA bar */}
             <div
-              className="absolute inset-0"
-              style={{ background: type.overlay }}
-            />
-            {/* text */}
-            <div className="absolute inset-0 flex flex-col items-center justify-end pb-2.5 px-1">
-              <p className="text-white font-black text-[11px] text-center leading-tight drop-shadow-md">
+              className="w-full flex flex-col items-center justify-center py-2 px-1"
+              style={{ background: type.accent }}
+            >
+              <p className="text-white font-black text-[10px] text-center leading-tight">
                 {ar ? type.ar : type.en}
               </p>
-              <p className="text-white/80 text-[9px] font-semibold mt-0.5 text-center leading-tight">
+              <p className="text-white/90 text-[9px] font-bold mt-0.5 text-center">
                 {ar ? type.subAr : type.subEn}
               </p>
             </div>
