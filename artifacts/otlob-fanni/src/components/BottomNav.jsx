@@ -165,37 +165,15 @@ export default function BottomNav() {
     try { localStorage.setItem('otlob_city', JSON.stringify(val)); } catch {}
   };
 
-  const getActiveCity = () => {
-    // Priority 1: current URL (/city/:id or /category/:id?city=X)
-    const cityPageMatch = location.match(/^\/city\/([^/?]+)/);
-    if (cityPageMatch && cityPageMatch[1] !== 'libya') return cityPageMatch[1];
-    const catPageMatch = location.match(/^\/category\/[^/?]+\?.*city=([^&]+)/);
-    if (catPageMatch) return decodeURIComponent(catPageMatch[1]);
-    // Priority 2: remembered city
-    return rememberedCity?.id || null;
-  };
-
   const handleCityClick = (cityId, city) => {
-    closeAll();
     rememberCity(cityId, city);
-    // If currently on a category page, stay on that category with the new city
-    const catMatch = location.match(/^\/category\/([^/?]+)/);
-    const catId = catMatch ? catMatch[1] : null;
-    if (catId && cityId !== 'libya') {
-      navigate(`/category/${catId}?city=${cityId}`);
-    } else {
-      navigate(`/city/${cityId}`);
-    }
+    closeAll();
+    navigate(`/city/${cityId}`);
   };
 
   const handleCatClick = (cat) => {
     closeAll();
-    const activeCity = getActiveCity();
-    if (activeCity && activeCity !== 'libya') {
-      navigate(`/category/${cat.id}?city=${activeCity}`);
-    } else {
-      navigate(`/category/${cat.id}`);
-    }
+    navigate(`/category/${cat.id}`);
   };
 
   const sheetStyle = {
