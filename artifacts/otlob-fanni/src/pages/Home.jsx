@@ -369,6 +369,20 @@ export default function Home() {
           )
         })()}
 
+        {/* عنوان قسم الانضمام */}
+        <div className="flex items-center gap-3 mb-1">
+          <div className="flex-1 h-px bg-gray-200" />
+          <div className="text-center">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
+              {ar ? 'هل أنت مزود خدمة؟' : 'Are you a provider?'}
+            </p>
+            <p className="text-[22px] font-black text-[#071B33] leading-tight">
+              {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
+            </p>
+          </div>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
         {/* بطاقات الانضمام */}
         <JoinCards ar={ar} />
 
