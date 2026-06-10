@@ -156,12 +156,26 @@ export default function BottomNav() {
 
   const handleCityClick = (cityId) => {
     closeAll();
-    navigate(`/city/${cityId}`);
+    // If currently on a category page, stay on that category with the new city
+    const catMatch = location.match(/^\/category\/([^/?]+)/);
+    const catId = catMatch ? catMatch[1] : null;
+    if (catId && cityId !== 'libya') {
+      navigate(`/category/${catId}?city=${cityId}`);
+    } else {
+      navigate(`/city/${cityId}`);
+    }
   };
 
   const handleCatClick = (cat) => {
     closeAll();
-    navigate(`/category/${cat.id}`);
+    // If currently on a city page, carry the city context automatically
+    const cityMatch = location.match(/^\/city\/([^/?]+)/);
+    const cityId = cityMatch ? cityMatch[1] : null;
+    if (cityId && cityId !== 'libya') {
+      navigate(`/category/${cat.id}?city=${cityId}`);
+    } else {
+      navigate(`/category/${cat.id}`);
+    }
   };
 
   const sheetStyle = {
