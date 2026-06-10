@@ -3,42 +3,211 @@ import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import BackHeader from '../components/BackHeader'
-import TechnicianCard from '../components/TechnicianCard'
-import { MapPin, Globe, Search, Building2, ChevronLeft, ChevronRight, Package } from 'lucide-react'
+import { MapPin, Globe, Search, Building2, Package, Star, Phone, MessageSquare, Zap, Heart } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
 import { categories as staticCategoriesData } from '../data/services'
 import { useAllCategories } from '../hooks/useAllCategories'
 
-function CompanyRow({ company, ar, onOpen }) {
-  const name = company.companyName || ''
-  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
-  const logo = getFileUrl(company.companyLogo || null)
-  const category = ar ? company.categoryAr : company.categoryEn
-  const ChevIcon = ar ? ChevronLeft : ChevronRight
+function useFavorites(key) {
+  const [favs, setFavs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] }
+  })
+  const toggle = (id) => setFavs(prev => {
+    const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    localStorage.setItem(key, JSON.stringify(next))
+    return next
+  })
+  return { isFav: (id) => favs.includes(id), toggle }
+}
+
+function Stars({ rating }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1,2,3,4,5].map(i => (
+        <Star key={i} className={`w-3 h-3 ${i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}
+          fill={i <= Math.round(rating) ? 'currentColor' : 'none'} />
+      ))}
+    </div>
+  )
+}
+
+function TechGrid({ tech, ar, onOpen, isFav, onToggleFav, categoryName }) {
+  const name = (ar ? tech.nameAr : tech.nameEn) || tech.nameAr || ''
+  const firstName = name ? (name.trim().split(' ')[0] || '؟') : '؟'
+  const photo = getFileUrl(tech.profilePhoto || tech.profile_photo || null)
+  const availableNow = tech.availableNow ?? tech.available_now ?? (tech.status === 'available')
+  const emergency = tech.emergency || false
+  const isFeatured = tech.isFeatured ?? tech.is_featured ?? false
+  const rating = tech.rating || 0
+  const reviewsCount = tech.reviewsCount ?? tech.reviews_count ?? 0
+  const city = (ar ? tech.cityAr || tech.city_name_ar : tech.cityEn || tech.city_name_en) || tech.city_name_ar || tech.city || ''
+  const area = tech.area || ''
+  const phone = tech.phone || ''
+  const whatsapp = tech.whatsapp || phone
 
   return (
-    <button
-      onClick={() => onOpen(company.id)}
-      className="w-full flex items-center gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 active:scale-[0.98] transition-all text-start"
-    >
-      <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden bg-blue-100 flex items-center justify-center">
-        {logo
-          ? <img src={logo} alt={name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
-              <span className="text-white font-bold text-xs text-center px-1 leading-tight">{firstWord}</span>
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+      onClick={() => onOpen(tech.id)}>
+      <div className="relative">
+        {photo
+          ? <img src={photo} alt={name} className="w-full h-32 object-cover" />
+          : <div className="w-full h-32 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+              <span className="text-white text-xl font-bold text-center px-2">{firstName}</span>
             </div>}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <p className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</p>
-          <span className="text-[9px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">خدمية</span>
+        <div className="absolute top-1.5 right-1.5 flex flex-col gap-1">
+          {availableNow && <span className="bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">{ar ? 'متاح' : 'Available'}</span>}
+          {emergency && <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 leading-none"><Zap className="w-2 h-2" />{ar ? 'طوارئ' : 'Emergency'}</span>}
+          {isFeatured && <span className="bg-[#FF7900] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 leading-none"><Star className="w-2 h-2" fill="currentColor" />{ar ? 'مميز' : 'Featured'}</span>}
         </div>
-        {category && <p className="text-xs text-[#FF7900] font-medium mt-0.5">{category}</p>}
-        {company.city && <p className="text-xs text-gray-400 mt-0.5">{company.city}</p>}
+        <button onClick={e => { e.stopPropagation(); onToggleFav(tech.id) }}
+          className="absolute top-1.5 left-1.5 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm">
+          <Heart className={`w-3 h-3 ${isFav ? 'text-rose-500' : 'text-gray-400'}`} fill={isFav ? 'currentColor' : 'none'} />
+        </button>
       </div>
-      <Building2 className="w-4 h-4 text-gray-300 flex-shrink-0" />
-    </button>
+      <div className="p-2.5 flex-1 flex flex-col">
+        <p className="font-bold text-[#071B33] text-sm leading-tight mb-0.5 truncate">{name}</p>
+        {categoryName && (
+          <div className="flex items-center gap-1 mb-1.5">
+            <div className="w-1 h-3 rounded-full bg-[#FF7900] flex-shrink-0" />
+            <span className="text-xs font-extrabold text-[#FF7900] truncate">{categoryName}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-0.5 mb-1.5">
+          <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+          <p className="text-[11px] text-gray-400 truncate">{city}{area ? ` · ${area}` : ''}</p>
+        </div>
+        {rating > 0 && (
+          <div className="flex items-center gap-1 mb-2">
+            <Stars rating={rating} />
+            {reviewsCount > 0 && <span className="text-[10px] text-gray-400">({reviewsCount})</span>}
+          </div>
+        )}
+        <div className="flex gap-1.5 mt-auto" onClick={e => e.stopPropagation()}>
+          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"
+            className="flex-1 bg-green-500 text-white text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
+            <MessageSquare className="w-3 h-3" />{ar ? 'واتساب' : 'WA'}
+          </a>
+          <a href={`tel:${phone}`}
+            className="flex-1 bg-[#071B33] text-white text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
+            <Phone className="w-3 h-3" />{ar ? 'اتصال' : 'Call'}
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CompanyGrid({ company, ar, onOpen, isFav, onToggleFav }) {
+  const name = company.companyName || company.company_name || ''
+  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
+  const logo = getFileUrl(company.companyLogo || company.company_logo || null)
+  const category = ar ? company.categoryAr : company.categoryEn
+  const availableNow = company.availableNow ?? company.available_now ?? false
+  const emergency = company.emergency || false
+  const isFeatured = company.isFeatured ?? company.is_featured ?? false
+  const city = company.city || ''
+  const area = company.area || ''
+  const phone = company.phone || ''
+  const whatsapp = company.whatsapp || phone
+
+  return (
+    <div className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+      onClick={() => onOpen(company.id)}>
+      <div className="relative">
+        {logo
+          ? <img src={logo} alt={name} className="w-full h-32 object-cover" />
+          : <div className="w-full h-32 bg-gradient-to-br from-[#071B33] to-[#1a56db] flex items-center justify-center">
+              <span className="text-white text-xl font-bold text-center px-2">{firstWord}</span>
+            </div>}
+        <div className="absolute top-1.5 right-1.5 flex flex-col gap-1">
+          <span className="bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"><Building2 className="w-2 h-2 inline" /> {ar ? 'خدمية' : 'Company'}</span>
+          {availableNow && <span className="bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">{ar ? 'متاح' : 'Available'}</span>}
+          {emergency && <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 leading-none"><Zap className="w-2 h-2" />{ar ? 'طوارئ' : 'Emergency'}</span>}
+          {isFeatured && <span className="bg-[#FF7900] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 leading-none"><Star className="w-2 h-2" fill="currentColor" />{ar ? 'مميز' : 'Featured'}</span>}
+        </div>
+        {isFav !== undefined && (
+          <button onClick={e => { e.stopPropagation(); onToggleFav(company.id) }}
+            className="absolute top-1.5 left-1.5 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm">
+            <Heart className={`w-3 h-3 ${isFav ? 'text-rose-500' : 'text-gray-400'}`} fill={isFav ? 'currentColor' : 'none'} />
+          </button>
+        )}
+      </div>
+      <div className="p-2.5 flex-1 flex flex-col">
+        <p className="font-bold text-[#071B33] text-sm leading-tight mb-0.5 truncate">{name}</p>
+        {category && (
+          <div className="flex items-center gap-1 mb-1.5">
+            <div className="w-1 h-3 rounded-full bg-blue-500 flex-shrink-0" />
+            <span className="text-xs font-extrabold text-blue-600 truncate">{category}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-0.5 mb-2">
+          <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+          <p className="text-[11px] text-gray-400 truncate">{city}{area ? ` · ${area}` : ''}</p>
+        </div>
+        <div className="flex gap-1.5 mt-auto" onClick={e => e.stopPropagation()}>
+          {whatsapp && <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"
+            className="flex-1 bg-green-500 text-white text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
+            <MessageSquare className="w-3 h-3" />{ar ? 'واتساب' : 'WA'}
+          </a>}
+          {phone && <a href={`tel:${phone}`}
+            className="flex-1 bg-[#071B33] text-white text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
+            <Phone className="w-3 h-3" />{ar ? 'اتصال' : 'Call'}
+          </a>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SupplierGrid({ supplier, ar, onOpen }) {
+  const name = supplier.businessName || supplier.business_name || ''
+  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
+  const logo = getFileUrl(supplier.logo || null)
+  const supplyLabel = supplier.customSupplyType || supplier.custom_supply_type || supplier.supplyType || supplier.supply_type || ''
+  const city = supplier.city || ''
+  const phone = supplier.phone || ''
+  const whatsapp = supplier.whatsapp || phone
+
+  return (
+    <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+      onClick={() => onOpen(supplier.id)}>
+      <div className="relative">
+        {logo
+          ? <img src={logo} alt={name} className="w-full h-32 object-cover" />
+          : <div className="w-full h-32 bg-gradient-to-br from-[#0a4e60] to-[#0e7c8f] flex items-center justify-center">
+              <span className="text-white text-xl font-bold text-center px-2">{firstWord}</span>
+            </div>}
+        <div className="absolute top-1.5 right-1.5">
+          <span className="bg-teal-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">{ar ? 'مورد' : 'Supplier'}</span>
+        </div>
+      </div>
+      <div className="p-2.5 flex-1 flex flex-col">
+        <p className="font-bold text-[#071B33] text-sm leading-tight mb-0.5 truncate">{name}</p>
+        {supplyLabel && (
+          <div className="flex items-center gap-1 mb-1.5">
+            <div className="w-1 h-3 rounded-full bg-teal-500 flex-shrink-0" />
+            <span className="text-xs font-extrabold text-teal-600 truncate">{supplyLabel}</span>
+          </div>
+        )}
+        {city && (
+          <div className="flex items-center gap-0.5 mb-2">
+            <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+            <p className="text-[11px] text-gray-400 truncate">{city}</p>
+          </div>
+        )}
+        <div className="flex gap-1.5 mt-auto" onClick={e => e.stopPropagation()}>
+          {whatsapp && <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"
+            className="flex-1 bg-green-500 text-white text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
+            <MessageSquare className="w-3 h-3" />{ar ? 'واتساب' : 'WA'}
+          </a>}
+          {phone && <a href={`tel:${phone}`}
+            className="flex-1 bg-[#071B33] text-white text-[11px] font-bold py-1.5 rounded-xl flex items-center justify-center gap-1">
+            <Phone className="w-3 h-3" />{ar ? 'اتصال' : 'Call'}
+          </a>}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -59,6 +228,8 @@ export default function CityTechnicians() {
   const [visibleCompanies, setVisibleCompanies] = useState(20)
   const [visibleSuppliers, setVisibleSuppliers] = useState(20)
   const [selectedCatId, setSelectedCatId]       = useState(null)
+  const techFavs = useFavorites('city_fav_techs')
+  const compFavs = useFavorites('city_fav_comps')
 
   const isLibya = id === 'libya'
 
@@ -322,96 +493,91 @@ export default function CityTechnicians() {
         ) : (
           <>
             {filteredTechs.length > 0 && (
-              <div className="space-y-1">
-                <div className="px-1 pb-2 pt-1">
+              <div>
+                <div className="px-1 pb-3 pt-1">
                   <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    {ar ? 'الفنيون' : 'Technicians'}
+                    🔧 {ar ? 'الفنيون' : 'Technicians'} <span className="ms-1.5 bg-white/20 rounded-full px-1.5">{filteredTechs.length}</span>
                   </span>
                 </div>
-                {shownTechs.map(tech => (
-                  <TechnicianCard key={tech.id} technician={tech} />
-                ))}
+                <div className="grid grid-cols-2 gap-3">
+                  {shownTechs.map(tech => {
+                    const catId = tech.categoryId || tech.category_id
+                    const catName = catId
+                      ? (ar
+                          ? allCategoriesData.find(c => c.id === catId)?.nameAr
+                          : allCategoriesData.find(c => c.id === catId)?.nameEn)
+                      : (ar ? tech.categoryAr : tech.categoryEn)
+                    return (
+                      <TechGrid
+                        key={tech.id}
+                        tech={tech}
+                        ar={ar}
+                        onOpen={id => navigate(`/technician/${id}`)}
+                        isFav={techFavs.isFav(tech.id)}
+                        onToggleFav={techFavs.toggle}
+                        categoryName={catName}
+                      />
+                    )
+                  })}
+                </div>
                 {filteredTechs.length > visibleTechs && (
-                  <button
-                    onClick={() => setVisibleTechs(v => v + 20)}
-                    className="w-full mt-2 py-3 rounded-2xl bg-white border border-[#FF7900]/30 text-[#FF7900] font-bold text-sm active:scale-[0.98] transition-transform"
-                  >
-                    {ar
-                      ? `تحميل المزيد (${filteredTechs.length - visibleTechs})`
-                      : `Load More (${filteredTechs.length - visibleTechs})`}
+                  <button onClick={() => setVisibleTechs(v => v + 20)}
+                    className="w-full mt-3 py-3 rounded-2xl bg-white border border-[#FF7900]/30 text-[#FF7900] font-bold text-sm active:scale-[0.98] transition-transform">
+                    {ar ? `تحميل المزيد (${filteredTechs.length - visibleTechs})` : `Load More (${filteredTechs.length - visibleTechs})`}
                   </button>
                 )}
               </div>
             )}
+
             {filteredCompanies.length > 0 && (
-              <div className="space-y-2">
-                <div className="px-1 pb-2 pt-1">
+              <div>
+                <div className="px-1 pb-3 pt-1">
                   <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    {ar ? 'الشركات الخدمية' : 'Companies'}
+                    🏢 {ar ? 'الشركات الخدمية' : 'Companies'} <span className="ms-1.5 bg-white/20 rounded-full px-1.5">{filteredCompanies.length}</span>
                   </span>
                 </div>
-                {shownCompanies.map(company => (
-                  <CompanyRow
-                    key={company.id}
-                    company={company}
-                    ar={ar}
-                    onOpen={(id) => navigate(`/company/${id}`)}
-                  />
-                ))}
+                <div className="grid grid-cols-2 gap-3">
+                  {shownCompanies.map(company => (
+                    <CompanyGrid
+                      key={company.id}
+                      company={company}
+                      ar={ar}
+                      onOpen={id => navigate(`/company/${id}`)}
+                      isFav={compFavs.isFav(company.id)}
+                      onToggleFav={compFavs.toggle}
+                    />
+                  ))}
+                </div>
                 {filteredCompanies.length > visibleCompanies && (
-                  <button
-                    onClick={() => setVisibleCompanies(v => v + 20)}
-                    className="w-full mt-2 py-3 rounded-2xl bg-white border border-blue-300 text-blue-600 font-bold text-sm active:scale-[0.98] transition-transform"
-                  >
-                    {ar
-                      ? `تحميل المزيد (${filteredCompanies.length - visibleCompanies})`
-                      : `Load More (${filteredCompanies.length - visibleCompanies})`}
+                  <button onClick={() => setVisibleCompanies(v => v + 20)}
+                    className="w-full mt-3 py-3 rounded-2xl bg-white border border-blue-300 text-blue-600 font-bold text-sm active:scale-[0.98] transition-transform">
+                    {ar ? `تحميل المزيد (${filteredCompanies.length - visibleCompanies})` : `Load More (${filteredCompanies.length - visibleCompanies})`}
                   </button>
                 )}
               </div>
             )}
+
             {filteredSuppliers.length > 0 && (
-              <div className="space-y-2">
-                <div className="px-1 pb-2 pt-1">
+              <div>
+                <div className="px-1 pb-3 pt-1">
                   <span className="inline-flex items-center bg-[#071B33] text-white text-[12px] font-bold px-3 py-1 rounded-full">
-                    {ar ? 'مزودو المستلزمات' : 'Suppliers'}
+                    📦 {ar ? 'مزودو المستلزمات' : 'Suppliers'} <span className="ms-1.5 bg-white/20 rounded-full px-1.5">{filteredSuppliers.length}</span>
                   </span>
                 </div>
-                {shownSuppliers.map(supplier => {
-                  const name = supplier.businessName || supplier.business_name || ''
-                  const firstWord = name ? (name.trim().split(' ')[0] || '؟') : '؟'
-                  const logo = getFileUrl(supplier.logo || null)
-                  const supplyLabel = supplier.customSupplyType || supplier.custom_supply_type || supplier.supplyType || supplier.supply_type || ''
-                  return (
-                    <button
+                <div className="grid grid-cols-2 gap-3">
+                  {shownSuppliers.map(supplier => (
+                    <SupplierGrid
                       key={supplier.id}
-                      onClick={() => navigate(`/supplier/${supplier.id}`)}
-                      className="w-full flex items-center gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 active:scale-[0.98] transition-all text-start"
-                    >
-                      <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden bg-teal-100 flex items-center justify-center">
-                        {logo
-                          ? <img src={logo} alt={name} className="w-full h-full object-cover" />
-                          : <div className="w-full h-full bg-teal-100 flex items-center justify-center">
-                              <Package className="w-6 h-6 text-teal-600" />
-                            </div>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-[#071B33] text-sm leading-tight truncate">{name}</p>
-                        {supplyLabel && <p className="text-xs text-teal-600 font-medium mt-0.5">{supplyLabel}</p>}
-                        {supplier.city && <p className="text-xs text-gray-400 mt-0.5">{supplier.city}</p>}
-                      </div>
-                      <Package className="w-4 h-4 text-gray-300 flex-shrink-0" />
-                    </button>
-                  )
-                })}
+                      supplier={supplier}
+                      ar={ar}
+                      onOpen={id => navigate(`/supplier/${id}`)}
+                    />
+                  ))}
+                </div>
                 {filteredSuppliers.length > visibleSuppliers && (
-                  <button
-                    onClick={() => setVisibleSuppliers(v => v + 20)}
-                    className="w-full mt-2 py-3 rounded-2xl bg-white border border-teal-300 text-teal-600 font-bold text-sm active:scale-[0.98] transition-transform"
-                  >
-                    {ar
-                      ? `تحميل المزيد (${filteredSuppliers.length - visibleSuppliers})`
-                      : `Load More (${filteredSuppliers.length - visibleSuppliers})`}
+                  <button onClick={() => setVisibleSuppliers(v => v + 20)}
+                    className="w-full mt-3 py-3 rounded-2xl bg-white border border-teal-300 text-teal-600 font-bold text-sm active:scale-[0.98] transition-transform">
+                    {ar ? `تحميل المزيد (${filteredSuppliers.length - visibleSuppliers})` : `Load More (${filteredSuppliers.length - visibleSuppliers})`}
                   </button>
                 )}
               </div>
