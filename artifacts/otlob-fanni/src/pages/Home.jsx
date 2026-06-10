@@ -382,23 +382,6 @@ export default function Home() {
         {/* ── ثم ابحث ── */}
         <SearchBar />
 
-        {/* ── كيف يعمل التطبيق ── */}
-        <div className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-2xl"
-          style={{ background: 'linear-gradient(135deg, #FFF7F0, #FFF3E8)', border: '1px solid rgba(255,121,0,0.15)' }}>
-          {[
-            { icon: '📍', text: ar ? 'اختر مدينة' : 'Pick a city' },
-            { icon: '🔍', text: ar ? 'ابحث أو تصفّح' : 'Search or browse' },
-            { icon: '📞', text: ar ? 'تواصل مباشرة' : 'Contact directly' },
-          ].map((step, i, arr) => (
-            <div key={i} className="flex items-center gap-1.5 flex-1 justify-center">
-              <span className="text-base leading-none">{step.icon}</span>
-              <span className="text-[11px] font-bold text-[#071B33] leading-tight">{step.text}</span>
-              {i < arr.length - 1 && (
-                <span className="text-[#FF7900] font-black text-xs mx-0.5">{ar ? '←' : '→'}</span>
-              )}
-            </div>
-          ))}
-        </div>
 
         {/* ── التخصصات الأكثر طلباً ── */}
         {allSortedCategories.length > 0 && (
