@@ -94,13 +94,13 @@ export default function JoinUs() {
         {/* Technician Card */}
         <Link href="/join">
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
-            style={{ background: 'linear-gradient(135deg, #1e8c3a 0%, #0f5c24 100%)' }}>
+            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #cc5f00 100%)' }}>
 
             <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 -left-6 w-32 h-32 rounded-full bg-black/10" />
 
             <div className="relative p-6 flex items-center gap-5">
-              <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-green-900/30 border border-white/20">
+              <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-orange-900/30 border border-white/20">
                 <UserPlus className="w-12 h-12 text-white" strokeWidth={1.5} />
               </div>
 
@@ -146,14 +146,13 @@ export default function JoinUs() {
         {/* Company Card */}
         <Link href="/join-company">
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
-            style={{ background: 'linear-gradient(135deg, #c45e00 0%, #8a3f00 100%)' }}>
-
+            style={{ background: 'linear-gradient(135deg, #1a56db 0%, #0f3d9e 100%)' }}>
 
             <div className="absolute -top-8 -left-8 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 -right-6 w-32 h-32 rounded-full bg-black/10" />
 
             <div className="relative p-6 flex items-center gap-5">
-              <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-orange-900/30 border border-white/20">
+              <div className="w-24 h-24 rounded-[22px] bg-white/20 flex items-center justify-center flex-shrink-0 shadow-xl shadow-blue-900/30 border border-white/20">
                 <Building2 className="w-12 h-12 text-white" strokeWidth={1.5} />
               </div>
 
@@ -226,7 +225,7 @@ export default function JoinUs() {
         {/* Supplier Card */}
         <Link href="/join-supplier">
           <div className="relative overflow-hidden rounded-3xl cursor-pointer active:scale-[0.97] transition-transform duration-150 select-none"
-            style={{ background: 'linear-gradient(135deg, #0e5c6d 0%, #072a36 100%)' }}>
+            style={{ background: 'linear-gradient(135deg, #0d9488 0%, #065f5a 100%)' }}>
 
             <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 -left-6 w-32 h-32 rounded-full bg-black/10" />
