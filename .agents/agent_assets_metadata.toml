@@ -666,6 +666,24 @@ uri = "file://artifacts/otlob-fanni/public/icons/categories/surveying.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "BScl6zWC3DbhrTeSgeYFY"
+uri = "file://artifacts/otlob-fanni/public/join-cards/technician.png"
+type = "image"
+title = "technician 3D cinematic"
+
+[[generated]]
+id = "2LOKIdBtTA23Q-YPNZBfp"
+uri = "file://artifacts/otlob-fanni/public/join-cards/company.png"
+type = "image"
+title = "service company 3D cinematic"
+
+[[generated]]
+id = "r0pAlowTSG5KgCIcTL9XX"
+uri = "file://artifacts/otlob-fanni/public/join-cards/supplier.png"
+type = "image"
+title = "supplier materials 3D cinematic"
+
 [[outputs]]
 id = "cxFVrc_BH78_VTZax5Nnv"
 uri = "file://attached_assets/icon_home_services_example.png"

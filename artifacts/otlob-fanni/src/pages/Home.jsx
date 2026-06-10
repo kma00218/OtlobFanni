@@ -60,51 +60,68 @@ function RecentCard({ item, ar }) {
 const JOIN_TYPES = [
   {
     key: 'tech',
-    icon: Wrench,
-    bg: 'linear-gradient(135deg, #FF7900 0%, #e05e00 100%)',
-    shadow: '0 4px 14px rgba(255,121,0,0.35)',
+    img: '/join-cards/technician.png',
+    overlay: 'linear-gradient(180deg, rgba(180,70,0,0.35) 0%, rgba(180,70,0,0.75) 100%)',
+    shadow: '0 6px 20px rgba(255,121,0,0.45)',
     ar: 'فني',
     en: 'Technician',
+    subAr: 'سجّل مجاناً',
+    subEn: 'Free signup',
   },
   {
     key: 'company',
-    icon: Building2,
-    bg: 'linear-gradient(135deg, #1a56db 0%, #0e3a9e 100%)',
-    shadow: '0 4px 14px rgba(26,86,219,0.35)',
+    img: '/join-cards/company.png',
+    overlay: 'linear-gradient(180deg, rgba(10,40,120,0.35) 0%, rgba(10,40,120,0.75) 100%)',
+    shadow: '0 6px 20px rgba(26,86,219,0.45)',
     ar: 'شركة خدمية',
     en: 'Service Co.',
+    subAr: 'سجّل شركتك',
+    subEn: 'Register now',
   },
   {
     key: 'supplier',
-    icon: Package,
-    bg: 'linear-gradient(135deg, #0d9488 0%, #0a7065 100%)',
-    shadow: '0 4px 14px rgba(13,148,136,0.35)',
+    img: '/join-cards/supplier.png',
+    overlay: 'linear-gradient(180deg, rgba(5,80,75,0.35) 0%, rgba(5,80,75,0.75) 100%)',
+    shadow: '0 6px 20px rgba(13,148,136,0.45)',
     ar: 'مورّد مستلزمات',
     en: 'Supplier',
+    subAr: 'انضم إلينا',
+    subEn: 'Join us',
   },
 ]
 
 function JoinCards({ ar }) {
   return (
     <div className="flex gap-2">
-      {JOIN_TYPES.map(type => {
-        const Icon = type.icon
-        return (
-          <Link key={type.key} href="/join-us" className="flex-1">
+      {JOIN_TYPES.map(type => (
+        <Link key={type.key} href="/join-us" className="flex-1">
+          <div
+            className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer"
+            style={{ height: '110px', boxShadow: type.shadow }}
+          >
+            {/* photo background */}
+            <img
+              src={type.img}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {/* gradient overlay */}
             <div
-              className="flex flex-col items-center justify-center gap-2 rounded-2xl py-3 px-2 active:scale-95 transition-transform duration-150 select-none cursor-pointer"
-              style={{ background: type.bg, boxShadow: type.shadow }}
-            >
-              <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-white font-black text-xs text-center leading-tight">
+              className="absolute inset-0"
+              style={{ background: type.overlay }}
+            />
+            {/* text */}
+            <div className="absolute inset-0 flex flex-col items-center justify-end pb-2.5 px-1">
+              <p className="text-white font-black text-[11px] text-center leading-tight drop-shadow-md">
                 {ar ? type.ar : type.en}
               </p>
+              <p className="text-white/80 text-[9px] font-semibold mt-0.5 text-center leading-tight">
+                {ar ? type.subAr : type.subEn}
+              </p>
             </div>
-          </Link>
-        )
-      })}
+          </div>
+        </Link>
+      ))}
     </div>
   )
 }
