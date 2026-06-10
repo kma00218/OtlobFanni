@@ -516,10 +516,10 @@ export default function Home() {
 
         {/* عنوان قسم الانضمام */}
         <div className="text-center mb-1">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
-            {ar ? 'هل أنت مزود خدمة؟' : 'Are you a provider?'}
+          <p className="text-[28px] font-black text-[#071B33] mb-1 leading-tight" style={{ letterSpacing: '-0.5px' }}>
+            {ar ? 'هل أنت فني أو شركة أو مورد؟' : 'Are you a technician, service company or supplier?'}
           </p>
-          <p className="text-[22px] font-black text-[#071B33] leading-tight">
+          <p className="text-[15px] font-extrabold text-[#FF7900] leading-snug">
             {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
           </p>
         </div>
