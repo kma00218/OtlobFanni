@@ -168,11 +168,18 @@ export default function BottomNav() {
   const handleCityClick = (cityId, city) => {
     rememberCity(cityId, city);
     closeAll();
-    navigate(`/city/${cityId}`);
+    // If already on a category page → stay on it but apply the city filter
+    const catMatch = location.match(/^\/category\/([^/?]+)/);
+    if (catMatch && cityId !== 'libya') {
+      navigate(`/category/${catMatch[1]}?city=${cityId}`);
+    } else {
+      navigate(`/city/${cityId}`);
+    }
   };
 
   const handleCatClick = (cat) => {
     closeAll();
+    // Always navigate to category without city — independent
     navigate(`/category/${cat.id}`);
   };
 
