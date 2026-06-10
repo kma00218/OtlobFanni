@@ -39,6 +39,7 @@ const TABS = [
   },
   {
     id: 'specialties',
+    hidden: true,
     path: null,
     exact: false,
     labelAr: 'تخصصات',
@@ -190,7 +191,7 @@ export default function BottomNav() {
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}
       >
         <div className="flex items-center justify-around px-2 pt-2 pb-1.5">
-          {TABS.map((tab) => {
+          {TABS.filter(t => !t.hidden).map((tab) => {
             const isCities = tab.id === 'cities';
             const isSpecs = tab.id === 'specialties';
             const active = isCities
