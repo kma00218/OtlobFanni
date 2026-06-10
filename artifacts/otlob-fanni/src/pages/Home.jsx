@@ -562,7 +562,7 @@ export default function Home() {
                 <UserPlus className="w-5 h-5 text-white" />
               </div>
               <p className="text-white font-black text-xs text-center leading-tight">
-                {ar ? 'رشّح فنياً' : 'Suggest'}
+                {ar ? 'رشّح فني أو شركة أو مورّد' : 'Suggest a Tech / Co. / Supplier'}
               </p>
             </button>
 
