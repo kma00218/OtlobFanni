@@ -29,7 +29,7 @@ export default function BackHeader({ title }) {
       <header
         className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-gray-100 z-50 flex items-center justify-between px-3 max-w-[480px] mx-auto"
       >
-        {/* Leading group: Back + Join */}
+        {/* Leading group: Back + Join + WhatsApp */}
         <div className="flex items-end gap-2 flex-shrink-0" style={{ position: 'relative', zIndex: 2 }}>
           <button
             onClick={() => window.history.back()}
@@ -53,18 +53,7 @@ export default function BackHeader({ title }) {
               <span className="text-[10px] font-semibold text-gray-500 leading-none">{lang === 'ar' ? 'انضم' : 'Join'}</span>
             </Link>
           )}
-        </div>
 
-        {/* Logo — absolutely centered, never shifts */}
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          style={{ zIndex: 1 }}
-        >
-          <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14" />
-        </div>
-
-        {/* Trailing group: WhatsApp + Search + Share + Language */}
-        <div className="flex items-end gap-2 flex-shrink-0" style={{ position: 'relative', zIndex: 2 }}>
           <a
             href="https://wa.me/491791607597"
             target="_blank"
@@ -79,7 +68,18 @@ export default function BackHeader({ title }) {
             </div>
             <span className="text-[10px] font-semibold text-gray-500 leading-none">WhatsApp</span>
           </a>
+        </div>
 
+        {/* Logo — absolutely centered, never shifts */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{ zIndex: 1 }}
+        >
+          <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14" />
+        </div>
+
+        {/* Trailing group: Search + Share + Language */}
+        <div className="flex items-end gap-2 flex-shrink-0" style={{ position: 'relative', zIndex: 2 }}>
           <button
             onClick={() => setSearchOpen(true)}
             className="flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
