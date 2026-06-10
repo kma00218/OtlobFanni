@@ -399,7 +399,7 @@ export default function Home() {
               </p>
               <div className="relative -mx-1">
                 <div
-                  className="flex gap-2 overflow-x-auto pb-0.5 px-1 justify-center"
+                  className="flex gap-2 overflow-x-auto pb-0.5 px-1"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   {citiesForFilter.map(city => {
