@@ -371,7 +371,7 @@ export default function Home() {
 
         {/* ── قسم العميل ── */}
         <div className="text-center">
-          <p className="text-[22px] font-black text-[#FF7900] mb-3 leading-tight" style={{ letterSpacing: '-0.5px' }}>
+          <p className="text-[16px] font-black text-[#FF7900] mb-3 leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
             {ar ? 'هل تبحث عن فني / شركة خدمية / مورد مستلزمات؟' : 'Looking for a technician / company / supplier?'}
           </p>
 
