@@ -187,7 +187,7 @@ export default function BottomNav() {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 border-t border-[#EAEAEA] z-50 max-w-[480px] mx-auto bg-white"
+        className="fixed bottom-0 left-0 right-0 border-t border-[#EAEAEA] z-[80] max-w-[480px] mx-auto bg-white"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}
       >
         <div className="flex items-center justify-around px-2 pt-2 pb-1.5">
@@ -249,7 +249,7 @@ export default function BottomNav() {
 
       {/* ── CITY PICKER ────────────────────────────────────────────────────────── */}
       {showCities && (
-        <div className="fixed inset-0 z-[60] flex flex-col justify-end max-w-[480px] mx-auto left-0 right-0"
+        <div className="fixed top-0 bottom-[74px] left-0 right-0 z-[60] flex flex-col justify-end max-w-[480px] mx-auto"
           onClick={closeAll}>
           <div className="absolute inset-0 bg-black/40" />
           <div className="relative bg-white rounded-t-3xl overflow-hidden flex flex-col" style={sheetStyle}
