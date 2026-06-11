@@ -111,6 +111,9 @@ export default function BottomNav() {
 
   const anySheetOpen = showCities || showSpecs;
 
+  // Close sheets on any navigation
+  useEffect(() => { closeAll(); }, [location]);
+
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv || !anySheetOpen) { setKbOffset(0); return; }
