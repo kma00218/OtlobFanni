@@ -371,13 +371,8 @@ export default function Home() {
 
         {/* ── قسم العميل ── */}
         <div className="text-center">
-          <p className="text-[28px] font-black text-[#FF7900] mb-1 leading-tight" style={{ letterSpacing: '-0.5px' }}>
-            {ar ? 'أنت عميل؟' : 'Are you a customer?'}
-          </p>
-          <p className="text-[18px] font-extrabold text-[#071B33] mb-3 leading-snug">
-            {ar
-              ? 'ابحث عن فني، شركة خدمية، أو مورد مستلزمات'
-              : 'Find a technician, company or supplier'}
+          <p className="text-[22px] font-black text-[#FF7900] mb-3 leading-tight" style={{ letterSpacing: '-0.5px' }}>
+            {ar ? 'هل تبحث عن فني / شركة خدمية / مورد مستلزمات؟' : 'Looking for a technician / company / supplier?'}
           </p>
 
           {citiesForFilter.length > 0 && (
