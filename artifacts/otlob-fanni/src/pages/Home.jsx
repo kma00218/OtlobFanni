@@ -371,9 +371,12 @@ export default function Home() {
 
         {/* ── قسم العميل ── */}
         <div className="text-center">
-          <p className="text-[16px] font-black text-[#FF7900] mb-3 leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
-            {ar ? 'هل تبحث عن فني / شركة خدمية / مورد مستلزمات؟' : 'Looking for a technician / company / supplier?'}
-          </p>
+          <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border border-[#FF7900]/30 rounded-2xl px-4 py-2.5 mb-3 shadow-sm">
+            <span className="text-lg">🔍</span>
+            <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
+              {ar ? 'هل تبحث عن فني / شركة خدمية / مورد مستلزمات؟' : 'Looking for a technician / company / supplier?'}
+            </p>
+          </div>
 
           {citiesForFilter.length > 0 && (
             <>
@@ -512,9 +515,12 @@ export default function Home() {
 
           {/* عنوان قسم الانضمام */}
           <div className="text-center">
-            <p className="text-[16px] font-black text-[#FF7900] mb-0.5 leading-tight" style={{ letterSpacing: '-0.3px' }}>
-              {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
-            </p>
+            <div className="inline-flex items-center gap-2 bg-[#071B33]/5 border border-[#071B33]/20 rounded-2xl px-4 py-2.5 mb-0.5 shadow-sm">
+              <span className="text-lg">💼</span>
+              <p className="text-[14px] font-black text-[#071B33] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
+                {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
+              </p>
+            </div>
             <p className="text-[15px] font-extrabold text-[#071B33] leading-snug">
               {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
             </p>
