@@ -371,7 +371,7 @@ export default function Home() {
 
         {/* ── قسم العميل ── */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border border-[#FF7900]/30 rounded-2xl px-4 py-2.5 mb-3 shadow-sm">
+          <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#071B33] rounded-2xl px-4 py-2.5 mb-3 shadow-sm">
             <span className="text-lg">🔍</span>
             <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
               {ar ? 'هل تبحث عن فني / شركة خدمية / مورد مستلزمات؟' : 'Looking for a technician / company / supplier?'}
@@ -515,7 +515,7 @@ export default function Home() {
 
           {/* عنوان قسم الانضمام */}
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border border-[#FF7900]/30 rounded-2xl px-4 py-2.5 mb-0.5 shadow-sm">
+            <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#071B33] rounded-2xl px-4 py-2.5 mb-0.5 shadow-sm">
               <span className="text-lg">💼</span>
               <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
                 {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
