@@ -377,7 +377,7 @@ export default function Home() {
 
           {citiesForFilter.length > 0 && (
             <>
-              <p className="text-[16px] font-black text-[#FF7900] mb-2">
+              <p className="text-[16px] font-black text-[#071B33] mb-2">
                 {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
               </p>
               <div className="relative -mx-1">
