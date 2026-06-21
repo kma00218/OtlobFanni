@@ -5,7 +5,7 @@ import {
   Receipt, ArrowRight, Lock, Sparkles, ClipboardList, Phone, MapPin,
   Clock, CheckCircle, XCircle, MessageCircle, RefreshCw,
   Handshake, Plus, Share2, Calendar, DollarSign, Send, ChevronDown,
-  TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine,
+  TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine, Eye,
 } from 'lucide-react'
 import { api } from '../lib/api'
 import ProEditTab from './ProEditTab'
@@ -405,6 +405,8 @@ export default function ProDashboard() {
   const [dealErr,        setDealErr]       = useState('')
   const [categories,     setCategories]    = useState([])
   const [cities,         setCities]        = useState([])
+  const [perfStats,      setPerfStats]     = useState(null)
+  const [perfLoading,    setPerfLoading]   = useState(false)
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -439,11 +441,22 @@ export default function ProDashboard() {
     finally { setDealsLoading(false) }
   }, [])
 
+  const loadPerfStats = useCallback(async (sess) => {
+    if (!sess) return
+    setPerfLoading(true)
+    try {
+      const data = await api.pro.myStats(sess.entityType, sess.entityId)
+      setPerfStats(data)
+    } catch { setPerfStats(null) }
+    finally { setPerfLoading(false) }
+  }, [])
+
   // Load both on session ready (for stats strip accuracy)
   useEffect(() => {
     if (!session) return
     loadRequests(session)
     loadDeals(session)
+    loadPerfStats(session)
   }, [session])
 
   // Reload when switching tabs (refresh)
@@ -699,6 +712,77 @@ export default function ProDashboard() {
                 {pendingDeals > 0 && (
                   <p className="text-[11px] text-amber-500 font-bold mt-0.5">{pendingDeals} بانتظار التأكيد</p>
                 )}
+              </div>
+            </div>
+
+            {/* ── Account Performance ── */}
+            <div className="rounded-3xl overflow-hidden shadow-sm bg-white">
+              <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${cfg.color}15` }}>
+                    <BarChart2 className="w-3.5 h-3.5" style={{ color: cfg.color }} />
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-[#071B33] text-sm">أداء حسابي</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Account Performance</p>
+                  </div>
+                </div>
+                <button onClick={() => loadPerfStats(session)} disabled={perfLoading}
+                  className="p-1.5 rounded-lg hover:bg-gray-50 active:scale-95 transition-all">
+                  <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${perfLoading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-px bg-slate-100">
+                {[
+                  {
+                    icon: <Eye className="w-4 h-4" />,
+                    label: 'مشاهدات الملف',
+                    value: perfStats?.profileViews ?? 0,
+                    color: cfg.color,
+                  },
+                  {
+                    icon: <MessageCircle className="w-4 h-4" />,
+                    label: 'نقرات واتساب',
+                    value: perfStats?.whatsappClicks ?? 0,
+                    color: '#25D366',
+                  },
+                  {
+                    icon: <Phone className="w-4 h-4" />,
+                    label: 'نقرات الهاتف',
+                    value: perfStats?.phoneClicks ?? 0,
+                    color: '#3b82f6',
+                  },
+                  {
+                    icon: <ClipboardList className="w-4 h-4" />,
+                    label: 'طلبات واردة',
+                    value: perfStats?.serviceRequests ?? 0,
+                    color: '#8b5cf6',
+                  },
+                  {
+                    icon: <Handshake className="w-4 h-4" />,
+                    label: 'صفقات مؤكدة',
+                    value: perfStats?.confirmedDeals ?? 0,
+                    color: '#10B981',
+                  },
+                  {
+                    icon: <Star className="w-4 h-4" />,
+                    label: 'متوسط التقييم',
+                    value: perfStats?.avgRating != null ? `${perfStats.avgRating}★` : '—',
+                    color: '#F59E0B',
+                  },
+                ].map((metric, i) => (
+                  <div key={i} className="bg-white px-3 py-4 flex flex-col items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: `${metric.color}15` }}>
+                      <span style={{ color: metric.color }}>{metric.icon}</span>
+                    </div>
+                    <p className={`font-black text-[#071B33] text-lg leading-none ${perfLoading ? 'opacity-40' : ''}`}>
+                      {perfLoading ? '…' : metric.value}
+                    </p>
+                    <p className="text-[10px] text-gray-400 text-center leading-tight">{metric.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
 

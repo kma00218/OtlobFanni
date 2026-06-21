@@ -277,6 +277,7 @@ export const api = {
     bulkCredentials:     ()                                          => post(`/admin/pro-credentials/bulk`, {}),
     markSent:            (entityId, type)                            => patch(`/admin/pro-credentials/${entityId}/mark-sent`, { type }),
     getProfile:          (entityType, entityId)                      => get(`/pro/me?entityType=${entityType}&entityId=${entityId}`),
+    myStats:             (entityType, entityId)                      => get(`/pro/my-stats?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`),
     changePassword:      (entityType, entityId, currentPassword, newPassword) =>
       post('/pro/change-password', { entityType, entityId, currentPassword, newPassword }),
     requestUpdate:       (entityType, entityId, changes)             => post('/pro/request-update', { entityType, entityId, changes }),

@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { analyticsEventsTable, techniciansTable, companyApplicationsTable, supplierApplicationsTable } from "@workspace/db/schema";
-import { eq, gte, sql, desc, count, inArray } from "drizzle-orm";
+import { analyticsEventsTable, techniciansTable, companyApplicationsTable, supplierApplicationsTable, serviceRequestsTable, dealsTable, reviewsTable } from "@workspace/db/schema";
+import { eq, sql, desc, count, inArray, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 const router: IRouter = Router();
@@ -172,6 +172,59 @@ router.get("/admin/analytics", async (_req, res): Promise<void> => {
     });
   } catch (err) {
     res.status(500).json({ error: "analytics error" });
+  }
+});
+
+// ── Pro performance stats ─────────────────────────────────────────────────────
+router.get("/pro/my-stats", async (req, res): Promise<void> => {
+  try {
+    const { entityType, entityId } = req.query as { entityType?: string; entityId?: string };
+    if (!entityType || !entityId) {
+      res.status(400).json({ error: "entityType and entityId required" }); return;
+    }
+
+    const viewEvent = entityType === 'technician' ? 'profile_view'
+      : entityType === 'company' ? 'company_view'
+      : 'supplier_view';
+
+    const [profileViews] = await db.select({ count: count() }).from(analyticsEventsTable)
+      .where(and(eq(analyticsEventsTable.event, viewEvent), eq(analyticsEventsTable.ref, entityId)));
+
+    const [waClicks] = await db.select({ count: count() }).from(analyticsEventsTable)
+      .where(and(eq(analyticsEventsTable.event, 'whatsapp_click'), eq(analyticsEventsTable.ref, entityId)));
+
+    const [phoneClicks] = await db.select({ count: count() }).from(analyticsEventsTable)
+      .where(and(eq(analyticsEventsTable.event, 'phone_click'), eq(analyticsEventsTable.ref, entityId)));
+
+    const [serviceReqs] = await db.select({ count: count() }).from(serviceRequestsTable)
+      .where(and(eq(serviceRequestsTable.ownerType, entityType), eq(serviceRequestsTable.ownerId, entityId)));
+
+    const [confirmedDeals] = await db.select({ count: count() }).from(dealsTable)
+      .where(and(eq(dealsTable.proType, entityType), eq(dealsTable.proId, entityId), eq(dealsTable.status, 'confirmed')));
+
+    let avgRating: number | null = null;
+    try {
+      const ratingWhere = entityType === 'technician'
+        ? eq(reviewsTable.technicianId, entityId)
+        : entityType === 'company'
+          ? eq(reviewsTable.companyId, entityId)
+          : eq(reviewsTable.supplierId, entityId);
+      const ratings = await db.select({ rating: reviewsTable.rating }).from(reviewsTable).where(ratingWhere);
+      if (ratings.length > 0) {
+        avgRating = Math.round(ratings.reduce((s, r) => s + r.rating, 0) / ratings.length * 10) / 10;
+      }
+    } catch (_) {}
+
+    res.json({
+      profileViews:   Number(profileViews.count),
+      whatsappClicks: Number(waClicks.count),
+      phoneClicks:    Number(phoneClicks.count),
+      serviceRequests: Number(serviceReqs.count),
+      confirmedDeals: Number(confirmedDeals.count),
+      avgRating,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "stats error" });
   }
 });
 
