@@ -681,154 +681,156 @@ export default function ProDashboard() {
 
         {/* ── PROFILE TAB ── */}
         {activeTab === 'profile' && (
-          <div className="space-y-4">
+          <div className="space-y-3">
 
-            {/* Quick summary cards */}
+            {/* ── Quick summary cards — gradient fills ── */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded-2xl p-4 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                    style={{ background: `${cfg.color}15` }}>
-                    <ClipboardList className="w-4 h-4" style={{ color: cfg.color }} />
-                  </div>
-                  <p className="text-xs font-bold text-gray-500">{cfg.statsLabels.requests}</p>
+              {/* Requests card */}
+              <div className="rounded-2xl p-4 relative overflow-hidden shadow-md"
+                style={{ background: `linear-gradient(135deg, ${cfg.color} 0%, ${cfg.color}cc 100%)` }}>
+                <div className="absolute -bottom-3 -left-3 w-16 h-16 rounded-full opacity-20"
+                  style={{ background: 'rgba(255,255,255,0.4)' }} />
+                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+                  <ClipboardList className="w-4 h-4 text-white" />
                 </div>
-                <p className="font-black text-[#071B33] text-2xl">{requests.length}</p>
+                <p className="font-black text-white text-3xl leading-none">{requests.length}</p>
+                <p className="text-white/80 text-[11px] font-semibold mt-1">{cfg.statsLabels.requests}</p>
                 {newCount > 0 && (
-                  <p className="text-[11px] text-[#FF7900] font-bold mt-0.5">{newCount} جديد</p>
+                  <span className="inline-flex items-center gap-1 mt-2 bg-white/25 rounded-full px-2 py-0.5 text-[10px] font-black text-white">
+                    ● {newCount} جديد
+                  </span>
                 )}
               </div>
 
-              <div className="bg-white rounded-2xl p-4 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-50">
-                    <Handshake className="w-4 h-4 text-emerald-500" />
-                  </div>
-                  <p className="text-xs font-bold text-gray-500">{cfg.statsLabels.deals}</p>
+              {/* Deals card */}
+              <div className="rounded-2xl p-4 relative overflow-hidden shadow-md"
+                style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981cc 100%)' }}>
+                <div className="absolute -bottom-3 -left-3 w-16 h-16 rounded-full opacity-20"
+                  style={{ background: 'rgba(255,255,255,0.4)' }} />
+                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+                  <Handshake className="w-4 h-4 text-white" />
                 </div>
-                <p className="font-black text-[#071B33] text-2xl">{dealCounts.confirmed}</p>
+                <p className="font-black text-white text-3xl leading-none">{dealCounts.confirmed}</p>
+                <p className="text-white/80 text-[11px] font-semibold mt-1">{cfg.statsLabels.deals}</p>
                 {pendingDeals > 0 && (
-                  <p className="text-[11px] text-amber-500 font-bold mt-0.5">{pendingDeals} بانتظار التأكيد</p>
+                  <span className="inline-flex items-center gap-1 mt-2 bg-white/25 rounded-full px-2 py-0.5 text-[10px] font-black text-white">
+                    ● {pendingDeals} معلّقة
+                  </span>
                 )}
               </div>
             </div>
 
+            {/* ── Profile hero card ── */}
+            <button type="button" onClick={() => navigate('/pro/profile')}
+              className="w-full rounded-2xl overflow-hidden active:scale-[0.98] transition-transform select-none"
+              style={{ WebkitTapHighlightColor: 'transparent', background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)', boxShadow: '0 4px 20px rgba(7,27,51,0.25)' }}>
+              <div className="relative px-5 py-4 flex items-center gap-4">
+                <div className="absolute top-0 left-0 w-28 h-28 rounded-full opacity-10 pointer-events-none"
+                  style={{ background: `radial-gradient(circle, ${cfg.color} 0%, transparent 70%)`, transform: 'translate(-30%, -30%)' }} />
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 relative z-10"
+                  style={{ background: `${cfg.color}30`, border: `1.5px solid ${cfg.color}50` }}>
+                  <User className="w-5 h-5" style={{ color: cfg.color }} />
+                </div>
+                <div className="flex-1 text-right relative z-10">
+                  <p className="text-white font-extrabold text-[15px] leading-tight">ملفي الشخصي</p>
+                  <p className="text-white/50 text-[11px] mt-0.5">عرض · تعديل · كلمة المرور</p>
+                </div>
+                <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 relative z-10">
+                  <ChevronLeft className="w-3.5 h-3.5 text-white/60" />
+                </div>
+              </div>
+            </button>
+
             {/* ── Account Performance ── */}
-            <div className="rounded-3xl overflow-hidden shadow-sm bg-white">
-              <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${cfg.color}15` }}>
+            <div className="rounded-2xl overflow-hidden bg-white"
+              style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.07)', border: '1px solid #F0F2F5' }}>
+              {/* Header */}
+              <div className="px-4 py-3 flex items-center justify-between"
+                style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                    style={{ background: `${cfg.color}30`, border: `1px solid ${cfg.color}40` }}>
                     <BarChart2 className="w-3.5 h-3.5" style={{ color: cfg.color }} />
                   </div>
                   <div>
-                    <p className="font-extrabold text-[#071B33] text-sm">أداء حسابي</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Account Performance</p>
+                    <p className="font-extrabold text-white text-sm leading-tight">أداء حسابي</p>
+                    <p className="text-white/40 text-[10px]">Account Performance</p>
                   </div>
                 </div>
                 <button onClick={() => loadPerfStats(session)} disabled={perfLoading}
-                  className="p-1.5 rounded-lg hover:bg-gray-50 active:scale-95 transition-all">
-                  <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${perfLoading ? 'animate-spin' : ''}`} />
+                  className="p-1.5 rounded-lg active:scale-95 transition-all"
+                  style={{ background: 'rgba(255,255,255,0.1)' }}>
+                  <RefreshCw className={`w-3.5 h-3.5 text-white/60 ${perfLoading ? 'animate-spin' : ''}`} />
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-px bg-slate-100">
+              {/* Metrics grid */}
+              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-[#F0F2F5]">
                 {[
-                  {
-                    icon: <Eye className="w-4 h-4" />,
-                    label: 'مشاهدات الملف',
-                    value: perfStats?.profileViews ?? 0,
-                    color: cfg.color,
-                  },
-                  {
-                    icon: <MessageCircle className="w-4 h-4" />,
-                    label: 'نقرات واتساب',
-                    value: perfStats?.whatsappClicks ?? 0,
-                    color: '#25D366',
-                  },
-                  {
-                    icon: <Phone className="w-4 h-4" />,
-                    label: 'نقرات الهاتف',
-                    value: perfStats?.phoneClicks ?? 0,
-                    color: '#3b82f6',
-                  },
-                  {
-                    icon: <ClipboardList className="w-4 h-4" />,
-                    label: 'طلبات واردة',
-                    value: perfStats?.serviceRequests ?? 0,
-                    color: '#8b5cf6',
-                  },
-                  {
-                    icon: <Handshake className="w-4 h-4" />,
-                    label: 'صفقات مؤكدة',
-                    value: perfStats?.confirmedDeals ?? 0,
-                    color: '#10B981',
-                  },
-                  {
-                    icon: <Star className="w-4 h-4" />,
-                    label: 'متوسط التقييم',
-                    value: perfStats?.avgRating != null ? `${perfStats.avgRating}★` : '—',
-                    color: '#F59E0B',
-                  },
-                ].map((metric, i) => (
-                  <div key={i} className="bg-white px-3 py-4 flex flex-col items-center gap-2">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${metric.color}15` }}>
-                      <span style={{ color: metric.color }}>{metric.icon}</span>
+                  { icon: <Eye className="w-4 h-4" />,          label: 'مشاهدات',    value: perfStats?.profileViews ?? 0,    color: cfg.color,   bg: `${cfg.color}12` },
+                  { icon: <MessageCircle className="w-4 h-4" />, label: 'واتساب',     value: perfStats?.whatsappClicks ?? 0,  color: '#25D366',   bg: '#25D36612' },
+                  { icon: <Phone className="w-4 h-4" />,         label: 'هاتف',       value: perfStats?.phoneClicks ?? 0,     color: '#3b82f6',   bg: '#3b82f612' },
+                ].map((m, i) => (
+                  <div key={i} className="py-4 flex flex-col items-center gap-1.5">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: m.bg }}>
+                      <span style={{ color: m.color }}>{m.icon}</span>
                     </div>
-                    <p className={`font-black text-[#071B33] text-lg leading-none ${perfLoading ? 'opacity-40' : ''}`}>
-                      {perfLoading ? '…' : metric.value}
+                    <p className={`font-black text-[#071B33] text-xl leading-none ${perfLoading ? 'opacity-30' : ''}`}>
+                      {perfLoading ? '·' : m.value}
                     </p>
-                    <p className="text-[10px] text-gray-400 text-center leading-tight">{metric.label}</p>
+                    <p className="text-[10px] text-gray-400 font-medium">{m.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="h-px bg-[#F0F2F5]" />
+
+              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-[#F0F2F5]">
+                {[
+                  { icon: <ClipboardList className="w-4 h-4" />, label: 'طلبات',      value: perfStats?.serviceRequests ?? 0, color: '#8b5cf6',   bg: '#8b5cf612' },
+                  { icon: <Handshake className="w-4 h-4" />,     label: 'صفقات',      value: perfStats?.confirmedDeals ?? 0,  color: '#059669',   bg: '#05966912' },
+                  { icon: <Star className="w-4 h-4" />,          label: 'تقييم',      value: perfStats?.avgRating != null ? `${perfStats.avgRating}★` : '—', color: '#F59E0B', bg: '#F59E0B12' },
+                ].map((m, i) => (
+                  <div key={i} className="py-4 flex flex-col items-center gap-1.5">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: m.bg }}>
+                      <span style={{ color: m.color }}>{m.icon}</span>
+                    </div>
+                    <p className={`font-black text-[#071B33] text-xl leading-none ${perfLoading ? 'opacity-30' : ''}`}>
+                      {perfLoading ? '·' : m.value}
+                    </p>
+                    <p className="text-[10px] text-gray-400 font-medium">{m.label}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Profile hero card */}
-            <button type="button" onClick={() => navigate('/pro/profile')}
-              className="w-full rounded-3xl overflow-hidden shadow-lg active:scale-[0.97] transition-transform select-none group"
-              style={{ WebkitTapHighlightColor: 'transparent' }}>
-              <div className="relative px-5 py-5 flex items-center gap-4"
-                style={{ background: `linear-gradient(135deg, ${cfg.color} 0%, ${cfg.color}cc 100%)` }}>
-                <div className="absolute inset-0 opacity-10"
-                  style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(255,255,255,.15) 20px,rgba(255,255,255,.15) 21px),repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(255,255,255,.15) 20px,rgba(255,255,255,.15) 21px)' }} />
-                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 relative z-10">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1 text-right relative z-10">
-                  <p className="text-white font-extrabold text-base leading-tight">ملفي الشخصي</p>
-                  <p className="text-white/70 text-xs mt-0.5">عرض الملف وتعديل البيانات وكلمة المرور</p>
-                </div>
-                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 relative z-10">
-                  <ChevronLeft className="w-4 h-4 text-white" />
-                </div>
-              </div>
-            </button>
-
-            {/* Coming soon tools */}
-            <div className="rounded-3xl overflow-hidden shadow-sm bg-white">
-              <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-slate-100">
+            {/* ── Coming soon tools ── */}
+            <div className="rounded-2xl overflow-hidden bg-white"
+              style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid #F0F2F5' }}>
+              <div className="px-4 py-3 flex items-center justify-between border-b border-[#F5F5F7]">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
                     <TrendingUp className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                   <div>
                     <p className="font-extrabold text-[#071B33] text-sm">أدوات الباقة المهنية</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">ستُفعَّل مع اشتراكك القريب</p>
+                    <p className="text-[11px] text-slate-400">ستُفعَّل مع اشتراكك القريب</p>
                   </div>
                 </div>
-                <span className="text-[10px] font-extrabold text-[#FF7900] bg-[#FF7900]/10 border border-[#FF7900]/20 px-2.5 py-1 rounded-full flex items-center gap-1">
+                <span className="flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full"
+                  style={{ color: cfg.color, background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
                   <Sparkles className="w-3 h-3" /> قريباً
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-px bg-slate-100">
-                {TOOLS.map(tool => (
-                  <div key={tool.id} className="bg-white px-4 py-5 flex flex-col items-center gap-3">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tool.bg} flex items-center justify-center opacity-40`}>
+              <div className="grid grid-cols-2">
+                {TOOLS.map((tool, i) => (
+                  <div key={tool.id}
+                    className={`px-4 py-5 flex flex-col items-center gap-2.5 ${i % 2 === 0 ? 'border-l border-[#F0F2F5]' : ''} ${i < 2 ? 'border-b border-[#F0F2F5]' : ''}`}>
+                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${tool.bg} flex items-center justify-center opacity-30`}>
                       {tool.icon}
                     </div>
                     <div className="text-center">
-                      <p className="font-bold text-slate-400 text-sm">{tool.labelAr}</p>
+                      <p className="font-bold text-slate-400 text-[13px]">{tool.labelAr}</p>
                       <div className="flex items-center justify-center gap-1 mt-1">
                         <Lock className="w-2.5 h-2.5 text-slate-300" />
                         <p className="text-[10px] text-slate-300 font-semibold">قريباً</p>
@@ -838,6 +840,7 @@ export default function ProDashboard() {
                 ))}
               </div>
             </div>
+
           </div>
         )}
 
