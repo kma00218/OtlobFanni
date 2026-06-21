@@ -77,13 +77,13 @@ const REQUEST_STATUS_CONFIG = {
 function StatCard({ label, value, icon, accent }) {
   return (
     <div className="flex-1 rounded-2xl px-3 py-3 flex flex-col items-center gap-1 min-w-0"
-      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
+      style={{ background: 'rgba(255,255,255,0.09)', border: '1.5px solid rgba(255,255,255,0.22)', boxShadow: `0 0 0 1px ${accent}30 inset` }}>
       <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: `${accent}22` }}>
+        style={{ background: `${accent}30`, border: `1px solid ${accent}50` }}>
         <span style={{ color: accent }}>{icon}</span>
       </div>
       <p className="font-black text-white text-xl leading-none">{value}</p>
-      <p className="text-[10px] text-white/50 text-center leading-tight">{label}</p>
+      <p className="text-[10px] text-white/60 text-center leading-tight">{label}</p>
     </div>
   )
 }
@@ -687,7 +687,7 @@ export default function ProDashboard() {
             <div className="grid grid-cols-2 gap-3">
               {/* Requests card */}
               <div className="rounded-2xl p-4 relative overflow-hidden shadow-md"
-                style={{ background: `linear-gradient(135deg, ${cfg.color} 0%, ${cfg.color}cc 100%)` }}>
+                style={{ background: `linear-gradient(135deg, ${cfg.color} 0%, ${cfg.color}cc 100%)`, border: `1.5px solid ${cfg.color}` }}>
                 <div className="absolute -bottom-3 -left-3 w-16 h-16 rounded-full opacity-20"
                   style={{ background: 'rgba(255,255,255,0.4)' }} />
                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center mb-3">
@@ -704,7 +704,7 @@ export default function ProDashboard() {
 
               {/* Deals card */}
               <div className="rounded-2xl p-4 relative overflow-hidden shadow-md"
-                style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981cc 100%)' }}>
+                style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981cc 100%)', border: '1.5px solid #059669' }}>
                 <div className="absolute -bottom-3 -left-3 w-16 h-16 rounded-full opacity-20"
                   style={{ background: 'rgba(255,255,255,0.4)' }} />
                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center mb-3">
@@ -743,7 +743,7 @@ export default function ProDashboard() {
 
             {/* ── Account Performance ── */}
             <div className="rounded-2xl overflow-hidden bg-white"
-              style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.07)', border: '1px solid #F0F2F5' }}>
+              style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.08)', border: '1.5px solid #E2E6EA' }}>
               {/* Header */}
               <div className="px-4 py-3 flex items-center justify-between"
                 style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
@@ -806,7 +806,7 @@ export default function ProDashboard() {
 
             {/* ── Coming soon tools ── */}
             <div className="rounded-2xl overflow-hidden bg-white"
-              style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid #F0F2F5' }}>
+              style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.08)', border: '1.5px solid #E2E6EA' }}>
               <div className="px-4 py-3 flex items-center justify-between border-b border-[#F5F5F7]">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
