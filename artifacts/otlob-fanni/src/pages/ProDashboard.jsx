@@ -651,8 +651,8 @@ export default function ProDashboard() {
       </div>
 
       {/* ── Tab Bar ────────────────────────────────── */}
-      <div className="flex mx-4 mb-1 rounded-2xl overflow-hidden p-1 gap-1"
-        style={{ background: 'rgba(255,255,255,0.08)' }}>
+      <div className="flex mx-4 mb-1 rounded-2xl p-1 gap-1"
+        style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', boxShadow: '0 2px 12px rgba(0,0,0,0.2)' }}>
         {[
           { key: 'profile',  label: 'ملفي',            badge: 0 },
           { key: 'requests', label: cfg.requestsTab,    badge: newCount },
