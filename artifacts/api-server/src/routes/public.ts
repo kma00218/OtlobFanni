@@ -1401,8 +1401,14 @@ router.post("/update-reports", async (req, res): Promise<void> => {
 router.post("/pro/login", async (req, res): Promise<void> => {
   const { whatsapp, password } = req.body;
   if (!whatsapp || !password) { res.status(400).json({ error: "whatsapp and password required" }); return; }
-  const normalised = whatsapp.replace(/\s/g, "");
-  const [cred] = await db.select().from(proCredentialsTable).where(eq(proCredentialsTable.whatsapp, normalised));
+  // Normalise to the 9-digit local form (no leading 0, no country code)
+  let digits = whatsapp.replace(/[\s\-\(\)\+]/g, "");
+  if (digits.startsWith("00218")) digits = digits.slice(5);
+  else if (digits.startsWith("218"))  digits = digits.slice(3);
+  if (digits.startsWith("0"))         digits = digits.slice(1);
+  // Try all common stored formats: 09XXXXXXXX, 9XXXXXXXX, +2189XXXXXXXX, 2189XXXXXXXX
+  const candidates = [`0${digits}`, digits, `+218${digits}`, `218${digits}`];
+  const [cred] = await db.select().from(proCredentialsTable).where(inArray(proCredentialsTable.whatsapp, candidates));
   if (!cred) { res.status(401).json({ error: "Invalid credentials" }); return; }
   const hash = crypto.createHash("sha256").update(String(password)).digest("hex");
   if (hash !== cred.passwordHash) { res.status(401).json({ error: "Invalid credentials" }); return; }
