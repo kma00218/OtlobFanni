@@ -767,43 +767,43 @@ export default function ProDashboard() {
               </div>
 
               {/* Metrics grid */}
-              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-[#F0F2F5]">
-                {[
-                  { icon: <Eye className="w-4 h-4" />,          label: 'مشاهدات',    value: perfStats?.profileViews ?? 0,    color: cfg.color,   bg: `${cfg.color}12` },
-                  { icon: <MessageCircle className="w-4 h-4" />, label: 'واتساب',     value: perfStats?.whatsappClicks ?? 0,  color: '#25D366',   bg: '#25D36612' },
-                  { icon: <Phone className="w-4 h-4" />,         label: 'هاتف',       value: perfStats?.phoneClicks ?? 0,     color: '#3b82f6',   bg: '#3b82f612' },
-                ].map((m, i) => (
-                  <div key={i} className="py-4 flex flex-col items-center gap-1.5">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: m.bg }}>
-                      <span style={{ color: m.color }}>{m.icon}</span>
-                    </div>
-                    <p className={`font-black text-[#071B33] text-xl leading-none ${perfLoading ? 'opacity-30' : ''}`}>
-                      {perfLoading ? '·' : m.value}
-                    </p>
-                    <p className="text-[10px] text-gray-400 font-medium">{m.label}</p>
+              {[
+                [
+                  { icon: <Eye className="w-4 h-4" />,          label: 'مشاهدات',  value: perfStats?.profileViews ?? 0,    color: cfg.color,  bg: `${cfg.color}18`, border: `${cfg.color}30` },
+                  { icon: <MessageCircle className="w-4 h-4" />, label: 'واتساب',   value: perfStats?.whatsappClicks ?? 0,  color: '#25D366',  bg: '#25D36618',      border: '#25D36630' },
+                  { icon: <Phone className="w-4 h-4" />,         label: 'هاتف',     value: perfStats?.phoneClicks ?? 0,     color: '#3b82f6',  bg: '#3b82f618',      border: '#3b82f630' },
+                ],
+                [
+                  { icon: <ClipboardList className="w-4 h-4" />, label: 'طلبات',   value: perfStats?.serviceRequests ?? 0, color: '#8b5cf6',  bg: '#8b5cf618',      border: '#8b5cf630' },
+                  { icon: <Handshake className="w-4 h-4" />,     label: 'صفقات',   value: perfStats?.confirmedDeals ?? 0,  color: '#059669',  bg: '#05966918',      border: '#05966930' },
+                  { icon: <Star className="w-4 h-4" />,          label: 'تقييم',   value: perfStats?.avgRating != null ? `${perfStats.avgRating}★` : '—', color: '#F59E0B', bg: '#F59E0B18', border: '#F59E0B30' },
+                ],
+              ].map((row, ri) => (
+                <div key={ri}>
+                  {ri > 0 && <div className="h-px bg-[#E8EBF0]" />}
+                  <div className="grid grid-cols-3">
+                    {row.map((m, i) => (
+                      <div key={i}
+                        className="py-4 flex flex-col items-center gap-2 relative"
+                        style={{
+                          background: m.bg,
+                          borderRight: i < 2 ? `1px solid ${m.border}` : 'none',
+                        }}>
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                          style={{ background: '#fff', border: `1.5px solid ${m.border}`, boxShadow: `0 2px 8px ${m.bg}` }}>
+                          <span style={{ color: m.color }}>{m.icon}</span>
+                        </div>
+                        <p className={`font-black text-[#071B33] text-xl leading-none ${perfLoading ? 'opacity-30' : ''}`}>
+                          {perfLoading ? '·' : m.value}
+                        </p>
+                        <p className="text-[10px] font-semibold text-center leading-tight" style={{ color: m.color }}>
+                          {m.label}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-
-              <div className="h-px bg-[#F0F2F5]" />
-
-              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-[#F0F2F5]">
-                {[
-                  { icon: <ClipboardList className="w-4 h-4" />, label: 'طلبات',      value: perfStats?.serviceRequests ?? 0, color: '#8b5cf6',   bg: '#8b5cf612' },
-                  { icon: <Handshake className="w-4 h-4" />,     label: 'صفقات',      value: perfStats?.confirmedDeals ?? 0,  color: '#059669',   bg: '#05966912' },
-                  { icon: <Star className="w-4 h-4" />,          label: 'تقييم',      value: perfStats?.avgRating != null ? `${perfStats.avgRating}★` : '—', color: '#F59E0B', bg: '#F59E0B12' },
-                ].map((m, i) => (
-                  <div key={i} className="py-4 flex flex-col items-center gap-1.5">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: m.bg }}>
-                      <span style={{ color: m.color }}>{m.icon}</span>
-                    </div>
-                    <p className={`font-black text-[#071B33] text-xl leading-none ${perfLoading ? 'opacity-30' : ''}`}>
-                      {perfLoading ? '·' : m.value}
-                    </p>
-                    <p className="text-[10px] text-gray-400 font-medium">{m.label}</p>
-                  </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
 
             {/* ── Coming soon tools ── */}
