@@ -601,11 +601,13 @@ export default function ProDashboard() {
 
         <div className="flex items-center justify-between mb-6 relative z-10">
           <button onClick={() => navigate('/more')}
-            className="flex items-center gap-1.5 text-white/50 text-sm active:opacity-70">
+            className="flex items-center gap-1.5 text-sm font-bold active:scale-95 transition-all px-3 py-1.5 rounded-xl"
+            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff' }}>
             <ArrowRight className="w-4 h-4" /> العودة
           </button>
           <button onClick={logout}
-            className="flex items-center gap-1.5 text-white/40 text-xs active:opacity-70">
+            className="flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-all px-3 py-1.5 rounded-xl"
+            style={{ background: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', color: '#fca5a5' }}>
             <LogOut className="w-3.5 h-3.5" /> خروج
           </button>
         </div>
