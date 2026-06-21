@@ -8,7 +8,6 @@ import {
   TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine, Eye,
 } from 'lucide-react'
 import { api } from '../lib/api'
-import ProEditTab from './ProEditTab'
 
 // ── Type-specific config ────────────────────────────────────────────────────
 const TYPE_CONFIG = {
@@ -656,7 +655,6 @@ export default function ProDashboard() {
           { key: 'profile',  label: 'ملفي',            badge: 0 },
           { key: 'requests', label: cfg.requestsTab,    badge: newCount },
           { key: 'deals',    label: cfg.dealsTab,       badge: pendingDeals },
-          { key: 'edit',     label: 'تعديل',            badge: 0 },
         ].map(tab => (
           <button key={tab.key}
             onClick={() => {
@@ -1039,11 +1037,6 @@ export default function ProDashboard() {
               </div>
             )}
           </div>
-        )}
-
-        {/* ── EDIT TAB ── */}
-        {activeTab === 'edit' && session && (
-          <ProEditTab session={session} cities={cities} categories={categories} />
         )}
 
       </div>
