@@ -504,31 +504,41 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── فاصل بين قسم العميل وقسم الانضمام ── */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+        </div>
+
+        {/* ── قسم الانضمام — خلفية داكنة ── */}
+        <div className="-mx-4 px-4 py-7"
+          style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d52 100%)', position: 'relative', overflow: 'hidden' }}>
+
+          {/* Glow blobs */}
+          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,121,0,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: '140px', height: '140px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+          {/* أو divider */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
+            <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.5)' }}>
               {ar ? 'أو' : 'OR'}
             </span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
           </div>
 
-          {/* عنوان قسم الانضمام */}
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#071B33] rounded-2xl px-4 py-2.5 mb-0.5 shadow-sm">
+          {/* Title */}
+          <div className="text-center mb-5">
+            <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#FF7900] rounded-2xl px-4 py-2.5 mb-2 shadow-sm">
               <span className="text-lg">💼</span>
               <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
                 {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
               </p>
             </div>
-            <p className="text-[15px] font-extrabold text-[#071B33] leading-snug">
+            <p className="text-[15px] font-extrabold text-white leading-snug">
               {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
             </p>
           </div>
-        </div>
 
-        {/* بطاقات الانضمام */}
-        <JoinCards ar={ar} />
+          {/* بطاقات الانضمام */}
+          <JoinCards ar={ar} />
+        </div>
 
         <div className="mt-6">
           <div className="flex justify-between items-center mb-3">
