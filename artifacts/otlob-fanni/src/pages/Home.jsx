@@ -504,8 +504,14 @@ export default function Home() {
             </div>
           )}
 
-          {/* ── فاصل بين قسم العميل وقسم الانضمام ── */}
-          <div className="flex items-center gap-3">
+        </div>
+
+        {/* ── قسم الانضمام — إطار برتقالي ── */}
+        <div className="-mx-4 px-4 py-6"
+          style={{ borderTop: '3px solid #FF7900', borderBottom: '3px solid #FF7900' }}>
+
+          {/* أو divider */}
+          <div className="flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-gray-200" />
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
               {ar ? 'أو' : 'OR'}
@@ -514,7 +520,7 @@ export default function Home() {
           </div>
 
           {/* عنوان قسم الانضمام */}
-          <div className="text-center">
+          <div className="text-center mb-4">
             <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#071B33] rounded-2xl px-4 py-2.5 mb-0.5 shadow-sm">
               <span className="text-lg">💼</span>
               <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
@@ -525,10 +531,10 @@ export default function Home() {
               {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
             </p>
           </div>
-        </div>
 
-        {/* بطاقات الانضمام */}
-        <JoinCards ar={ar} />
+          {/* بطاقات الانضمام */}
+          <JoinCards ar={ar} />
+        </div>
 
         <div className="mt-6">
           <div className="flex justify-between items-center mb-3">
