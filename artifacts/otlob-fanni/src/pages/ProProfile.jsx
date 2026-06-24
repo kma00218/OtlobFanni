@@ -309,44 +309,44 @@ export default function ProProfile() {
             <div className="grid grid-cols-2 gap-3">
               {publicUrl && (
                 <a href={publicUrl}
-                  className="rounded-2xl px-4 py-4 flex flex-col items-center gap-2 active:scale-95 transition-transform text-center bg-white"
-                  style={{ border: '1.5px solid #DBEAFE', boxShadow: '0 2px 10px rgba(59,130,246,0.08)' }}>
+                  className="rounded-2xl px-4 py-5 flex flex-col items-center gap-2.5 active:scale-95 transition-transform text-center bg-white"
+                  style={{ border: '1.5px solid #E2E6EA', boxShadow: '0 2px 8px rgba(7,27,51,0.06)' }}>
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                    style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)' }}>
-                    <ExternalLink className="w-5 h-5 text-white" />
+                    style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE' }}>
+                    <ExternalLink className="w-5 h-5 text-blue-600" />
                   </div>
                   <p className="text-xs font-bold text-[#071B33]">عرض ملفي العام</p>
                 </a>
               )}
 
               <button onClick={handleShare}
-                className="rounded-2xl px-4 py-4 flex flex-col items-center gap-2 active:scale-95 transition-transform bg-white"
-                style={{ border: '1.5px solid #EDE9FE', boxShadow: '0 2px 10px rgba(139,92,246,0.08)' }}>
+                className="rounded-2xl px-4 py-5 flex flex-col items-center gap-2.5 active:scale-95 transition-transform bg-white"
+                style={{ border: '1.5px solid #E2E6EA', boxShadow: '0 2px 8px rgba(7,27,51,0.06)' }}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)' }}>
-                  <Share2 className="w-5 h-5 text-white" />
+                  style={{ background: '#F5F3FF', border: '1.5px solid #DDD6FE' }}>
+                  <Share2 className="w-5 h-5 text-violet-600" />
                 </div>
                 <p className="text-xs font-bold text-[#071B33]">مشاركة ملفي</p>
               </button>
 
               {waDigits && (
                 <a href={`https://wa.me/${waDigits}`} target="_blank" rel="noreferrer"
-                  className="rounded-2xl px-4 py-4 flex flex-col items-center gap-2 active:scale-95 transition-transform text-center bg-white"
-                  style={{ border: '1.5px solid #D1FAE5', boxShadow: '0 2px 10px rgba(16,185,129,0.08)' }}>
+                  className="rounded-2xl px-4 py-5 flex flex-col items-center gap-2.5 active:scale-95 transition-transform text-center bg-white"
+                  style={{ border: '1.5px solid #E2E6EA', boxShadow: '0 2px 8px rgba(7,27,51,0.06)' }}>
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                    style={{ background: 'linear-gradient(135deg, #059669 0%, #34d399 100%)' }}>
-                    <MessageSquare className="w-5 h-5 text-white" />
+                    style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0' }}>
+                    <MessageSquare className="w-5 h-5 text-emerald-600" />
                   </div>
                   <p className="text-xs font-bold text-[#071B33]">واتساب</p>
                 </a>
               )}
 
               <button onClick={() => { setCpOpen(v => !v); setCpMsg(null) }}
-                className="rounded-2xl px-4 py-4 flex flex-col items-center gap-2 active:scale-95 transition-transform bg-white"
-                style={{ border: '1.5px solid #FEF3C7', boxShadow: '0 2px 10px rgba(245,158,11,0.08)' }}>
+                className="rounded-2xl px-4 py-5 flex flex-col items-center gap-2.5 active:scale-95 transition-transform bg-white"
+                style={{ border: '1.5px solid #E2E6EA', boxShadow: '0 2px 8px rgba(7,27,51,0.06)' }}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #d97706 0%, #fbbf24 100%)' }}>
-                  <Lock className="w-5 h-5 text-white" />
+                  style={{ background: '#FFFBEB', border: '1.5px solid #FDE68A' }}>
+                  <Lock className="w-5 h-5 text-amber-600" />
                 </div>
                 <p className="text-xs font-bold text-[#071B33]">تغيير المرور</p>
               </button>
