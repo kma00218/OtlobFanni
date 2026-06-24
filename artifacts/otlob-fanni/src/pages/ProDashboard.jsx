@@ -83,7 +83,7 @@ function StatCard({ label, value, icon, accent }) {
         <span style={{ color: accent }}>{icon}</span>
       </div>
       <p className="font-black text-white text-xl leading-none">{value}</p>
-      <p className="text-[10px] text-white/60 text-center leading-tight">{label}</p>
+      <p className="text-[10px] text-white/90 text-center leading-tight">{label}</p>
     </div>
   )
 }
@@ -665,7 +665,7 @@ export default function ProDashboard() {
               if (tab.key === 'deals'    && session) loadDeals(session)
             }}
             className={`flex-1 py-2.5 text-xs font-bold transition-all rounded-xl relative ${
-              activeTab === tab.key ? 'bg-white text-[#071B33] shadow' : 'text-white/60'
+              activeTab === tab.key ? 'bg-white text-[#071B33] shadow' : 'text-white/85'
             }`}>
             {tab.label}
             {tab.badge > 0 && (
@@ -696,7 +696,7 @@ export default function ProDashboard() {
                   <ClipboardList className="w-4 h-4 text-white" />
                 </div>
                 <p className="font-black text-white text-3xl leading-none">{requests.length}</p>
-                <p className="text-white/80 text-[11px] font-semibold mt-1">{cfg.statsLabels.requests}</p>
+                <p className="text-white text-[11px] font-semibold mt-1">{cfg.statsLabels.requests}</p>
                 {newCount > 0 && (
                   <span className="inline-flex items-center gap-1 mt-2 bg-white/25 rounded-full px-2 py-0.5 text-[10px] font-black text-white">
                     ● {newCount} جديد
@@ -713,7 +713,7 @@ export default function ProDashboard() {
                   <Handshake className="w-4 h-4 text-white" />
                 </div>
                 <p className="font-black text-white text-3xl leading-none">{dealCounts.confirmed}</p>
-                <p className="text-white/80 text-[11px] font-semibold mt-1">{cfg.statsLabels.deals}</p>
+                <p className="text-white text-[11px] font-semibold mt-1">{cfg.statsLabels.deals}</p>
                 {pendingDeals > 0 && (
                   <span className="inline-flex items-center gap-1 mt-2 bg-white/25 rounded-full px-2 py-0.5 text-[10px] font-black text-white">
                     ● {pendingDeals} معلّقة
@@ -735,10 +735,10 @@ export default function ProDashboard() {
                 </div>
                 <div className="flex-1 text-right relative z-10">
                   <p className="text-white font-extrabold text-[15px] leading-tight">ملفي الشخصي</p>
-                  <p className="text-white/50 text-[11px] mt-0.5">عرض · تعديل · كلمة المرور</p>
+                  <p className="text-white/85 text-[11px] mt-0.5">عرض · تعديل · كلمة المرور</p>
                 </div>
                 <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 relative z-10">
-                  <ChevronLeft className="w-3.5 h-3.5 text-white/60" />
+                  <ChevronLeft className="w-3.5 h-3.5 text-white/85" />
                 </div>
               </div>
             </button>
@@ -756,13 +756,13 @@ export default function ProDashboard() {
                   </div>
                   <div>
                     <p className="font-extrabold text-white text-sm leading-tight">أداء حسابي</p>
-                    <p className="text-white/40 text-[10px]">Account Performance</p>
+                    <p className="text-white/75 text-[10px]">Account Performance</p>
                   </div>
                 </div>
                 <button onClick={() => loadPerfStats(session)} disabled={perfLoading}
                   className="p-1.5 rounded-lg active:scale-95 transition-all"
                   style={{ background: 'rgba(255,255,255,0.1)' }}>
-                  <RefreshCw className={`w-3.5 h-3.5 text-white/60 ${perfLoading ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 text-white/85 ${perfLoading ? 'animate-spin' : ''}`} />
                 </button>
               </div>
 
