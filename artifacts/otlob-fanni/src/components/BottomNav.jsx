@@ -365,7 +365,7 @@ export default function BottomNav() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <span className="text-[12px] leading-none">🏢</span>
-                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'شركات' : 'Co.'}</span>
+                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'شركات خدمية' : 'Service Co.'}</span>
                             </div>
                             <span className="text-[12px] font-extrabold" style={{ color: comps > 0 ? '#1e40af' : '#D1D5DB' }}>{comps}</span>
                           </div>
@@ -373,18 +373,10 @@ export default function BottomNav() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
                               <span className="text-[12px] leading-none">📦</span>
-                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'موردون' : 'Sup.'}</span>
+                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'موردو مستلزمات' : 'Suppliers'}</span>
                             </div>
                             <span className="text-[12px] font-extrabold" style={{ color: sups > 0 ? '#0e7c8f' : '#D1D5DB' }}>{sups}</span>
                           </div>
-                          {/* Total divider */}
-                          {hasAny && (
-                            <div className="flex items-center justify-between pt-1 mt-0.5"
-                              style={{ borderTop: '1px dashed #E8EDF2' }}>
-                              <span className="text-[11px] font-bold text-gray-400">{ar ? 'الإجمالي' : 'Total'}</span>
-                              <span className="text-[12px] font-black text-[#071B33]">{total}</span>
-                            </div>
-                          )}
                           {!hasAny && (
                             <p className="text-[11px] text-gray-300 text-center py-1">{ar ? 'قريباً' : 'Soon'}</p>
                           )}
