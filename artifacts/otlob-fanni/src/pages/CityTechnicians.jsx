@@ -366,7 +366,9 @@ export default function CityTechnicians() {
 
         {/* City header */}
         <div className="bg-white rounded-2xl overflow-hidden"
-          style={{ border: '1.5px solid #E8EDF2', boxShadow: '0 2px 12px rgba(7,27,51,0.08)' }}>
+          style={{ border: '2px solid #D1D9E6', boxShadow: '0 4px 16px rgba(7,27,51,0.12)' }}>
+          {/* Orange top accent */}
+          <div style={{ height: '4px', background: 'linear-gradient(90deg, #FF7900, #ffb347)' }} />
 
           {/* Top: city name + icon */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3"
