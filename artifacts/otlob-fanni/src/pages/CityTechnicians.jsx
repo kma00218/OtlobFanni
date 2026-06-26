@@ -365,19 +365,85 @@ export default function CityTechnicians() {
       <main className="px-4 pt-4 space-y-4">
 
         {/* City header */}
-        <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-100 p-3.5 shadow-sm">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isLibya ? 'bg-green-100' : 'bg-blue-100'}`}>
-            {isLibya
-              ? <Globe className="w-6 h-6 text-green-600" />
-              : <MapPin className="w-6 h-6 text-blue-600" />}
+        <div className="bg-white rounded-2xl overflow-hidden"
+          style={{ border: '1.5px solid #E8EDF2', boxShadow: '0 2px 12px rgba(7,27,51,0.08)' }}>
+
+          {/* Top: city name + icon */}
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3"
+            style={{ borderBottom: '1px solid #F0F4F8' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: isLibya ? 'rgba(34,197,94,0.12)' : 'linear-gradient(135deg,rgba(255,121,0,0.15),rgba(255,121,0,0.05))' }}>
+              {isLibya
+                ? <Globe className="w-5 h-5 text-green-600" />
+                : <MapPin className="w-5 h-5" style={{ color: '#FF7900' }} />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-black text-[#071B33] text-[17px] leading-tight">{cityName}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                {loading
+                  ? (ar ? 'جارٍ التحميل...' : 'Loading...')
+                  : ar ? `${cityTotal} مقدّم خدمة` : `${cityTotal} providers`}
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-bold text-[#071B33] text-base">{cityName}</p>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {loading
-                ? (ar ? 'جارٍ التحميل...' : 'Loading...')
-                : ar ? `${total} مقدّم خدمة` : `${total} providers`}
-            </p>
+
+          {/* Bottom: 4-column breakdown */}
+          <div className="grid grid-cols-4 divide-x divide-x-reverse"
+            style={{ direction: 'rtl' }}>
+
+            {/* فنيون */}
+            <div className="flex flex-col items-center py-3 px-1">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
+                style={{ background: 'rgba(255,121,0,0.10)' }}>
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#FF7900" strokeWidth={2} strokeLinecap="round">
+                  <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+                </svg>
+              </div>
+              <p className="text-[18px] font-black leading-none" style={{ color: '#FF7900' }}>
+                {loading ? '…' : techs.length}
+              </p>
+              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'فنيون' : 'Tech.'}</p>
+            </div>
+
+            {/* شركات */}
+            <div className="flex flex-col items-center py-3 px-1">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
+                style={{ background: 'rgba(30,64,175,0.10)' }}>
+                <Building2 className="w-4 h-4" style={{ color: '#1e40af' }} />
+              </div>
+              <p className="text-[18px] font-black leading-none" style={{ color: '#1e40af' }}>
+                {loading ? '…' : companies.length}
+              </p>
+              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'شركات' : 'Co.'}</p>
+            </div>
+
+            {/* موردون */}
+            <div className="flex flex-col items-center py-3 px-1">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
+                style={{ background: 'rgba(14,124,143,0.10)' }}>
+                <Package className="w-4 h-4" style={{ color: '#0e7c8f' }} />
+              </div>
+              <p className="text-[18px] font-black leading-none" style={{ color: '#0e7c8f' }}>
+                {loading ? '…' : suppliers.length}
+              </p>
+              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'موردون' : 'Sup.'}</p>
+            </div>
+
+            {/* الإجمالي */}
+            <div className="flex flex-col items-center py-3 px-1"
+              style={{ background: 'rgba(7,27,51,0.03)' }}>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
+                style={{ background: 'rgba(7,27,51,0.10)' }}>
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#071B33" strokeWidth={2} strokeLinecap="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+                </svg>
+              </div>
+              <p className="text-[18px] font-black leading-none text-[#071B33]">
+                {loading ? '…' : cityTotal}
+              </p>
+              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'الإجمالي' : 'Total'}</p>
+            </div>
+
           </div>
         </div>
 
