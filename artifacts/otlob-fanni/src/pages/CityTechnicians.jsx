@@ -394,7 +394,8 @@ export default function CityTechnicians() {
             style={{ direction: 'rtl' }}>
 
             {/* فنيون */}
-            <div className="flex flex-col items-center py-4 px-1.5">
+            <button className="flex flex-col items-center py-4 px-1.5 active:scale-95 transition-transform"
+              onClick={() => document.getElementById('section-techs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
               <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
                 style={{ boxShadow: '0 4px 12px rgba(255,121,0,0.20)', border: '1.5px solid rgba(255,121,0,0.15)' }}>
                 <img src="/icons/categories/workers.png" alt="technicians" className="w-full h-full object-cover"
@@ -406,10 +407,11 @@ export default function CityTechnicians() {
               <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'فنيون' : 'Technicians'}
               </p>
-            </div>
+            </button>
 
             {/* شركات خدمية */}
-            <div className="flex flex-col items-center py-4 px-1.5">
+            <button className="flex flex-col items-center py-4 px-1.5 active:scale-95 transition-transform"
+              onClick={() => document.getElementById('section-companies')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
               <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
                 style={{ boxShadow: '0 4px 12px rgba(59,130,246,0.25)', border: '1.5px solid rgba(59,130,246,0.15)' }}>
                 <img src="/icons/sections/service_companies.png" alt="companies" className="w-full h-full object-cover"
@@ -421,10 +423,11 @@ export default function CityTechnicians() {
               <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'شركات خدمية' : 'Service Co.'}
               </p>
-            </div>
+            </button>
 
             {/* موردو مستلزمات */}
-            <div className="flex flex-col items-center py-4 px-1.5">
+            <button className="flex flex-col items-center py-4 px-1.5 active:scale-95 transition-transform"
+              onClick={() => document.getElementById('section-suppliers')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
               <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
                 style={{ boxShadow: '0 4px 12px rgba(14,124,143,0.20)', border: '1.5px solid rgba(14,124,143,0.15)' }}>
                 <img src="/icons/sections/more_services.png" alt="suppliers" className="w-full h-full object-cover"
@@ -436,7 +439,7 @@ export default function CityTechnicians() {
               <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'موردو مستلزمات' : 'Suppliers'}
               </p>
-            </div>
+            </button>
 
             {/* الإجمالي */}
             <div className="flex flex-col items-center py-4 px-1.5"
@@ -568,7 +571,7 @@ export default function CityTechnicians() {
         ) : (
           <>
             {filteredTechs.length > 0 && (
-              <div>
+              <div id="section-techs">
                 <div className="rounded-2xl mb-3 border-r-4 border-[#FF7900] overflow-hidden"
                   style={{ background: 'linear-gradient(to left, rgba(255,121,0,0.09), rgba(255,121,0,0.02))' }}>
                   <div className="flex items-center justify-between px-4 py-3">
@@ -610,7 +613,7 @@ export default function CityTechnicians() {
             )}
 
             {filteredCompanies.length > 0 && (
-              <div>
+              <div id="section-companies">
                 <div className="rounded-2xl mb-3 border-r-4 border-[#1e40af] overflow-hidden"
                   style={{ background: 'linear-gradient(to left, rgba(30,64,175,0.09), rgba(30,64,175,0.02))' }}>
                   <div className="flex items-center justify-between px-4 py-3">
@@ -643,7 +646,7 @@ export default function CityTechnicians() {
             )}
 
             {filteredSuppliers.length > 0 && (
-              <div>
+              <div id="section-suppliers">
                 <div className="rounded-2xl mb-3 border-r-4 border-[#0e7c8f] overflow-hidden"
                   style={{ background: 'linear-gradient(to left, rgba(14,124,143,0.09), rgba(14,124,143,0.02))' }}>
                   <div className="flex items-center justify-between px-4 py-3">
