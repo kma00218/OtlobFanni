@@ -392,56 +392,60 @@ export default function CityTechnicians() {
             style={{ direction: 'rtl' }}>
 
             {/* فنيون */}
-            <div className="flex flex-col items-center py-3 px-1">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
-                style={{ background: 'rgba(255,121,0,0.10)' }}>
-                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#FF7900" strokeWidth={2} strokeLinecap="round">
+            <div className="flex flex-col items-center py-4 px-1">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #FF7900 0%, #e05500 100%)', boxShadow: '0 4px 10px rgba(255,121,0,0.35)' }}>
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="white" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
                 </svg>
               </div>
-              <p className="text-[18px] font-black leading-none" style={{ color: '#FF7900' }}>
+              <p className="text-[20px] font-black leading-none" style={{ color: '#FF7900' }}>
                 {loading ? '…' : techs.length}
               </p>
-              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'فنيون' : 'Tech.'}</p>
+              <p className="text-[10px] font-bold text-gray-400 mt-1">{ar ? 'فنيون' : 'Tech.'}</p>
             </div>
 
             {/* شركات */}
-            <div className="flex flex-col items-center py-3 px-1">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
-                style={{ background: 'rgba(30,64,175,0.10)' }}>
-                <Building2 className="w-4 h-4" style={{ color: '#1e40af' }} />
+            <div className="flex flex-col items-center py-4 px-1">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #3b82f6 0%, #1e40af 100%)', boxShadow: '0 4px 10px rgba(59,130,246,0.35)' }}>
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="white" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+                </svg>
               </div>
-              <p className="text-[18px] font-black leading-none" style={{ color: '#1e40af' }}>
+              <p className="text-[20px] font-black leading-none" style={{ color: '#1e40af' }}>
                 {loading ? '…' : companies.length}
               </p>
-              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'شركات' : 'Co.'}</p>
+              <p className="text-[10px] font-bold text-gray-400 mt-1">{ar ? 'شركات' : 'Co.'}</p>
             </div>
 
             {/* موردون */}
-            <div className="flex flex-col items-center py-3 px-1">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
-                style={{ background: 'rgba(14,124,143,0.10)' }}>
-                <Package className="w-4 h-4" style={{ color: '#0e7c8f' }} />
+            <div className="flex flex-col items-center py-4 px-1">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #0ea5e9 0%, #0e7c8f 100%)', boxShadow: '0 4px 10px rgba(14,124,143,0.35)' }}>
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="white" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 8L12 3 3 8v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5"/><line x1="12" y1="13" x2="12" y2="21"/>
+                </svg>
               </div>
-              <p className="text-[18px] font-black leading-none" style={{ color: '#0e7c8f' }}>
+              <p className="text-[20px] font-black leading-none" style={{ color: '#0e7c8f' }}>
                 {loading ? '…' : suppliers.length}
               </p>
-              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'موردون' : 'Sup.'}</p>
+              <p className="text-[10px] font-bold text-gray-400 mt-1">{ar ? 'موردون' : 'Sup.'}</p>
             </div>
 
             {/* الإجمالي */}
-            <div className="flex flex-col items-center py-3 px-1"
+            <div className="flex flex-col items-center py-4 px-1"
               style={{ background: 'rgba(7,27,51,0.03)' }}>
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-1.5"
-                style={{ background: 'rgba(7,27,51,0.10)' }}>
-                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#071B33" strokeWidth={2} strokeLinecap="round">
-                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #1e3a5f 0%, #071B33 100%)', boxShadow: '0 4px 10px rgba(7,27,51,0.30)' }}>
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="white" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6H6l5 6-5 6h12"/>
                 </svg>
               </div>
-              <p className="text-[18px] font-black leading-none text-[#071B33]">
+              <p className="text-[20px] font-black leading-none text-[#071B33]">
                 {loading ? '…' : cityTotal}
               </p>
-              <p className="text-[10px] font-semibold text-gray-400 mt-0.5">{ar ? 'الإجمالي' : 'Total'}</p>
+              <p className="text-[10px] font-bold text-gray-400 mt-1">{ar ? 'الإجمالي' : 'Total'}</p>
             </div>
 
           </div>
