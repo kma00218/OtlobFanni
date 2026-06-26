@@ -328,23 +328,26 @@ export default function BottomNav() {
                     return (
                       <button key={city.id} onClick={() => handleCityClick(city.id, city)}
                         className="flex flex-col bg-white rounded-2xl overflow-hidden active:scale-[0.97] transition-transform text-right"
-                        style={{ border: '1.5px solid #E8EDF2', boxShadow: '0 2px 8px rgba(7,27,51,0.06)' }}
+                        style={{ border: '2px solid #D1D9E6', boxShadow: '0 4px 14px rgba(7,27,51,0.10)' }}
                         dir="rtl"
                       >
+                        {/* Orange top accent */}
+                        <div style={{ height: '3px', background: 'linear-gradient(90deg, #FF7900, #ffb347)' }} />
+
                         {/* Header row */}
-                        <div className="flex items-center justify-between px-3 pt-3 pb-2"
-                          style={{ borderBottom: '1px solid #F0F4F8' }}>
+                        <div className="flex items-center justify-between px-3 pt-2.5 pb-2"
+                          style={{ borderBottom: '1.5px solid #EEF2F7' }}>
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
+                            <div className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0"
                               style={{ background: 'rgba(255,121,0,0.12)' }}>
-                              <svg className="w-3.5 h-3.5" fill="#FF7900" viewBox="0 0 24 24">
+                              <svg className="w-3 h-3" fill="#FF7900" viewBox="0 0 24 24">
                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                               </svg>
                             </div>
-                            <p className="font-black text-[#071B33] text-[14px] leading-tight truncate">{name}</p>
+                            <p className="font-black text-[#071B33] text-[15px] leading-tight truncate">{name}</p>
                           </div>
                           {hasAny && (
-                            <span className="text-[11px] font-black text-white px-2 py-0.5 rounded-full leading-none flex-shrink-0 ms-1"
+                            <span className="text-[12px] font-black text-white px-2.5 py-0.5 rounded-full leading-none flex-shrink-0 ms-1"
                               style={{ background: 'linear-gradient(135deg, #FF7900, #e06500)' }}>
                               {total}
                             </span>
@@ -352,30 +355,30 @@ export default function BottomNav() {
                         </div>
 
                         {/* Stats rows */}
-                        <div className="px-3 py-2.5 flex flex-col gap-1.5">
+                        <div className="px-3 py-3 flex flex-col gap-2.5">
                           {/* Technicians */}
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[12px] leading-none">🔧</span>
-                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'فنيون' : 'Tech.'}</span>
+                            <div className="flex items-center gap-2">
+                              <img src="/icons/categories/workers.png" alt="" className="w-5 h-5 object-cover rounded-md flex-shrink-0" />
+                              <span className="text-[12px] font-bold text-[#1F2937]">{ar ? 'فنيون' : 'Technicians'}</span>
                             </div>
-                            <span className="text-[12px] font-extrabold" style={{ color: techs > 0 ? '#FF7900' : '#D1D5DB' }}>{techs}</span>
+                            <span className="text-[13px] font-black" style={{ color: techs > 0 ? '#FF7900' : '#D1D5DB' }}>{techs}</span>
                           </div>
                           {/* Companies */}
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[12px] leading-none">🏢</span>
-                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'شركات خدمية' : 'Service Co.'}</span>
+                            <div className="flex items-center gap-2">
+                              <img src="/icons/sections/service_companies.png" alt="" className="w-5 h-5 object-cover rounded-md flex-shrink-0" />
+                              <span className="text-[12px] font-bold text-[#1F2937]">{ar ? 'شركات خدمية' : 'Service Co.'}</span>
                             </div>
-                            <span className="text-[12px] font-extrabold" style={{ color: comps > 0 ? '#1e40af' : '#D1D5DB' }}>{comps}</span>
+                            <span className="text-[13px] font-black" style={{ color: comps > 0 ? '#1e40af' : '#D1D5DB' }}>{comps}</span>
                           </div>
                           {/* Suppliers */}
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[12px] leading-none">📦</span>
-                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'موردو مستلزمات' : 'Suppliers'}</span>
+                            <div className="flex items-center gap-2">
+                              <img src="/icons/sections/more_services.png" alt="" className="w-5 h-5 object-cover rounded-md flex-shrink-0" />
+                              <span className="text-[12px] font-bold text-[#1F2937]">{ar ? 'موردو مستلزمات' : 'Suppliers'}</span>
                             </div>
-                            <span className="text-[12px] font-extrabold" style={{ color: sups > 0 ? '#0e7c8f' : '#D1D5DB' }}>{sups}</span>
+                            <span className="text-[13px] font-black" style={{ color: sups > 0 ? '#0e7c8f' : '#D1D5DB' }}>{sups}</span>
                           </div>
                           {!hasAny && (
                             <p className="text-[11px] text-gray-300 text-center py-1">{ar ? 'قريباً' : 'Soon'}</p>
