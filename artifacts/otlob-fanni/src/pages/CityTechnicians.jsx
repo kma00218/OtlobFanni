@@ -439,10 +439,9 @@ export default function CityTechnicians() {
             {/* الإجمالي */}
             <div className="flex flex-col items-center py-4 px-1.5"
               style={{ background: 'rgba(7,27,51,0.03)' }}>
-              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-2"
-                style={{ boxShadow: '0 4px 12px rgba(7,27,51,0.15)', border: '1.5px solid rgba(7,27,51,0.10)' }}>
-                <img src="/icons/sections/home_services.png" alt="total" className="w-9 h-9 object-contain"
-                  onError={e => { e.currentTarget.style.display='none'; }} />
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #1e3a5f 0%, #071B33 100%)', boxShadow: '0 4px 12px rgba(7,27,51,0.35)' }}>
+                <span className="text-white font-black leading-none select-none" style={{ fontSize: '26px', marginTop: '-2px' }}>Σ</span>
               </div>
               <p className="text-[20px] font-black leading-none text-[#071B33]">
                 {loading ? '…' : cityTotal}
