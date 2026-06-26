@@ -393,45 +393,45 @@ export default function CityTechnicians() {
 
             {/* فنيون */}
             <div className="flex flex-col items-center py-4 px-1.5">
-              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-2"
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2"
                 style={{ boxShadow: '0 4px 12px rgba(255,121,0,0.20)', border: '1.5px solid rgba(255,121,0,0.15)' }}>
-                <img src="/icons/categories/workers.png" alt="technicians" className="w-9 h-9 object-contain"
+                <img src="/icons/categories/workers.png" alt="technicians" className="w-10 h-10 object-contain"
                   onError={e => { e.currentTarget.style.display='none'; }} />
               </div>
               <p className="text-[20px] font-black leading-none" style={{ color: '#FF7900' }}>
                 {loading ? '…' : techs.length}
               </p>
-              <p className="text-[10px] font-bold text-gray-400 mt-1 text-center leading-tight">
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'فنيون' : 'Technicians'}
               </p>
             </div>
 
             {/* شركات خدمية */}
             <div className="flex flex-col items-center py-4 px-1.5">
-              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-2"
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2"
                 style={{ boxShadow: '0 4px 12px rgba(59,130,246,0.20)', border: '1.5px solid rgba(59,130,246,0.15)' }}>
-                <img src="/icons/sections/business_services.png" alt="companies" className="w-9 h-9 object-contain"
+                <img src="/icons/sections/business_services.png" alt="companies" className="w-10 h-10 object-contain"
                   onError={e => { e.currentTarget.style.display='none'; }} />
               </div>
               <p className="text-[20px] font-black leading-none" style={{ color: '#1e40af' }}>
                 {loading ? '…' : companies.length}
               </p>
-              <p className="text-[10px] font-bold text-gray-400 mt-1 text-center leading-tight">
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'شركات خدمية' : 'Service Co.'}
               </p>
             </div>
 
             {/* موردو مستلزمات */}
             <div className="flex flex-col items-center py-4 px-1.5">
-              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-2"
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2"
                 style={{ boxShadow: '0 4px 12px rgba(14,124,143,0.20)', border: '1.5px solid rgba(14,124,143,0.15)' }}>
-                <img src="/icons/sections/more_services.png" alt="suppliers" className="w-9 h-9 object-contain"
+                <img src="/icons/sections/more_services.png" alt="suppliers" className="w-10 h-10 object-contain"
                   onError={e => { e.currentTarget.style.display='none'; }} />
               </div>
               <p className="text-[20px] font-black leading-none" style={{ color: '#0e7c8f' }}>
                 {loading ? '…' : suppliers.length}
               </p>
-              <p className="text-[10px] font-bold text-gray-400 mt-1 text-center leading-tight">
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'موردو مستلزمات' : 'Suppliers'}
               </p>
             </div>
@@ -439,14 +439,14 @@ export default function CityTechnicians() {
             {/* الإجمالي */}
             <div className="flex flex-col items-center py-4 px-1.5"
               style={{ background: 'rgba(7,27,51,0.03)' }}>
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-2"
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-2"
                 style={{ background: 'linear-gradient(145deg, #1e3a5f 0%, #071B33 100%)', boxShadow: '0 4px 12px rgba(7,27,51,0.35)' }}>
-                <span className="text-white font-black leading-none select-none" style={{ fontSize: '26px', marginTop: '-2px' }}>Σ</span>
+                <span className="text-white font-black leading-none select-none" style={{ fontSize: '32px', marginTop: '-2px' }}>Σ</span>
               </div>
               <p className="text-[20px] font-black leading-none text-[#071B33]">
                 {loading ? '…' : cityTotal}
               </p>
-              <p className="text-[10px] font-bold text-gray-400 mt-1 text-center leading-tight">
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">
                 {ar ? 'الإجمالي' : 'Total'}
               </p>
             </div>
