@@ -319,41 +319,74 @@ export default function BottomNav() {
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   {filteredCities.map(city => {
-                    const name = ar ? city.nameAr : (city.nameEn || city.nameAr);
+                    const name  = ar ? city.nameAr : (city.nameEn || city.nameAr);
                     const techs = city.technicians || 0;
-                    const comps = city.companies || 0;
-                    const sups = city.suppliers || 0;
+                    const comps = city.companies   || 0;
+                    const sups  = city.suppliers   || 0;
                     const total = city.total || techs + comps + sups;
                     const hasAny = total > 0;
                     return (
                       <button key={city.id} onClick={() => handleCityClick(city.id, city)}
-                        className="relative flex flex-col items-center justify-between bg-white border border-gray-100 rounded-2xl px-3 py-3.5 shadow-sm active:scale-[0.97] transition-transform text-center overflow-hidden"
+                        className="flex flex-col bg-white rounded-2xl overflow-hidden active:scale-[0.97] transition-transform text-right"
+                        style={{ border: '1.5px solid #E8EDF2', boxShadow: '0 2px 8px rgba(7,27,51,0.06)' }}
+                        dir="rtl"
                       >
-                        <div className="absolute inset-0 pointer-events-none rounded-2xl"
-                          style={{ background: 'linear-gradient(135deg, rgba(255,121,0,0.04) 0%, transparent 60%)' }} />
-                        {hasAny && (
-                          <span className="absolute top-2 left-2 text-[10px] font-black bg-[#071B33] text-white px-1.5 py-0.5 rounded-full leading-none">
-                            {total}
-                          </span>
-                        )}
-                        <div className="w-8 h-8 rounded-xl bg-[#FF7900]/10 flex items-center justify-center mb-1.5 flex-shrink-0">
-                          <svg className="w-4 h-4 text-[#FF7900]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                          </svg>
+                        {/* Header row */}
+                        <div className="flex items-center justify-between px-3 pt-3 pb-2"
+                          style={{ borderBottom: '1px solid #F0F4F8' }}>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
+                              style={{ background: 'rgba(255,121,0,0.12)' }}>
+                              <svg className="w-3.5 h-3.5" fill="#FF7900" viewBox="0 0 24 24">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                              </svg>
+                            </div>
+                            <p className="font-black text-[#071B33] text-[14px] leading-tight truncate">{name}</p>
+                          </div>
+                          {hasAny && (
+                            <span className="text-[11px] font-black text-white px-2 py-0.5 rounded-full leading-none flex-shrink-0 ms-1"
+                              style={{ background: 'linear-gradient(135deg, #FF7900, #e06500)' }}>
+                              {total}
+                            </span>
+                          )}
                         </div>
-                        <p className="font-black text-[#071B33] text-[15px] leading-tight mb-2">{name}</p>
-                        <div className="flex items-center justify-center gap-1 flex-wrap">
-                          {techs > 0 && (
-                            <span className="text-[11px] font-bold bg-[#FF7900]/10 text-[#FF7900] px-1.5 py-0.5 rounded-full leading-none">🔧 {techs}</span>
-                          )}
-                          {comps > 0 && (
-                            <span className="text-[11px] font-bold bg-blue-50 text-[#1e40af] px-1.5 py-0.5 rounded-full leading-none">🏢 {comps}</span>
-                          )}
-                          {sups > 0 && (
-                            <span className="text-[11px] font-bold bg-teal-50 text-[#0e7c8f] px-1.5 py-0.5 rounded-full leading-none">📦 {sups}</span>
+
+                        {/* Stats rows */}
+                        <div className="px-3 py-2.5 flex flex-col gap-1.5">
+                          {/* Technicians */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[12px] leading-none">🔧</span>
+                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'فنيون' : 'Tech.'}</span>
+                            </div>
+                            <span className="text-[12px] font-extrabold" style={{ color: techs > 0 ? '#FF7900' : '#D1D5DB' }}>{techs}</span>
+                          </div>
+                          {/* Companies */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[12px] leading-none">🏢</span>
+                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'شركات' : 'Co.'}</span>
+                            </div>
+                            <span className="text-[12px] font-extrabold" style={{ color: comps > 0 ? '#1e40af' : '#D1D5DB' }}>{comps}</span>
+                          </div>
+                          {/* Suppliers */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[12px] leading-none">📦</span>
+                              <span className="text-[11px] font-semibold text-gray-500">{ar ? 'موردون' : 'Sup.'}</span>
+                            </div>
+                            <span className="text-[12px] font-extrabold" style={{ color: sups > 0 ? '#0e7c8f' : '#D1D5DB' }}>{sups}</span>
+                          </div>
+                          {/* Total divider */}
+                          {hasAny && (
+                            <div className="flex items-center justify-between pt-1 mt-0.5"
+                              style={{ borderTop: '1px dashed #E8EDF2' }}>
+                              <span className="text-[11px] font-bold text-gray-400">{ar ? 'الإجمالي' : 'Total'}</span>
+                              <span className="text-[12px] font-black text-[#071B33]">{total}</span>
+                            </div>
                           )}
                           {!hasAny && (
-                            <span className="text-[11px] text-gray-300 font-medium">{ar ? 'قريباً' : 'Soon'}</span>
+                            <p className="text-[11px] text-gray-300 text-center py-1">{ar ? 'قريباً' : 'Soon'}</p>
                           )}
                         </div>
                       </button>

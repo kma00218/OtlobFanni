@@ -390,19 +390,53 @@ export default function Home() {
                 >
                   {citiesForFilter.map(city => {
                     const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
+                    const techs = city.technicians || 0
+                    const comps = city.companies || 0
+                    const sups  = city.suppliers  || 0
+                    const total = city.total || techs + comps + sups
                     return (
                       <button
                         key={city.id}
                         onClick={() => navigate(`/city/${city.id}`)}
-                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:scale-95 transition-transform"
-                        style={{ background: '#FFF3E6', border: '1.5px solid #FFA94D', color: '#071B33' }}
+                        className="flex-shrink-0 flex flex-col bg-white rounded-2xl overflow-hidden active:scale-95 transition-transform"
+                        style={{ width: '118px', border: '1.5px solid #E8EDF2', boxShadow: '0 2px 6px rgba(7,27,51,0.07)' }}
+                        dir="rtl"
                       >
-                        {label}
-                        {(city.total || 0) > 0 && (
-                          <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
-                            {city.total}
-                          </span>
-                        )}
+                        {/* City name + total */}
+                        <div className="flex items-center justify-between px-2.5 pt-2.5 pb-1.5"
+                          style={{ borderBottom: '1px solid #F0F4F8' }}>
+                          <p className="font-black text-[#071B33] text-[13px] leading-tight truncate">{label}</p>
+                          {total > 0 && (
+                            <span className="text-[10px] font-black text-white px-1.5 py-0.5 rounded-full flex-shrink-0 ms-1 leading-none"
+                              style={{ background: '#FF7900' }}>
+                              {total}
+                            </span>
+                          )}
+                        </div>
+                        {/* Breakdown */}
+                        <div className="px-2.5 py-2 flex flex-col gap-1">
+                          {techs > 0 && (
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-[10px] text-gray-400">🔧 {ar ? 'فنيون' : 'Tech'}</span>
+                              <span className="text-[10px] font-extrabold" style={{ color: '#FF7900' }}>{techs}</span>
+                            </div>
+                          )}
+                          {comps > 0 && (
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-[10px] text-gray-400">🏢 {ar ? 'شركات' : 'Co.'}</span>
+                              <span className="text-[10px] font-extrabold text-blue-700">{comps}</span>
+                            </div>
+                          )}
+                          {sups > 0 && (
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-[10px] text-gray-400">📦 {ar ? 'موردون' : 'Sup.'}</span>
+                              <span className="text-[10px] font-extrabold text-teal-700">{sups}</span>
+                            </div>
+                          )}
+                          {total === 0 && (
+                            <p className="text-[10px] text-gray-300 text-center py-0.5">{ar ? 'قريباً' : 'Soon'}</p>
+                          )}
+                        </div>
                       </button>
                     )
                   })}
