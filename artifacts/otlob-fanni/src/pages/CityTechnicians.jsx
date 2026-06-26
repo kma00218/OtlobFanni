@@ -393,9 +393,9 @@ export default function CityTechnicians() {
 
             {/* فنيون */}
             <div className="flex flex-col items-center py-4 px-1.5">
-              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2"
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
                 style={{ boxShadow: '0 4px 12px rgba(255,121,0,0.20)', border: '1.5px solid rgba(255,121,0,0.15)' }}>
-                <img src="/icons/categories/workers.png" alt="technicians" className="w-10 h-10 object-contain"
+                <img src="/icons/categories/workers.png" alt="technicians" className="w-full h-full object-cover"
                   onError={e => { e.currentTarget.style.display='none'; }} />
               </div>
               <p className="text-[20px] font-black leading-none" style={{ color: '#FF7900' }}>
@@ -408,10 +408,9 @@ export default function CityTechnicians() {
 
             {/* شركات خدمية */}
             <div className="flex flex-col items-center py-4 px-1.5">
-              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2"
-                style={{ boxShadow: '0 4px 12px rgba(59,130,246,0.20)', border: '1.5px solid rgba(59,130,246,0.15)' }}>
-                <img src="/icons/sections/business_services.png" alt="companies" className="w-10 h-10 object-contain"
-                  onError={e => { e.currentTarget.style.display='none'; }} />
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #3b82f6 0%, #1e40af 100%)', boxShadow: '0 4px 12px rgba(59,130,246,0.40)' }}>
+                <Building2 size={28} color="white" strokeWidth={1.8} />
               </div>
               <p className="text-[20px] font-black leading-none" style={{ color: '#1e40af' }}>
                 {loading ? '…' : companies.length}
@@ -423,9 +422,9 @@ export default function CityTechnicians() {
 
             {/* موردو مستلزمات */}
             <div className="flex flex-col items-center py-4 px-1.5">
-              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2"
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
                 style={{ boxShadow: '0 4px 12px rgba(14,124,143,0.20)', border: '1.5px solid rgba(14,124,143,0.15)' }}>
-                <img src="/icons/sections/more_services.png" alt="suppliers" className="w-10 h-10 object-contain"
+                <img src="/icons/sections/more_services.png" alt="suppliers" className="w-full h-full object-cover"
                   onError={e => { e.currentTarget.style.display='none'; }} />
               </div>
               <p className="text-[20px] font-black leading-none" style={{ color: '#0e7c8f' }}>
