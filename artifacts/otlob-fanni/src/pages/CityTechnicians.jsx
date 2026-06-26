@@ -571,7 +571,7 @@ export default function CityTechnicians() {
         ) : (
           <>
             {filteredTechs.length > 0 && (
-              <div id="section-techs">
+              <div id="section-techs" style={{ scrollMarginTop: '88px' }}>
                 <div className="rounded-2xl mb-3 border-r-4 border-[#FF7900] overflow-hidden"
                   style={{ background: 'linear-gradient(to left, rgba(255,121,0,0.09), rgba(255,121,0,0.02))' }}>
                   <div className="flex items-center justify-between px-4 py-3">
@@ -613,7 +613,7 @@ export default function CityTechnicians() {
             )}
 
             {filteredCompanies.length > 0 && (
-              <div id="section-companies">
+              <div id="section-companies" style={{ scrollMarginTop: '88px' }}>
                 <div className="rounded-2xl mb-3 border-r-4 border-[#1e40af] overflow-hidden"
                   style={{ background: 'linear-gradient(to left, rgba(30,64,175,0.09), rgba(30,64,175,0.02))' }}>
                   <div className="flex items-center justify-between px-4 py-3">
@@ -646,7 +646,7 @@ export default function CityTechnicians() {
             )}
 
             {filteredSuppliers.length > 0 && (
-              <div id="section-suppliers">
+              <div id="section-suppliers" style={{ scrollMarginTop: '88px' }}>
                 <div className="rounded-2xl mb-3 border-r-4 border-[#0e7c8f] overflow-hidden"
                   style={{ background: 'linear-gradient(to left, rgba(14,124,143,0.09), rgba(14,124,143,0.02))' }}>
                   <div className="flex items-center justify-between px-4 py-3">
