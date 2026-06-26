@@ -242,9 +242,9 @@ export default function BottomNav() {
             }
 
             return (
-              <Link key={tab.id} href={tab.path}>
+              <button key={tab.id} onClick={() => { closeAll(); navigate(tab.path); }}>
                 {inner}
-              </Link>
+              </button>
             );
           })}
         </div>
