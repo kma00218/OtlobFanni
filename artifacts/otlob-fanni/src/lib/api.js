@@ -201,6 +201,7 @@ export const api = {
     adRequests: {
       list:   ()             => get('/admin/ad-requests'),
       update: (id, status)  => patch(`/admin/ad-requests/${id}`, { status }),
+      edit:   (id, data)    => patch(`/admin/ad-requests/${id}/fields`, data),
       delete: (id)          => del(`/admin/ad-requests/${id}`),
     },
 

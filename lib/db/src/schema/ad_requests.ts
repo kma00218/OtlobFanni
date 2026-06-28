@@ -16,6 +16,7 @@ export const adRequestsTable = pgTable("ad_requests", {
   websiteOrSocialLink:  text("website_or_social_link"),
   notes:                text("notes"),
   imagePreview:         text("image_preview"),
+  specialCode:          text("special_code"),
   status:               text("status").notNull().default("pending"),
   createdAt:            timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

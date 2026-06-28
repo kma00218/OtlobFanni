@@ -625,6 +625,19 @@ router.patch("/ad-requests/:id", async (req, res): Promise<void> => {
   res.json(r);
 });
 
+router.patch("/ad-requests/:id/fields", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { phone, whatsapp, contactName, specialCode } = req.body;
+  const updates: Record<string, string | null> = {};
+  if (phone       !== undefined) updates.phone       = phone;
+  if (whatsapp    !== undefined) updates.whatsapp    = whatsapp;
+  if (contactName !== undefined) updates.contactName = contactName;
+  if (specialCode !== undefined) updates.specialCode = specialCode;
+  const [r] = await db.update(adRequestsTable).set(updates).where(eq(adRequestsTable.id, raw)).returning();
+  if (!r) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(r);
+});
+
 router.delete("/ad-requests/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   await db.delete(adRequestsTable).where(eq(adRequestsTable.id, raw));

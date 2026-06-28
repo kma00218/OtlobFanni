@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Eye, CheckCircle, XCircle, Trash2, X, ExternalLink, Phone, MapPin, Megaphone, Building2, ChevronDown } from 'lucide-react'
+import { Eye, CheckCircle, XCircle, Trash2, X, ExternalLink, Phone, MapPin, Megaphone, Building2, ChevronDown, Pencil, Tag, Save } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 import { sections, categories } from '../../data/services'
 
@@ -39,6 +39,127 @@ const WaIcon = () => (
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
   </svg>
 )
+
+// ── Edit modal ────────────────────────────────────────────────────────────────
+function EditModal({ req, onClose, onSaved }) {
+  const [form, setForm] = useState({
+    phone:       req.phone       || '',
+    whatsapp:    req.whatsapp    || '',
+    contactName: req.contactName || req.contact_name || '',
+    specialCode: req.specialCode || req.special_code || '',
+  })
+  const [saving, setSaving] = useState(false)
+  const [error,  setError]  = useState('')
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleSave = async () => {
+    setSaving(true); setError('')
+    try {
+      const updated = await api.admin.adRequests.edit(req.id, form)
+      onSaved(updated)
+      onClose()
+    } catch {
+      setError('حدث خطأ أثناء الحفظ')
+    } finally { setSaving(false) }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/80 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
+      <div
+        className="bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl w-full max-w-md shadow-2xl"
+        onClick={e => e.stopPropagation()}
+        dir="rtl"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 rounded-t-3xl sm:rounded-t-2xl">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#FF7900,#c45e00)' }}>
+              <Pencil className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h2 className="font-bold text-[#071B33] text-sm">تعديل بيانات الطلب</h2>
+              <p className="text-[10px] text-slate-400">{req.companyName || req.company_name}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          {/* Special Code — prominent */}
+          <div className="bg-[#FF7900]/8 border border-[#FF7900]/20 rounded-2xl p-4 space-y-2">
+            <label className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#FF7900]">
+              <Tag className="w-3 h-3" /> الكود الخاص (رمز مرجعي)
+            </label>
+            <input
+              type="text"
+              value={form.specialCode}
+              onChange={e => set('specialCode', e.target.value)}
+              placeholder="مثال: AD-001 أو VIP-2026"
+              dir="ltr"
+              className="w-full bg-white border-2 border-[#FF7900]/30 focus:border-[#FF7900] rounded-xl px-4 py-2.5 text-sm font-bold text-[#071B33] placeholder:text-slate-400 focus:outline-none transition-colors"
+            />
+            <p className="text-[10px] text-slate-400">كود تضعه أنت لتنظيم ومتابعة الطلبات</p>
+          </div>
+
+          {/* Contact name */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-black uppercase tracking-wider text-slate-500 block">اسم المسؤول</label>
+            <input
+              type="text"
+              value={form.contactName}
+              onChange={e => set('contactName', e.target.value)}
+              placeholder="اسم المسؤول"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-[#FF7900]/60 rounded-xl px-4 py-2.5 text-sm text-[#071B33] focus:outline-none transition-colors"
+            />
+          </div>
+
+          {/* Phone */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-black uppercase tracking-wider text-slate-500 block">رقم الهاتف</label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={e => set('phone', e.target.value)}
+              placeholder="0921111600"
+              dir="ltr"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-[#FF7900]/60 rounded-xl px-4 py-2.5 text-sm font-mono text-[#071B33] focus:outline-none transition-colors"
+            />
+          </div>
+
+          {/* WhatsApp */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-black uppercase tracking-wider text-slate-500 block">واتساب</label>
+            <input
+              type="tel"
+              value={form.whatsapp}
+              onChange={e => set('whatsapp', e.target.value)}
+              placeholder="0921111600"
+              dir="ltr"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-[#FF7900]/60 rounded-xl px-4 py-2.5 text-sm font-mono text-[#071B33] focus:outline-none transition-colors"
+            />
+          </div>
+
+          {error && <p className="text-xs text-red-500 font-semibold">{error}</p>}
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold text-sm disabled:opacity-60 transition-all active:scale-95"
+            style={{ background: 'linear-gradient(135deg,#FF7900,#c45e00)' }}
+          >
+            {saving
+              ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              : <Save className="w-4 h-4" />}
+            حفظ التعديلات
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ── Placement selection modal ─────────────────────────────────────────────────
 function PlacementModal({ req, onClose, onConfirm }) {
@@ -248,20 +369,21 @@ function PlacementModal({ req, onClose, onConfirm }) {
 }
 
 // ── Detail modal ──────────────────────────────────────────────────────────────
-function DetailModal({ req, onClose, onApproveClick, onReject }) {
+function DetailModal({ req, onClose, onApproveClick, onReject, onEditClick }) {
   if (!req) return null
-  const title     = req.adTitle     || req.ad_title     || ''
-  const desc      = req.adDescription || req.ad_description || ''
-  const business  = req.companyName  || req.company_name  || ''
-  const contact   = req.contactName  || req.contact_name  || ''
-  const phone     = req.phone || ''
-  const whatsapp  = req.whatsapp || ''
-  const city      = req.city || ''
-  const link      = req.websiteOrSocialLink || req.website_or_social_link || ''
-  const notes     = req.notes || ''
-  const image     = getFileUrl(req.imagePreview  || req.image_preview  || null)
-  const createdAt = req.createdAt     || req.created_at     || ''
-  const isPending = req.status === 'pending'
+  const title       = req.adTitle     || req.ad_title     || ''
+  const desc        = req.adDescription || req.ad_description || ''
+  const business    = req.companyName  || req.company_name  || ''
+  const contact     = req.contactName  || req.contact_name  || ''
+  const phone       = req.phone || ''
+  const whatsapp    = req.whatsapp || ''
+  const city        = req.city || ''
+  const link        = req.websiteOrSocialLink || req.website_or_social_link || ''
+  const notes       = req.notes || ''
+  const image       = getFileUrl(req.imagePreview  || req.image_preview  || null)
+  const createdAt   = req.createdAt     || req.created_at     || ''
+  const specialCode = req.specialCode  || req.special_code  || ''
+  const isPending   = req.status === 'pending'
   const requestedPlacement = req.requestedPlacement || req.requested_placement || ''
   const PLACEMENT_LABELS = {
     home_top:            'الصفحة الرئيسية — أعلى (تحت شريط البحث)',
@@ -290,6 +412,14 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
           </div>
           <div className="flex items-center gap-2">
             <StatusBadge status={req.status} />
+            <button
+              onClick={() => { onClose(); onEditClick(req) }}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              style={{ background: 'rgba(255,121,0,0.1)', color: '#FF7900' }}
+              title="تعديل"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400">
               <X className="w-4 h-4" />
             </button>
@@ -315,6 +445,16 @@ function DetailModal({ req, onClose, onApproveClick, onReject }) {
             <div className="bg-[#FF7900]/10 border border-[#FF7900]/20 rounded-xl px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#FF7900] mb-1">نوع الإعلان المطلوب</p>
               <p className="text-[#071B33] font-semibold text-sm">{placementLabel}</p>
+            </div>
+          )}
+
+          {specialCode && (
+            <div className="flex items-center gap-2 bg-[#FF7900]/10 border border-[#FF7900]/25 rounded-xl px-4 py-2.5">
+              <Tag className="w-4 h-4 text-[#FF7900] flex-shrink-0" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#FF7900]">الكود الخاص</p>
+                <p className="font-black text-[#071B33] text-sm" dir="ltr">{specialCode}</p>
+              </div>
             </div>
           )}
 
@@ -375,8 +515,14 @@ export default function AdRequests() {
   const [loading, setLoading]   = useState(true)
   const [filter, setFilter]     = useState('')
   const [viewItem, setViewItem] = useState(null)
+  const [editItem, setEditItem] = useState(null)
   const [approveTarget, setApproveTarget] = useState(null)
   const [toast, setToast]       = useState(null)
+
+  const handleEdited = (updated) => {
+    setRequests(prev => prev.map(r => r.id === updated.id ? updated : r))
+    if (viewItem?.id === updated.id) setViewItem(updated)
+  }
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type })
@@ -466,6 +612,15 @@ export default function AdRequests() {
           onClose={() => setViewItem(null)}
           onApproveClick={(req) => setApproveTarget(req)}
           onReject={(id) => { rejectRequest(id); setViewItem(null) }}
+          onEditClick={(req) => setEditItem(req)}
+        />
+      )}
+
+      {editItem && (
+        <EditModal
+          req={editItem}
+          onClose={() => setEditItem(null)}
+          onSaved={handleEdited}
         />
       )}
 
@@ -543,8 +698,16 @@ export default function AdRequests() {
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="font-bold text-[#071B33] text-sm leading-tight">{business}</p>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-bold text-[#071B33] text-sm leading-tight">{business}</p>
+                            {(r.specialCode || r.special_code) && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,121,0,0.12)', color: '#FF7900' }}>
+                                <Tag className="w-2.5 h-2.5" />
+                                {r.specialCode || r.special_code}
+                              </span>
+                            )}
+                          </div>
                           {title && <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{title}</p>}
                         </div>
                         <StatusBadge status={r.status} />
@@ -572,6 +735,13 @@ export default function AdRequests() {
                       className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-500/8 hover:bg-blue-500/15 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       <Eye className="w-3.5 h-3.5" /> عرض التفاصيل
+                    </button>
+                    <button
+                      onClick={() => setEditItem(r)}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors"
+                      style={{ color: '#FF7900', background: 'rgba(255,121,0,0.08)' }}
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> تعديل
                     </button>
                     {r.status === 'pending' && (
                       <>
