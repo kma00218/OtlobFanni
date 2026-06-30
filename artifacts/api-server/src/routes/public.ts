@@ -1762,7 +1762,7 @@ router.post("/pro/activate", async (req, res): Promise<void> => {
 
   const pinHash = crypto.createHash("sha256").update(pinStr).digest("hex");
   await db.update(proCredentialsTable)
-    .set({ passwordHash: pinHash, passwordPlain: null, updatedAt: new Date() })
+    .set({ passwordHash: pinHash, passwordPlain: "", updatedAt: new Date() })
     .where(eq(proCredentialsTable.id, cred.id));
 
   res.json({ success: true, entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });

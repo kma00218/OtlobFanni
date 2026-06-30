@@ -1,10 +1,60 @@
 import { useState } from 'react'
 import { useLocation } from 'wouter'
-import { Briefcase, ArrowRight, Lock } from 'lucide-react'
+import { Briefcase, ArrowRight, ArrowLeft, Lock } from 'lucide-react'
 import api from '../lib/api'
+import { useLang } from '../context/LanguageContext'
+
+const T = {
+  ar: {
+    title:       'دخول الحسابات المهنية',
+    sub:         'للفنيين والشركات والموردين فقط',
+    back:        'العودة',
+    firstTime:   'أول مرة تدخل بعد التحديث؟',
+    createPin:   'أنشئ PIN من 4 أرقام أولاً من ',
+    here:        'هنا',
+    phone:       'رقم الواتساب',
+    phoneHint:   'أدخل الرقم المحلي فقط (مثال: 91، 92) بدون صفر في البداية',
+    pin:         'PIN (4 أرقام)',
+    forgot:      'نسيت PIN؟',
+    enter:       'دخول',
+    entering:    'جارٍ الدخول…',
+    footer:      'هذا الدخول مخصص للفنيين والشركات والموردين المسجلين فقط.',
+    notReg:      'إذا لم تكن مسجلاً،',
+    joinNow:     'سجّل الآن',
+    errPhone:    'أدخل رقم الواتساب كاملاً',
+    errPin:      'أدخل PIN مكون من 4 أرقام',
+    errWrong:    'رقم الواتساب أو PIN غير صحيح',
+    errGeneral:  'حدث خطأ، حاول مجدداً',
+  },
+  en: {
+    title:       'Professional Account Login',
+    sub:         'For technicians, companies & suppliers only',
+    back:        'Back',
+    firstTime:   'First time logging in after the update?',
+    createPin:   'Create your 4-digit PIN first — ',
+    here:        'tap here',
+    phone:       'WhatsApp Number',
+    phoneHint:   'Enter local number only (e.g. 91, 92) without leading zero',
+    pin:         'PIN (4 digits)',
+    forgot:      'Forgot PIN?',
+    enter:       'Sign In',
+    entering:    'Signing in…',
+    footer:      'This login is for registered technicians, companies & suppliers only.',
+    notReg:      "Not registered?",
+    joinNow:     'Join now',
+    errPhone:    'Enter your full WhatsApp number',
+    errPin:      'Enter your 4-digit PIN',
+    errWrong:    'Incorrect WhatsApp number or PIN',
+    errGeneral:  'An error occurred, please try again',
+  },
+}
 
 export default function ProLogin() {
   const [, navigate] = useLocation()
+  const { lang } = useLang()
+  const ar = lang === 'ar'
+  const t = T[lang]
+
   const [localPhone, setLocalPhone] = useState('')
   const [pin, setPin]               = useState('')
   const [loading, setLoading]       = useState(false)
@@ -15,14 +65,8 @@ export default function ProLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (localPhone.replace(/\D/g, '').length < 9) {
-      setError('أدخل رقم الواتساب كاملاً')
-      return
-    }
-    if (!/^\d{4}$/.test(pin)) {
-      setError('أدخل PIN مكون من 4 أرقام')
-      return
-    }
+    if (localPhone.replace(/\D/g, '').length < 9) { setError(t.errPhone); return }
+    if (!/^\d{4}$/.test(pin))                     { setError(t.errPin);   return }
     setLoading(true)
     try {
       const data = await api.pro.login(fullPhone, pin)
@@ -30,15 +74,15 @@ export default function ProLogin() {
       navigate('/pro')
     } catch (err) {
       setError(err.message === 'HTTP 401' || err.message?.includes('401')
-        ? 'رقم الواتساب أو PIN غير صحيح'
-        : 'حدث خطأ، حاول مجدداً')
+        ? t.errWrong : t.errGeneral)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-[100dvh] flex flex-col max-w-[480px] mx-auto" dir="rtl"
+    <div className="min-h-[100dvh] flex flex-col max-w-[480px] mx-auto"
+      dir={ar ? 'rtl' : 'ltr'}
       style={{ background: '#F0F2F5' }}>
 
       <div className="relative px-5 pt-14 pb-10 overflow-hidden"
@@ -51,8 +95,8 @@ export default function ProLogin() {
         <button onClick={() => navigate('/more')}
           className="relative z-10 flex items-center gap-2 mb-8 px-3.5 py-2 rounded-xl font-bold text-sm active:scale-95 transition-all"
           style={{ background: 'rgba(255,255,255,0.13)', border: '1.5px solid rgba(255,255,255,0.25)', color: '#fff' }}>
-          <ArrowRight className="w-4 h-4" />
-          العودة
+          {ar ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+          {t.back}
         </button>
 
         <div className="relative z-10 flex items-center gap-4">
@@ -61,8 +105,8 @@ export default function ProLogin() {
             <Briefcase className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h1 className="text-white font-black text-xl leading-tight">دخول الحسابات المهنية</h1>
-            <p className="text-white/80 text-sm mt-0.5">للفنيين والشركات والموردين فقط</p>
+            <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
+            <p className="text-white/80 text-sm mt-0.5">{t.sub}</p>
           </div>
         </div>
       </div>
@@ -73,13 +117,11 @@ export default function ProLogin() {
           style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
           <span className="text-lg leading-none mt-0.5">🔑</span>
           <div className="text-sm leading-relaxed" style={{ color: '#92400E' }}>
-            <span className="font-extrabold block mb-0.5">أول مرة تدخل بعد التحديث؟</span>
-            أنشئ PIN من 4 أرقام أولاً من{' '}
-            <button type="button"
-              onClick={() => navigate('/pro-activate')}
-              className="font-extrabold underline"
-              style={{ color: '#FF7900' }}>
-              هنا
+            <span className="font-extrabold block mb-0.5">{t.firstTime}</span>
+            {t.createPin}
+            <button type="button" onClick={() => navigate('/pro-activate')}
+              className="font-extrabold underline" style={{ color: '#FF7900' }}>
+              {t.here}
             </button>
           </div>
         </div>
@@ -91,7 +133,7 @@ export default function ProLogin() {
           style={{ border: '1.5px solid #E2E6EA', boxShadow: '0 4px 24px rgba(7,27,51,0.10)' }}>
 
           <div>
-            <label className="block text-sm font-extrabold text-[#071B33] mb-2">رقم الواتساب</label>
+            <label className="block text-sm font-extrabold text-[#071B33] mb-2">{t.phone}</label>
             <div className="flex rounded-xl overflow-hidden transition-all bg-white"
               dir="ltr"
               style={{ border: '1.5px solid #D1D5DB' }}>
@@ -102,10 +144,7 @@ export default function ProLogin() {
               <input
                 type="tel"
                 value={localPhone}
-                onChange={e => {
-                  let v = e.target.value.replace(/\D/g, '').replace(/^0/, '')
-                  setLocalPhone(v)
-                }}
+                onChange={e => setLocalPhone(e.target.value.replace(/\D/g, '').replace(/^0/, ''))}
                 placeholder="91 0000000"
                 inputMode="numeric"
                 maxLength={9}
@@ -116,17 +155,15 @@ export default function ProLogin() {
                 onBlur={e => e.currentTarget.closest('[dir="ltr"]').style.border = '1.5px solid #D1D5DB'}
               />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1.5 px-0.5" dir="rtl">
-              أدخل الرقم المحلي فقط (مثال: 91، 92) بدون صفر في البداية
-            </p>
+            <p className="text-[11px] text-slate-400 mt-1.5 px-0.5">{t.phoneHint}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-extrabold text-[#071B33] mb-2">PIN (4 أرقام)</label>
+            <label className="block text-sm font-extrabold text-[#071B33] mb-2">{t.pin}</label>
             <div className="flex rounded-xl overflow-hidden bg-white transition-all"
               style={{ border: '1.5px solid #D1D5DB' }}>
               <div className="flex items-center px-3"
-                style={{ background: '#F8F9FA', borderLeft: '1.5px solid #D1D5DB' }}>
+                style={{ background: '#F8F9FA', borderRight: '1.5px solid #D1D5DB' }}>
                 <Lock className="w-4 h-4 text-slate-400" />
               </div>
               <input
@@ -144,11 +181,9 @@ export default function ProLogin() {
               />
             </div>
             <div className="flex justify-end mt-2">
-              <button type="button"
-                onClick={() => navigate('/pro-activate')}
-                className="text-xs font-bold"
-                style={{ color: '#FF7900' }}>
-                نسيت PIN؟
+              <button type="button" onClick={() => navigate('/pro-activate')}
+                className="text-xs font-bold" style={{ color: '#FF7900' }}>
+                {t.forgot}
               </button>
             </div>
           </div>
@@ -163,17 +198,15 @@ export default function ProLogin() {
           <button type="submit" disabled={loading}
             className="w-full py-4 rounded-2xl font-extrabold text-white text-base transition-all active:scale-95 disabled:opacity-60"
             style={{ background: 'linear-gradient(135deg, #FF7900 0%, #e06500 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.35)' }}>
-            {loading ? 'جارٍ الدخول…' : 'دخول'}
+            {loading ? t.entering : t.enter}
           </button>
-
         </form>
       </div>
 
       <p className="text-center text-xs text-slate-400 mt-6 px-6 leading-relaxed">
-        هذا الدخول مخصص للفنيين والشركات والموردين المسجلين فقط.<br />
-        إذا لم تكن مسجلاً، <a href="/join" className="font-bold" style={{ color: '#FF7900' }}>سجّل الآن</a>.
+        {t.footer}<br />
+        {t.notReg} <a href="/join" className="font-bold" style={{ color: '#FF7900' }}>{t.joinNow}</a>.
       </p>
-
     </div>
   )
 }
