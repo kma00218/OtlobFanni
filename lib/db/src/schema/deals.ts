@@ -20,6 +20,7 @@ export const dealsTable = pgTable("deals", {
   confirmToken:     text("confirm_token"),
   createdAt:        timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   confirmedAt:      timestamp("confirmed_at", { withTimezone: true }),
+  fromOrder:        boolean("from_order").notNull().default(false),
 });
 
 export type Deal = typeof dealsTable.$inferSelect;

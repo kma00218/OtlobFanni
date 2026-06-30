@@ -834,6 +834,7 @@ router.post("/service-confirm/:token/confirm-completed", async (req, res): Promi
       proPoints:    "10",
       userPoints:   "5",
       confirmedAt:  now,
+      fromOrder:    true,
     }).onConflictDoNothing();
   }
 
@@ -899,6 +900,19 @@ router.get("/deals/mine", async (req, res): Promise<void> => {
     .where(and(eq(dealsTable.proId, proId), eq(dealsTable.proType, proType)))
     .orderBy(desc(dealsTable.createdAt));
   res.json(deals);
+});
+
+// Delete a deal (manual deals only — auto-generated from orders are protected)
+router.delete("/deals/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { proId, proType } = req.query as Record<string, string>;
+  if (!proId || !proType) { res.status(400).json({ error: "Missing params" }); return; }
+  const [deal] = await db.select().from(dealsTable).where(eq(dealsTable.id, id));
+  if (!deal) { res.status(404).json({ error: "Deal not found" }); return; }
+  if (deal.proId !== proId || deal.proType !== proType) { res.status(403).json({ error: "Forbidden" }); return; }
+  if (deal.fromOrder) { res.status(403).json({ error: "لا يمكن حذف صفقة تم إنشاؤها تلقائياً من طلب مكتمل" }); return; }
+  await db.delete(dealsTable).where(eq(dealsTable.id, id));
+  res.json({ ok: true });
 });
 
 // ── Recently Joined ───────────────────────────────────────────────────────────

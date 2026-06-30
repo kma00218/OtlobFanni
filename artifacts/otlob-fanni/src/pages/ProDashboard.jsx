@@ -6,7 +6,7 @@ import {
   Clock, CheckCircle, XCircle, MessageCircle, RefreshCw,
   Handshake, Plus, Share2, Calendar, DollarSign, Send, ChevronDown,
   TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine, Eye,
-  PlayCircle, Flag,
+  PlayCircle, Flag, Trash2,
 } from 'lucide-react'
 import { api } from '../lib/api'
 
@@ -103,9 +103,10 @@ const WaIcon = () => (
 )
 
 // ── Deal Card ────────────────────────────────────────────────────────────────
-function DealCard({ deal }) {
-  const [expanded, setExpanded] = useState(false)
-  const [copied, setCopied]     = useState(false)
+function DealCard({ deal, onDelete }) {
+  const [expanded,  setExpanded]  = useState(false)
+  const [copied,    setCopied]    = useState(false)
+  const [deleting,  setDeleting]  = useState(false)
   const cfg = DEAL_STATUS_CONFIG[deal.status] || DEAL_STATUS_CONFIG.pending
   const confirmUrl = `${window.location.origin}/deal-confirm/${deal.confirmToken || ''}`
   const waMsg = `مرحباً! يرجى تأكيد الصفقة عبر الرابط التالي 👇\n${confirmUrl}`
@@ -115,6 +116,13 @@ function DealCard({ deal }) {
     navigator.clipboard.writeText(confirmUrl).then(() => {
       setCopied(true); setTimeout(() => setCopied(false), 2000)
     })
+  }
+
+  const handleDelete = async () => {
+    if (!window.confirm('هل تريد حذف هذه الصفقة؟')) return
+    setDeleting(true)
+    try { await onDelete(deal.id) }
+    finally { setDeleting(false) }
   }
 
   return (
@@ -145,6 +153,12 @@ function DealCard({ deal }) {
               <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
               {cfg.label}
             </span>
+            {!deal.fromOrder && (
+              <button onClick={handleDelete} disabled={deleting}
+                className="p-1 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button onClick={() => setExpanded(p => !p)} className="p-1 rounded-lg hover:bg-gray-50">
               <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`} />
             </button>
@@ -154,6 +168,11 @@ function DealCard({ deal }) {
 
       {expanded && (
         <div className="px-4 pb-4 space-y-2.5 border-t border-gray-50 pt-3">
+          {deal.fromOrder && (
+            <p className="text-[10px] text-[#FF7900]/70 flex items-center gap-1">
+              <CheckCircle className="w-3 h-3" /> تم إنشاؤها تلقائياً من طلب مكتمل
+            </p>
+          )}
           {deal.description && (
             <p className="text-xs text-gray-600 bg-gray-50 rounded-xl px-3 py-2">{deal.description}</p>
           )}
@@ -1161,7 +1180,12 @@ export default function ProDashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {filteredDeals.map(d => <DealCard key={d.id} deal={d} />)}
+                {filteredDeals.map(d => (
+                  <DealCard key={d.id} deal={d} onDelete={async (id) => {
+                    await api.deals.delete(id, session.entityId, session.entityType)
+                    setDeals(prev => prev.filter(x => x.id !== id))
+                  }} />
+                ))}
               </div>
             )}
           </div>

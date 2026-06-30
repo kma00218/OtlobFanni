@@ -305,6 +305,10 @@ export const api = {
       return get('/admin/deals' + (qs ? '?' + qs : ''))
     },
     adminSetStatus: (id, status)    => patch(`/admin/deals/${id}/status`, { status }),
+    delete:         (id, proId, proType) => {
+      const qs = new URLSearchParams({ proId, proType }).toString()
+      return del(`/deals/${id}?${qs}`)
+    },
   },
 
   popularCategories: () => get('/categories/popular'),
