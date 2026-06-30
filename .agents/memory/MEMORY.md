@@ -1,2 +1,3 @@
 - [Icon name mapping rules](icon-name-rules.md) — iconName must match PNG filename exactly; services.js, seed.ts, and DB must all stay in sync
 - [Service request system](service-request-system.md) — full lead system (RequestFormModal, 3 profile pages, ProDashboard tab, AdminServiceRequests) is already built
+- [Service lifecycle system](service-lifecycle.md) — full lifecycle (start→customer confirm→complete→customer confirm/dispute) built on service_requests table with confirmation_token

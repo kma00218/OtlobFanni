@@ -6,6 +6,7 @@ import {
   Clock, CheckCircle, XCircle, MessageCircle, RefreshCw,
   Handshake, Plus, Share2, Calendar, DollarSign, Send, ChevronDown,
   TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine, Eye,
+  PlayCircle, Flag,
 } from 'lucide-react'
 import { api } from '../lib/api'
 
@@ -67,10 +68,16 @@ const DEAL_STATUS_CONFIG = {
 }
 
 const REQUEST_STATUS_CONFIG = {
-  new:       { label: 'جديد',        color: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500' },
-  contacted: { label: 'تم التواصل', color: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500' },
-  completed: { label: 'مكتمل',       color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  cancelled: { label: 'ملغي',        color: 'bg-red-100 text-red-700',         dot: 'bg-red-500' },
+  new:                                    { label: 'جديد',                      color: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500'    },
+  contacted:                              { label: 'تم التواصل',               color: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500'   },
+  in_progress:                            { label: 'قيد التنفيذ',               color: 'bg-orange-100 text-orange-700',   dot: 'bg-orange-500'  },
+  customer_confirmed_started:             { label: 'العميل أكد البداية ✓',      color: 'bg-indigo-100 text-indigo-700',   dot: 'bg-indigo-500'  },
+  pending_customer_completion_confirmation:{ label: 'بانتظار تأكيد العميل',      color: 'bg-purple-100 text-purple-700',   dot: 'bg-purple-500'  },
+  completed_confirmed:                    { label: 'مكتمل ومؤكد ✓',             color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  amount_disputed:                        { label: 'خلاف على القيمة',           color: 'bg-yellow-100 text-yellow-700',   dot: 'bg-yellow-500'  },
+  completion_disputed:                    { label: 'خلاف على الإنهاء',          color: 'bg-red-100 text-red-700',         dot: 'bg-red-500'     },
+  completed:                              { label: 'مكتمل',                     color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  cancelled:                              { label: 'ملغي',                      color: 'bg-gray-100 text-gray-500',       dot: 'bg-gray-400'    },
 }
 
 // ── Stat Card ───────────────────────────────────────────────────────────────
@@ -182,10 +189,15 @@ function DealCard({ deal }) {
 }
 
 // ── Request Card ─────────────────────────────────────────────────────────────
-function RequestCard({ req, onStatusChange, onMarkRead }) {
-  const [updating, setUpdating]   = useState(false)
-  const [expanded, setExpanded]   = useState(false)
-  const [localRead, setLocalRead] = useState(req.isRead)
+function RequestCard({ req, onStatusChange, onMarkRead, proName }) {
+  const [updating,          setUpdating]          = useState(false)
+  const [lifecycleUpdating, setLifecycleUpdating] = useState(false)
+  const [expanded,          setExpanded]          = useState(false)
+  const [localRead,         setLocalRead]         = useState(req.isRead)
+  const [showCompleteForm,  setShowCompleteForm]  = useState(false)
+  const [completeAmount,    setCompleteAmount]    = useState('')
+  const [completeNotes,     setCompleteNotes]     = useState('')
+  const [completeErr,       setCompleteErr]       = useState('')
   const status = REQUEST_STATUS_CONFIG[req.status] || REQUEST_STATUS_CONFIG.new
 
   const handleExpand = async () => {
@@ -203,19 +215,64 @@ function RequestCard({ req, onStatusChange, onMarkRead }) {
     try {
       await api.updateServiceRequest(req.id, newStatus)
       onStatusChange(req.id, newStatus)
-    } catch { /* ignore */ }
+    } catch {}
     finally { setUpdating(false) }
   }
 
+  const buildPhoneNum = () => {
+    const clean = (req.phone || req.whatsappPhone || '').replace(/\D/g, '')
+    if (!clean) return ''
+    return clean.startsWith('218') ? clean : clean.startsWith('0') ? '218' + clean.slice(1) : '218' + clean
+  }
+
   const buildWaUrl = () => {
-    const clean = (req.phone || '').replace(/\D/g, '')
-    if (!clean) return null
-    const num = clean.startsWith('218') ? clean : clean.startsWith('0') ? '218' + clean.slice(1) : '218' + clean
+    const num = buildPhoneNum()
+    if (!num) return null
     const msg = `السلام عليكم ${req.customerName}،\nبخصوص طلبك على منصة اطلب فني 🔧\nنوع الطلب: ${req.requestType || '—'}\nهل يمكنكم تحديد موعد مناسب؟ شكراً 🙏`
     return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`
   }
 
-  const isUnread = !localRead
+  const handleStartWork = async () => {
+    setLifecycleUpdating(true)
+    try {
+      const updated = await api.startWork(req.id, { ownerName: proName || null })
+      const tok = updated.confirmationToken
+      const confirmLink = `${window.location.origin}/service-confirm/${tok}`
+      const num = buildPhoneNum()
+      if (num) {
+        const msg = `مرحباً ${req.customerName}، تم تسجيل بداية العمل على طلبك في منصة اطلب فني.\nيرجى تأكيد أن الفني بدأ العمل من خلال الرابط التالي:\n${confirmLink}`
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank')
+      }
+      onStatusChange(req.id, 'in_progress')
+    } catch {}
+    finally { setLifecycleUpdating(false) }
+  }
+
+  const handleComplete = async () => {
+    setCompleteErr('')
+    if (!completeAmount.trim()) { setCompleteErr('قيمة الخدمة مطلوبة'); return }
+    setLifecycleUpdating(true)
+    try {
+      const updated = await api.completeService(req.id, { serviceAmount: completeAmount, completionNotes: completeNotes || undefined })
+      const tok = updated.confirmationToken
+      const confirmLink = `${window.location.origin}/service-confirm/${tok}`
+      const num = buildPhoneNum()
+      if (num) {
+        const msg = `مرحباً ${req.customerName}، تم تسجيل انتهاء الخدمة في منصة اطلب فني.\nقيمة الخدمة المسجلة: ${completeAmount} د.ل\nيرجى تأكيد انتهاء الخدمة وتقييم الفني من خلال الرابط التالي:\n${confirmLink}`
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank')
+      }
+      onStatusChange(req.id, 'pending_customer_completion_confirmation')
+      setShowCompleteForm(false)
+      setCompleteAmount('')
+      setCompleteNotes('')
+    } catch { setCompleteErr('حدث خطأ، يرجى المحاولة مجدداً') }
+    finally { setLifecycleUpdating(false) }
+  }
+
+  const isUnread   = !localRead
+  const isTerminal = ['completed_confirmed', 'amount_disputed', 'completion_disputed', 'completed', 'cancelled', 'pending_customer_completion_confirmation'].includes(req.status)
+  const canStartWork = ['new', 'contacted'].includes(req.status)
+  const canComplete  = ['in_progress', 'customer_confirmed_started'].includes(req.status)
 
   return (
     <div className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all ${
@@ -292,32 +349,98 @@ function RequestCard({ req, onStatusChange, onMarkRead }) {
             </p>
           )}
 
+          {req.serviceAmount && (
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 flex items-center justify-between">
+              <span className="text-xs font-bold text-emerald-700">قيمة الخدمة</span>
+              <span className="text-sm font-black text-emerald-700">{req.serviceAmount} د.ل</span>
+            </div>
+          )}
+
+          {/* ── Action buttons ── */}
           <div className="flex flex-wrap gap-2 pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
-            {req.phone && buildWaUrl() && (
+            {buildWaUrl() && (
               <a href={buildWaUrl()} target="_blank" rel="noreferrer"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-green-50 text-green-700 border border-green-200">
                 <WaIcon /> رد على واتساب
               </a>
             )}
-            {req.status !== 'contacted' && req.status !== 'completed' && req.status !== 'cancelled' && (
-              <button onClick={() => changeStatus('contacted')} disabled={updating}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 disabled:opacity-50">
-                <MessageCircle className="w-3 h-3" /> تم التواصل
+
+            {canStartWork && (
+              <>
+                {req.status !== 'contacted' && (
+                  <button onClick={() => changeStatus('contacted')} disabled={updating}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 disabled:opacity-50">
+                    <MessageCircle className="w-3 h-3" /> تم التواصل
+                  </button>
+                )}
+                <button onClick={handleStartWork} disabled={lifecycleUpdating}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 active:scale-95 transition-all"
+                  style={{ background: 'linear-gradient(135deg, #FF7900, #d96400)' }}>
+                  {lifecycleUpdating
+                    ? <RefreshCw className="w-3 h-3 animate-spin" />
+                    : <PlayCircle className="w-3 h-3" />
+                  }
+                  بدأت العمل
+                </button>
+              </>
+            )}
+
+            {canComplete && !showCompleteForm && (
+              <button onClick={() => setShowCompleteForm(true)} disabled={lifecycleUpdating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 active:scale-95 transition-all"
+                style={{ background: 'linear-gradient(135deg, #059669, #065f46)' }}>
+                <Flag className="w-3 h-3" /> إنهاء الخدمة
               </button>
             )}
-            {req.status !== 'completed' && req.status !== 'cancelled' && (
-              <button onClick={() => changeStatus('completed')} disabled={updating}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 disabled:opacity-50">
-                <CheckCircle className="w-3 h-3" /> مكتمل
-              </button>
-            )}
-            {req.status !== 'cancelled' && (
+
+            {!isTerminal && (
               <button onClick={() => changeStatus('cancelled')} disabled={updating}
                 className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-600 border border-red-200 disabled:opacity-50">
                 <XCircle className="w-3 h-3" /> إلغاء
               </button>
             )}
           </div>
+
+          {/* ── Complete service form ── */}
+          {showCompleteForm && (
+            <div className="bg-[#F8F9FA] rounded-2xl p-4 space-y-3 border border-emerald-100">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-black text-[#071B33]">إنهاء الخدمة</p>
+                <button type="button" onClick={() => { setShowCompleteForm(false); setCompleteErr('') }}
+                  className="text-xs text-gray-400">إغلاق</button>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">قيمة الخدمة (د.ل) *</label>
+                <input type="number" min="0" placeholder="أدخل قيمة الخدمة"
+                  value={completeAmount}
+                  onChange={e => setCompleteAmount(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm text-[#071B33] focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+                  style={{ background: '#fff', border: '1.5px solid #E2E8F0' }} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">ملاحظات (اختياري)</label>
+                <textarea rows={2} placeholder="أي ملاحظات عن الخدمة..."
+                  value={completeNotes}
+                  onChange={e => setCompleteNotes(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl text-sm text-[#071B33] resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+                  style={{ background: '#fff', border: '1.5px solid #E2E8F0' }} />
+              </div>
+              {completeErr && <p className="text-xs text-red-600 font-semibold">{completeErr}</p>}
+              <div className="bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
+                <p className="text-[11px] text-blue-600">
+                  سيتم فتح واتساب برسالة جاهزة للعميل • عمولة المنصة 2% تُحسب تلقائياً
+                </p>
+              </div>
+              <button type="button" onClick={handleComplete} disabled={lifecycleUpdating}
+                className="w-full py-3 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-all"
+                style={{ background: 'linear-gradient(135deg, #059669, #065f46)' }}>
+                {lifecycleUpdating
+                  ? <RefreshCw className="w-4 h-4 animate-spin" />
+                  : <><Flag className="w-4 h-4" /> إرسال وفتح واتساب</>
+                }
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -887,7 +1010,7 @@ export default function ProDashboard() {
             ) : (
               <div className="space-y-3">
                 {filteredRequests.map(r => (
-                  <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} onMarkRead={handleMarkRead} />
+                  <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} onMarkRead={handleMarkRead} proName={session.displayName} />
                 ))}
               </div>
             )}

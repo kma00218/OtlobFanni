@@ -48,6 +48,7 @@ const NotFound = lazy(() => import("./pages/not-found"));
 const ProLogin = lazy(() => import("./pages/ProLogin"));
 const ProDashboard = lazy(() => import("./pages/ProDashboard"));
 const ProSoon = lazy(() => import("./pages/ProSoon"));
+const ServiceConfirm = lazy(() => import("./pages/ServiceConfirm"));
 const ProProfile = lazy(() => import("./pages/ProProfile"));
 const ProEditProfile = lazy(() => import("./pages/ProEditProfile"));
 const DealConfirm = lazy(() => import("./pages/DealConfirm"));
@@ -218,7 +219,7 @@ function AppContent() {
     );
   }
 
-  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile';
+  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile' || location.startsWith('/service-confirm');
 
   return (
     <LanguageProvider>
@@ -259,6 +260,7 @@ function AppContent() {
               <Route path="/pro/soon" component={ProSoon} />
               <Route path="/pro/edit-profile" component={ProEditProfile} />
               <Route path="/pro/profile" component={ProProfile} />
+              <Route path="/service-confirm/:token" component={ServiceConfirm} />
               <Route path="/deal-confirm/:token" component={DealConfirm} />
               <Route path="/pro" component={ProDashboard} />
               <Route path="/about" component={About} />
@@ -268,7 +270,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           </ErrorBoundary>
-          {location !== '/pro-login' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && <BottomNav />}
+          {location !== '/pro-login' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && !location.startsWith('/service-confirm') && <BottomNav />}
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />

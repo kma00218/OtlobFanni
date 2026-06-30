@@ -713,6 +713,105 @@ router.patch("/service-requests/:id/read", async (req, res): Promise<void> => {
   res.json({ ok: true });
 });
 
+// ── Service Lifecycle ──────────────────────────────────────────────────────────
+
+// Pro starts work → sets status, creates token, returns updated record
+router.patch("/service-requests/:id/start-work", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { ownerName } = req.body;
+  const token = crypto.randomBytes(24).toString("hex");
+  const now   = new Date();
+  const [r] = await db.update(serviceRequestsTable)
+    .set({ status: "in_progress", workStartedAt: now, confirmationToken: token, ownerName: ownerName || null })
+    .where(eq(serviceRequestsTable.id, raw))
+    .returning();
+  if (!r) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(r);
+});
+
+// Public — customer opens confirm link (no auth needed)
+router.get("/service-confirm/:token", async (req, res): Promise<void> => {
+  const { token } = req.params;
+  const [r] = await db.select({
+    id:            serviceRequestsTable.id,
+    ownerName:     serviceRequestsTable.ownerName,
+    ownerType:     serviceRequestsTable.ownerType,
+    requestType:   serviceRequestsTable.requestType,
+    categoryName:  serviceRequestsTable.categoryName,
+    cityName:      serviceRequestsTable.cityName,
+    status:        serviceRequestsTable.status,
+    serviceAmount: serviceRequestsTable.serviceAmount,
+    createdAt:     serviceRequestsTable.createdAt,
+  }).from(serviceRequestsTable)
+    .where(eq(serviceRequestsTable.confirmationToken, token));
+  if (!r) { res.status(404).json({ error: "الرابط غير صالح أو منتهي الصلاحية" }); return; }
+  res.json({ ...r, token });
+});
+
+// Customer confirms work has started
+router.post("/service-confirm/:token/confirm-started", async (req, res): Promise<void> => {
+  const { token } = req.params;
+  const now = new Date();
+  const [r] = await db.update(serviceRequestsTable)
+    .set({ status: "customer_confirmed_started", customerStartedConfirmedAt: now })
+    .where(eq(serviceRequestsTable.confirmationToken, token))
+    .returning({ id: serviceRequestsTable.id });
+  if (!r) { res.status(404).json({ error: "الرابط غير صالح" }); return; }
+  res.json({ ok: true });
+});
+
+// Pro completes service (service_amount is required)
+router.patch("/service-requests/:id/complete", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const { serviceAmount, completionNotes } = req.body;
+  if (!serviceAmount) { res.status(400).json({ error: "قيمة الخدمة مطلوبة" }); return; }
+  const commission = (parseFloat(String(serviceAmount)) * 0.02).toFixed(2);
+  const [r] = await db.update(serviceRequestsTable)
+    .set({
+      status:             "pending_customer_completion_confirmation",
+      serviceAmount:      String(serviceAmount),
+      completionNotes:    completionNotes || null,
+      platformCommission: commission,
+    })
+    .where(eq(serviceRequestsTable.id, raw))
+    .returning();
+  if (!r) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(r);
+});
+
+// Customer confirms completion, disputes amount, or disputes completion
+router.post("/service-confirm/:token/confirm-completed", async (req, res): Promise<void> => {
+  const { token } = req.params;
+  const { action, rating, comment, disputeAmount, disputeNote } = req.body;
+  if (!action) { res.status(400).json({ error: "action required" }); return; }
+
+  const now = new Date();
+  let updateFields: Record<string, unknown> = {};
+
+  if (action === "confirm") {
+    updateFields = {
+      status:              "completed_confirmed",
+      completedConfirmedAt: now,
+      customerRating:      rating  ? String(rating)  : null,
+      customerComment:     comment ? String(comment) : null,
+    };
+  } else if (action === "amount_dispute") {
+    const note = [disputeAmount ? `القيمة الصحيحة: ${disputeAmount} د.ل` : '', disputeNote || ''].filter(Boolean).join(' — ')
+    updateFields = { status: "amount_disputed", customerDisputeNote: note || null };
+  } else if (action === "completion_dispute") {
+    updateFields = { status: "completion_disputed", customerDisputeNote: disputeNote || null };
+  } else {
+    res.status(400).json({ error: "Invalid action" }); return;
+  }
+
+  const [r] = await db.update(serviceRequestsTable)
+    .set(updateFields)
+    .where(eq(serviceRequestsTable.confirmationToken, token))
+    .returning({ id: serviceRequestsTable.id });
+  if (!r) { res.status(404).json({ error: "الرابط غير صالح" }); return; }
+  res.json({ ok: true });
+});
+
 // ── DEALS ─────────────────────────────────────────────────────────────────────
 
 // Create a deal (pro initiates)

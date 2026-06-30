@@ -116,9 +116,18 @@ export const api = {
   updateServiceRequest: (id, status) => patch(`/service-requests/${id}/status`, { status }),
   markRequestRead:      (id)         => patch(`/service-requests/${id}/read`, {}),
 
+  startWork:        (id, data)  => patch(`/service-requests/${id}/start-work`, data || {}),
+  completeService:  (id, data)  => patch(`/service-requests/${id}/complete`, data),
+
   createServiceRequest: (data) => post('/service-requests', data),
   myServiceRequests: (entityType, entityId) =>
     get(`/service-requests/mine?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`),
+
+  serviceConfirm: {
+    get:             (token)       => get(`/service-confirm/${token}`),
+    confirmStarted:  (token)       => post(`/service-confirm/${token}/confirm-started`, {}),
+    confirmCompleted:(token, data) => post(`/service-confirm/${token}/confirm-completed`, data),
+  },
 
   checkWhatsapp: (number, opts = {}) => {
     const p = new URLSearchParams({ number })
