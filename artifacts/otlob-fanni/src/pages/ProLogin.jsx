@@ -215,7 +215,7 @@ export default function ProLogin() {
 
       <p className="text-center text-xs text-slate-400 mt-6 px-6 leading-relaxed">
         {t.footer}<br />
-        {t.notReg} <a href="/join" className="font-bold" style={{ color: '#FF7900' }}>{t.joinNow}</a>.
+        {t.notReg} <a href="/join-us" className="font-bold" style={{ color: '#FF7900' }}>{t.joinNow}</a>.
       </p>
     </div>
   )
