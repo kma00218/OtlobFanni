@@ -785,6 +785,11 @@ router.post("/service-confirm/:token/confirm-completed", async (req, res): Promi
   const { action, rating, comment, disputeAmount, disputeNote } = req.body;
   if (!action) { res.status(400).json({ error: "action required" }); return; }
 
+  // Fetch the request first so we have all fields for auto-deal creation
+  const [sr] = await db.select().from(serviceRequestsTable)
+    .where(eq(serviceRequestsTable.confirmationToken, token));
+  if (!sr) { res.status(404).json({ error: "الرابط غير صالح" }); return; }
+
   const now = new Date();
   let updateFields: Record<string, unknown> = {};
 
@@ -804,11 +809,34 @@ router.post("/service-confirm/:token/confirm-completed", async (req, res): Promi
     res.status(400).json({ error: "Invalid action" }); return;
   }
 
-  const [r] = await db.update(serviceRequestsTable)
+  await db.update(serviceRequestsTable)
     .set(updateFields)
-    .where(eq(serviceRequestsTable.confirmationToken, token))
-    .returning({ id: serviceRequestsTable.id });
-  if (!r) { res.status(404).json({ error: "الرابط غير صالح" }); return; }
+    .where(eq(serviceRequestsTable.confirmationToken, token));
+
+  // Auto-create a confirmed deal when customer confirms completion
+  if (action === "confirm" && sr.ownerId && sr.ownerType) {
+    const dealId = crypto.randomBytes(8).toString("hex");
+    const serviceDate = now.toISOString().slice(0, 10);
+    await db.insert(dealsTable).values({
+      id:           dealId,
+      proId:        sr.ownerId,
+      proType:      sr.ownerType,
+      proName:      sr.ownerName || null,
+      userPhone:    sr.whatsappPhone || sr.phone || sr.callPhone || "",
+      userName:     sr.customerName || null,
+      serviceType:  sr.categoryName || sr.requestType || "خدمة",
+      serviceValue: sr.serviceAmount ? String(sr.serviceAmount) : null,
+      serviceDate,
+      description:  sr.completionNotes || sr.description || null,
+      proConfirmed: true,
+      userConfirmed: true,
+      status:       "confirmed",
+      proPoints:    "10",
+      userPoints:   "5",
+      confirmedAt:  now,
+    }).onConflictDoNothing();
+  }
+
   res.json({ ok: true });
 });
 
