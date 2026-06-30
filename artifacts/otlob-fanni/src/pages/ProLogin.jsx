@@ -6,7 +6,7 @@ import { useLang } from '../context/LanguageContext'
 
 const T = {
   ar: {
-    title:         'دخول الحسابات المهنية',
+    title:         'أعمالي',
     sub:           'للفنيين والشركات والموردين فقط',
     back:          'العودة',
     phone:         'رقم الواتساب',
@@ -26,7 +26,7 @@ const T = {
     pinNotSetBtn:  'إنشاء PIN',
   },
   en: {
-    title:         'Professional Account Login',
+    title:         'My Business',
     sub:           'For technicians, companies & suppliers only',
     back:          'Back',
     phone:         'WhatsApp Number',
