@@ -282,7 +282,8 @@ export const api = {
   },
 
   pro: {
-    login:               (whatsapp, password)                        => post('/pro/login', { whatsapp, password }),
+    login:               (whatsapp, pin)                            => post('/pro/login', { whatsapp, password: pin }),
+    activate:            (whatsapp, pin)                            => post('/pro/activate', { whatsapp, pin }),
     generateCredentials: (entityType, entityId)                      => post(`/admin/pro-credentials/${entityType}/${entityId}`, {}),
     bulkCredentials:     ()                                          => post(`/admin/pro-credentials/bulk`, {}),
     markSent:            (entityId, type)                            => patch(`/admin/pro-credentials/${entityId}/mark-sent`, { type }),

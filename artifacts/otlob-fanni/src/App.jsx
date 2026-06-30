@@ -46,6 +46,7 @@ const CityTechnicians = lazy(() => import("./pages/CityTechnicians"));
 import StatusTracking from "./pages/StatusTracking";
 const NotFound = lazy(() => import("./pages/not-found"));
 const ProLogin = lazy(() => import("./pages/ProLogin"));
+const ProActivate = lazy(() => import("./pages/ProActivate"));
 const ProDashboard = lazy(() => import("./pages/ProDashboard"));
 const ProSoon = lazy(() => import("./pages/ProSoon"));
 const ServiceConfirm = lazy(() => import("./pages/ServiceConfirm"));
@@ -112,7 +113,7 @@ function InstallFAB() {
   }, []);
 
   if (isInstalled) return null;
-  if (location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile') return null;
+  if (location === '/more' || location === '/pro-login' || location === '/pro-activate' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile') return null;
 
   const handleFABClick = async () => {
     if (installPrompt) {
@@ -167,7 +168,7 @@ function SearchFAB() {
   const [open, setOpen] = useState(false);
 
   // Hide on home (already has search bar) and on join form pages
-  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin') || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile';
+  const hidden = location === '/' || location === '/join' || location === '/join-company' || location === '/join-supplier' || location.startsWith('/admin') || location === '/pro-login' || location === '/pro-activate' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile';
   if (hidden) return null;
 
   const ar = lang === 'ar';
@@ -219,7 +220,7 @@ function AppContent() {
     );
   }
 
-  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile' || location.startsWith('/service-confirm');
+  const hasOwnHeader = location === '/join-us' || location === '/more' || location === '/pro-login' || location === '/pro-activate' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile' || location.startsWith('/service-confirm');
 
   return (
     <LanguageProvider>
@@ -257,6 +258,7 @@ function AppContent() {
               <Route path="/status/:id" component={StatusTracking} />
               <Route path="/status" component={StatusTracking} />
               <Route path="/pro-login" component={ProLogin} />
+              <Route path="/pro-activate" component={ProActivate} />
               <Route path="/pro/soon" component={ProSoon} />
               <Route path="/pro/edit-profile" component={ProEditProfile} />
               <Route path="/pro/profile" component={ProProfile} />
@@ -270,7 +272,7 @@ function AppContent() {
             </Switch>
           </Suspense>
           </ErrorBoundary>
-          {location !== '/pro-login' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && !location.startsWith('/service-confirm') && <BottomNav />}
+          {location !== '/pro-login' && location !== '/pro-activate' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && !location.startsWith('/service-confirm') && <BottomNav />}
           <SearchFAB />
           <InstallFAB />
           <NotificationPrompt />

@@ -1728,4 +1728,44 @@ router.post("/referrals", async (req, res): Promise<void> => {
   res.json(row);
 });
 
+// ── Pro: Activate / Reset PIN ─────────────────────────────────────────────────
+router.post("/pro/activate", async (req, res): Promise<void> => {
+  const { whatsapp, pin } = req.body;
+  if (!whatsapp || !pin) { res.status(400).json({ error: "whatsapp and pin required" }); return; }
+  const pinStr = String(pin);
+  if (!/^\d{4}$/.test(pinStr)) { res.status(400).json({ error: "PIN يجب أن يكون 4 أرقام فقط" }); return; }
+
+  let digits = String(whatsapp).replace(/[\s\-\(\)\+]/g, "");
+  if (digits.startsWith("00218")) digits = digits.slice(5);
+  else if (digits.startsWith("218")) digits = digits.slice(3);
+  if (digits.startsWith("0")) digits = digits.slice(1);
+  const candidates = [`0${digits}`, digits, `+218${digits}`, `218${digits}`];
+
+  const [cred] = await db.select().from(proCredentialsTable).where(inArray(proCredentialsTable.whatsapp, candidates));
+
+  if (!cred) {
+    const [tech] = await db.select({ id: techniciansTable.id }).from(techniciansTable)
+      .where(inArray(techniciansTable.whatsapp, candidates)).limit(1);
+    if (!tech) {
+      const [company] = await db.select({ id: companyApplicationsTable.id }).from(companyApplicationsTable)
+        .where(inArray(companyApplicationsTable.whatsapp, candidates)).limit(1);
+      if (!company) {
+        const [supplier] = await db.select({ id: supplierApplicationsTable.id }).from(supplierApplicationsTable)
+          .where(inArray(supplierApplicationsTable.whatsapp, candidates)).limit(1);
+        if (!supplier) {
+          res.status(404).json({ error: "هذا الرقم غير مسجل في منصة اطلب فني" }); return;
+        }
+      }
+    }
+    res.status(404).json({ error: "لم يتم تفعيل حسابك بعد، تواصل مع الإدارة" }); return;
+  }
+
+  const pinHash = crypto.createHash("sha256").update(pinStr).digest("hex");
+  await db.update(proCredentialsTable)
+    .set({ passwordHash: pinHash, passwordPlain: null, updatedAt: new Date() })
+    .where(eq(proCredentialsTable.id, cred.id));
+
+  res.json({ success: true, entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });
+});
+
 export default router;
