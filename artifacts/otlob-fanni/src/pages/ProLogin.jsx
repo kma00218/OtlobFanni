@@ -67,7 +67,25 @@ export default function ProLogin() {
         </div>
       </div>
 
-      <div className="mx-4 -mt-5 relative z-10">
+      {/* First-time hint */}
+      <div className="mx-4 mt-4 relative z-10">
+        <div className="rounded-2xl px-4 py-3.5 flex items-start gap-3"
+          style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
+          <span className="text-lg leading-none mt-0.5">🔑</span>
+          <div className="text-sm leading-relaxed" style={{ color: '#92400E' }}>
+            <span className="font-extrabold block mb-0.5">أول مرة تدخل بعد التحديث؟</span>
+            أنشئ PIN من 4 أرقام أولاً من{' '}
+            <button type="button"
+              onClick={() => navigate('/pro-activate')}
+              className="font-extrabold underline"
+              style={{ color: '#FF7900' }}>
+              هنا
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-4 mt-4 relative z-10">
         <form onSubmit={handleSubmit}
           className="bg-white rounded-2xl p-5 space-y-5"
           style={{ border: '1.5px solid #E2E6EA', boxShadow: '0 4px 24px rgba(7,27,51,0.10)' }}>
