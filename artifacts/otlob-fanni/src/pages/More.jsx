@@ -266,6 +266,20 @@ export default function More() {
       </div>
 
       {/* Professional Login Button */}
+      <style>{`
+        @keyframes orbitGlow {
+          0%,100% { box-shadow: 0 0 0 3px #FF7900, 0 0 22px 4px rgba(255,121,0,0.45); }
+          50%      { box-shadow: 0 0 0 3px #ffaa44, 0 0 36px 8px rgba(255,121,0,0.25); }
+        }
+        @keyframes iconPulse {
+          0%,100% { box-shadow: 0 0 0 0px rgba(255,121,0,0.5); }
+          60%      { box-shadow: 0 0 0 8px rgba(255,121,0,0); }
+        }
+        @keyframes shimmer {
+          0%   { transform: translateX(-100%) skewX(-15deg); }
+          100% { transform: translateX(300%) skewX(-15deg); }
+        }
+      `}</style>
       <div className="px-4 mb-4">
         <button
           className="w-full text-start"
@@ -273,21 +287,56 @@ export default function More() {
             const session = localStorage.getItem('pro_session')
             navigate(session ? '/pro' : '/pro-login')
           }}>
-          <div className="flex items-center gap-4 px-4 py-4 rounded-2xl shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
-            style={{ background: 'linear-gradient(135deg, #071B33 0%, #1a3a5c 100%)' }}>
-            <div className="w-12 h-12 rounded-2xl bg-[#FF7900] flex items-center justify-center flex-shrink-0 shadow-md">
-              <Briefcase className="w-6 h-6 text-white" />
+          <div className="relative overflow-hidden flex items-center gap-4 px-4 py-5 rounded-2xl active:scale-[0.97] transition-transform cursor-pointer"
+            style={{
+              background: 'linear-gradient(135deg, #071B33 0%, #0e2647 60%, #1a1a2e 100%)',
+              animation: 'orbitGlow 2.8s ease-in-out infinite',
+            }}>
+
+            {/* shimmer sweep */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+              <div style={{
+                position: 'absolute', top: 0, left: 0, width: '40%', height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)',
+                animation: 'shimmer 3.5s ease-in-out infinite',
+              }} />
             </div>
-            <div className="flex-1">
-              <p className="text-white font-extrabold text-base leading-tight">
-                {ar ? 'أعمالي' : 'My Business'}
-              </p>
-              <p className="text-white/60 text-xs mt-0.5">
-                {ar ? 'للفنيين والشركات والموردين' : 'Technicians, Companies & Suppliers'}
+
+            {/* orange top accent line */}
+            <div className="absolute top-0 left-6 right-6 h-[2px] rounded-full pointer-events-none"
+              style={{ background: 'linear-gradient(90deg, transparent, #FF7900, transparent)' }} />
+
+            {/* icon */}
+            <div className="relative flex-shrink-0">
+              <div className="w-13 h-13 w-[52px] h-[52px] rounded-2xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #FF7900 0%, #e05f00 100%)',
+                  animation: 'iconPulse 2.8s ease-in-out infinite',
+                }}>
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+            </div>
+
+            {/* text */}
+            <div className="flex-1 relative z-10">
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="text-white font-black text-lg leading-tight tracking-wide">
+                  {ar ? 'أعمالي' : 'My Business'}
+                </p>
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md"
+                  style={{ background: '#FF7900', color: '#fff', letterSpacing: '0.05em' }}>
+                  PRO
+                </span>
+              </div>
+              <p className="text-white/55 text-xs leading-snug">
+                {ar ? 'فنيين · شركات · موردين' : 'Technicians · Companies · Suppliers'}
               </p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-              <ExternalLink className="w-4 h-4 text-white/60" />
+
+            {/* arrow */}
+            <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: 'rgba(255,121,0,0.18)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
+              <ExternalLink className="w-3.5 h-3.5" style={{ color: '#FF7900' }} />
             </div>
           </div>
         </button>
