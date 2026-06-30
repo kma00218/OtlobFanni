@@ -1,6 +1,6 @@
 import { useLang } from '../context/LanguageContext';
 import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell, Briefcase, UserPlus } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
 import { track } from '../lib/tracker';
 import { NotificationSettingsRow } from '../components/NotificationPrompt';
@@ -81,6 +81,7 @@ function IconGrid({ title, titleIcon, items, ar }) {
 export default function More() {
   const { lang, toggleLang } = useLang()
   const ar = lang === 'ar'
+  const [, navigate] = useLocation()
   const [installTab, setInstallTab] = useState('ios')
   const [installPrompt, setInstallPrompt] = useState(null)
   const [installed, setInstalled] = useState(false)
@@ -266,7 +267,12 @@ export default function More() {
 
       {/* Professional Login Button */}
       <div className="px-4 mb-4">
-        <Link href="/pro-login">
+        <button
+          className="w-full text-start"
+          onClick={() => {
+            const session = localStorage.getItem('pro_session')
+            navigate(session ? '/pro' : '/pro-login')
+          }}>
           <div className="flex items-center gap-4 px-4 py-4 rounded-2xl shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
             style={{ background: 'linear-gradient(135deg, #071B33 0%, #1a3a5c 100%)' }}>
             <div className="w-12 h-12 rounded-2xl bg-[#FF7900] flex items-center justify-center flex-shrink-0 shadow-md">
@@ -284,7 +290,7 @@ export default function More() {
               <ExternalLink className="w-4 h-4 text-white/60" />
             </div>
           </div>
-        </Link>
+        </button>
       </div>
 
       {/* Language Toggle */}

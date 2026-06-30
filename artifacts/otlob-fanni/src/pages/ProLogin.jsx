@@ -6,46 +6,44 @@ import { useLang } from '../context/LanguageContext'
 
 const T = {
   ar: {
-    title:       'دخول الحسابات المهنية',
-    sub:         'للفنيين والشركات والموردين فقط',
-    back:        'العودة',
-    firstTime:   'أول مرة تدخل بعد التحديث؟',
-    createPin:   'أنشئ PIN من 4 أرقام أولاً من ',
-    here:        'هنا',
-    phone:       'رقم الواتساب',
-    phoneHint:   'أدخل الرقم المحلي فقط (مثال: 91، 92) بدون صفر في البداية',
-    pin:         'PIN (4 أرقام)',
-    forgot:      'نسيت PIN؟',
-    enter:       'دخول',
-    entering:    'جارٍ الدخول…',
-    footer:      'هذا الدخول مخصص للفنيين والشركات والموردين المسجلين فقط.',
-    notReg:      'إذا لم تكن مسجلاً،',
-    joinNow:     'سجّل الآن',
-    errPhone:    'أدخل رقم الواتساب كاملاً',
-    errPin:      'أدخل PIN مكون من 4 أرقام',
-    errWrong:    'رقم الواتساب أو PIN غير صحيح',
-    errGeneral:  'حدث خطأ، حاول مجدداً',
+    title:         'دخول الحسابات المهنية',
+    sub:           'للفنيين والشركات والموردين فقط',
+    back:          'العودة',
+    phone:         'رقم الواتساب',
+    phoneHint:     'أدخل الرقم المحلي فقط (مثال: 91، 92) بدون صفر في البداية',
+    pin:           'PIN (4 أرقام)',
+    forgot:        'نسيت PIN؟',
+    enter:         'دخول',
+    entering:      'جارٍ الدخول…',
+    footer:        'هذا الدخول مخصص للفنيين والشركات والموردين المسجلين فقط.',
+    notReg:        'إذا لم تكن مسجلاً،',
+    joinNow:       'سجّل الآن',
+    errPhone:      'أدخل رقم الواتساب كاملاً',
+    errPin:        'أدخل PIN مكون من 4 أرقام',
+    errWrong:      'رقم الواتساب أو PIN غير صحيح',
+    errGeneral:    'حدث خطأ، حاول مجدداً',
+    pinNotSetMsg:  'هذه أول مرة تدخل فيها إلى أعمالي. يرجى إنشاء PIN أولاً.',
+    pinNotSetBtn:  'إنشاء PIN',
   },
   en: {
-    title:       'Professional Account Login',
-    sub:         'For technicians, companies & suppliers only',
-    back:        'Back',
-    firstTime:   'First time logging in after the update?',
-    createPin:   'Create your 4-digit PIN first — ',
-    here:        'tap here',
-    phone:       'WhatsApp Number',
-    phoneHint:   'Enter local number only (e.g. 91, 92) without leading zero',
-    pin:         'PIN (4 digits)',
-    forgot:      'Forgot PIN?',
-    enter:       'Sign In',
-    entering:    'Signing in…',
-    footer:      'This login is for registered technicians, companies & suppliers only.',
-    notReg:      "Not registered?",
-    joinNow:     'Join now',
-    errPhone:    'Enter your full WhatsApp number',
-    errPin:      'Enter your 4-digit PIN',
-    errWrong:    'Incorrect WhatsApp number or PIN',
-    errGeneral:  'An error occurred, please try again',
+    title:         'Professional Account Login',
+    sub:           'For technicians, companies & suppliers only',
+    back:          'Back',
+    phone:         'WhatsApp Number',
+    phoneHint:     'Enter local number only (e.g. 91, 92) without leading zero',
+    pin:           'PIN (4 digits)',
+    forgot:        'Forgot PIN?',
+    enter:         'Sign In',
+    entering:      'Signing in…',
+    footer:        'This login is for registered technicians, companies & suppliers only.',
+    notReg:        'Not registered?',
+    joinNow:       'Join now',
+    errPhone:      'Enter your full WhatsApp number',
+    errPin:        'Enter your 4-digit PIN',
+    errWrong:      'Incorrect WhatsApp number or PIN',
+    errGeneral:    'An error occurred, please try again',
+    pinNotSetMsg:  'This is your first time signing in. Please create a PIN first.',
+    pinNotSetBtn:  'Create PIN',
   },
 }
 
@@ -59,12 +57,14 @@ export default function ProLogin() {
   const [pin, setPin]               = useState('')
   const [loading, setLoading]       = useState(false)
   const [error, setError]           = useState('')
+  const [pinNotSet, setPinNotSet]   = useState(false)
 
   const fullPhone = '+218' + localPhone.replace(/\D/g, '').replace(/^0/, '')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setPinNotSet(false)
     if (localPhone.replace(/\D/g, '').length < 9) { setError(t.errPhone); return }
     if (!/^\d{4}$/.test(pin))                     { setError(t.errPin);   return }
     setLoading(true)
@@ -73,8 +73,13 @@ export default function ProLogin() {
       localStorage.setItem('pro_session', JSON.stringify(data))
       navigate('/pro')
     } catch (err) {
-      setError(err.message === 'HTTP 401' || err.message?.includes('401')
-        ? t.errWrong : t.errGeneral)
+      if (err.message?.includes('403')) {
+        setPinNotSet(true)
+      } else if (err.message?.includes('401')) {
+        setError(t.errWrong)
+      } else {
+        setError(t.errGeneral)
+      }
     } finally {
       setLoading(false)
     }
@@ -111,21 +116,26 @@ export default function ProLogin() {
         </div>
       </div>
 
-      {/* First-time hint */}
-      <div className="mx-4 mt-4 relative z-10">
-        <div className="rounded-2xl px-4 py-3.5 flex items-start gap-3"
-          style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
-          <span className="text-lg leading-none mt-0.5">🔑</span>
-          <div className="text-sm leading-relaxed" style={{ color: '#92400E' }}>
-            <span className="font-extrabold block mb-0.5">{t.firstTime}</span>
-            {t.createPin}
-            <button type="button" onClick={() => navigate('/pro-activate')}
-              className="font-extrabold underline" style={{ color: '#FF7900' }}>
-              {t.here}
+      {/* PIN not set — shown only after 403 response */}
+      {pinNotSet && (
+        <div className="mx-4 mt-4 relative z-10">
+          <div className="rounded-2xl px-4 py-4 flex flex-col gap-3"
+            style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
+            <div className="flex items-start gap-3">
+              <span className="text-lg leading-none mt-0.5">🔑</span>
+              <p className="text-sm font-semibold leading-relaxed" style={{ color: '#92400E' }}>
+                {t.pinNotSetMsg}
+              </p>
+            </div>
+            <button type="button"
+              onClick={() => navigate('/pro-activate')}
+              className="w-full py-3 rounded-xl font-extrabold text-white text-sm active:scale-95 transition-all"
+              style={{ background: 'linear-gradient(135deg, #FF7900 0%, #e06500 100%)' }}>
+              {t.pinNotSetBtn}
             </button>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="mx-4 mt-4 relative z-10">
         <form onSubmit={handleSubmit}

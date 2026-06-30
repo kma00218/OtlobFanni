@@ -1551,6 +1551,10 @@ router.post("/pro/login", async (req, res): Promise<void> => {
   const candidates = [`0${digits}`, digits, `+218${digits}`, `218${digits}`];
   const [cred] = await db.select().from(proCredentialsTable).where(inArray(proCredentialsTable.whatsapp, candidates));
   if (!cred) { res.status(401).json({ error: "Invalid credentials" }); return; }
+  // If passwordPlain is non-empty the user has not yet created their own PIN
+  if (cred.passwordPlain && cred.passwordPlain.length > 0) {
+    res.status(403).json({ error: "PIN_NOT_SET" }); return;
+  }
   const hash = crypto.createHash("sha256").update(String(password)).digest("hex");
   if (hash !== cred.passwordHash) { res.status(401).json({ error: "Invalid credentials" }); return; }
   res.json({ entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });
