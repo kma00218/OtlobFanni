@@ -348,8 +348,7 @@ export default function AdminSearch() {
       {!loading && results.map((r) => {
         const isTech     = r.accountType === 'technician'
         const isSupplier = r.accountType === 'supplier'
-        const techLink   = `${base}/join?ref=${r.id}`
-        const compLink   = `${base}/join-company?ref=${r.id}`
+        const unifiedLink = `${base}/ref/${r.id}`
         const profileUrl = r.requestNumber ? `${base}/status/${r.requestNumber}` : null
         const statusInfo = STATUS[r.status] || STATUS.pending
         const isSuspended = isTech && r.status === 'published' && r.technicianIsActive === false
@@ -450,10 +449,9 @@ export default function AdminSearch() {
 
               {/* Referral links */}
               <div className="space-y-2">
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">روابط الترشيح</p>
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">رابط الترشيح</p>
                 {[
-                  { label: '🔧 رابط تسجيل فني',   link: techLink, key: `tech-${r.id}`, short: `${window.location.hostname}/join…` },
-                  { label: '🏢 رابط تسجيل شركة', link: compLink, key: `comp-${r.id}`, short: `${window.location.hostname}/join-company…` },
+                  { label: '🔗 رابط التسجيل (فني / شركة / مورد)', link: unifiedLink, key: `unified-${r.id}`, short: `${window.location.hostname}/ref/…` },
                 ].map(({ label, link, key, short }) => (
                   <div key={key} className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5">
                     <span className="text-sm font-semibold text-[#071B33] flex-1 truncate">

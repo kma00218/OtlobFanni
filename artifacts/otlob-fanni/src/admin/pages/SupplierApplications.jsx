@@ -179,7 +179,7 @@ export default function SupplierApplications() {
   }
 
   const openPublishedWhatsApp = ({ name, phone, requestNumber }) => {
-    const msg = `مبروك ${name}! 🎉 تم نشر نشاطك الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع عملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n━━━━━━━━━━━━━━━━━━━\n🔗 روابط التسجيل في المنصة\nادعُ أصدقاءك للانضمام إلى اطلب فني:\n\n🔧 سجّل فنياً:\nhttps://otlobfanni.ly/join?ref=${requestNumber}\n\n🏢 سجّل شركة خدمية:\nhttps://otlobfanni.ly/join-company?ref=${requestNumber}\n\n📦 سجّل مورد مستلزمات:\nhttps://otlobfanni.ly/join-supplier?ref=${requestNumber}\n━━━━━━━━━━━━━━━━━━━\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`
+    const msg = `مبروك ${name}! 🎉 تم نشر نشاطك الآن على دليل مزودي المستلزمات في منصة اطلب فني 🇱🇾\n\nيمكنك الآن مشاركة نشاطك مع عملائك عبر هذا الرابط:\n👉 https://otlobfanni.ly/status/${requestNumber}\n\n📲 لتثبيت التطبيق على هاتفك:\nافتح: www.otlobfanni.ly\n\n━━━━━━━━━━━━━━━━━━━\n🔗 رابط التسجيل في المنصة\nادعُ أصدقاءك للانضمام إلى اطلب فني:\n\n📲 رابط التسجيل (يختار المستخدم نوع حسابه):\nhttps://otlobfanni.ly/ref/${requestNumber}\n━━━━━━━━━━━━━━━━━━━\n\n📢 تابع القناة الرسمية لمنصة اطلب فني على تيليجرام لمشاهدة:\n\n• الفنيين الجدد\n• التحديثات\n• الخدمات الجديدة\n• نصائح وتحسينات المنصة\n\n👉 https://t.me/OtlobFanni`
     window.open(`https://wa.me/${(phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 

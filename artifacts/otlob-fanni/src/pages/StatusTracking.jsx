@@ -337,25 +337,24 @@ export default function StatusTracking() {
                 {/* ── Referral Link Card ── */}
                 {(() => {
                   const base = window.location.origin + (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
-                  const techLink = `${base}/join?ref=${result.id}`
-                  const compLink = `${base}/join-company?ref=${result.id}`
-                  const waMsg = (link) => encodeURIComponent(
+                  const unifiedLink = `${base}/ref/${result.id}`
+                  const waMsg = encodeURIComponent(
                     ar
-                      ? `سجّل في منصة اطلب فني — أكبر دليل خدمات فنية في ليبيا 🇱🇾\n${link}`
-                      : `Register on Otlob Fanni — Libya's largest service directory 🇱🇾\n${link}`
+                      ? `سجّل في منصة اطلب فني — أكبر دليل خدمات فنية في ليبيا 🇱🇾\n${unifiedLink}`
+                      : `Register on Otlob Fanni — Libya's largest service directory 🇱🇾\n${unifiedLink}`
                   )
-                  const copyLink = async (text, key) => {
-                    try { await navigator.clipboard.writeText(text) } catch { }
-                    setCopiedRef(key)
+                  const copyLink = async () => {
+                    try { await navigator.clipboard.writeText(unifiedLink) } catch { }
+                    setCopiedRef('unified')
                     setTimeout(() => setCopiedRef(null), 2000)
                   }
                   const regCount = refStats?.registered ?? 0
                   const arabicRegMsg = (n) => {
-                    if (n === 1) return '🎉 تم تسجيل فني عبر دعوتك'
-                    if (n === 2) return '🎉 تم تسجيل فنيين عبر دعوتك'
+                    if (n === 1) return '🎉 تم تسجيل شخص عبر دعوتك'
+                    if (n === 2) return '🎉 تم تسجيل شخصين عبر دعوتك'
                     const words = ['', '', '', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة', 'عشرة']
-                    if (n <= 10) return `🎉 تم تسجيل ${words[n]} فنيين عبر دعوتك`
-                    return `🎉 تم تسجيل ${n} فنياً عبر دعوتك`
+                    if (n <= 10) return `🎉 تم تسجيل ${words[n]} أشخاص عبر دعوتك`
+                    return `🎉 تم تسجيل ${n} شخصاً عبر دعوتك`
                   }
                   return (
                     <div className="bg-gradient-to-br from-[#071B33] to-[#0d2a4d] rounded-2xl p-5 shadow-md text-white">
@@ -375,40 +374,35 @@ export default function StatusTracking() {
                           <p className="text-[12px] text-white font-semibold">
                             {ar
                               ? arabicRegMsg(regCount)
-                              : `🎉 ${regCount === 1 ? '1 technician' : `${regCount} technicians`} registered via your invite`}
+                              : `🎉 ${regCount} ${regCount === 1 ? 'person' : 'people'} registered via your invite`}
                           </p>
                         </div>
                       )}
-                      <div className="space-y-2.5">
-                        {[
-                          { label: ar ? '🔧 رابط تسجيل فني'   : '🔧 Technician Link', link: techLink, key: 'tech' },
-                          { label: ar ? '🏢 رابط تسجيل شركة' : '🏢 Company Link',    link: compLink, key: 'comp' },
-                        ].map(({ label, link, key }) => (
-                          <div key={key} className="bg-white/10 rounded-xl p-3 space-y-2">
-                            <p className="text-xs font-bold text-blue-200">{label}</p>
-                            <div className="flex items-center gap-2" dir="ltr">
-                              <p className="flex-1 text-[11px] text-white/60 font-mono truncate">
-                                {window.location.hostname}{key === 'tech' ? '/join…' : '/join-company…'}
-                              </p>
-                              <button
-                                onClick={() => copyLink(link, key)}
-                                className="flex items-center gap-1 px-2.5 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"
-                              >
-                                {copiedRef === key ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
-                                {copiedRef === key ? (ar ? 'تم!' : 'Done!') : (ar ? 'نسخ' : 'Copy')}
-                              </button>
-                              <a
-                                href={`https://wa.me/?text=${waMsg(link)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 px-2.5 py-1.5 bg-green-600/70 hover:bg-green-600 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"
-                              >
-                                <span>💬</span>
-                                {ar ? 'واتساب' : 'WA'}
-                              </a>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="bg-white/10 rounded-xl p-3 space-y-2">
+                        <p className="text-xs font-bold text-blue-200">
+                          {ar ? '🔗 رابط التسجيل (فني / شركة / مورد)' : '🔗 Registration Link (Technician / Company / Supplier)'}
+                        </p>
+                        <div className="flex items-center gap-2" dir="ltr">
+                          <p className="flex-1 text-[11px] text-white/60 font-mono truncate">
+                            {window.location.hostname}/ref/…
+                          </p>
+                          <button
+                            onClick={copyLink}
+                            className="flex items-center gap-1 px-2.5 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"
+                          >
+                            {copiedRef === 'unified' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                            {copiedRef === 'unified' ? (ar ? 'تم!' : 'Done!') : (ar ? 'نسخ' : 'Copy')}
+                          </button>
+                          <a
+                            href={`https://wa.me/?text=${waMsg}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 px-2.5 py-1.5 bg-green-600/70 hover:bg-green-600 text-white rounded-lg text-[11px] font-bold transition-colors active:scale-95 flex-shrink-0"
+                          >
+                            <span>💬</span>
+                            {ar ? 'واتساب' : 'WA'}
+                          </a>
+                        </div>
                       </div>
                     </div>
                   )
