@@ -273,8 +273,9 @@ export default function More() {
               <Briefcase className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-white font-extrabold text-base leading-tight">أعمالي</p>
-              <p className="text-white/70 text-xs font-medium leading-tight">My Business</p>
+              <p className="text-white font-extrabold text-base leading-tight">
+                {ar ? 'أعمالي' : 'My Business'}
+              </p>
               <p className="text-white/60 text-xs mt-0.5">
                 {ar ? 'للفنيين والشركات والموردين' : 'Technicians, Companies & Suppliers'}
               </p>
