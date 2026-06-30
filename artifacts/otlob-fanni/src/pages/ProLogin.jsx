@@ -93,9 +93,10 @@ export default function ProLogin() {
           <div>
             <label className="block text-sm font-extrabold text-[#071B33] mb-2">رقم الواتساب</label>
             <div className="flex rounded-xl overflow-hidden transition-all bg-white"
+              dir="ltr"
               style={{ border: '1.5px solid #D1D5DB' }}>
               <span className="flex items-center px-3 text-[#071B33] font-bold text-sm select-none whitespace-nowrap"
-                style={{ background: '#F8F9FA', borderLeft: '1.5px solid #D1D5DB' }}>
+                style={{ background: '#F8F9FA', borderRight: '1.5px solid #D1D5DB' }}>
                 🇱🇾 +218
               </span>
               <input
@@ -111,8 +112,8 @@ export default function ProLogin() {
                 dir="ltr"
                 className="flex-1 bg-white outline-none px-3 py-3.5 text-sm text-[#071B33] placeholder-slate-400"
                 autoComplete="tel"
-                onFocus={e => e.currentTarget.closest('.flex').style.border = '1.5px solid #FF7900'}
-                onBlur={e => e.currentTarget.closest('.flex').style.border = '1.5px solid #D1D5DB'}
+                onFocus={e => e.currentTarget.closest('[dir="ltr"]').style.border = '1.5px solid #FF7900'}
+                onBlur={e => e.currentTarget.closest('[dir="ltr"]').style.border = '1.5px solid #D1D5DB'}
               />
             </div>
             <p className="text-[11px] text-slate-400 mt-1.5 px-0.5" dir="rtl">
