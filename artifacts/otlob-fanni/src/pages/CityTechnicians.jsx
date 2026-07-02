@@ -8,6 +8,7 @@ import api, { getFileUrl } from '../lib/api'
 import { SkeletonListCards } from '../components/Skeleton'
 import { categories as staticCategoriesData } from '../data/services'
 import { useAllCategories } from '../hooks/useAllCategories'
+import SmartSearchBox from '../components/SmartSearchBox'
 
 function useFavorites(key) {
   const [favs, setFavs] = useState(() => {
@@ -493,6 +494,11 @@ export default function CityTechnicians() {
             )}
           </div>
         </div>
+
+        {/* ── البحث الذكي ── */}
+        {!isLibya && id && (
+          <SmartSearchBox cityId={id} />
+        )}
 
         {/* ── Specialty filter icons ── */}
         {!loading && citySpecialties.length > 0 && (

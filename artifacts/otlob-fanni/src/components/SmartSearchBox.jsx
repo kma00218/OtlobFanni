@@ -1,51 +1,45 @@
 import { useState } from 'react'
 import { useLocation } from 'wouter'
-import { Sparkles, ChevronDown, Search, X, MapPin } from 'lucide-react'
+import { Sparkles, Search, X } from 'lucide-react'
 import { api, getFileUrl } from '../lib/api'
 import { useLang } from '../context/LanguageContext'
 
 const T = {
   ar: {
-    title:        'البحث الذكي',
-    desc:         'اكتب مشكلتك وسنقترح لك أنسب فني أو شركة أو مورد في مدينتك',
-    chooseCity:   'اختر المدينة',
-    placeholder:  'مثال: المكيف لا يبرد، أريد تركيب كاميرات، أحتاج شركة تنظيف...',
-    btn:          'اعرض الأنسب',
-    searching:    'جارٍ البحث…',
-    noCity:       'اختر المدينة أولاً',
-    noDesc:       'اكتب وصف المشكلة',
-    noResults:    'لا توجد نتائج في هذه المدينة لهذا الوصف',
-    clarify:      'هل تبحث عن:',
-    techBtn:      'فني',
-    compBtn:      'شركة خدمية',
-    suppBtn:      'مورد مستلزمات',
-    techSection:  'فنيون مقترحون',
-    compSection:  'شركات مقترحة',
-    suppSection:  'موردون مقترحون',
-    viewProfile:  'عرض الملف',
-    rating:       'تقييم',
-    clear:        'مسح',
+    title:       'البحث الذكي ✨',
+    desc:        'اكتب مشكلتك بلغتك الطبيعية وسنعرض أنسب النتائج',
+    placeholder: 'مثال: المكيف لا يبرد، أريد تركيب كاميرات، تسريب ماء في الحمام...',
+    btn:         'اعرض الأنسب',
+    searching:   'جارٍ البحث…',
+    noDesc:      'اكتب وصف المشكلة أولاً',
+    noResults:   'لا توجد نتائج مطابقة في هذه المدينة',
+    clarify:     'هل تبحث عن:',
+    techBtn:     '👷 فني',
+    compBtn:     '🏢 شركة خدمية',
+    suppBtn:     '📦 مورد مستلزمات',
+    techSection: 'فنيون مقترحون',
+    compSection: 'شركات مقترحة',
+    suppSection: 'موردون مقترحون',
+    viewProfile: 'عرض الملف',
+    clear:       'مسح',
   },
   en: {
-    title:        'Smart Search',
-    desc:         'Describe your problem and we\'ll suggest the best match in your city',
-    chooseCity:   'Choose city',
-    placeholder:  'E.g. AC not cooling, install cameras, need cleaning company...',
-    btn:          'Show Best Match',
-    searching:    'Searching…',
-    noCity:       'Choose your city first',
-    noDesc:       'Describe your problem',
-    noResults:    'No results in this city for this description',
-    clarify:      'Are you looking for:',
-    techBtn:      'Technician',
-    compBtn:      'Service Company',
-    suppBtn:      'Supplier',
-    techSection:  'Suggested Technicians',
-    compSection:  'Suggested Companies',
-    suppSection:  'Suggested Suppliers',
-    viewProfile:  'View Profile',
-    rating:       'Rating',
-    clear:        'Clear',
+    title:       'Smart Search ✨',
+    desc:        'Describe your problem naturally and we\'ll find the best match',
+    placeholder: 'E.g. AC not cooling, install cameras, water leak in bathroom...',
+    btn:         'Show Best Match',
+    searching:   'Searching…',
+    noDesc:      'Describe your problem first',
+    noResults:   'No matching results in this city',
+    clarify:     'Are you looking for:',
+    techBtn:     '👷 Technician',
+    compBtn:     '🏢 Service Company',
+    suppBtn:     '📦 Supplier',
+    techSection: 'Suggested Technicians',
+    compSection: 'Suggested Companies',
+    suppSection: 'Suggested Suppliers',
+    viewProfile: 'View Profile',
+    clear:       'Clear',
   },
 }
 
@@ -149,27 +143,23 @@ function SuppCard({ item, ar, t, navigate }) {
   )
 }
 
-export default function SmartSearchBox({ cities = [] }) {
+/**
+ * SmartSearchBox — accepts `cityId` directly (no city dropdown needed).
+ * Used inside city pages where the city is already known.
+ */
+export default function SmartSearchBox({ cityId }) {
   const { lang } = useLang()
   const ar = lang === 'ar'
   const t = T[lang]
   const [, navigate] = useLocation()
 
-  const [cityId, setCityId]           = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading]         = useState(false)
   const [results, setResults]         = useState(null)
   const [ambiguous, setAmbiguous]     = useState(false)
   const [error, setError]             = useState('')
-  const [showCityDrop, setShowCityDrop] = useState(false)
-
-  const selectedCity = cities.find(c => c.id === cityId)
-  const cityLabel = selectedCity
-    ? (ar ? selectedCity.nameAr : (selectedCity.nameEn || selectedCity.nameAr))
-    : ''
 
   const doSearch = async (overrideType) => {
-    if (!cityId) { setError(t.noCity); return }
     if (!description.trim()) { setError(t.noDesc); return }
     setError('')
     setLoading(true)
@@ -227,38 +217,7 @@ export default function SmartSearchBox({ cities = [] }) {
       </div>
 
       <div className="p-4 space-y-3">
-        {/* City selector */}
-        <div className="relative">
-          <button
-            onClick={() => setShowCityDrop(v => !v)}
-            className="w-full flex items-center gap-2 px-3.5 py-3 rounded-xl text-sm font-semibold text-start"
-            style={{ background: '#F8F9FA', border: `1.5px solid ${cityId ? '#FF7900' : '#D1D5DB'}`, color: cityId ? '#071B33' : '#9CA3AF' }}>
-            <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: cityId ? '#FF7900' : '#9CA3AF' }} />
-            <span className="flex-1">{cityLabel || t.chooseCity}</span>
-            <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          </button>
-          {showCityDrop && (
-            <div className="absolute top-full mt-1 w-full bg-white rounded-xl shadow-xl z-50 max-h-52 overflow-y-auto"
-              style={{ border: '1.5px solid #E2E6EA' }}>
-              {cities.map(city => {
-                const label = ar ? city.nameAr : (city.nameEn || city.nameAr)
-                return (
-                  <button key={city.id}
-                    onClick={() => { setCityId(city.id); setShowCityDrop(false); setResults(null); setAmbiguous(false) }}
-                    className="w-full text-start px-4 py-2.5 text-sm font-semibold hover:bg-orange-50 transition-colors"
-                    style={{ color: city.id === cityId ? '#FF7900' : '#071B33' }}>
-                    {label}
-                    {city.total > 0 && (
-                      <span className="ms-2 text-[11px] text-[#FF7900]">({city.total})</span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Description input */}
+        {/* Description textarea */}
         <textarea
           value={description}
           onChange={e => { setDescription(e.target.value); setResults(null); setAmbiguous(false); setError('') }}
@@ -278,11 +237,11 @@ export default function SmartSearchBox({ cities = [] }) {
         {/* Submit */}
         <button
           onClick={() => doSearch(null)}
-          disabled={loading || !description.trim() || !cityId}
+          disabled={loading || !description.trim()}
           className="w-full py-3.5 rounded-xl font-extrabold text-white text-sm active:scale-95 transition-all disabled:opacity-50"
           style={{ background: 'linear-gradient(135deg, #FF7900 0%, #e06500 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
           {loading
-            ? <span className="flex items-center justify-center gap-2"><span className="animate-spin">⟳</span> {t.searching}</span>
+            ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">⟳</span> {t.searching}</span>
             : <span className="flex items-center justify-center gap-2"><Search className="w-4 h-4" /> {t.btn}</span>}
         </button>
 
