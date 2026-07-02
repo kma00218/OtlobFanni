@@ -29,7 +29,7 @@ function IosSafariView({ ar, onClose }) {
         <div className="flex flex-col items-center gap-3">
           <img src="/icon-192.png" alt="اطلب فني" className="w-16 h-16 rounded-2xl shadow-lg" />
           <p className="text-white font-bold text-sm">{ar ? 'اطلب فني' : 'Otlob Fanni'}</p>
-          <p className="text-white/60 text-xs">{ar ? 'اضغط على زر المشاركة أدناه' : 'Tap the Share button below'}</p>
+          <p className="text-white/60 text-xs">{ar ? 'ابحث عن زر المشاركة في أسفل الشاشة' : 'Find the Share button at the bottom'}</p>
         </div>
 
         {/* Animated arrow pointing down */}
@@ -47,16 +47,19 @@ function IosSafariView({ ar, onClose }) {
         </div>
 
         <p className="text-center text-white/50 text-[11px] mt-2">
-          {ar ? '(زر السهم في شريط Safari أسفل الشاشة)' : '(Share icon in Safari\'s bottom bar)'}
+          {ar ? '(زر مربع فيه سهم للأعلى ⬆ في شريط Safari)' : '(A square icon with an upward arrow ⬆ on Safari\'s bar)'}
         </p>
       </div>
 
-      {/* 2 simple steps */}
+      {/* 3 simple steps */}
       <div className="space-y-3">
-        <Step n={1} icon="⬆️" color="#FF7900"
+        <Step n={1} icon="⋯" color="#FF7900"
+          title={ar ? 'لا ترى زر المشاركة مباشرة؟' : 'Don\'t see the Share button right away?'}
+          desc={ar ? 'اضغط أولاً على النقاط الثلاث ⋯ في شريط Safari أسفل الشاشة' : 'First tap the three dots ⋯ on Safari\'s bottom bar'} />
+        <Step n={2} icon="⬆️" color="#FF7900"
           title={ar ? 'اضغط زر المشاركة' : 'Tap the Share button'}
-          desc={ar ? 'الزر في أسفل الشاشة — مربع فيه سهم للأعلى ⬆' : 'At the bottom — box with upward arrow ⬆'} />
-        <Step n={2} icon="📱" color="#FF7900"
+          desc={ar ? 'مربع فيه سهم للأعلى ⬆ — إما في الشريط مباشرة أو داخل قائمة النقاط الثلاث' : 'A box with an upward arrow ⬆ — either directly on the bar, or inside the "•••" menu'} />
+        <Step n={3} icon="📱" color="#FF7900"
           title={ar ? 'اختر "إضافة إلى الشاشة الرئيسية"' : 'Tap "Add to Home Screen"'}
           desc={ar ? 'مرر للأسفل في القائمة واضغط عليها ثم اضغط "إضافة"' : 'Scroll down in the list and tap it, then tap "Add"'} />
       </div>
