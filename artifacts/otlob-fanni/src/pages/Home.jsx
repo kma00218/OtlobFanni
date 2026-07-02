@@ -12,6 +12,7 @@ import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import LibyaMap from '../components/LibyaMap'
+import SmartSearchBox from '../components/SmartSearchBox'
 
 function RecentCard({ item, ar }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
@@ -415,6 +416,11 @@ export default function Home() {
             </>
           )}
         </div>
+
+        {/* ── البحث الذكي ── */}
+        {citiesForFilter.length > 0 && (
+          <SmartSearchBox cities={citiesForFilter} />
+        )}
 
         {/* ── بحث ── */}
         <SearchBar />

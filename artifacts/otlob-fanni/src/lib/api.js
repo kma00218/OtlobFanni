@@ -319,6 +319,8 @@ export const api = {
   supplier:                     (id)   => get(`/suppliers/${id}`),
   submitSupplierApplication:    (data) => post('/supplier-applications', data),
   trackSupplierApplication:     (rn)   => get(`/supplier-applications/track/${encodeURIComponent(rn)}`),
+
+  smartSearch: (data) => post('/smart-search', data),
 }
 
 // ── Libyan Phone Utilities ────────────────────────────────────────────────────

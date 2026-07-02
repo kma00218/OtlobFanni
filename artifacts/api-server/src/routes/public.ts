@@ -568,6 +568,225 @@ router.get("/search", async (req, res): Promise<void> => {
   });
 });
 
+// ── Smart Search ─────────────────────────────────────────────────────────────
+// Keyword → category mapping for Arabic problem descriptions
+const SMART_KEYWORD_MAP: { keywords: string[]; categories: string[] }[] = [
+  { keywords: ['مكيف','تكييف','سبليت','بارد','تبريد','برودة','مكيفات','لا يبرد','ما يبرد'], categories: ['ac','car_ac'] },
+  { keywords: ['كهرباء','كهربائي','كهربة','تمديد كهربائي','أسلاك','لوحة كهرباء','بريكر','فيوز','كابل','انقطع الكهرباء','ضوء','إضاءة'], categories: ['electricity','backup_power','battery_inverter'] },
+  { keywords: ['سباكة','سباك','تسريب','حنفية','أنبوب','مجاري','حمام','مرحاض','بيارة','تصريف','مياه','ماء سرب'], categories: ['plumbing'] },
+  { keywords: ['نجارة','نجار','خشب','مطبخ خشب','خزانة خشب','رف','أرفف خشبية'], categories: ['carpentry','furniture_install'] },
+  { keywords: ['تركيب أثاث','أثاث','موبيليا','سرير','خزانة','طاولة تركيب'], categories: ['furniture_install'] },
+  { keywords: ['دهان','طلاء','صبغ','دهانة','بوية','تشطيب','دهن'], categories: ['painting'] },
+  { keywords: ['كاميرات','كاميرا','مراقبة','cctv','تصوير أمني','كاميرات مراقبة','نظام مراقبة'], categories: ['cctv','shop_cctv'] },
+  { keywords: ['كاميرات محل','مراقبة محل','تجهيز محل'], categories: ['shop_cctv'] },
+  { keywords: ['بلاط','سيراميك','أرضية','بلاطة','فرش أرضية','رخام'], categories: ['tiles'] },
+  { keywords: ['ألمنيوم','زجاج','نافذة','شباك','بلوني','واجهة زجاجية','شبابيك'], categories: ['aluminum'] },
+  { keywords: ['أقفال','قفل','مفتاح','باب','تكسير قفل','فتح باب','أبواب'], categories: ['locks'] },
+  { keywords: ['ثلاجة','غسالة','تلفزيون','شاشة','ميكروويف','فرن','مجفف','تصليح جهاز'], categories: ['appliances'] },
+  { keywords: ['سقف','أسطح','تسقيف','سطح','حرارة من السقف','عزل سقف'], categories: ['roofing'] },
+  { keywords: ['غاز','بوتاجاز','أنابيب غاز','تأسيس غاز','غاز مركزي'], categories: ['gas'] },
+  { keywords: ['إنذار','حريق','جرس إنذار','نظام إنذار','انذار'], categories: ['alarm'] },
+  { keywords: ['مولد','مولدات','جنريتور','كهرباء احتياطية','طاقة احتياطية'], categories: ['generator_install','battery_inverter'] },
+  { keywords: ['بطارية','انفرتر','inverter','اوبس','ups','طاقة شمسية','سولار','ألواح شمسية'], categories: ['battery_inverter'] },
+  { keywords: ['مسبح','حوض سباحة','سباحة','بيسين'], categories: ['pool_cleaning'] },
+  { keywords: ['خزان','صهريج','تنظيف خزان','خزان ماء'], categories: ['tank_cleaning'] },
+  { keywords: ['حدائق','حديقة','أشجار','نباتات','عشب','نخيل','تنسيق حديقة'], categories: ['landscaping'] },
+  { keywords: ['تنظيف منزل','تنظيف بيت','نظافة منزلية','خادمة','مساعدة منزلية'], categories: ['home_help'] },
+  { keywords: ['تنظيف مكتب','تنظيف شركة','تنظيف مبنى','نظافة مكاتب'], categories: ['office_cleaning'] },
+  { keywords: ['تنظيف','نظافة','كنس','مسح','تلميع'], categories: ['home_help','office_cleaning'] },
+  { keywords: ['حشرات','صراصير','بق','نمل','فئران','قوارض','مكافحة حشرات'], categories: ['pest_control'] },
+  { keywords: ['نقل أثاث','انتقال','عفش','نقل عفش','نقل أغراض'], categories: ['moving'] },
+  { keywords: ['نقل ثقيل','شاحنة','حمل ثقيل'], categories: ['heavy_transport'] },
+  { keywords: ['تحميل','تنزيل','نقل بضاعة'], categories: ['loading'] },
+  { keywords: ['مصعد','أسانسير','ليفت'], categories: ['elevators'] },
+  { keywords: ['خرسانة','بناء','أساسات','هيكل'], categories: ['concrete','contracting'] },
+  { keywords: ['مقاولات','مقاول','إنشاء','تشييد','بناء منزل'], categories: ['contracting','eng_consultancy'] },
+  { keywords: ['عزل مائي','رطوبة','تسريب ماء من الجدار'], categories: ['waterproof'] },
+  { keywords: ['عزل حراري','حرارة شديدة','حرارة مبنى'], categories: ['thermal'] },
+  { keywords: ['مضخة','مضخات مياه','ضخ مياه'], categories: ['pumps'] },
+  { keywords: ['ميكانيك','سيارة لا تشتغل','محرك','سيارة عطلانة','تصليح سيارة'], categories: ['car_mechanic'] },
+  { keywords: ['كهربائي سيارة','كهرباء سيارة','بطارية سيارة تالفة'], categories: ['auto_electrician','car_battery'] },
+  { keywords: ['تكييف سيارة','مكيف سيارة'], categories: ['car_ac'] },
+  { keywords: ['بنشر','إطار','عجلة','كاوتش','تغيير إطار'], categories: ['tire_repair'] },
+  { keywords: ['تغيير زيت','فلتر زيت','صيانة سيارة'], categories: ['oil_change'] },
+  { keywords: ['فحص سيارة','كمبيوتر سيارة','بلوتوث سيارة'], categories: ['car_diagnostics'] },
+  { keywords: ['غسيل سيارة','تنظيف سيارة'], categories: ['car_wash'] },
+  { keywords: ['لوحات','إعلان','يافطة','لافتة','بنر'], categories: ['signs'] },
+  { keywords: ['موقع إلكتروني','تطبيق','برمجة','برنامج'], categories: ['software_dev'] },
+  { keywords: ['سوشيال ميديا','صفحات','إدارة صفحة','تصميم منشورات'], categories: ['social_media_mgmt'] },
+  { keywords: ['ماكينة قهوة','قهوة','اسبريسو'], categories: ['coffee_machine'] },
+  { keywords: ['معدات مطعم','مطعم','مطبخ تجاري'], categories: ['restaurant_equipment','restaurant_staff'] },
+  { keywords: ['معدات ثقيلة','حفار','جرافة','رافعة'], categories: ['heavy_equipment'] },
+  { keywords: ['كسارة','مواد بناء','رمل','حصى'], categories: ['crusher_materials'] },
+  { keywords: ['مساحة','تقسيم أرض','مسح أرض'], categories: ['surveying'] },
+  { keywords: ['ونش','سحب سيارة','رفع سيارة'], categories: ['towing'] },
+  { keywords: ['pos','نقطة بيع','كاشير'], categories: ['pos_systems'] },
+  { keywords: ['بوابة','دخول ذكي','بصمة','access control'], categories: ['access_control'] },
+];
+
+const SUPPLIER_KEYWORDS = ['مستلزمات','قطع غيار','مواد بناء','توريد','جملة','بضاعة','قطع','حديد','رخام','أسمنت','بيع بالجملة','مورد','مواد','كميات كبيرة','بلاط بالجملة','أثاث بالجملة'];
+const COMPANY_KEYWORDS  = ['شركة','مؤسسة','صيانة دورية','مجمع','مبنى كبير','برج','فندق','مستشفى','مجمع سكني','مول'];
+
+function smartAnalyze(description: string): { categories: string[]; entityType: string; ambiguous: boolean } {
+  const lower = description.toLowerCase().trim();
+  const matchedCategories = new Set<string>();
+
+  for (const { keywords, categories } of SMART_KEYWORD_MAP) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) {
+        categories.forEach(c => matchedCategories.add(c));
+        break;
+      }
+    }
+  }
+
+  const isSupplier = SUPPLIER_KEYWORDS.some(kw => lower.includes(kw));
+  const isCompany  = COMPANY_KEYWORDS.some(kw => lower.includes(kw));
+
+  let entityType = 'technician';
+  if (isSupplier) entityType = 'supplier';
+  else if (isCompany) entityType = 'company';
+
+  const ambiguous = matchedCategories.size === 0 && !isSupplier && !isCompany;
+
+  return { categories: Array.from(matchedCategories), entityType, ambiguous };
+}
+
+router.post("/smart-search", async (req, res): Promise<void> => {
+  const { cityId, description, forceType } = req.body as { cityId?: string; description?: string; forceType?: string };
+  if (!description?.trim()) { res.status(400).json({ error: "description required" }); return; }
+
+  const { categories, entityType, ambiguous } = smartAnalyze(description.trim());
+  if (ambiguous && !forceType) {
+    res.json({ ambiguous: true, technicians: [], companies: [], suppliers: [] });
+    return;
+  }
+
+  const resolvedType = forceType || entityType;
+  const catList = categories.length > 0 ? categories : [];
+
+  // Score helper: higher = better
+  const scoreT = (t: typeof techniciansTable.$inferSelect) =>
+    (catList.includes(t.categoryId ?? '') ? 20 : 0) +
+    (t.isFeatured ? 8 : 0) +
+    ((t.rating ?? 0) * 3) +
+    Math.min((t.workImages as string[] ?? []).length, 5);
+
+  try {
+    // Resolve city name (companies/suppliers store city as Arabic text)
+    let cityNameAr: string | undefined;
+    if (cityId) {
+      const cityRow = await db.select({ nameAr: citiesTable.nameAr })
+        .from(citiesTable).where(eq(citiesTable.id, cityId)).limit(1);
+      cityNameAr = cityRow[0]?.nameAr;
+    }
+
+    const [techRows, compRows, suppRows] = await Promise.all([
+      resolvedType !== 'supplier' && resolvedType !== 'company'
+        ? db.select({
+            tech: techniciansTable,
+            cityNameAr: citiesTable.nameAr,
+            cityNameEn: citiesTable.nameEn,
+            categoryAr: categoriesTable.nameAr,
+            categoryEn: categoriesTable.nameEn,
+          })
+          .from(techniciansTable)
+          .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+          .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
+          .where(and(
+            eq(techniciansTable.isApproved, true),
+            eq(techniciansTable.isActive, true),
+            cityId ? eq(techniciansTable.cityId, cityId) : undefined,
+            catList.length > 0 ? inArray(techniciansTable.categoryId, catList) : undefined,
+          ))
+          .limit(100)
+        : Promise.resolve([]),
+
+      resolvedType === 'company' || resolvedType === 'all'
+        ? db.select({
+            company: companyApplicationsTable,
+            categoryAr: categoriesTable.nameAr,
+            categoryEn: categoriesTable.nameEn,
+          })
+          .from(companyApplicationsTable)
+          .leftJoin(categoriesTable, eq(companyApplicationsTable.specialty, categoriesTable.id))
+          .where(and(
+            eq(companyApplicationsTable.status, 'published'),
+            cityNameAr ? ilike(companyApplicationsTable.city, `%${cityNameAr}%`) : undefined,
+            catList.length > 0 ? inArray(companyApplicationsTable.specialty, catList) : undefined,
+          ))
+          .limit(50)
+        : Promise.resolve([]),
+
+      resolvedType === 'supplier' || resolvedType === 'all'
+        ? db.select({
+            id: supplierApplicationsTable.id,
+            businessName: supplierApplicationsTable.businessName,
+            city: supplierApplicationsTable.city,
+            supplyType: supplierApplicationsTable.supplyType,
+            customSupplyType: supplierApplicationsTable.customSupplyType,
+            logo: supplierApplicationsTable.logo,
+          })
+          .from(supplierApplicationsTable)
+          .where(and(
+            eq(supplierApplicationsTable.status, 'published'),
+            cityNameAr ? ilike(supplierApplicationsTable.city, `%${cityNameAr}%`) : undefined,
+          ))
+          .limit(50)
+        : Promise.resolve([]),
+    ]);
+
+    // Sort technicians by score desc, take top 6
+    const sortedTechs = (techRows as any[])
+      .sort((a, b) => scoreT(b.tech) - scoreT(a.tech))
+      .slice(0, 6)
+      .map(r => ({
+        id: r.tech.id,
+        nameAr: r.tech.nameAr,
+        nameEn: r.tech.nameEn,
+        profilePhoto: r.tech.profilePhoto,
+        rating: r.tech.rating ?? 0,
+        categoryAr: r.categoryAr ?? '',
+        categoryEn: r.categoryEn ?? '',
+        cityNameAr: r.cityNameAr ?? '',
+        cityNameEn: r.cityNameEn ?? '',
+      }));
+
+    const sortedComps = (compRows as any[])
+      .sort((a, b) => ((b.company.rating ?? 0) - (a.company.rating ?? 0)))
+      .slice(0, 4)
+      .map(r => ({
+        id: r.company.id,
+        companyName: r.company.companyName,
+        companyLogo: r.company.companyLogo,
+        rating: r.company.rating ?? 0,
+        city: r.company.city,
+        categoryAr: r.categoryAr ?? '',
+        categoryEn: r.categoryEn ?? '',
+      }));
+
+    const sortedSupps = (suppRows as any[]).slice(0, 4).map(r => ({
+      id: r.id,
+      businessName: r.businessName,
+      logo: r.logo,
+      city: r.city,
+      supplyType: r.supplyType,
+      customSupplyType: r.customSupplyType,
+    }));
+
+    res.json({
+      ambiguous: false,
+      entityType: resolvedType,
+      technicians: sortedTechs,
+      companies:   sortedComps,
+      suppliers:   sortedSupps,
+    });
+  } catch (err) {
+    console.error('[smart-search]', err);
+    res.status(500).json({ error: 'Internal error' });
+  }
+});
+
 // ── Single Technician ─────────────────────────────────────────────────────────
 // ── Technician name search ────────────────────────────────────────────────────
 router.get("/technicians/search", async (req, res): Promise<void> => {
