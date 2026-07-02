@@ -652,6 +652,128 @@ function smartAnalyze(description: string): { categories: string[]; entityType: 
   return { categories: Array.from(matchedCategories), entityType, ambiguous };
 }
 
+// ── Phase 2: AI Tag-aware scoring ────────────────────────────────────────────
+
+// Action-verb prefixes that identify a tag as describing a SERVICE (what the pro DOES)
+const SERVICE_TAG_PREFIXES = [
+  'تركيب','صيانة','إصلاح','تعبئة','تمديد','تأسيس','نصب','تنفيذ',
+  'أعمال','إنشاء','تشغيل','فحص','تغيير','تصليح','طلاء','دهان',
+  'تنظيف','مكافحة','نقل','تجهيز','توصيل','تصميم','برمجة','بيع',
+  'توريد','إعادة','رفع','حفر','لحام','قص','تلييس','تسوية','عزل',
+  'تركيبات','تشطيب','تفصيل','تجليد','تأجير','تحميل',
+];
+
+function isServiceTag(tag: string): boolean {
+  const t = tag.trim();
+  return SERVICE_TAG_PREFIXES.some(p => t.startsWith(p));
+}
+
+// Arabic stopwords to remove before matching query tokens against tags
+const STOPWORDS = new Set([
+  'في','من','على','إلى','عن','هل','أو','لا','ما','هذا','هذه',
+  'إن','أن','و','أريد','أحتاج','عندي','عندنا','لدي','بدي','أبغى',
+  'محتاج','ابي','ابغى','ودي','عايز','طلب','ممكن','مشكلة','مشكله',
+  'يوجد','يوجد','عندي','منزل','بيت','شقة',
+]);
+
+/**
+ * Split user query into meaningful Arabic tokens (≥2 chars, no stopwords).
+ * These tokens are matched against AI tag strings.
+ */
+function tokenizeQuery(q: string): string[] {
+  return q
+    .split(/[\s،,\.؟?!،;]+/)
+    .map(t => t.trim())
+    .filter(t => t.length >= 2 && !STOPWORDS.has(t));
+}
+
+/**
+ * SERVICE tag score — decreasing points per matched service tag.
+ * First match = 10 pts, second = 8, third = 6, then 5, 4, 3 …
+ * Hard cap: 50 pts total.
+ */
+const SERVICE_TAG_WEIGHTS = [10, 8, 6, 5, 4, 3, 3, 2];
+
+function serviceTagScore(tags: string[], tokens: string[]): number {
+  if (!tokens.length) return 0;
+  let matchCount = 0;
+  let total = 0;
+  for (const tag of tags) {
+    if (!isServiceTag(tag)) continue;
+    const tagLower = tag.toLowerCase();
+    const hit = tokens.some(tok => tagLower.includes(tok));
+    if (hit) {
+      total += SERVICE_TAG_WEIGHTS[Math.min(matchCount, SERVICE_TAG_WEIGHTS.length - 1)];
+      matchCount++;
+      if (total >= 50) break;
+    }
+  }
+  return Math.min(total, 50);
+}
+
+/**
+ * MARKETING tag bonus — 1 pt per matched marketing tag, max 5.
+ * Only helps distinguish profiles that are otherwise similarly scored.
+ */
+function marketingTagBonus(tags: string[], tokens: string[]): number {
+  if (!tokens.length) return 0;
+  let bonus = 0;
+  for (const tag of tags) {
+    if (isServiceTag(tag)) continue;
+    const tagLower = tag.toLowerCase();
+    if (tokens.some(tok => tagLower.includes(tok))) {
+      bonus++;
+      if (bonus >= 5) break;
+    }
+  }
+  return bonus;
+}
+
+/** Description text match: 5 pts if any query token found in profile description. */
+function descriptionScore(descAr: string | null | undefined, descEn: string | null | undefined, tokens: string[]): number {
+  if (!tokens.length) return 0;
+  const text = ((descAr ?? '') + ' ' + (descEn ?? '')).toLowerCase();
+  return tokens.some(tok => tok.length >= 3 && text.includes(tok)) ? 5 : 0;
+}
+
+/** Full scoring for a technician row. */
+function scoreTech(tech: any, catList: string[], tokens: string[]): number {
+  const tags: string[] = Array.isArray(tech.aiTags) ? tech.aiTags : [];
+  return (
+    (catList.includes(tech.categoryId ?? '') ? 30 : 0) +
+    serviceTagScore(tags, tokens) +
+    marketingTagBonus(tags, tokens) +
+    descriptionScore(tech.descriptionAr, tech.descriptionEn, tokens) +
+    ((tech.rating ?? 0) * 4) +
+    Math.min(Array.isArray(tech.workImages) ? tech.workImages.length : 0, 5) +
+    (tech.isFeatured ? 5 : 0)
+  );
+}
+
+/** Full scoring for a company row. */
+function scoreComp(company: any, catList: string[], tokens: string[]): number {
+  const tags: string[] = Array.isArray(company.aiTags) ? company.aiTags : [];
+  return (
+    (catList.includes(company.specialty ?? '') ? 30 : 0) +
+    serviceTagScore(tags, tokens) +
+    marketingTagBonus(tags, tokens) +
+    descriptionScore(company.description, null, tokens) +
+    ((parseFloat(company.rating) || 0) * 4) +
+    Math.min(Array.isArray(company.workImages) ? company.workImages.length : 0, 5)
+  );
+}
+
+/** Full scoring for a supplier row. */
+function scoreSupp(supp: any, tokens: string[]): number {
+  const tags: string[] = Array.isArray(supp.aiTags) ? supp.aiTags : [];
+  return (
+    serviceTagScore(tags, tokens) +
+    marketingTagBonus(tags, tokens) +
+    descriptionScore(supp.description, null, tokens) +
+    ((supp.rating ?? 0) * 4)
+  );
+}
+
 router.post("/smart-search", async (req, res): Promise<void> => {
   const { cityId, description, forceType } = req.body as { cityId?: string; description?: string; forceType?: string };
   if (!description?.trim()) { res.status(400).json({ error: "description required" }); return; }
@@ -665,12 +787,8 @@ router.post("/smart-search", async (req, res): Promise<void> => {
   const resolvedType = forceType || entityType;
   const catList = categories.length > 0 ? categories : [];
 
-  // Score helper: higher = better
-  const scoreT = (t: typeof techniciansTable.$inferSelect) =>
-    (catList.includes(t.categoryId ?? '') ? 20 : 0) +
-    (t.isFeatured ? 8 : 0) +
-    ((t.rating ?? 0) * 3) +
-    Math.min((t.workImages as string[] ?? []).length, 5);
+  // Tokenize user query for AI-tag matching (Phase 2)
+  const queryTokens = tokenizeQuery(description.trim());
 
   try {
     // Resolve city name (companies/suppliers store city as Arabic text)
@@ -720,12 +838,15 @@ router.post("/smart-search", async (req, res): Promise<void> => {
 
       resolvedType === 'supplier' || resolvedType === 'all'
         ? db.select({
-            id: supplierApplicationsTable.id,
-            businessName: supplierApplicationsTable.businessName,
-            city: supplierApplicationsTable.city,
-            supplyType: supplierApplicationsTable.supplyType,
+            id:              supplierApplicationsTable.id,
+            businessName:    supplierApplicationsTable.businessName,
+            city:            supplierApplicationsTable.city,
+            supplyType:      supplierApplicationsTable.supplyType,
             customSupplyType: supplierApplicationsTable.customSupplyType,
-            logo: supplierApplicationsTable.logo,
+            logo:            supplierApplicationsTable.logo,
+            aiTags:          (supplierApplicationsTable as any).aiTags,
+            description:     supplierApplicationsTable.description,
+            rating:          supplierApplicationsTable.rating,
           })
           .from(supplierApplicationsTable)
           .where(and(
@@ -736,43 +857,51 @@ router.post("/smart-search", async (req, res): Promise<void> => {
         : Promise.resolve([]),
     ]);
 
-    // Sort technicians by score desc, take top 6
+    // ── Sort technicians: Phase 2 AI-tag-aware scoring ──────────────────────
     const sortedTechs = (techRows as any[])
-      .sort((a, b) => scoreT(b.tech) - scoreT(a.tech))
+      .map(r => ({ ...r, _score: scoreTech(r.tech, catList, queryTokens) }))
+      .sort((a, b) => b._score - a._score)
       .slice(0, 6)
       .map(r => ({
-        id: r.tech.id,
-        nameAr: r.tech.nameAr,
-        nameEn: r.tech.nameEn,
+        id:          r.tech.id,
+        nameAr:      r.tech.nameAr,
+        nameEn:      r.tech.nameEn,
         profilePhoto: r.tech.profilePhoto,
-        rating: r.tech.rating ?? 0,
-        categoryAr: r.categoryAr ?? '',
-        categoryEn: r.categoryEn ?? '',
-        cityNameAr: r.cityNameAr ?? '',
-        cityNameEn: r.cityNameEn ?? '',
+        rating:      r.tech.rating ?? 0,
+        categoryAr:  r.categoryAr ?? '',
+        categoryEn:  r.categoryEn ?? '',
+        cityNameAr:  r.cityNameAr ?? '',
+        cityNameEn:  r.cityNameEn ?? '',
       }));
 
+    // ── Sort companies: Phase 2 AI-tag-aware scoring ─────────────────────────
     const sortedComps = (compRows as any[])
-      .sort((a, b) => ((b.company.rating ?? 0) - (a.company.rating ?? 0)))
+      .map(r => ({ ...r, _score: scoreComp(r.company, catList, queryTokens) }))
+      .sort((a, b) => b._score - a._score)
       .slice(0, 4)
       .map(r => ({
-        id: r.company.id,
+        id:          r.company.id,
         companyName: r.company.companyName,
         companyLogo: r.company.companyLogo,
-        rating: r.company.rating ?? 0,
-        city: r.company.city,
-        categoryAr: r.categoryAr ?? '',
-        categoryEn: r.categoryEn ?? '',
+        rating:      parseFloat(r.company.rating) || 0,
+        city:        r.company.city,
+        categoryAr:  r.categoryAr ?? '',
+        categoryEn:  r.categoryEn ?? '',
       }));
 
-    const sortedSupps = (suppRows as any[]).slice(0, 4).map(r => ({
-      id: r.id,
-      businessName: r.businessName,
-      logo: r.logo,
-      city: r.city,
-      supplyType: r.supplyType,
-      customSupplyType: r.customSupplyType,
-    }));
+    // ── Sort suppliers: Phase 2 AI-tag-aware scoring ─────────────────────────
+    const sortedSupps = (suppRows as any[])
+      .map(r => ({ ...r, _score: scoreSupp(r, queryTokens) }))
+      .sort((a, b) => b._score - a._score)
+      .slice(0, 4)
+      .map(r => ({
+        id:              r.id,
+        businessName:    r.businessName,
+        logo:            r.logo,
+        city:            r.city,
+        supplyType:      r.supplyType,
+        customSupplyType: r.customSupplyType,
+      }));
 
     res.json({
       ambiguous: false,
