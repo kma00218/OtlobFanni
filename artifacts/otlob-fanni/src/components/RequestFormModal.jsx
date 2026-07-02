@@ -53,7 +53,7 @@ async function uploadPhoto(file) {
   return objectPath
 }
 
-function buildWhatsAppMsg(form, ownerName, profileUrl, ar, photoUrls) {
+function buildWhatsAppMsg(form, ownerName, profileUrl, ar, photoUrls, requestLink) {
   const photos = photoUrls.length > 0
     ? (ar ? `\n📷 صور:\n` : `\n📷 Photos:\n`) + photoUrls.map(u => `• ${u}`).join('\n')
     : ''
@@ -67,7 +67,8 @@ function buildWhatsAppMsg(form, ownerName, profileUrl, ar, photoUrls) {
       (form.preferredDatetime ? `🗓 الوقت المفضل: ${form.preferredDatetime}\n` : '') +
       (form.description ? `📝 التفاصيل: ${form.description}\n` : '') +
       photos +
-      `\n🔗 الملف الشخصي: ${profileUrl}`
+      `\n🔗 الملف الشخصي: ${profileUrl}` +
+      (requestLink ? `\n\n📋 لعرض الطلب مباشرةً في تطبيقك:\n${requestLink}` : '')
   }
   return `🔧 New Service Request — OtlobFanni\n\n` +
     `👤 Name: ${form.customerName}\n` +
@@ -78,7 +79,8 @@ function buildWhatsAppMsg(form, ownerName, profileUrl, ar, photoUrls) {
     (form.preferredDatetime ? `🗓 Preferred Time: ${form.preferredDatetime}\n` : '') +
     (form.description ? `📝 Details: ${form.description}\n` : '') +
     photos +
-    `\n🔗 Profile: ${profileUrl}`
+    `\n🔗 Profile: ${profileUrl}` +
+    (requestLink ? `\n\n📋 View request directly in your app:\n${requestLink}` : '')
 }
 
 /* ─────────────── Libyan phone input (inline, styled to match form) ─────────────── */
@@ -204,7 +206,7 @@ export default function RequestFormModal({
       if (photos.length) paths = await Promise.all(photos.map(p => uploadPhoto(p.file)))
       const servingUrls = paths.map(p => `${window.location.origin}/api/storage${p}`)
 
-      await api.createServiceRequest({
+      const created = await api.createServiceRequest({
         ownerId, ownerType,
         customerName:      form.customerName.trim(),
         whatsappPhone:     form.whatsappPhone,
@@ -217,7 +219,8 @@ export default function RequestFormModal({
         photoUrls:         servingUrls.length ? servingUrls : undefined,
       })
       setDone(true)
-      const msg = buildWhatsAppMsg(form, ownerName, profileUrl, ar, servingUrls)
+      const requestLink = created?.id ? `${window.location.origin}/pro?requestId=${created.id}` : ''
+      const msg = buildWhatsAppMsg(form, ownerName, profileUrl, ar, servingUrls, requestLink)
       if (waWin) waWin.location.href = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`
       else setTimeout(() => window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank'), 100)
     } catch {

@@ -71,7 +71,9 @@ export default function ProLogin() {
     try {
       const data = await api.pro.login(fullPhone, pin)
       localStorage.setItem('pro_session', JSON.stringify(data))
-      navigate('/pro')
+      const params = new URLSearchParams(window.location.search)
+      const requestId = params.get('requestId')
+      navigate(requestId ? `/pro?requestId=${requestId}` : '/pro')
     } catch (err) {
       if (err.message?.includes('403')) {
         setPinNotSet(true)

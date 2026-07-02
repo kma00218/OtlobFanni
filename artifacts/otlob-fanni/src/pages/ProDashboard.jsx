@@ -68,16 +68,15 @@ const DEAL_STATUS_CONFIG = {
 }
 
 const REQUEST_STATUS_CONFIG = {
-  new:                                    { label: 'جديد',                      color: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500'    },
-  contacted:                              { label: 'تم التواصل',               color: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500'   },
-  in_progress:                            { label: 'قيد التنفيذ',               color: 'bg-orange-100 text-orange-700',   dot: 'bg-orange-500'  },
-  customer_confirmed_started:             { label: 'العميل أكد البداية ✓',      color: 'bg-indigo-100 text-indigo-700',   dot: 'bg-indigo-500'  },
-  pending_customer_completion_confirmation:{ label: 'بانتظار تأكيد العميل',      color: 'bg-purple-100 text-purple-700',   dot: 'bg-purple-500'  },
-  completed_confirmed:                    { label: 'مكتمل ومؤكد ✓',             color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  amount_disputed:                        { label: 'خلاف على القيمة',           color: 'bg-yellow-100 text-yellow-700',   dot: 'bg-yellow-500'  },
-  completion_disputed:                    { label: 'خلاف على الإنهاء',          color: 'bg-red-100 text-red-700',         dot: 'bg-red-500'     },
-  completed:                              { label: 'مكتمل',                     color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  cancelled:                              { label: 'ملغي',                      color: 'bg-gray-100 text-gray-500',       dot: 'bg-gray-400'    },
+  new:                              { label: 'جديد',                 color: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500'    },
+  contacted:                        { label: 'تم التواصل',          color: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500'   },
+  in_progress:                      { label: 'قيد التنفيذ',          color: 'bg-orange-100 text-orange-700',   dot: 'bg-orange-500'  },
+  awaiting_customer_confirmation:   { label: 'بانتظار تأكيد العميل', color: 'bg-purple-100 text-purple-700',   dot: 'bg-purple-500'  },
+  completed_confirmed:              { label: 'مكتمل ومؤكد ✓',        color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  amount_disputed:                  { label: 'خلاف على القيمة',      color: 'bg-yellow-100 text-yellow-700',   dot: 'bg-yellow-500'  },
+  completion_disputed:              { label: 'خلاف على الإنهاء',     color: 'bg-red-100 text-red-700',         dot: 'bg-red-500'     },
+  completed:                        { label: 'مكتمل',                color: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  cancelled:                        { label: 'ملغي',                 color: 'bg-gray-100 text-gray-500',       dot: 'bg-gray-400'    },
 }
 
 // ── Stat Card ───────────────────────────────────────────────────────────────
@@ -208,16 +207,29 @@ function DealCard({ deal, onDelete }) {
 }
 
 // ── Request Card ─────────────────────────────────────────────────────────────
-function RequestCard({ req, onStatusChange, onMarkRead, proName }) {
+function RequestCard({ req, onStatusChange, onMarkRead, proName, highlighted }) {
   const [updating,          setUpdating]          = useState(false)
   const [lifecycleUpdating, setLifecycleUpdating] = useState(false)
-  const [expanded,          setExpanded]          = useState(false)
+  const [expanded,          setExpanded]          = useState(!!highlighted)
   const [localRead,         setLocalRead]         = useState(req.isRead)
   const [showCompleteForm,  setShowCompleteForm]  = useState(false)
   const [completeAmount,    setCompleteAmount]    = useState('')
   const [completeNotes,     setCompleteNotes]     = useState('')
   const [completeErr,       setCompleteErr]       = useState('')
+  const cardRef = useRef(null)
   const status = REQUEST_STATUS_CONFIG[req.status] || REQUEST_STATUS_CONFIG.new
+
+  useEffect(() => {
+    if (highlighted && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      if (!localRead) {
+        setLocalRead(true)
+        api.markRequestRead(req.id).catch(() => {})
+        onMarkRead?.(req.id)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlighted])
 
   const handleExpand = async () => {
     const opening = !expanded
@@ -254,14 +266,7 @@ function RequestCard({ req, onStatusChange, onMarkRead, proName }) {
   const handleStartWork = async () => {
     setLifecycleUpdating(true)
     try {
-      const updated = await api.startWork(req.id, { ownerName: proName || null })
-      const tok = updated.confirmationToken
-      const confirmLink = `${window.location.origin}/service-confirm/${tok}`
-      const num = buildPhoneNum()
-      if (num) {
-        const msg = `مرحباً ${req.customerName}، تم تسجيل بداية العمل على طلبك في منصة اطلب فني.\nيرجى تأكيد أن الفني بدأ العمل من خلال الرابط التالي:\n${confirmLink}`
-        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank')
-      }
+      await api.startWork(req.id, { ownerName: proName || null })
       onStatusChange(req.id, 'in_progress')
     } catch {}
     finally { setLifecycleUpdating(false) }
@@ -280,7 +285,7 @@ function RequestCard({ req, onStatusChange, onMarkRead, proName }) {
         const msg = `مرحباً ${req.customerName}، تم تسجيل انتهاء الخدمة في منصة اطلب فني.\nقيمة الخدمة المسجلة: ${completeAmount} د.ل\nيرجى تأكيد انتهاء الخدمة وتقييم الفني من خلال الرابط التالي:\n${confirmLink}`
         window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank')
       }
-      onStatusChange(req.id, 'pending_customer_completion_confirmation')
+      onStatusChange(req.id, 'awaiting_customer_confirmation')
       setShowCompleteForm(false)
       setCompleteAmount('')
       setCompleteNotes('')
@@ -289,14 +294,14 @@ function RequestCard({ req, onStatusChange, onMarkRead, proName }) {
   }
 
   const isUnread   = !localRead
-  const isTerminal = ['completed_confirmed', 'amount_disputed', 'completion_disputed', 'completed', 'cancelled', 'pending_customer_completion_confirmation'].includes(req.status)
+  const isTerminal = ['completed_confirmed', 'amount_disputed', 'completion_disputed', 'completed', 'cancelled', 'awaiting_customer_confirmation'].includes(req.status)
   const canStartWork = ['new', 'contacted'].includes(req.status)
-  const canComplete  = ['in_progress', 'customer_confirmed_started'].includes(req.status)
+  const canComplete  = ['in_progress'].includes(req.status)
 
   return (
-    <div className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all ${
-      isUnread ? 'ring-2 ring-[#FF7900]/40' : ''
-    }`} style={{ border: isUnread ? '1px solid #FF7900' : '1px solid #F0F2F5' }}>
+    <div ref={cardRef} className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all ${
+      isUnread || highlighted ? 'ring-2 ring-[#FF7900]/40' : ''
+    }`} style={{ border: isUnread || highlighted ? '1px solid #FF7900' : '1px solid #F0F2F5' }}>
 
       {/* ── Collapsed header (always visible) ── */}
       <button type="button" onClick={handleExpand}
@@ -469,11 +474,13 @@ function RequestCard({ req, onStatusChange, onMarkRead, proName }) {
 // ── Filter Chips ─────────────────────────────────────────────────────────────
 function FilterChips({ active, onChange, counts }) {
   const filters = [
-    { key: 'all',       label: 'الكل',        count: counts.all },
-    { key: 'new',       label: 'جديد',        count: counts.new },
-    { key: 'contacted', label: 'تم التواصل', count: counts.contacted },
-    { key: 'completed', label: 'مكتمل',       count: counts.completed },
-    { key: 'cancelled', label: 'ملغي',        count: counts.cancelled },
+    { key: 'all',                            label: 'الكل',                 count: counts.all },
+    { key: 'new',                            label: 'جديد',                 count: counts.new },
+    { key: 'contacted',                      label: 'تم التواصل',          count: counts.contacted },
+    { key: 'in_progress',                    label: 'قيد التنفيذ',          count: counts.in_progress },
+    { key: 'awaiting_customer_confirmation', label: 'بانتظار تأكيد العميل', count: counts.awaiting_customer_confirmation },
+    { key: 'completed',                      label: 'مكتمل',                count: counts.completed },
+    { key: 'cancelled',                      label: 'ملغي',                 count: counts.cancelled },
   ]
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
@@ -548,12 +555,17 @@ export default function ProDashboard() {
   const [cities,         setCities]        = useState([])
   const [perfStats,      setPerfStats]     = useState(null)
   const [perfLoading,    setPerfLoading]   = useState(false)
+  const [highlightId,    setHighlightId]   = useState(null)
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
-    if (!raw) { navigate('/pro-login'); return }
+    if (!raw) { navigate('/pro-login' + window.location.search); return }
     try { setSession(JSON.parse(raw)) }
-    catch { localStorage.removeItem('pro_session'); navigate('/pro-login') }
+    catch { localStorage.removeItem('pro_session'); navigate('/pro-login' + window.location.search) }
+
+    const params = new URLSearchParams(window.location.search)
+    const reqId = params.get('requestId')
+    if (reqId) { setActiveTab('requests'); setHighlightId(reqId) }
 
     api.categories().then(cats => {
       setCategories(cats.filter(c => c.isActive !== false))
@@ -654,12 +666,22 @@ export default function ProDashboard() {
 
   // Request counts for filter chips
   const reqCounts = {
-    all:       requests.length,
-    new:       requests.filter(r => r.status === 'new').length,
-    contacted: requests.filter(r => r.status === 'contacted').length,
-    completed: requests.filter(r => r.status === 'completed').length,
-    cancelled: requests.filter(r => r.status === 'cancelled').length,
+    all:                            requests.length,
+    new:                            requests.filter(r => r.status === 'new').length,
+    contacted:                      requests.filter(r => r.status === 'contacted').length,
+    in_progress:                    requests.filter(r => r.status === 'in_progress').length,
+    awaiting_customer_confirmation: requests.filter(r => r.status === 'awaiting_customer_confirmation').length,
+    completed:                      requests.filter(r => ['completed', 'completed_confirmed'].includes(r.status)).length,
+    cancelled:                      requests.filter(r => r.status === 'cancelled').length,
   }
+
+  // Status summary counters shown atop the requests tab
+  const statusSummary = [
+    { key: 'new',                            emoji: '🟠', label: 'جديدة',                  count: requests.filter(r => r.status === 'new').length },
+    { key: 'in_progress',                    emoji: '🔵', label: 'قيد التنفيذ',             count: requests.filter(r => r.status === 'in_progress').length },
+    { key: 'awaiting_customer_confirmation', emoji: '🟢', label: 'بانتظار تأكيد العميل',    count: requests.filter(r => r.status === 'awaiting_customer_confirmation').length },
+    { key: 'completed',                      emoji: '⭐', label: 'مكتملة',                  count: requests.filter(r => ['completed', 'completed_confirmed'].includes(r.status)).length },
+  ]
 
   // Deal counts for filter chips
   const dealCounts = {
@@ -670,7 +692,11 @@ export default function ProDashboard() {
   }
 
   // Filtered lists
-  const filteredRequests = reqFilter === 'all' ? requests : requests.filter(r => r.status === reqFilter)
+  const filteredRequests = reqFilter === 'all'
+    ? requests
+    : reqFilter === 'completed'
+      ? requests.filter(r => ['completed', 'completed_confirmed'].includes(r.status))
+      : requests.filter(r => r.status === reqFilter)
   const filteredDeals    = dealFilter === 'all' ? deals    : deals.filter(d => d.status === dealFilter)
 
   const handleStatusChange = (id, newStatus) => {
@@ -1008,6 +1034,23 @@ export default function ProDashboard() {
               </button>
             </div>
 
+            {/* Status summary counters */}
+            {requests.length > 0 && (
+              <div className="grid grid-cols-4 gap-2">
+                {statusSummary.map(s => (
+                  <button key={s.key} onClick={() => setReqFilter(reqFilter === s.key ? 'all' : s.key)}
+                    className={`flex flex-col items-center gap-0.5 py-2 rounded-xl transition-all ${
+                      reqFilter === s.key ? 'bg-white shadow-sm ring-1 ring-[#FF7900]/40' : 'bg-white/60'
+                    }`}
+                    style={{ border: '1px solid #F0F2F5' }}>
+                    <span className="text-base leading-none">{s.emoji}</span>
+                    <span className="font-black text-[#071B33] text-sm leading-none">{s.count}</span>
+                    <span className="text-[9px] text-gray-400 text-center leading-tight px-0.5">{s.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Filter chips */}
             {requests.length > 0 && (
               <FilterChips active={reqFilter} onChange={setReqFilter} counts={reqCounts} />
@@ -1029,7 +1072,8 @@ export default function ProDashboard() {
             ) : (
               <div className="space-y-3">
                 {filteredRequests.map(r => (
-                  <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} onMarkRead={handleMarkRead} proName={session.displayName} />
+                  <RequestCard key={r.id} req={r} onStatusChange={handleStatusChange} onMarkRead={handleMarkRead}
+                    proName={session.displayName} highlighted={r.id === highlightId} />
                 ))}
               </div>
             )}

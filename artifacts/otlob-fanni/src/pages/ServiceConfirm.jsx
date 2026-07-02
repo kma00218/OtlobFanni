@@ -5,9 +5,7 @@ import { api } from '../lib/api'
 
 const PHASE = {
   loading: 'loading',
-  start:   'start',            // status=in_progress
-  started: 'started',          // status=customer_confirmed_started (already confirmed)
-  complete:'complete',          // status=pending_customer_completion_confirmation
+  complete:'complete',          // status=awaiting_customer_confirmation
   done:    'done',              // terminal
   invalid: 'invalid',
   error:   'error',
@@ -61,25 +59,13 @@ export default function ServiceConfirm() {
       .then(d => {
         setData(d)
         const s = d.status
-        if (s === 'in_progress')                         setPhase(PHASE.start)
-        else if (s === 'customer_confirmed_started')     setPhase(PHASE.started)
-        else if (s === 'pending_customer_completion_confirmation') setPhase(PHASE.complete)
+        if (s === 'awaiting_customer_confirmation')      setPhase(PHASE.complete)
         else if (['completed_confirmed', 'amount_disputed', 'completion_disputed', 'completed', 'cancelled'].includes(s))
                                                           setPhase(PHASE.done)
         else                                              setPhase(PHASE.invalid)
       })
       .catch(() => setPhase(PHASE.error))
   }, [token])
-
-  const handleConfirmStarted = async () => {
-    setSubmitting(true); setErr('')
-    try {
-      await api.serviceConfirm.confirmStarted(token)
-      setSuccess('شكراً لك! تم تأكيد بداية العمل بنجاح.')
-      setPhase(PHASE.done)
-    } catch { setErr('حدث خطأ، يرجى المحاولة مجدداً.') }
-    finally { setSubmitting(false) }
-  }
 
   const handleConfirmCompleted = async () => {
     setErr('')
@@ -119,54 +105,7 @@ export default function ServiceConfirm() {
           </div>
         )}
 
-        {/* ── Phase 1: Confirm work started ── */}
-        {phase === PHASE.start && data && (
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <div className="text-center mb-2">
-              <div className="w-14 h-14 bg-[#FF7900]/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <Wrench className="w-7 h-7 text-[#FF7900]" />
-              </div>
-              <h1 className="font-black text-[#071B33] text-lg leading-tight">هل بدأ {ownerLabel} العمل؟</h1>
-              <p className="text-sm text-gray-400 mt-1">يرجى تأكيد بداية الخدمة</p>
-            </div>
-
-            <div className="bg-[#F8F9FA] rounded-2xl p-4 space-y-2.5">
-              {data.ownerName && (
-                <InfoRow icon={<Wrench className="w-4 h-4" />} text={`${ownerLabel}: ${data.ownerName}`} />
-              )}
-              {(data.requestType || data.categoryName) && (
-                <InfoRow icon={<Wrench className="w-4 h-4" />} text={data.requestType || data.categoryName} />
-              )}
-              {data.cityName && (
-                <InfoRow icon={<MapPin className="w-4 h-4" />} text={data.cityName} />
-              )}
-            </div>
-
-            {err && <p className="text-xs text-red-600 font-semibold text-center">{err}</p>}
-
-            <button onClick={handleConfirmStarted} disabled={submitting}
-              className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-all"
-              style={{ background: 'linear-gradient(135deg, #FF7900, #d96400)' }}>
-              {submitting
-                ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                : <><CheckCircle className="w-4 h-4" /> نعم، الفني بدأ العمل</>
-              }
-            </button>
-
-            <p className="text-center text-[11px] text-gray-300">منصة اطلب فني • otlobfanni.ly</p>
-          </div>
-        )}
-
-        {/* ── Phase 1 already confirmed ── */}
-        {phase === PHASE.started && (
-          <div className="bg-white rounded-3xl p-6 text-center shadow-sm border border-emerald-100">
-            <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-            <p className="font-bold text-gray-700 text-base mb-1">تم التأكيد مسبقاً</p>
-            <p className="text-sm text-gray-400">لقد قمت بتأكيد بداية العمل بالفعل. شكراً!</p>
-          </div>
-        )}
-
-        {/* ── Phase 2: Confirm completion ── */}
+        {/* ── Confirm completion ── */}
         {phase === PHASE.complete && data && (
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
             <div className="text-center mb-2">

@@ -1152,14 +1152,13 @@ router.patch("/service-requests/:id/read", async (req, res): Promise<void> => {
 
 // ── Service Lifecycle ──────────────────────────────────────────────────────────
 
-// Pro starts work → sets status, creates token, returns updated record
+// Pro starts work → sets status to in_progress (no customer link/confirmation needed)
 router.patch("/service-requests/:id/start-work", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const { ownerName } = req.body;
-  const token = crypto.randomBytes(24).toString("hex");
   const now   = new Date();
   const [r] = await db.update(serviceRequestsTable)
-    .set({ status: "in_progress", workStartedAt: now, confirmationToken: token, ownerName: ownerName || null })
+    .set({ status: "in_progress", workStartedAt: now, ownerName: ownerName || null })
     .where(eq(serviceRequestsTable.id, raw))
     .returning();
   if (!r) { res.status(404).json({ error: "Not found" }); return; }
@@ -1185,30 +1184,20 @@ router.get("/service-confirm/:token", async (req, res): Promise<void> => {
   res.json({ ...r, token });
 });
 
-// Customer confirms work has started
-router.post("/service-confirm/:token/confirm-started", async (req, res): Promise<void> => {
-  const { token } = req.params;
-  const now = new Date();
-  const [r] = await db.update(serviceRequestsTable)
-    .set({ status: "customer_confirmed_started", customerStartedConfirmedAt: now })
-    .where(eq(serviceRequestsTable.confirmationToken, token))
-    .returning({ id: serviceRequestsTable.id });
-  if (!r) { res.status(404).json({ error: "الرابط غير صالح" }); return; }
-  res.json({ ok: true });
-});
-
 // Pro completes service (service_amount is required)
 router.patch("/service-requests/:id/complete", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const { serviceAmount, completionNotes } = req.body;
   if (!serviceAmount) { res.status(400).json({ error: "قيمة الخدمة مطلوبة" }); return; }
   const commission = (parseFloat(String(serviceAmount)) * 0.02).toFixed(2);
+  const token = crypto.randomBytes(24).toString("hex");
   const [r] = await db.update(serviceRequestsTable)
     .set({
-      status:             "pending_customer_completion_confirmation",
+      status:             "awaiting_customer_confirmation",
       serviceAmount:      String(serviceAmount),
       completionNotes:    completionNotes || null,
       platformCommission: commission,
+      confirmationToken:  token,
     })
     .where(eq(serviceRequestsTable.id, raw))
     .returning();

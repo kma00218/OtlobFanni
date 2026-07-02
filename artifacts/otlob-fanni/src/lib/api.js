@@ -125,7 +125,6 @@ export const api = {
 
   serviceConfirm: {
     get:             (token)       => get(`/service-confirm/${token}`),
-    confirmStarted:  (token)       => post(`/service-confirm/${token}/confirm-started`, {}),
     confirmCompleted:(token, data) => post(`/service-confirm/${token}/confirm-completed`, data),
   },
 
