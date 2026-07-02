@@ -61,17 +61,28 @@ function TechCard({ item, ar, t, navigate, onClose }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
   const category = ar ? item.categoryAr : (item.categoryEn || item.categoryAr)
   const photo = getFileUrl(item.profilePhoto)
+  const isExact = item.matchLevel === 'exact'
   return (
     <div className="bg-white rounded-2xl p-3.5 flex items-center gap-3 shadow-sm"
-      style={{ border: '1.5px solid #E8ECF0' }}>
-      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+      style={{ border: `1.5px solid ${isExact ? '#FFD4A3' : '#E8ECF0'}` }}>
+      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 relative">
         {photo
           ? <img src={photo} alt={name} className="w-full h-full object-cover" />
           : <div className="w-full h-full flex items-center justify-center text-xl">👷</div>}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-[#071B33] text-sm truncate">{name}</p>
-        {category && <p className="text-xs font-semibold truncate" style={{ color: '#FF7900' }}>{category}</p>}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="font-bold text-[#071B33] text-sm truncate">{name}</p>
+          {isExact && (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white flex-shrink-0"
+              style={{ background: '#FF7900' }}>الأنسب</span>
+          )}
+        </div>
+        {item.matchReason
+          ? <p className="text-xs font-semibold truncate" style={{ color: '#FF7900' }}>{item.matchReason}</p>
+          : category
+            ? <p className="text-xs font-semibold truncate" style={{ color: '#FF7900' }}>{category}</p>
+            : null}
         {item.rating > 0 && (
           <div className="flex items-center gap-1 mt-0.5">
             <StarRating value={item.rating} />
@@ -161,6 +172,9 @@ export default function SmartSearchBox({ cityId }) {
   const [results, setResults]     = useState(null)
   const [ambiguous, setAmbiguous] = useState(false)
   const [error, setError]         = useState('')
+  const [showAllTechs, setShowAllTechs] = useState(false)
+
+  const INITIAL_TECH_LIMIT = 6
 
   // Lock body scroll when sheet is open
   useEffect(() => {
@@ -175,6 +189,7 @@ export default function SmartSearchBox({ cityId }) {
     setLoading(true)
     setResults(null)
     setAmbiguous(false)
+    setShowAllTechs(false)
     try {
       const data = await api.smartSearch({ cityId, description: description.trim(), forceType: overrideType })
       if (data.ambiguous && !overrideType) {
@@ -313,16 +328,45 @@ export default function SmartSearchBox({ cityId }) {
                     <p className="text-center text-sm text-gray-400 py-6">{t.noResults}</p>
                   )}
 
-                  {results.technicians?.length > 0 && (
-                    <div>
-                      <p className="text-xs font-extrabold text-gray-400 uppercase tracking-wide mb-2">👷 {t.techSection}</p>
-                      <div className="space-y-2">
-                        {results.technicians.map(item => (
-                          <TechCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} onClose={closeSheet} />
-                        ))}
+                  {results.technicians?.length > 0 && (() => {
+                    const exactList   = results.technicians.filter(i => i.matchLevel === 'exact')
+                    const relatedList = results.technicians.filter(i => i.matchLevel !== 'exact')
+                    const visibleTechs = showAllTechs
+                      ? results.technicians
+                      : results.technicians.slice(0, INITIAL_TECH_LIMIT)
+                    const hiddenCount = results.technicians.length - INITIAL_TECH_LIMIT
+                    return (
+                      <div>
+                        <p className="text-xs font-extrabold text-gray-400 uppercase tracking-wide mb-2">
+                          👷 {t.techSection} ({results.technicians.length})
+                        </p>
+                        <div className="space-y-2">
+                          {visibleTechs.map((item, idx) => {
+                            const prevItem = visibleTechs[idx - 1]
+                            const showRelatedDivider = item.matchLevel === 'related' && (!prevItem || prevItem.matchLevel === 'exact') && exactList.length > 0
+                            return (
+                              <div key={item.id}>
+                                {showRelatedDivider && (
+                                  <p className="text-[10px] font-bold text-gray-400 px-1 pt-2 pb-1">
+                                    — {ar ? 'ذو صلة' : 'Related'}
+                                  </p>
+                                )}
+                                <TechCard item={item} ar={ar} t={t} navigate={navigate} onClose={closeSheet} />
+                              </div>
+                            )
+                          })}
+                        </div>
+                        {!showAllTechs && hiddenCount > 0 && (
+                          <button
+                            onClick={() => setShowAllTechs(true)}
+                            className="w-full mt-2 py-2.5 rounded-2xl text-sm font-bold active:scale-95 transition-transform"
+                            style={{ background: '#FFF3E8', color: '#FF7900', border: '1.5px solid #FFD4A3' }}>
+                            ⬇ {ar ? `عرض ${hiddenCount} فني إضافي` : `Show ${hiddenCount} more`}
+                          </button>
+                        )}
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
 
                   {results.companies?.length > 0 && (
                     <div>

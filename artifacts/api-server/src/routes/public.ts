@@ -903,20 +903,53 @@ router.post("/smart-search", async (req, res): Promise<void> => {
     }
 
     const sortedTechs = techPool
-      .map(r => ({ ...r, _score: scoreTech(r.tech, catList, queryTokens) }))
+      .map(r => {
+        const tech = r.tech;
+        const tags: string[] = Array.isArray(tech.aiTags) ? tech.aiTags : [];
+        const catMatch  = catList.includes(tech.categoryId ?? '');
+        const svcScore  = serviceTagScore(tags, queryTokens);
+        const mktScore  = marketingTagBonus(tags, queryTokens);
+        const descMatch = descriptionScore(tech.descriptionAr, tech.descriptionEn, queryTokens) > 0;
+
+        // matchLevel: 'exact' = category or service-tag hit; 'related' = only marketing/desc
+        const matchLevel: 'exact' | 'related' = (catMatch || svcScore > 0) ? 'exact' : 'related';
+
+        // matchReason: pick the most descriptive reason
+        let matchReason = '';
+        if (catMatch) matchReason = r.categoryAr ?? '';
+        else if (svcScore > 0) {
+          const hit = tags.find(t => {
+            if (!isServiceTag(t)) return false;
+            return queryTokens.some(tok => t.toLowerCase().includes(tok));
+          });
+          matchReason = hit ?? '';
+        } else if (mktScore > 0) {
+          const hit = tags.find(t => queryTokens.some(tok => t.toLowerCase().includes(tok)));
+          matchReason = hit ?? '';
+        } else if (descMatch) matchReason = 'وصف ذو صلة';
+
+        return {
+          ...r,
+          _score: scoreTech(tech, catList, queryTokens),
+          matchLevel,
+          matchReason,
+        };
+      })
       .filter(r => r._score > 0)
       .sort((a, b) => b._score - a._score)
-      .slice(0, 8)
+      .slice(0, 12)
       .map(r => ({
-        id:          r.tech.id,
-        nameAr:      r.tech.nameAr,
-        nameEn:      r.tech.nameEn,
+        id:           r.tech.id,
+        nameAr:       r.tech.nameAr,
+        nameEn:       r.tech.nameEn,
         profilePhoto: r.tech.profilePhoto,
-        rating:      r.tech.rating ?? 0,
-        categoryAr:  r.categoryAr ?? '',
-        categoryEn:  r.categoryEn ?? '',
-        cityNameAr:  r.cityNameAr ?? '',
-        cityNameEn:  r.cityNameEn ?? '',
+        rating:       r.tech.rating ?? 0,
+        categoryAr:   r.categoryAr ?? '',
+        categoryEn:   r.categoryEn ?? '',
+        cityNameAr:   r.cityNameAr ?? '',
+        cityNameEn:   r.cityNameEn ?? '',
+        matchLevel:   r.matchLevel,
+        matchReason:  r.matchReason,
       }));
 
     // ── Sort companies: Phase 2 AI-tag-aware scoring ─────────────────────────
