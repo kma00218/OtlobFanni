@@ -881,16 +881,24 @@ router.post("/smart-search", async (req, res): Promise<void> => {
         ))
         .limit(100);
 
-      // Merge: deduplicate by id, keep existing entries (they already have category match bonus)
+      // Merge: deduplicate by id, and only add fallback technicians that have
+      // actual tag/description relevance (not just a high rating).
       const existingIds = new Set(techPool.map((r: any) => r.tech.id));
       for (const row of fallbackRows) {
-        if (!existingIds.has((row as any).tech.id)) techPool.push(row);
+        const t = (row as any).tech;
+        if (existingIds.has(t.id)) continue;
+        const tags: string[] = Array.isArray(t.aiTags) ? t.aiTags : [];
+        const relevance =
+          (catList.includes(t.categoryId ?? '') ? 30 : 0) +
+          serviceTagScore(tags, queryTokens) +
+          descriptionScore(t.descriptionAr, t.descriptionEn, queryTokens);
+        if (relevance > 0) techPool.push(row);
       }
     }
 
     const sortedTechs = techPool
       .map(r => ({ ...r, _score: scoreTech(r.tech, catList, queryTokens) }))
-      .filter(r => r._score > 0)           // only show if there's any relevance signal
+      .filter(r => r._score > 0)
       .sort((a, b) => b._score - a._score)
       .slice(0, 8)
       .map(r => ({
