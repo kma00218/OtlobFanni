@@ -858,10 +858,41 @@ router.post("/smart-search", async (req, res): Promise<void> => {
     ]);
 
     // ── Sort technicians: Phase 2 AI-tag-aware scoring ──────────────────────
-    const sortedTechs = (techRows as any[])
+    let techPool = techRows as any[];
+
+    // Fallback: if category filter returned < 3, also fetch all technicians in the
+    // city (no category restriction) and rank by AI tag score — ensures users
+    // always see a useful set of results even in cities with few specialists.
+    if (techPool.length < 3 && cityId && catList.length > 0) {
+      const fallbackRows = await db.select({
+          tech: techniciansTable,
+          cityNameAr: citiesTable.nameAr,
+          cityNameEn: citiesTable.nameEn,
+          categoryAr: categoriesTable.nameAr,
+          categoryEn: categoriesTable.nameEn,
+        })
+        .from(techniciansTable)
+        .leftJoin(citiesTable, eq(techniciansTable.cityId, citiesTable.id))
+        .leftJoin(categoriesTable, eq(techniciansTable.categoryId, categoriesTable.id))
+        .where(and(
+          eq(techniciansTable.isApproved, true),
+          eq(techniciansTable.isActive, true),
+          eq(techniciansTable.cityId, cityId),
+        ))
+        .limit(100);
+
+      // Merge: deduplicate by id, keep existing entries (they already have category match bonus)
+      const existingIds = new Set(techPool.map((r: any) => r.tech.id));
+      for (const row of fallbackRows) {
+        if (!existingIds.has((row as any).tech.id)) techPool.push(row);
+      }
+    }
+
+    const sortedTechs = techPool
       .map(r => ({ ...r, _score: scoreTech(r.tech, catList, queryTokens) }))
+      .filter(r => r._score > 0)           // only show if there's any relevance signal
       .sort((a, b) => b._score - a._score)
-      .slice(0, 6)
+      .slice(0, 8)
       .map(r => ({
         id:          r.tech.id,
         nameAr:      r.tech.nameAr,
