@@ -32,7 +32,12 @@ export default function TechnicianCard({ technician }) {
   const firstName = name ? (name.trim().split(' ')[0] || '؟') : '؟';
 
   return (
-    <Link href={`/technician/${technician.id}`} className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 active:scale-[0.98] transition-all">
+    <Link href={`/technician/${technician.id}`} className="block bg-white rounded-2xl p-4 mb-3 active:scale-[0.98] transition-all"
+      style={{
+        border: '1.5px solid #FFD5A8',
+        borderInlineStart: '4px solid #FF7900',
+        boxShadow: '0 4px 20px rgba(255,121,0,0.14), 0 1px 5px rgba(0,0,0,0.05)'
+      }}>
       <div className="flex items-start gap-3">
 
         {/* Avatar */}

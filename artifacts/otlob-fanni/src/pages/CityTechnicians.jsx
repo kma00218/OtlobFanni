@@ -48,7 +48,12 @@ function TechGrid({ tech, ar, onOpen, isFav, onToggleFav, categoryName }) {
   const whatsapp = tech.whatsapp || phone
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col border-t-[3px] border-t-[#FF7900]"
+    <div className="bg-white rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+      style={{
+        border: '1.5px solid #FFD5A8',
+        borderTop: '4px solid #FF7900',
+        boxShadow: '0 6px 24px rgba(255,121,0,0.18), 0 1px 6px rgba(0,0,0,0.06)'
+      }}
       onClick={() => onOpen(tech.id)}>
       <div className="relative">
         {photo
@@ -113,7 +118,12 @@ function CompanyGrid({ company, ar, onOpen, isFav, onToggleFav }) {
   const whatsapp = company.whatsapp || phone
 
   return (
-    <div className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col border-t-[3px] border-t-[#1e40af]"
+    <div className="bg-white rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+      style={{
+        border: '1.5px solid #BFDBFE',
+        borderTop: '4px solid #1e40af',
+        boxShadow: '0 6px 24px rgba(30,64,175,0.18), 0 1px 6px rgba(0,0,0,0.06)'
+      }}
       onClick={() => onOpen(company.id)}>
       <div className="relative">
         {logo
@@ -171,7 +181,12 @@ function SupplierGrid({ supplier, ar, onOpen }) {
   const whatsapp = supplier.whatsapp || phone
 
   return (
-    <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col border-t-[3px] border-t-[#0e7c8f]"
+    <div className="bg-white rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform flex flex-col"
+      style={{
+        border: '1.5px solid #99F6E4',
+        borderTop: '4px solid #0e7c8f',
+        boxShadow: '0 6px 24px rgba(14,124,143,0.18), 0 1px 6px rgba(0,0,0,0.06)'
+      }}
       onClick={() => onOpen(supplier.id)}>
       <div className="relative">
         {logo
