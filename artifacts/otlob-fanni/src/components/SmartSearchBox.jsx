@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation } from 'wouter'
 import { Sparkles, Search, X } from 'lucide-react'
 import { api, getFileUrl } from '../lib/api'
@@ -6,7 +6,8 @@ import { useLang } from '../context/LanguageContext'
 
 const T = {
   ar: {
-    title:       'البحث الذكي ✨',
+    triggerBtn:  'بحث ذكي بالذكاء الاصطناعي 🤖',
+    title:       'البحث الذكي بالذكاء الاصطناعي',
     desc:        'اكتب مشكلتك بلغتك الطبيعية وسنعرض أنسب النتائج',
     placeholder: 'مثال: المكيف لا يبرد، أريد تركيب كاميرات، تسريب ماء في الحمام...',
     btn:         'اعرض الأنسب',
@@ -21,10 +22,10 @@ const T = {
     compSection: 'شركات مقترحة',
     suppSection: 'موردون مقترحون',
     viewProfile: 'عرض الملف',
-    clear:       'مسح',
   },
   en: {
-    title:       'Smart Search ✨',
+    triggerBtn:  'AI Smart Search 🤖',
+    title:       'AI Smart Search',
     desc:        'Describe your problem naturally and we\'ll find the best match',
     placeholder: 'E.g. AC not cooling, install cameras, water leak in bathroom...',
     btn:         'Show Best Match',
@@ -39,7 +40,6 @@ const T = {
     compSection: 'Suggested Companies',
     suppSection: 'Suggested Suppliers',
     viewProfile: 'View Profile',
-    clear:       'Clear',
   },
 }
 
@@ -57,7 +57,7 @@ function StarRating({ value }) {
   )
 }
 
-function TechCard({ item, ar, t, navigate }) {
+function TechCard({ item, ar, t, navigate, onClose }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
   const category = ar ? item.categoryAr : (item.categoryEn || item.categoryAr)
   const photo = getFileUrl(item.profilePhoto)
@@ -70,8 +70,8 @@ function TechCard({ item, ar, t, navigate }) {
           : <div className="w-full h-full flex items-center justify-center text-xl">👷</div>}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-extrabold text-[#071B33] text-sm truncate">{name}</p>
-        {category && <p className="text-xs text-[#FF7900] font-semibold truncate">{category}</p>}
+        <p className="font-bold text-[#071B33] text-sm truncate">{name}</p>
+        {category && <p className="text-xs font-semibold truncate" style={{ color: '#FF7900' }}>{category}</p>}
         {item.rating > 0 && (
           <div className="flex items-center gap-1 mt-0.5">
             <StarRating value={item.rating} />
@@ -79,7 +79,7 @@ function TechCard({ item, ar, t, navigate }) {
           </div>
         )}
       </div>
-      <button onClick={() => navigate(`/technician/${item.id}`)}
+      <button onClick={() => { navigate(`/technician/${item.id}`); onClose() }}
         className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-white active:scale-95 transition-transform"
         style={{ background: '#FF7900' }}>
         {t.viewProfile}
@@ -88,20 +88,21 @@ function TechCard({ item, ar, t, navigate }) {
   )
 }
 
-function CompCard({ item, ar, t, navigate }) {
+function CompCard({ item, ar, t, navigate, onClose }) {
   const category = ar ? item.categoryAr : (item.categoryEn || item.categoryAr)
   const logo = getFileUrl(item.companyLogo)
+  const name = ar ? (item.company?.nameAr || item.nameAr) : (item.company?.nameEn || item.nameEn || item.nameAr)
   return (
     <div className="bg-white rounded-2xl p-3.5 flex items-center gap-3 shadow-sm"
       style={{ border: '1.5px solid #E8ECF0' }}>
       <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
         {logo
-          ? <img src={logo} alt={item.companyName} className="w-full h-full object-cover" />
+          ? <img src={logo} alt={name} className="w-full h-full object-cover" />
           : <div className="w-full h-full flex items-center justify-center text-xl">🏢</div>}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-extrabold text-[#071B33] text-sm truncate">{item.companyName}</p>
-        {category && <p className="text-xs text-[#FF7900] font-semibold truncate">{category}</p>}
+        <p className="font-bold text-[#071B33] text-sm truncate">{name || item.tradeName}</p>
+        {category && <p className="text-xs font-semibold truncate" style={{ color: '#071B33' }}>{category}</p>}
         {item.rating > 0 && (
           <div className="flex items-center gap-1 mt-0.5">
             <StarRating value={item.rating} />
@@ -109,7 +110,7 @@ function CompCard({ item, ar, t, navigate }) {
           </div>
         )}
       </div>
-      <button onClick={() => navigate(`/company/${item.id}`)}
+      <button onClick={() => { navigate(`/company/${item.id}`); onClose() }}
         className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-white active:scale-95 transition-transform"
         style={{ background: '#071B33' }}>
         {t.viewProfile}
@@ -118,7 +119,7 @@ function CompCard({ item, ar, t, navigate }) {
   )
 }
 
-function SuppCard({ item, ar, t, navigate }) {
+function SuppCard({ item, ar, t, navigate, onClose }) {
   const logo = getFileUrl(item.logo)
   return (
     <div className="bg-white rounded-2xl p-3.5 flex items-center gap-3 shadow-sm"
@@ -129,12 +130,13 @@ function SuppCard({ item, ar, t, navigate }) {
           : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-extrabold text-[#071B33] text-sm truncate">{item.businessName}</p>
+        <p className="font-bold text-[#071B33] text-sm truncate">{item.businessName}</p>
+        {item.supplyType && <p className="text-xs text-gray-500 truncate">{item.supplyType}</p>}
         {item.customSupplyType && (
-          <p className="text-xs text-[#FF7900] font-semibold truncate">{item.customSupplyType}</p>
+          <p className="text-xs font-semibold truncate" style={{ color: '#FF7900' }}>{item.customSupplyType}</p>
         )}
       </div>
-      <button onClick={() => navigate(`/supplier/${item.id}`)}
+      <button onClick={() => { navigate(`/supplier/${item.id}`); onClose() }}
         className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-white active:scale-95 transition-transform"
         style={{ background: '#1a5c3a' }}>
         {t.viewProfile}
@@ -144,8 +146,8 @@ function SuppCard({ item, ar, t, navigate }) {
 }
 
 /**
- * SmartSearchBox — accepts `cityId` directly (no city dropdown needed).
- * Used inside city pages where the city is already known.
+ * SmartSearchBox — compact trigger button + bottom sheet modal.
+ * Accepts `cityId` directly (city page already knows the city).
  */
 export default function SmartSearchBox({ cityId }) {
   const { lang } = useLang()
@@ -153,11 +155,19 @@ export default function SmartSearchBox({ cityId }) {
   const t = T[lang]
   const [, navigate] = useLocation()
 
+  const [open, setOpen]           = useState(false)
   const [description, setDescription] = useState('')
-  const [loading, setLoading]         = useState(false)
-  const [results, setResults]         = useState(null)
-  const [ambiguous, setAmbiguous]     = useState(false)
-  const [error, setError]             = useState('')
+  const [loading, setLoading]     = useState(false)
+  const [results, setResults]     = useState(null)
+  const [ambiguous, setAmbiguous] = useState(false)
+  const [error, setError]         = useState('')
+
+  // Lock body scroll when sheet is open
+  useEffect(() => {
+    if (open) document.body.style.overflow = 'hidden'
+    else       document.body.style.overflow = ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
 
   const doSearch = async (overrideType) => {
     if (!description.trim()) { setError(t.noDesc); return }
@@ -185,7 +195,11 @@ export default function SmartSearchBox({ cityId }) {
     results.suppliers?.length > 0
   )
 
-  const clearAll = () => {
+  const closeSheet = () => {
+    setOpen(false)
+  }
+
+  const resetAll = () => {
     setDescription('')
     setResults(null)
     setAmbiguous(false)
@@ -193,121 +207,158 @@ export default function SmartSearchBox({ cityId }) {
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden"
-      style={{ border: '2px solid #FF7900', background: 'linear-gradient(135deg, #fff9f4 0%, #fff 100%)' }}>
+    <>
+      {/* ── Compact trigger button ── */}
+      <button
+        onClick={() => setOpen(true)}
+        className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl font-extrabold text-white text-sm active:scale-95 transition-all"
+        style={{ background: 'linear-gradient(135deg, #FF7900 0%, #e06500 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.25)' }}
+        dir={ar ? 'rtl' : 'ltr'}
+      >
+        <Sparkles className="w-5 h-5 flex-shrink-0" />
+        <span>{t.triggerBtn}</span>
+      </button>
 
-      {/* Header */}
-      <div className="flex items-center gap-2.5 px-4 pt-4 pb-3"
-        style={{ borderBottom: '1.5px solid #FFE4C9' }}>
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #FF7900, #e06500)' }}>
-          <Sparkles className="w-4 h-4 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="font-black text-[#071B33] text-sm leading-tight">{t.title}</p>
-          <p className="text-[11px] text-gray-500 leading-tight mt-0.5">{t.desc}</p>
-        </div>
-        {(description || results) && (
-          <button onClick={clearAll}
-            className="w-7 h-7 rounded-full flex items-center justify-center"
-            style={{ background: '#F0F2F5' }}>
-            <X className="w-3.5 h-3.5 text-gray-400" />
-          </button>
-        )}
-      </div>
+      {/* ── Bottom sheet overlay ── */}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col justify-end"
+          style={{ background: 'rgba(7,27,51,0.55)', backdropFilter: 'blur(2px)' }}
+          onClick={e => { if (e.target === e.currentTarget) closeSheet() }}
+        >
+          <div
+            className="w-full rounded-t-3xl flex flex-col"
+            style={{
+              background: '#fff',
+              maxHeight: '90dvh',
+              boxShadow: '0 -8px 40px rgba(0,0,0,0.18)',
+            }}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-gray-200" />
+            </div>
 
-      <div className="p-4 space-y-3">
-        {/* Description textarea */}
-        <textarea
-          value={description}
-          onChange={e => { setDescription(e.target.value); setResults(null); setAmbiguous(false); setError('') }}
-          placeholder={t.placeholder}
-          rows={2}
-          dir={ar ? 'rtl' : 'ltr'}
-          className="w-full px-3.5 py-3 rounded-xl text-sm resize-none outline-none leading-relaxed"
-          style={{ background: '#F8F9FA', border: '1.5px solid #D1D5DB', color: '#071B33' }}
-          onFocus={e => e.target.style.border = '1.5px solid #FF7900'}
-          onBlur={e => e.target.style.border = '1.5px solid #D1D5DB'}
-        />
+            {/* Sheet header */}
+            <div className="flex items-center gap-3 px-5 py-3" style={{ borderBottom: '1.5px solid #F0F2F5' }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #FF7900, #e06500)' }}>
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1" dir={ar ? 'rtl' : 'ltr'}>
+                <p className="font-black text-[#071B33] text-sm leading-tight">{t.title}</p>
+                <p className="text-[11px] text-gray-400 leading-tight mt-0.5">{t.desc}</p>
+              </div>
+              <button
+                onClick={closeSheet}
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: '#F0F2F5' }}>
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
 
-        {error && (
-          <p className="text-xs font-semibold text-red-500 px-1">{error}</p>
-        )}
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3" dir={ar ? 'rtl' : 'ltr'}>
+              {/* Textarea */}
+              <textarea
+                value={description}
+                onChange={e => { setDescription(e.target.value); setResults(null); setAmbiguous(false); setError('') }}
+                placeholder={t.placeholder}
+                rows={3}
+                autoFocus
+                className="w-full px-4 py-3 rounded-2xl text-sm resize-none outline-none leading-relaxed"
+                style={{ background: '#F8F9FA', border: '1.5px solid #D1D5DB', color: '#071B33' }}
+                onFocus={e => e.target.style.border = '1.5px solid #FF7900'}
+                onBlur={e => e.target.style.border = '1.5px solid #D1D5DB'}
+              />
 
-        {/* Submit */}
-        <button
-          onClick={() => doSearch(null)}
-          disabled={loading || !description.trim()}
-          className="w-full py-3.5 rounded-xl font-extrabold text-white text-sm active:scale-95 transition-all disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg, #FF7900 0%, #e06500 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
-          {loading
-            ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">⟳</span> {t.searching}</span>
-            : <span className="flex items-center justify-center gap-2"><Search className="w-4 h-4" /> {t.btn}</span>}
-        </button>
+              {error && <p className="text-xs font-semibold text-red-500 px-1">{error}</p>}
 
-        {/* Clarification buttons */}
-        {ambiguous && !loading && (
-          <div className="rounded-xl p-3.5" style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
-            <p className="text-sm font-bold text-[#92400E] mb-2.5">{t.clarify}</p>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { key: 'technician', label: t.techBtn, bg: '#FF7900' },
-                { key: 'company',    label: t.compBtn,  bg: '#071B33' },
-                { key: 'supplier',   label: t.suppBtn,  bg: '#1a5c3a' },
-              ].map(({ key, label, bg }) => (
-                <button key={key}
-                  onClick={() => { setAmbiguous(false); doSearch(key) }}
-                  className="px-4 py-2 rounded-xl text-sm font-extrabold text-white active:scale-95 transition-transform"
-                  style={{ background: bg }}>
-                  {label}
-                </button>
-              ))}
+              {/* Search button */}
+              <button
+                onClick={() => doSearch(null)}
+                disabled={loading || !description.trim()}
+                className="w-full py-3.5 rounded-2xl font-extrabold text-white text-sm active:scale-95 transition-all disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #FF7900 0%, #e06500 100%)', boxShadow: '0 4px 16px rgba(255,121,0,0.3)' }}>
+                {loading
+                  ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">⟳</span> {t.searching}</span>
+                  : <span className="flex items-center justify-center gap-2"><Search className="w-4 h-4" /> {t.btn}</span>}
+              </button>
+
+              {/* Clarification */}
+              {ambiguous && !loading && (
+                <div className="rounded-2xl p-4" style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
+                  <p className="text-sm font-bold text-[#92400E] mb-3">{t.clarify}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { key: 'technician', label: t.techBtn, bg: '#FF7900' },
+                      { key: 'company',    label: t.compBtn,  bg: '#071B33' },
+                      { key: 'supplier',   label: t.suppBtn,  bg: '#1a5c3a' },
+                    ].map(({ key, label, bg }) => (
+                      <button key={key}
+                        onClick={() => { setAmbiguous(false); doSearch(key) }}
+                        className="px-4 py-2 rounded-xl text-sm font-extrabold text-white active:scale-95 transition-transform"
+                        style={{ background: bg }}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Results */}
+              {results && !loading && (
+                <div className="space-y-4 pt-1 pb-4">
+                  {!hasResults && (
+                    <p className="text-center text-sm text-gray-400 py-6">{t.noResults}</p>
+                  )}
+
+                  {results.technicians?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-extrabold text-gray-400 uppercase tracking-wide mb-2">👷 {t.techSection}</p>
+                      <div className="space-y-2">
+                        {results.technicians.map(item => (
+                          <TechCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} onClose={closeSheet} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {results.companies?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-extrabold text-gray-400 uppercase tracking-wide mb-2">🏢 {t.compSection}</p>
+                      <div className="space-y-2">
+                        {results.companies.map(item => (
+                          <CompCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} onClose={closeSheet} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {results.suppliers?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-extrabold text-gray-400 uppercase tracking-wide mb-2">📦 {t.suppSection}</p>
+                      <div className="space-y-2">
+                        {results.suppliers.map(item => (
+                          <SuppCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} onClose={closeSheet} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {hasResults && (
+                    <button onClick={resetAll}
+                      className="w-full py-2.5 rounded-2xl text-sm font-bold text-gray-500 active:scale-95 transition-transform"
+                      style={{ background: '#F0F2F5' }}>
+                      🔄 بحث جديد
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        )}
-
-        {/* Results */}
-        {results && !loading && (
-          <div className="space-y-4 pt-1">
-            {!hasResults && (
-              <p className="text-center text-sm text-gray-400 py-4">{t.noResults}</p>
-            )}
-
-            {results.technicians?.length > 0 && (
-              <div>
-                <p className="text-xs font-extrabold text-gray-500 uppercase tracking-wide mb-2">👷 {t.techSection}</p>
-                <div className="space-y-2">
-                  {results.technicians.map(item => (
-                    <TechCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {results.companies?.length > 0 && (
-              <div>
-                <p className="text-xs font-extrabold text-gray-500 uppercase tracking-wide mb-2">🏢 {t.compSection}</p>
-                <div className="space-y-2">
-                  {results.companies.map(item => (
-                    <CompCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {results.suppliers?.length > 0 && (
-              <div>
-                <p className="text-xs font-extrabold text-gray-500 uppercase tracking-wide mb-2">📦 {t.suppSection}</p>
-                <div className="space-y-2">
-                  {results.suppliers.map(item => (
-                    <SuppCard key={item.id} item={item} ar={ar} t={t} navigate={navigate} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   )
 }
