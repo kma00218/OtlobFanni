@@ -222,7 +222,7 @@ export default function SmartSearchBox({ cityId }) {
       {/* ── Bottom sheet overlay ── */}
       {open && (
         <div
-          className="fixed inset-0 z-50 flex flex-col justify-end"
+          className="fixed inset-0 z-[9999] flex flex-col justify-end"
           style={{ background: 'rgba(7,27,51,0.55)', backdropFilter: 'blur(2px)' }}
           onClick={e => { if (e.target === e.currentTarget) closeSheet() }}
         >
