@@ -134,7 +134,7 @@ function InstallFAB() {
     <>
       <button
         onClick={handleFABClick}
-        className="fixed bottom-24 z-50 flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-lg active:scale-95 transition-transform font-bold text-white text-sm"
+        className="fixed bottom-24 z-50 flex items-center gap-1.5 px-4 py-3.5 rounded-2xl shadow-xl active:scale-95 transition-transform font-black text-white whitespace-nowrap"
         style={{
           background: hasDirectInstall
             ? 'linear-gradient(135deg, #34A853 0%, #1a7a36 100%)'
@@ -142,15 +142,19 @@ function InstallFAB() {
           left: '50%',
           transform: 'translateX(-50%)',
           boxShadow: hasDirectInstall
-            ? '0 4px 20px rgba(52,168,83,0.45)'
-            : '0 4px 20px rgba(255,121,0,0.4)',
+            ? '0 6px 28px rgba(52,168,83,0.55)'
+            : '0 6px 28px rgba(255,121,0,0.5)',
+          fontSize: 'clamp(13px, 4vw, 17px)',
+          maxWidth: '94vw',
+          animation: 'installPulse 2s ease-in-out infinite',
         }}
       >
-        <Download className="w-4 h-4" />
+        <Download className="w-5 h-5 flex-shrink-0" strokeWidth={2.5} />
         {hasDirectInstall
-          ? (lang === 'ar' ? '⚡ ثبّت الآن' : '⚡ Install Now')
+          ? (lang === 'ar' ? 'ثبّت الآن' : 'Install Now')
           : (lang === 'ar' ? 'ثبّت التطبيق' : 'Install App')}
       </button>
+      <style>{`@keyframes installPulse { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.045)} }`}</style>
 
       {showModal && (
         <InstallGuideModal
