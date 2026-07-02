@@ -799,8 +799,14 @@ router.post("/smart-search", async (req, res): Promise<void> => {
       cityNameAr = cityRow[0]?.nameAr;
     }
 
+    // Always fetch all three types so results are enriched with whatever is relevant.
+    // Only when the user explicitly picks a type (forceType) do we restrict.
+    const fetchTechs = !forceType || forceType === 'technician' || forceType === 'all';
+    const fetchComps = !forceType || forceType === 'company'    || forceType === 'all';
+    const fetchSupps = !forceType || forceType === 'supplier'   || forceType === 'all';
+
     const [techRows, compRows, suppRows] = await Promise.all([
-      resolvedType !== 'supplier' && resolvedType !== 'company'
+      fetchTechs
         ? db.select({
             tech: techniciansTable,
             cityNameAr: citiesTable.nameAr,
@@ -820,7 +826,7 @@ router.post("/smart-search", async (req, res): Promise<void> => {
           .limit(100)
         : Promise.resolve([]),
 
-      resolvedType === 'company' || resolvedType === 'all'
+      fetchComps
         ? db.select({
             company: companyApplicationsTable,
             categoryAr: categoriesTable.nameAr,
@@ -836,7 +842,7 @@ router.post("/smart-search", async (req, res): Promise<void> => {
           .limit(50)
         : Promise.resolve([]),
 
-      resolvedType === 'supplier' || resolvedType === 'all'
+      fetchSupps
         ? db.select({
             id:              supplierApplicationsTable.id,
             businessName:    supplierApplicationsTable.businessName,
@@ -931,6 +937,17 @@ router.post("/smart-search", async (req, res): Promise<void> => {
     // ── Sort suppliers: Phase 2 AI-tag-aware scoring ─────────────────────────
     const sortedSupps = (suppRows as any[])
       .map(r => ({ ...r, _score: scoreSupp(r, queryTokens) }))
+      .filter(r => {
+        // Require actual tag/description relevance — rating alone is not enough.
+        // Suppliers use product/item tags (not service-verb tags), so also
+        // include marketingTagBonus in the relevance check.
+        const tags: string[] = Array.isArray(r.aiTags) ? r.aiTags : [];
+        return (
+          serviceTagScore(tags, queryTokens) +
+          marketingTagBonus(tags, queryTokens) +
+          descriptionScore(r.description, null, queryTokens)
+        ) > 0;
+      })
       .sort((a, b) => b._score - a._score)
       .slice(0, 4)
       .map(r => ({
