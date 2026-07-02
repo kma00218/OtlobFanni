@@ -495,8 +495,8 @@ export default function CityTechnicians() {
           </div>
         </div>
 
-        {/* ── البحث الذكي ── */}
-        {!isLibya && id && (
+        {/* ── البحث الذكي ── (مخفي مؤقتاً) */}
+        {false && !isLibya && id && (
           <SmartSearchBox cityId={id} />
         )}
 
