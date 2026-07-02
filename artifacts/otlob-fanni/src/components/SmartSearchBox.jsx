@@ -79,7 +79,7 @@ function TechCard({ item, ar, t, navigate }) {
           </div>
         )}
       </div>
-      <button onClick={() => navigate(`/technicians/${item.id}`)}
+      <button onClick={() => navigate(`/technician/${item.id}`)}
         className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-white active:scale-95 transition-transform"
         style={{ background: '#FF7900' }}>
         {t.viewProfile}
@@ -109,7 +109,7 @@ function CompCard({ item, ar, t, navigate }) {
           </div>
         )}
       </div>
-      <button onClick={() => navigate(`/companies/${item.id}`)}
+      <button onClick={() => navigate(`/company/${item.id}`)}
         className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-white active:scale-95 transition-transform"
         style={{ background: '#071B33' }}>
         {t.viewProfile}
@@ -134,7 +134,7 @@ function SuppCard({ item, ar, t, navigate }) {
           <p className="text-xs text-[#FF7900] font-semibold truncate">{item.customSupplyType}</p>
         )}
       </div>
-      <button onClick={() => navigate(`/suppliers/${item.id}`)}
+      <button onClick={() => navigate(`/supplier/${item.id}`)}
         className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold text-white active:scale-95 transition-transform"
         style={{ background: '#1a5c3a' }}>
         {t.viewProfile}
