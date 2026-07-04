@@ -314,10 +314,6 @@ export default function Home() {
 
         {/* ── بطاقة الإطلاق ── */}
         {stats && (() => {
-          const LAUNCH = new Date('2026-05-20T00:00:00')
-          const today  = new Date()
-          today.setHours(0, 0, 0, 0)
-          const dayNum = Math.max(1, Math.floor((today - LAUNCH) / 86400000) + 1)
           return (
             <div className="relative rounded-2xl overflow-hidden select-none" style={{ background: '#071B33' }}>
               {/* subtle radial glow */}
@@ -325,15 +321,6 @@ export default function Home() {
                 style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
 
               <div className="relative flex items-center gap-3 px-4 pt-2.5 pb-5">
-                {/* Day badge */}
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className="text-[10px] font-bold text-white/90">{ar ? 'اليوم' : 'Day'}</span>
-                  <span className="text-xl font-black text-[#FF7900] leading-none">{dayNum}</span>
-                  <span className="text-[10px]">🚀</span>
-                </div>
-
-                <div className="w-px self-stretch bg-white/15" />
-
                 {/* Stats inline */}
                 <div className="flex flex-1 items-center justify-around">
                   <span className="text-[11px] font-bold text-white">
