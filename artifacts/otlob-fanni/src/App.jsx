@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
-import { Download, Search, UserPlus } from "lucide-react";
+import { Download, Search, UserPlus, ClipboardList } from "lucide-react";
 import NotificationPrompt from "./components/NotificationPrompt";
 import LocationPrompt from "./components/LocationPrompt";
 import BottomNav from "./components/BottomNav";
@@ -38,6 +38,7 @@ const More = lazy(() => import("./pages/More"));
 const Support = lazy(() => import("./pages/Support"));
 const JoinUs = lazy(() => import("./pages/JoinUs"));
 const AdvertiseWithUs = lazy(() => import("./pages/AdvertiseWithUs"));
+const MyRequests = lazy(() => import("./pages/MyRequests"));
 const About = lazy(() => import("./pages/About"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -204,6 +205,35 @@ function SearchFAB() {
 }
 
 
+function MyRequestsFAB() {
+  const [location] = useLocation();
+  const { lang } = useLang();
+  const ar = lang === 'ar';
+
+  const hidden = location === '/my-requests' || location.startsWith('/admin') || location === '/pro-login' || location === '/pro-activate' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile' || location === '/join' || location === '/join-company' || location === '/join-supplier';
+  if (hidden) return null;
+
+  return (
+    <Link
+      href="/my-requests"
+      className="fixed z-40 flex items-center gap-2 active:scale-95 transition-transform duration-150"
+      style={{
+        bottom: '96px',
+        [ar ? 'left' : 'right']: '16px',
+        padding: '12px 16px',
+        borderRadius: '18px',
+        background: 'linear-gradient(135deg, #071B33 0%, #0d2e57 100%)',
+        boxShadow: '0 6px 24px rgba(7,27,51,0.5)',
+        textDecoration: 'none',
+      }}
+      aria-label={ar ? 'طلباتي' : 'My Requests'}
+    >
+      <ClipboardList className="w-5 h-5 text-white flex-shrink-0" />
+      <span className="text-sm font-black text-white whitespace-nowrap">{ar ? 'طلباتي' : 'My Requests'}</span>
+    </Link>
+  );
+}
+
 function AppContent() {
   const [location] = useLocation();
   const isAdminPath = location.startsWith("/admin");
@@ -257,6 +287,7 @@ function AppContent() {
               <Route path="/more" component={More} />
               <Route path="/join-us" component={JoinUs} />
               <Route path="/advertise" component={AdvertiseWithUs} />
+              <Route path="/my-requests" component={MyRequests} />
               <Route path="/all-specialties" component={AllSpecialties} />
               <Route path="/city/:id" component={CityTechnicians} />
               <Route path="/status/:id" component={StatusTracking} />
@@ -278,6 +309,7 @@ function AppContent() {
           </ErrorBoundary>
           {location !== '/pro-login' && location !== '/pro-activate' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && !location.startsWith('/service-confirm') && <BottomNav />}
           <SearchFAB />
+          <MyRequestsFAB />
           <InstallFAB />
           <NotificationPrompt />
           <LocationPrompt />

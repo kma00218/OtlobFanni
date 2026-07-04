@@ -295,6 +295,18 @@ export const api = {
     updateProfile:       (entityType, entityId, fields)               => request('PATCH', '/pro/profile', { entityType, entityId, fields }),
   },
 
+  generalRequests: {
+    create:      (data)                    => post('/general-requests', data),
+    track:       (whatsapp, trackingCode)  => post('/general-requests/track', { whatsapp, trackingCode }),
+    forPro:      (params = {})             => {
+      const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString()
+      return get(`/general-requests/for-pro${qs ? '?' + qs : ''}`)
+    },
+    myOffers:    (entityType, entityId)    => get(`/general-requests/my-offers?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`),
+    submitOffer: (requestId, data)         => post(`/general-requests/${requestId}/offers`, data),
+    selectOffer: (requestId, data)         => post(`/general-requests/${requestId}/select-offer`, data),
+  },
+
   deals: {
     create:        (data)           => post('/deals', data),
     mine:          (proId, proType) => get(`/deals/mine?proId=${encodeURIComponent(proId)}&proType=${encodeURIComponent(proType)}`),

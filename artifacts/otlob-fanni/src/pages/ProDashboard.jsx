@@ -8,7 +8,7 @@ import {
   TrendingUp, Star, Package, Building2, Wrench, Filter, PencilLine, Eye,
   PlayCircle, Flag, Trash2,
 } from 'lucide-react'
-import { api } from '../lib/api'
+import { api, getFileUrl } from '../lib/api'
 
 // ── Type-specific config ────────────────────────────────────────────────────
 const TYPE_CONFIG = {
@@ -556,6 +556,11 @@ export default function ProDashboard() {
   const [perfStats,      setPerfStats]     = useState(null)
   const [perfLoading,    setPerfLoading]   = useState(false)
   const [highlightId,    setHighlightId]   = useState(null)
+  const [genRequests,    setGenRequests]   = useState([])
+  const [genOffers,      setGenOffers]     = useState([])
+  const [genLoading,     setGenLoading]    = useState(false)
+  const [genOfferForm,   setGenOfferForm]  = useState(null) // { requestId, price, etaText, note }
+  const [genSubmitting,  setGenSubmitting] = useState(false)
 
   useEffect(() => {
     const raw = localStorage.getItem('pro_session')
@@ -604,12 +609,34 @@ export default function ProDashboard() {
     finally { setPerfLoading(false) }
   }, [])
 
+  const loadGeneralRequests = useCallback(async (sess, { silent } = {}) => {
+    if (!sess) return
+    if (!silent) setGenLoading(true)
+    try {
+      const profile = await api.pro.getProfile(sess.entityType, sess.entityId)
+      const params = sess.entityType === 'company'
+        ? { cityName: profile?.city }
+        : { cityId: profile?.cityId, cityName: profile?.cityNameAr }
+      const catParams = sess.entityType === 'company'
+        ? { categoryId: profile?.specialty, categoryName: profile?.categoryAr }
+        : { categoryId: profile?.categoryId, categoryName: profile?.categoryAr }
+      const [reqs, offers] = await Promise.all([
+        api.generalRequests.forPro({ ...params, ...catParams }),
+        api.generalRequests.myOffers(sess.entityType, sess.entityId),
+      ])
+      setGenRequests(reqs)
+      setGenOffers(offers)
+    } catch { if (!silent) { setGenRequests([]); setGenOffers([]) } }
+    finally { if (!silent) setGenLoading(false) }
+  }, [])
+
   // Load both on session ready (for stats strip accuracy)
   useEffect(() => {
     if (!session) return
     loadRequests(session)
     loadDeals(session)
     loadPerfStats(session)
+    loadGeneralRequests(session)
   }, [session])
 
   // Reload when switching tabs (refresh)
@@ -617,7 +644,15 @@ export default function ProDashboard() {
     if (!session) return
     if (activeTab === 'requests') loadRequests(session)
     if (activeTab === 'deals')    loadDeals(session)
+    if (activeTab === 'general')  loadGeneralRequests(session)
   }, [activeTab])
+
+  // Background polling for general requests badge (every 25s, regardless of active tab)
+  useEffect(() => {
+    if (!session) return
+    const interval = setInterval(() => loadGeneralRequests(session, { silent: true }), 25000)
+    return () => clearInterval(interval)
+  }, [session, loadGeneralRequests])
 
   // ── Web Audio API notification sound ────────────────────────────────────────
   const playNotificationSound = useCallback(() => {
@@ -663,6 +698,8 @@ export default function ProDashboard() {
   const initials     = (session.displayName || '').trim().slice(0, 1)
   const newCount     = requests.filter(r => !r.isRead).length
   const pendingDeals = deals.filter(d => d.status === 'pending').length
+  const offeredIds   = new Set(genOffers.map(o => o.requestId))
+  const genNewCount  = genRequests.filter(r => !offeredIds.has(r.id)).length
 
   // Request counts for filter chips
   const reqCounts = {
@@ -822,15 +859,17 @@ export default function ProDashboard() {
       <div className="flex mx-4 mb-1 rounded-2xl p-1 gap-1"
         style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', boxShadow: '0 2px 12px rgba(0,0,0,0.2)' }}>
         {[
-          { key: 'profile',  label: 'ملفي',            badge: 0 },
-          { key: 'requests', label: cfg.requestsTab,    badge: newCount },
-          { key: 'deals',    label: cfg.dealsTab,       badge: pendingDeals },
+          { key: 'profile',  label: 'ملفي',              badge: 0 },
+          { key: 'requests', label: cfg.requestsTab,      badge: newCount },
+          { key: 'general',  label: 'الطلبات العامة',     badge: genNewCount },
+          { key: 'deals',    label: cfg.dealsTab,         badge: pendingDeals },
         ].map(tab => (
           <button key={tab.key}
             onClick={() => {
               setActiveTab(tab.key)
               if (tab.key === 'requests' && session) loadRequests(session)
               if (tab.key === 'deals'    && session) loadDeals(session)
+              if (tab.key === 'general'  && session) loadGeneralRequests(session)
             }}
             className={`flex-1 py-2.5 text-xs font-bold transition-all rounded-xl relative ${
               activeTab === tab.key ? 'bg-white text-[#071B33] shadow' : 'text-white/85'
@@ -1230,6 +1269,137 @@ export default function ProDashboard() {
                     setDeals(prev => prev.filter(x => x.id !== id))
                   }} />
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── GENERAL REQUESTS TAB ── */}
+        {activeTab === 'general' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, #7B2FBE, #4c1d80)' }}>
+                  <ClipboardList className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="font-black text-[#071B33] text-sm">طلبات عامة وعروض</p>
+                  <p className="text-[11px] text-gray-400">{genRequests.length} طلب متاح</p>
+                </div>
+              </div>
+              <button onClick={() => loadGeneralRequests(session)}
+                className="p-2 rounded-xl bg-white border border-gray-100 shadow-sm">
+                <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${genLoading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+
+            <div className="bg-purple-50 border border-purple-100 rounded-2xl px-4 py-3 text-xs text-purple-700">
+              <p>هذه طلبات عامة من عملاء يبحثون عن فني — قدّم عرض سعر ليختارك العميل. لن يظهر رقم العميل إلا بعد اختيارك.</p>
+            </div>
+
+            {genLoading ? (
+              <div className="flex justify-center py-14">
+                <div className="w-7 h-7 border-2 border-t-transparent rounded-full animate-spin"
+                  style={{ borderColor: '#7B2FBE transparent transparent transparent' }} />
+              </div>
+            ) : genRequests.length === 0 ? (
+              <div className="text-center py-14 bg-white rounded-3xl shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                <ClipboardList className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                <p className="font-bold text-gray-400">لا توجد طلبات عامة حاليًا</p>
+                <p className="text-xs text-gray-300 mt-1">ستظهر هنا الطلبات المطابقة لمدينتك وتخصصك</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {genRequests.map(r => {
+                  const myOffer = genOffers.find(o => o.requestId === r.id)
+                  const formOpen = genOfferForm?.requestId === r.id
+                  return (
+                    <div key={r.id} className="bg-white rounded-3xl p-4 shadow-sm" style={{ border: '1px solid #F0F2F5' }}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-black text-[#071B33] text-sm truncate">{r.title}</p>
+                          <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
+                            {r.cityName && <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" />{r.cityName}</span>}
+                            {r.categoryName && <span>• {r.categoryName}</span>}
+                          </div>
+                        </div>
+                        {myOffer && (
+                          <span className={`text-[10px] font-black px-2 py-1 rounded-full whitespace-nowrap ${
+                            myOffer.status === 'selected' ? 'bg-emerald-100 text-emerald-700' : myOffer.status === 'rejected' ? 'bg-gray-100 text-gray-500' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {myOffer.status === 'selected' ? 'تم اختيارك ✓' : myOffer.status === 'rejected' ? 'لم يتم اختيارك' : 'عرضك قيد المراجعة'}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">{r.description}</p>
+                      {Array.isArray(r.photoUrls) && r.photoUrls.length > 0 && (
+                        <div className="flex gap-2 mt-2">
+                          {r.photoUrls.map((p, i) => (
+                            <img key={i} src={getFileUrl(p)} alt="" className="w-14 h-14 rounded-lg object-cover" />
+                          ))}
+                        </div>
+                      )}
+
+                      {!myOffer && !formOpen && (
+                        <button onClick={() => setGenOfferForm({ requestId: r.id, price: '', etaText: '', note: '' })}
+                          className="mt-3 w-full py-2.5 rounded-xl text-xs font-black text-white active:scale-95 transition-all"
+                          style={{ background: 'linear-gradient(135deg, #7B2FBE, #4c1d80)' }}>
+                          تقديم عرض سعر
+                        </button>
+                      )}
+
+                      {myOffer && myOffer.status !== 'rejected' && !formOpen && (
+                        <button onClick={() => setGenOfferForm({ requestId: r.id, price: myOffer.price || '', etaText: myOffer.etaText || '', note: myOffer.note || '' })}
+                          className="mt-3 w-full py-2 rounded-xl text-xs font-bold text-gray-500 bg-gray-50 active:scale-95 transition-all">
+                          تعديل العرض ({myOffer.price} د.ل)
+                        </button>
+                      )}
+
+                      {formOpen && (
+                        <div className="mt-3 space-y-2 bg-gray-50 rounded-2xl p-3">
+                          <div className="grid grid-cols-2 gap-2">
+                            <input type="number" min="0" placeholder="السعر (د.ل) *" required
+                              value={genOfferForm.price}
+                              onChange={e => setGenOfferForm(f => ({ ...f, price: e.target.value }))}
+                              className="px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B2FBE]/30" />
+                            <input type="text" placeholder="المدة (مثال: خلال يوم)"
+                              value={genOfferForm.etaText}
+                              onChange={e => setGenOfferForm(f => ({ ...f, etaText: e.target.value }))}
+                              className="px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B2FBE]/30" />
+                          </div>
+                          <textarea rows={2} placeholder="ملاحظة (اختياري)"
+                            value={genOfferForm.note}
+                            onChange={e => setGenOfferForm(f => ({ ...f, note: e.target.value }))}
+                            className="w-full px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B2FBE]/30 resize-none" />
+                          <div className="flex gap-2">
+                            <button type="button" onClick={() => setGenOfferForm(null)}
+                              className="flex-1 py-2 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-200">
+                              إلغاء
+                            </button>
+                            <button type="button" disabled={genSubmitting || !genOfferForm.price}
+                              onClick={async () => {
+                                setGenSubmitting(true)
+                                try {
+                                  await api.generalRequests.submitOffer(genOfferForm.requestId, {
+                                    entityType: session.entityType, entityId: session.entityId,
+                                    price: genOfferForm.price, etaText: genOfferForm.etaText || undefined, note: genOfferForm.note || undefined,
+                                  })
+                                  setGenOfferForm(null)
+                                  loadGeneralRequests(session)
+                                } catch { alert('حدث خطأ، حاول مرة أخرى') }
+                                finally { setGenSubmitting(false) }
+                              }}
+                              className="flex-1 py-2 rounded-xl text-xs font-black text-white disabled:opacity-50"
+                              style={{ background: 'linear-gradient(135deg, #7B2FBE, #4c1d80)' }}>
+                              {genSubmitting ? 'جارٍ الإرسال...' : 'إرسال العرض'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>

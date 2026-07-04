@@ -16,3 +16,5 @@ export * from "./referrals";
 export * from "./profile_update_requests";
 export * from "./deals";
 export * from "./ambassadors";
+export * from "./general_requests";
+export * from "./general_offers";

@@ -12,7 +12,7 @@ export const dealsTable = pgTable("deals", {
   serviceDate:      text("service_date").notNull(),
   description:      text("description"),
   proConfirmed:     boolean("pro_confirmed").notNull().default(true),
-  userConfirmed:    boolean("user_confirmed").default(null),
+  userConfirmed:    boolean("user_confirmed"),
   userResponse:     text("user_response"),
   status:           text("status").notNull().default("pending"),
   proPoints:        text("pro_points").default("0"),

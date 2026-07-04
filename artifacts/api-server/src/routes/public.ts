@@ -6,7 +6,7 @@ import {
   adRequestsTable, serviceRequestsTable, reviewsTable,
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
   referralsTable, analyticsEventsTable, profileUpdateRequestsTable,
-  dealsTable,
+  dealsTable, generalRequestsTable, generalOffersTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
@@ -2196,6 +2196,222 @@ router.post("/pro/activate", async (req, res): Promise<void> => {
     .where(eq(proCredentialsTable.id, cred.id));
 
   res.json({ success: true, entityType: cred.entityType, entityId: cred.entityId, displayName: cred.displayName });
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// General Requests & Offers (طلبات عامة وعروض) — additive marketplace flow
+// ══════════════════════════════════════════════════════════════════════════
+
+function normalizeWa(whatsapp: string) {
+  let digits = String(whatsapp || "").replace(/[\s\-\(\)\+]/g, "");
+  if (digits.startsWith("00218")) digits = digits.slice(5);
+  else if (digits.startsWith("218")) digits = digits.slice(3);
+  if (digits.startsWith("0")) digits = digits.slice(1);
+  return digits;
+}
+function waCandidates(whatsapp: string) {
+  const digits = normalizeWa(whatsapp);
+  return [`0${digits}`, digits, `+218${digits}`, `218${digits}`];
+}
+function genTrackingCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no confusing chars
+  let out = "";
+  for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+
+// ── Create a general request (public, anonymous) ──────────────────────────────
+router.post("/general-requests", async (req, res): Promise<void> => {
+  const { customerName, whatsapp, cityId, cityName, categoryId, categoryName, title, description, photoUrls } = req.body;
+  if (!customerName || !whatsapp) { res.status(400).json({ error: "الاسم ورقم الواتساب مطلوبان" }); return; }
+
+  // Soft rate-limit: >=5 requests from same WhatsApp within the last hour
+  const candidates = waCandidates(whatsapp);
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const [{ value: recentCount }] = await db.select({ value: count() }).from(generalRequestsTable)
+    .where(and(inArray(generalRequestsTable.whatsapp, candidates), sql`${generalRequestsTable.createdAt} > ${oneHourAgo}`));
+  if (Number(recentCount) >= 5) {
+    res.status(429).json({ error: "لقد نشرت عدة طلبات خلال وقت قصير، الرجاء الانتظار قليلاً قبل نشر طلب جديد" });
+    return;
+  }
+
+  const id = crypto.randomBytes(8).toString("hex");
+  const orderNumber = "GR-" + String(Date.now()).slice(-6);
+  const trackingCode = genTrackingCode();
+
+  const [r] = await db.insert(generalRequestsTable).values({
+    id, orderNumber, trackingCode,
+    customerName: String(customerName).trim(),
+    whatsapp: String(whatsapp).trim(),
+    cityId: cityId || null,
+    cityName: cityName || null,
+    categoryId: categoryId || null,
+    categoryName: categoryName || null,
+    title: title || null,
+    description: description || null,
+    photoUrls: Array.isArray(photoUrls) && photoUrls.length > 0 ? photoUrls : null,
+    status: "open",
+  }).returning();
+
+  res.status(201).json({ id: r.id, orderNumber: r.orderNumber, trackingCode: r.trackingCode });
+});
+
+// ── Customer tracks their request + sees offers ────────────────────────────────
+router.post("/general-requests/track", async (req, res): Promise<void> => {
+  const { whatsapp, trackingCode } = req.body;
+  if (!whatsapp || !trackingCode) { res.status(400).json({ error: "الرقم والكود مطلوبان" }); return; }
+  const candidates = waCandidates(whatsapp);
+  const [reqRow] = await db.select().from(generalRequestsTable)
+    .where(and(inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, trackingCode.toUpperCase().trim())));
+  if (!reqRow) { res.status(404).json({ error: "لم يتم العثور على طلب بهذه البيانات" }); return; }
+
+  const offers = await db.select().from(generalOffersTable)
+    .where(eq(generalOffersTable.requestId, reqRow.id))
+    .orderBy(desc(generalOffersTable.createdAt));
+
+  // Hide contact details of providers unless their offer has been selected
+  const safeOffers = await Promise.all(offers.map(async (o) => {
+    if (o.status !== "selected") {
+      return { id: o.id, providerName: o.providerName, providerPhoto: o.providerPhoto, providerRating: o.providerRating, cityName: o.cityName, price: o.price, etaText: o.etaText, note: o.note, status: o.status, createdAt: o.createdAt };
+    }
+    let whatsappOut: string | null = null;
+    if (o.entityType === "technician") {
+      const [t] = await db.select({ whatsapp: techniciansTable.whatsapp }).from(techniciansTable).where(eq(techniciansTable.id, o.entityId));
+      whatsappOut = t?.whatsapp || null;
+    } else if (o.entityType === "company") {
+      const [c] = await db.select({ whatsapp: companyApplicationsTable.whatsapp }).from(companyApplicationsTable).where(eq(companyApplicationsTable.id, o.entityId));
+      whatsappOut = c?.whatsapp || null;
+    }
+    return { ...o, providerWhatsapp: whatsappOut };
+  }));
+
+  res.json({ request: reqRow, offers: safeOffers });
+});
+
+// ── List open requests for a pro (matches city + category) ────────────────────
+router.get("/general-requests/for-pro", async (req, res): Promise<void> => {
+  const { cityId, cityName, categoryId, categoryName } = req.query as Record<string, string>;
+  const conditions = [eq(generalRequestsTable.status, "open")];
+  const cityConds = [] as any[];
+  if (cityId) cityConds.push(eq(generalRequestsTable.cityId, cityId));
+  if (cityName) cityConds.push(eq(generalRequestsTable.cityName, cityName));
+  if (cityConds.length) conditions.push(or(...cityConds)!);
+  const catConds = [] as any[];
+  if (categoryId) catConds.push(eq(generalRequestsTable.categoryId, categoryId));
+  if (categoryName) catConds.push(eq(generalRequestsTable.categoryName, categoryName));
+  if (catConds.length) conditions.push(or(...catConds)!);
+
+  const rows = await db.select({
+    id:           generalRequestsTable.id,
+    orderNumber:  generalRequestsTable.orderNumber,
+    cityName:     generalRequestsTable.cityName,
+    categoryName: generalRequestsTable.categoryName,
+    title:        generalRequestsTable.title,
+    description:  generalRequestsTable.description,
+    photoUrls:    generalRequestsTable.photoUrls,
+    status:       generalRequestsTable.status,
+    createdAt:    generalRequestsTable.createdAt,
+  }).from(generalRequestsTable)
+    .where(and(...conditions))
+    .orderBy(desc(generalRequestsTable.createdAt))
+    .limit(100);
+
+  res.json(rows);
+});
+
+// ── Pro submits (or updates) an offer on a request ─────────────────────────────
+router.post("/general-requests/:id/offers", async (req, res): Promise<void> => {
+  const requestId = req.params.id;
+  const { entityType, entityId, price, etaText, note } = req.body;
+  if (!entityType || !entityId || !price) { res.status(400).json({ error: "بيانات العرض ناقصة" }); return; }
+
+  const [reqRow] = await db.select().from(generalRequestsTable).where(eq(generalRequestsTable.id, requestId));
+  if (!reqRow) { res.status(404).json({ error: "الطلب غير موجود" }); return; }
+  if (reqRow.status !== "open") { res.status(409).json({ error: "تم إغلاق هذا الطلب بالفعل" }); return; }
+
+  let providerName = "", providerPhoto: string | null = null, providerRating: string | null = null, cityName: string | null = null;
+  if (entityType === "technician") {
+    const [t] = await db.select().from(techniciansTable).where(eq(techniciansTable.id, entityId));
+    if (t) { providerName = t.nameAr; providerPhoto = t.profilePhoto; providerRating = t.rating != null ? String(t.rating) : null; }
+  } else if (entityType === "company") {
+    const [c] = await db.select().from(companyApplicationsTable).where(eq(companyApplicationsTable.id, entityId));
+    if (c) { providerName = c.companyName; providerPhoto = c.companyLogo; providerRating = c.rating != null ? String(c.rating) : null; cityName = c.city; }
+  }
+
+  const [existing] = await db.select().from(generalOffersTable)
+    .where(and(eq(generalOffersTable.requestId, requestId), eq(generalOffersTable.entityType, entityType), eq(generalOffersTable.entityId, entityId)));
+
+  let offer;
+  if (existing) {
+    [offer] = await db.update(generalOffersTable)
+      .set({ price: String(price), etaText: etaText || null, note: note || null })
+      .where(eq(generalOffersTable.id, existing.id)).returning();
+  } else {
+    const id = crypto.randomBytes(8).toString("hex");
+    [offer] = await db.insert(generalOffersTable).values({
+      id, requestId, entityType, entityId,
+      providerName, providerPhoto, providerRating, cityName,
+      price: String(price), etaText: etaText || null, note: note || null,
+      status: "pending",
+    }).returning();
+  }
+
+  res.status(201).json(offer);
+});
+
+// ── Pro's own submitted offers (to know which requests they already offered on) ─
+router.get("/general-requests/my-offers", async (req, res): Promise<void> => {
+  const { entityType, entityId } = req.query as Record<string, string>;
+  if (!entityType || !entityId) { res.status(400).json({ error: "Missing params" }); return; }
+  const rows = await db.select().from(generalOffersTable)
+    .where(and(eq(generalOffersTable.entityType, entityType), eq(generalOffersTable.entityId, entityId)))
+    .orderBy(desc(generalOffersTable.createdAt));
+  res.json(rows);
+});
+
+// ── Customer selects an offer → assigns request + feeds it into the existing
+//    execution lifecycle by creating a normal service_request row ─────────────
+router.post("/general-requests/:id/select-offer", async (req, res): Promise<void> => {
+  const requestId = req.params.id;
+  const { whatsapp, trackingCode, offerId } = req.body;
+  if (!whatsapp || !trackingCode || !offerId) { res.status(400).json({ error: "بيانات ناقصة" }); return; }
+
+  const candidates = waCandidates(whatsapp);
+  const [reqRow] = await db.select().from(generalRequestsTable)
+    .where(and(eq(generalRequestsTable.id, requestId), inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, trackingCode.toUpperCase().trim())));
+  if (!reqRow) { res.status(404).json({ error: "الطلب غير موجود" }); return; }
+  if (reqRow.status !== "open") { res.status(409).json({ error: "تم اختيار عرض مسبقاً على هذا الطلب" }); return; }
+
+  const [offer] = await db.select().from(generalOffersTable).where(eq(generalOffersTable.id, offerId));
+  if (!offer || offer.requestId !== requestId) { res.status(404).json({ error: "العرض غير موجود" }); return; }
+
+  await db.update(generalOffersTable).set({ status: "selected" }).where(eq(generalOffersTable.id, offer.id));
+  await db.update(generalOffersTable).set({ status: "rejected" })
+    .where(and(eq(generalOffersTable.requestId, requestId), sql`${generalOffersTable.id} != ${offer.id}`));
+  await db.update(generalRequestsTable).set({ status: "assigned", assignedOfferId: offer.id }).where(eq(generalRequestsTable.id, requestId));
+
+  // Feed into the existing direct-request execution cycle (unchanged logic)
+  const srId = crypto.randomBytes(8).toString("hex");
+  const [sr] = await db.insert(serviceRequestsTable).values({
+    id: srId,
+    ownerId: offer.entityId,
+    ownerType: offer.entityType,
+    ownerName: offer.providerName || null,
+    customerName: reqRow.customerName,
+    phone: reqRow.whatsapp,
+    whatsappPhone: reqRow.whatsapp,
+    callPhone: reqRow.whatsapp,
+    cityId: reqRow.cityId,
+    cityName: reqRow.cityName,
+    requestType: "طلب عام (عرض مقبول)",
+    categoryId: reqRow.categoryId,
+    categoryName: reqRow.categoryName,
+    description: `${reqRow.description || ""}\n\nالسعر المتفق عليه: ${offer.price}${offer.etaText ? ` — ${offer.etaText}` : ""}`.trim(),
+    photoUrls: reqRow.photoUrls,
+    status: "new",
+  }).returning();
+
+  res.status(201).json({ success: true, serviceRequestId: sr.id });
 });
 
 export default router;
