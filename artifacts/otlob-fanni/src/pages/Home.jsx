@@ -320,19 +320,19 @@ export default function Home() {
               <div className="absolute inset-0 pointer-events-none"
                 style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
 
-              <div className="relative flex items-center gap-3 px-4 pt-2.5 pb-5">
+              <div className="relative flex items-center gap-3 px-3 pt-3 pb-6">
                 {/* Stats inline */}
-                <div className="flex flex-1 items-center justify-around">
-                  <span className="text-[11px] font-bold text-white">
-                    <span className="text-[#FF7900]">{stats.technicians}</span> {ar ? 'فني' : 'Tech'}
+                <div className="flex flex-1 items-center justify-around flex-wrap gap-y-1">
+                  <span className="text-sm font-bold text-white whitespace-nowrap">
+                    <span className="text-[#FF7900] text-base">{stats.technicians}</span> {ar ? 'فني' : 'Tech'}
                   </span>
-                  <span className="text-white/20 text-xs">·</span>
-                  <span className="text-[11px] font-bold text-white">
-                    <span className="text-blue-300">{stats.companies}</span> {ar ? 'شركة خدمات' : 'Service Co.'}
+                  <span className="text-white/20 text-sm">·</span>
+                  <span className="text-sm font-bold text-white whitespace-nowrap">
+                    <span className="text-blue-300 text-base">{stats.companies}</span> {ar ? 'شركة خدمات' : 'Service Co.'}
                   </span>
-                  <span className="text-white/20 text-xs">·</span>
-                  <span className="text-[11px] font-bold text-white">
-                    <span className="text-teal-300">{stats.suppliers}</span> {ar ? 'مورد مستلزمات' : 'Supplier'}
+                  <span className="text-white/20 text-sm">·</span>
+                  <span className="text-sm font-bold text-white whitespace-nowrap">
+                    <span className="text-teal-300 text-base">{stats.suppliers}</span> {ar ? 'مورد مستلزمات' : 'Supplier'}
                   </span>
                 </div>
 
@@ -340,10 +340,10 @@ export default function Home() {
 
                 {/* Grand total */}
                 <div className="flex flex-col items-center flex-shrink-0">
-                  <span className="text-2xl font-black text-[#FF7900] leading-none">
+                  <span className="text-3xl font-black text-[#FF7900] leading-none">
                     {stats.technicians + stats.companies + stats.suppliers}
                   </span>
-                  <span className="text-[9px] font-bold text-white/60 mt-0.5">{ar ? 'إجمالي' : 'Total'}</span>
+                  <span className="text-xs font-bold text-white/70 mt-1">{ar ? 'إجمالي' : 'Total'}</span>
                 </div>
               </div>
 
