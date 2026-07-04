@@ -320,20 +320,21 @@ export default function Home() {
               <div className="absolute inset-0 pointer-events-none"
                 style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
 
-              <div className="relative flex items-center gap-3 px-3 pt-3 pb-6">
-                {/* Stats inline */}
-                <div className="flex flex-1 items-center justify-around flex-wrap gap-y-1">
-                  <span className="text-sm font-bold text-white whitespace-nowrap">
-                    <span className="text-[#FF7900] text-base">{stats.technicians}</span> {ar ? 'فني' : 'Tech'}
-                  </span>
-                  <span className="text-white/20 text-sm">·</span>
-                  <span className="text-sm font-bold text-white whitespace-nowrap">
-                    <span className="text-blue-300 text-base">{stats.companies}</span> {ar ? 'شركة خدمات' : 'Service Co.'}
-                  </span>
-                  <span className="text-white/20 text-sm">·</span>
-                  <span className="text-sm font-bold text-white whitespace-nowrap">
-                    <span className="text-teal-300 text-base">{stats.suppliers}</span> {ar ? 'مورد مستلزمات' : 'Supplier'}
-                  </span>
+              <div className="relative flex items-center gap-2 px-3 pt-3 pb-6">
+                {/* Stats grid */}
+                <div className="flex flex-1 items-center justify-around">
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <span className="text-2xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
+                    <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
+                  </div>
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <span className="text-2xl font-black text-blue-300 leading-none">{stats.companies}</span>
+                    <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
+                  </div>
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <span className="text-2xl font-black text-teal-300 leading-none">{stats.suppliers}</span>
+                    <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
+                  </div>
                 </div>
 
                 <div className="w-px self-stretch bg-white/15" />
