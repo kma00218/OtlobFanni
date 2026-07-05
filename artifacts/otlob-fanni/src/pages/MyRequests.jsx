@@ -53,8 +53,8 @@ function Landing({ ar, onNew, onTrack }) {
       >
         <PlusCircle className="w-6 h-6 flex-shrink-0" />
         <span className="text-right flex-1" dir="auto">
-          <span className="block text-base">{ar ? 'إرسال طلب جديد' : 'Send a New Request'}</span>
-          <span className="block text-xs font-normal opacity-90">{ar ? 'استلم عروض أسعار من الفنيين' : 'Get quotes from technicians'}</span>
+          <span className="block text-base">{ar ? 'إرسال طلب خدمة جديد' : 'Send a New Service Request'}</span>
+          <span className="block text-xs font-normal opacity-90">{ar ? 'استلم عروض أسعار من الفنيين والشركات' : 'Get quotes from technicians & companies'}</span>
         </span>
       </button>
 
