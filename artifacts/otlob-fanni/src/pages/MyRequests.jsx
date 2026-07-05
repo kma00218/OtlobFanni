@@ -13,25 +13,65 @@ const STATUS_LABELS = {
   cancelled: { ar: 'ملغى',           en: 'Cancelled',       color: '#9CA3AF' },
 }
 
+const SAVED_KEY = 'otlob_my_requests'
+
+function loadSavedRequests() {
+  try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]') } catch { return [] }
+}
+
+function saveRequestLocally(entry) {
+  try {
+    const list = loadSavedRequests().filter(r => r.trackingCode !== entry.trackingCode)
+    list.unshift(entry)
+    localStorage.setItem(SAVED_KEY, JSON.stringify(list.slice(0, 10)))
+  } catch {}
+}
+
 export default function MyRequests() {
   const { lang, dir } = useLang()
   const ar = lang === 'ar'
   const [, navigate] = useLocation()
   const [view, setView] = useState('landing') // landing | new | track | result
+  const [autoTrack, setAutoTrack] = useState(null) // { whatsapp, trackingCode } to auto-search
+  const [savedRequests, setSavedRequests] = useState(loadSavedRequests())
+
+  function goToSaved(entry) {
+    setAutoTrack({ whatsapp: entry.whatsapp, trackingCode: entry.trackingCode })
+    setView('track')
+  }
+
+  function handleNewDone() {
+    setSavedRequests(loadSavedRequests())
+    setView('landing')
+  }
 
   return (
     <div dir={dir} className="min-h-[100dvh] bg-gray-50">
       <BackHeader title={ar ? 'طلباتي' : 'My Requests'} />
       <div className="pt-24 pb-40 px-4 max-w-[480px] mx-auto">
-        {view === 'landing' && <Landing ar={ar} onNew={() => setView('new')} onTrack={() => setView('track')} />}
-        {view === 'new' && <NewRequest ar={ar} onDone={() => setView('landing')} />}
-        {view === 'track' && <TrackRequest ar={ar} onBack={() => setView('landing')} />}
+        {view === 'landing' && (
+          <Landing
+            ar={ar}
+            savedRequests={savedRequests}
+            onNew={() => setView('new')}
+            onTrack={() => { setAutoTrack(null); setView('track') }}
+            onOpenSaved={goToSaved}
+          />
+        )}
+        {view === 'new' && <NewRequest ar={ar} onDone={handleNewDone} />}
+        {view === 'track' && (
+          <TrackRequest
+            ar={ar}
+            initial={autoTrack}
+            onBack={() => setView('landing')}
+          />
+        )}
       </div>
     </div>
   )
 }
 
-function Landing({ ar, onNew, onTrack }) {
+function Landing({ ar, savedRequests, onNew, onTrack, onOpenSaved }) {
   return (
     <div className="space-y-4 pt-4">
       <div className="text-center mb-2">
@@ -58,14 +98,36 @@ function Landing({ ar, onNew, onTrack }) {
         </span>
       </button>
 
+      {savedRequests.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-[#071B33] px-1">{ar ? 'طلباتك على هذا الجهاز' : 'Your requests on this device'}</h3>
+          {savedRequests.map(r => (
+            <button
+              key={r.trackingCode}
+              onClick={() => onOpenSaved(r)}
+              className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-gray-200 active:scale-[0.98] transition-transform text-right"
+            >
+              <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#FFF3E9' }}>
+                <Search className="w-4 h-4 text-[#FF7900]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-[#071B33] text-sm truncate">{r.title || (ar ? 'طلب خدمة' : 'Service request')}</p>
+                <p className="text-xs text-gray-400" dir="ltr">{r.orderNumber}</p>
+              </div>
+              <span className="text-xs font-bold text-[#FF7900] flex-shrink-0">{ar ? 'عرض العروض ›' : 'View offers ›'}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <button
         onClick={onTrack}
         className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 font-bold active:scale-[0.98] transition-transform"
       >
         <Search className="w-6 h-6 flex-shrink-0 text-[#071B33]" />
         <span className="text-right flex-1" dir="auto">
-          <span className="block text-base text-[#071B33]">{ar ? 'تتبع طلب سابق' : 'Track a Previous Request'}</span>
-          <span className="block text-xs font-normal text-gray-500">{ar ? 'شوف العروض اللي وصلتك' : 'View offers you received'}</span>
+          <span className="block text-base text-[#071B33]">{ar ? 'تتبع طلب سابق (جهاز آخر)' : 'Track a Previous Request (another device)'}</span>
+          <span className="block text-xs font-normal text-gray-500">{ar ? 'باستخدام رقم الواتساب وكود التتبع' : 'Using your WhatsApp number and tracking code'}</span>
         </span>
       </button>
     </div>
@@ -129,6 +191,12 @@ function NewRequest({ ar, onDone }) {
         photoUrls: photos.length ? photos : undefined,
       })
       setResult(res)
+      saveRequestLocally({
+        orderNumber: res.orderNumber,
+        trackingCode: res.trackingCode,
+        whatsapp: form.whatsapp.trim(),
+        title: form.title.trim(),
+      })
     } catch (err) {
       setError(err.message === 'HTTP 429'
         ? (ar ? 'وصلت الحد الأقصى للطلبات، حاول بعد ساعة' : 'You have reached the request limit, try again in an hour')
@@ -237,24 +305,42 @@ function NewRequest({ ar, onDone }) {
   )
 }
 
-function TrackRequest({ ar, onBack }) {
-  const [whatsapp, setWhatsapp] = useState('')
-  const [code, setCode] = useState('')
-  const [loading, setLoading] = useState(false)
+function TrackRequest({ ar, onBack, initial }) {
+  const [whatsapp, setWhatsapp] = useState(initial?.whatsapp || '')
+  const [code, setCode] = useState(initial?.trackingCode || '')
+  const [loading, setLoading] = useState(!!initial)
   const [error, setError] = useState('')
   const [data, setData] = useState(null)
   const [selecting, setSelecting] = useState(null)
 
-  async function handleTrack(e) {
-    e.preventDefault()
+  async function doTrack(wa, trackCode) {
     setError(''); setLoading(true); setData(null)
+    if (/^GR-?\d/i.test(trackCode)) {
+      setError(ar
+        ? 'هذا يبدو رقم الطلب وليس كود التتبع. كود التتبع مكوّن من 6 أحرف/أرقام تم عرضه بعد إرسال الطلب (مثال: AB3XZ9)'
+        : 'That looks like the order number, not the tracking code. The tracking code is 6 letters/digits shown right after you submitted the request (e.g. AB3XZ9)')
+      setLoading(false)
+      return
+    }
     try {
-      const res = await api.generalRequests.track(whatsapp.trim(), code.trim().toUpperCase())
+      const res = await api.generalRequests.track(wa, trackCode)
       setData(res)
     } catch {
       setError(ar ? 'لم يتم العثور على طلب بهذه البيانات' : 'No request found with this info')
     } finally { setLoading(false) }
   }
+
+  async function handleTrack(e) {
+    e.preventDefault()
+    await doTrack(whatsapp.trim(), code.trim().toUpperCase())
+  }
+
+  useEffect(() => {
+    if (initial?.whatsapp && initial?.trackingCode) {
+      doTrack(initial.whatsapp.trim(), initial.trackingCode.trim().toUpperCase())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function refresh() {
     try {
@@ -341,9 +427,15 @@ function TrackRequest({ ar, onBack }) {
       <div>
         <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'كود التتبع' : 'Tracking code'}</label>
         <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={6} dir="ltr"
+          placeholder="AB3XZ9"
           autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck="false"
           style={{ unicodeBidi: 'plaintext' }}
           className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm tracking-widest font-bold text-center outline-none focus:border-[#FF7900]" required />
+        <p className="text-[11px] text-gray-400 mt-1 px-0.5">
+          {ar
+            ? 'كود من 6 أحرف/أرقام ظهر لك بعد إرسال الطلب — وليس رقم الطلب (GR-...)'
+            : '6-character code shown right after you submitted the request — not the order number (GR-...)'}
+        </p>
       </div>
       {error && <p className="text-sm text-red-500 text-center">{error}</p>}
       <button type="submit" disabled={loading} className="w-full py-3.5 rounded-xl font-black text-white disabled:opacity-60" style={{ background: '#071B33' }}>
