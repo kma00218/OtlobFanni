@@ -18,9 +18,9 @@ const FIELD_HINT = "text-[12px] text-gray-400 mt-1.5 px-0.5 leading-relaxed"
 function normalizeCode(str) {
   return String(str || '')
     .replace(/[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g, '')
-    .replace(/[\u2010-\u2015\u2212]/g, '-')
+    .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
+    .replace(/[\s\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+/g, '')
     .toUpperCase()
-    .trim()
 }
 
 function FormCard({ ar, title, subtitle, onBack, children }) {
