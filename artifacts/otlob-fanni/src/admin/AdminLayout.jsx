@@ -25,6 +25,7 @@ import UpdateReports from './pages/UpdateReports'
 import AdminReferrals from './pages/AdminReferrals'
 import AdminProfileUpdates from './pages/AdminProfileUpdates'
 import AdminServiceRequests from './pages/AdminServiceRequests'
+import AdminGeneralRequests from './pages/AdminGeneralRequests'
 import AdminDeals from './pages/AdminDeals'
 import AdminAffiliates from './pages/AdminAffiliates'
 import { Shield } from 'lucide-react'
@@ -66,6 +67,7 @@ function AdminRoutes() {
       <Route path="/admin/referrals"               component={AdminReferrals} />
       <Route path="/admin/profile-updates"         component={AdminProfileUpdates} />
       <Route path="/admin/service-requests"         component={AdminServiceRequests} />
+      <Route path="/admin/general-requests"         component={AdminGeneralRequests} />
       <Route path="/admin/deals"                   component={AdminDeals} />
       <Route path="/admin/affiliates"              component={AdminAffiliates} />
       <Route path="/admin/search"                  component={AdminSearch} />

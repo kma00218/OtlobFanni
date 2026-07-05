@@ -220,6 +220,10 @@ export const api = {
       markRead: (id)        => patch(`/service-requests/${id}/read`, {}),
     },
 
+    generalRequests: {
+      list: (qs = '') => get(`/admin/general-requests${qs}`),
+    },
+
     adminUsers: {
       list:   ()         => get('/admin/admin-users'),
       create: (data)     => post('/admin/admin-users', data),

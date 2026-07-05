@@ -6,10 +6,10 @@ import {
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
   proCredentialsTable, referralsTable, profileUpdateRequestsTable, dealsTable,
-  ambassadorsTable,
+  ambassadorsTable, generalRequestsTable, generalOffersTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
-import { eq, ne, desc, count, and, or, ilike, sql } from "drizzle-orm";
+import { eq, ne, desc, count, and, or, ilike, sql, inArray } from "drizzle-orm";
 import { objectStorageClient } from "../lib/objectStorage";
 
 const router: IRouter = Router();
@@ -41,6 +41,8 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [pendingUpdateRpts]    = await db.select({ count: count() }).from(updateReportsTable).where(eq(updateReportsTable.status, "new"));
   const [pendingReferrals]     = await db.select({ count: count() }).from(referralsTable).where(eq(referralsTable.status, "new"));
   const [pendingProfileUpds]   = await db.select({ count: count() }).from(profileUpdateRequestsTable).where(eq(profileUpdateRequestsTable.status, "pending"));
+  const [openGeneralReqs]      = await db.select({ count: count() }).from(generalRequestsTable).where(eq(generalRequestsTable.status, "open"));
+  const [totalGeneralReqs]     = await db.select({ count: count() }).from(generalRequestsTable);
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(10);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
@@ -71,6 +73,8 @@ router.get("/stats", async (_req, res): Promise<void> => {
     pendingUpdateReports:   Number(pendingUpdateRpts.count),
     pendingReferrals:       Number(pendingReferrals.count),
     pendingProfileUpdates:  Number(pendingProfileUpds.count),
+    openGeneralRequests:    Number(openGeneralReqs.count),
+    totalGeneralRequests:   Number(totalGeneralReqs.count),
     recentRequests,
     recentTechs,
     recentCompanies,
@@ -1114,6 +1118,32 @@ router.patch("/service-requests/:id/status", async (req, res): Promise<void> => 
   const [r] = await db.update(serviceRequestsTable).set({ status }).where(eq(serviceRequestsTable.id, id)).returning();
   if (!r) { res.status(404).json({ error: "Not found" }); return; }
   res.json(r);
+});
+
+// ── General Requests & Offers (admin) ────────────────────────────────────────
+router.get("/general-requests", async (req, res): Promise<void> => {
+  const { status, city, category } = req.query as Record<string, string>;
+  const conditions = [];
+  if (status)   conditions.push(eq(generalRequestsTable.status, status));
+  if (city)     conditions.push(ilike(generalRequestsTable.cityName, `%${city}%`));
+  if (category) conditions.push(ilike(generalRequestsTable.categoryName, `%${category}%`));
+  const reqs = conditions.length > 0
+    ? await db.select().from(generalRequestsTable).where(and(...conditions)).orderBy(desc(generalRequestsTable.createdAt))
+    : await db.select().from(generalRequestsTable).orderBy(desc(generalRequestsTable.createdAt));
+
+  if (reqs.length === 0) { res.json([]); return; }
+
+  const requestIds = reqs.map(r => r.id);
+  const offers = await db.select().from(generalOffersTable)
+    .where(inArray(generalOffersTable.requestId, requestIds))
+    .orderBy(desc(generalOffersTable.createdAt));
+
+  const offersByRequest: Record<string, typeof offers> = {};
+  for (const o of offers) {
+    (offersByRequest[o.requestId] ??= []).push(o);
+  }
+
+  res.json(reqs.map(r => ({ ...r, offers: offersByRequest[r.id] || [] })));
 });
 
 // ── AI Icon Generation ─────────────────────────────────────────────────────────

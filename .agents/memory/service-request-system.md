@@ -23,3 +23,11 @@ description: Complete lead/request system — RequestFormModal, 3 profile pages,
 - Deep-link scheme: WhatsApp message to the pro includes `${origin}/pro?requestId=<id>`. ProDashboard reads `?requestId=` on mount, switches to the requests tab, and auto-expands/highlights/scrolls to that card. If not logged in, it redirects to `/pro-login` while preserving the full query string; ProLogin forwards `requestId` back to `/pro?requestId=<id>` after a successful login.
 
 **Why:** Keeps the pro's WhatsApp-driven workflow low-friction (one less confirmation round-trip) while still letting the customer verify work was actually completed before it's marked done.
+
+## General requests & offers admin visibility (added 2026-07-05)
+- Separate marketplace system: `general_requests`/`general_offers` tables (distinct from `service_requests` above — general requests are broadcast to many pros who each submit a priced offer, vs. service requests going to one specific pro).
+- Admin page AdminGeneralRequests.jsx at /admin/general-requests shows every general request with all its offers grouped underneath (creation time, offer submission times, prices, statuses) so the admin can monitor the whole request→offer flow without touching the DB.
+- Backend: GET /admin/general-requests in admin.ts joins offers per request via `inArray` on request ids (not raw SQL) — fetch requests first, then batch-fetch offers for those ids.
+- Sidebar/stats: `/admin/stats` now also returns `openGeneralRequests`/`totalGeneralRequests`; AdminSidebar nav item uses `badgeKey: 'openGeneralRequests'` + `statsKey: 'totalGeneralRequests'` for the badge/gray-count pattern.
+
+**Why:** Admin previously had no way to see general (broadcast) requests or their incoming offers at all — this closes that visibility gap for the marketplace feature.
