@@ -38,7 +38,7 @@ function Landing({ ar, onNew, onTrack }) {
         <div className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}>
           <ClipboardList className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-xl font-black text-[#071B33]">{ar ? 'طلبات عامة وعروض' : 'General Requests & Offers'}</h1>
+        <h1 className="text-xl font-black text-[#071B33]">{ar ? 'طلبات خدمات عامة وعروض' : 'General Service Requests & Offers'}</h1>
         <p className="text-sm text-gray-500 mt-1">
           {ar
             ? 'صف مشكلتك وخلي الفنيين والشركات يقدملك عروض أسعار'

@@ -39,7 +39,7 @@ const NAV_GROUPS = [
       { path: '/admin/referrals',               label: 'الترشيحات',         icon: UserPlus,   badgeKey: 'pendingReferrals',      badgeColor: 'green' },
       { path: '/admin/profile-updates',         label: 'تعديلات الملفات',   icon: FilePen,    badgeKey: 'pendingProfileUpdates', badgeColor: 'orange' },
       { path: '/admin/service-requests',        label: 'طلبات العملاء',     icon: ClipboardList, badgeKey: 'newRequests', badgeColor: 'orange' },
-      { path: '/admin/general-requests',        label: 'طلبات عامة وعروض', icon: ListChecks,    badgeKey: 'openGeneralRequests', badgeColor: 'blue', statsKey: 'totalGeneralRequests' },
+      { path: '/admin/general-requests',        label: 'طلبات خدمات عامة وعروض', icon: ListChecks,    badgeKey: 'openGeneralRequests', badgeColor: 'blue', statsKey: 'totalGeneralRequests' },
       { path: '/admin/deals',                    label: 'الصفقات المؤكدة',    icon: Handshake },
     ]
   },

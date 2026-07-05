@@ -1284,7 +1284,7 @@ export default function ProDashboard() {
                   <ClipboardList className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <p className="font-black text-[#071B33] text-sm">طلبات عامة وعروض</p>
+                  <p className="font-black text-[#071B33] text-sm">طلبات خدمات عامة وعروض</p>
                   <p className="text-[11px] text-gray-400">{genRequests.length} طلب متاح</p>
                 </div>
               </div>

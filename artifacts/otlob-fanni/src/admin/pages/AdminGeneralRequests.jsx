@@ -170,7 +170,7 @@ export default function AdminGeneralRequests() {
             <ListChecks className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-black text-[#071B33]">طلبات عامة وعروض</h1>
+            <h1 className="text-xl font-black text-[#071B33]">طلبات خدمات عامة وعروض</h1>
             <p className="text-sm text-gray-500">
               {requests.length} طلب
               {noOffersYet > 0 && <span className="text-amber-500 font-bold"> · {noOffersYet} بدون عروض بعد</span>}
