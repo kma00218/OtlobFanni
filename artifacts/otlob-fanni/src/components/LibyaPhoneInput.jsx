@@ -41,6 +41,11 @@ export default function LibyaPhoneInput({ value, onChange, onBlur, required, cla
           inputMode="numeric"
           maxLength={9}
           dir="ltr"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          style={{ unicodeBidi: 'plaintext', textAlign: 'left' }}
           className={`flex-1 bg-white outline-none px-3 py-2.5 text-sm text-[#071B33] placeholder-gray-400 ${className || ''}`}
         />
       </div>

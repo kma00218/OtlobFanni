@@ -341,6 +341,8 @@ function TrackRequest({ ar, onBack }) {
       <div>
         <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'كود التتبع' : 'Tracking code'}</label>
         <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={6} dir="ltr"
+          autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck="false"
+          style={{ unicodeBidi: 'plaintext' }}
           className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm tracking-widest font-bold text-center outline-none focus:border-[#FF7900]" required />
       </div>
       {error && <p className="text-sm text-red-500 text-center">{error}</p>}
