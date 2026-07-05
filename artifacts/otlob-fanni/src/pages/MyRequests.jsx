@@ -5,7 +5,28 @@ import BackHeader from '../components/BackHeader'
 import { useAllCategories } from '../hooks/useAllCategories'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import api, { uploadFile, getFileUrl } from '../lib/api'
-import { CheckCircle2, ClipboardList, Loader2, PlusCircle, Search, Camera, X } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Loader2, PlusCircle, Search, Camera, X, ChevronRight, ChevronLeft } from 'lucide-react'
+
+function FormCard({ ar, title, onBack, children }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-[0_4px_24px_rgba(7,27,51,0.06)] p-5">
+      <div className="flex items-center gap-2 mb-5">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center active:scale-90 transition-transform flex-shrink-0"
+            aria-label={ar ? 'رجوع للنموذج الرئيسي' : 'Back to main form'}
+          >
+            {ar ? <ChevronRight className="w-5 h-5 text-[#071B33]" /> : <ChevronLeft className="w-5 h-5 text-[#071B33]" />}
+          </button>
+        )}
+        <h2 className={`text-lg font-black text-[#071B33] flex-1 text-center ${onBack ? '-me-9' : ''}`}>{title}</h2>
+      </div>
+      {children}
+    </div>
+  )
+}
 
 const STATUS_LABELS = {
   open:      { ar: 'بانتظار العروض', en: 'Awaiting offers', color: '#FF7900' },
@@ -58,7 +79,7 @@ export default function MyRequests() {
             onOpenSaved={goToSaved}
           />
         )}
-        {view === 'new' && <NewRequest ar={ar} onDone={handleNewDone} />}
+        {view === 'new' && <NewRequest ar={ar} onDone={handleNewDone} onBack={() => setView('landing')} />}
         {view === 'track' && (
           <TrackRequest
             ar={ar}
@@ -134,7 +155,7 @@ function Landing({ ar, savedRequests, onNew, onTrack, onOpenSaved }) {
   )
 }
 
-function NewRequest({ ar, onDone }) {
+function NewRequest({ ar, onDone, onBack }) {
   const categories = useAllCategories()
   const [cities, setCities] = useState([])
   const [form, setForm] = useState({ customerName: '', whatsapp: '', cityId: '', categoryId: '', title: '', description: '' })
@@ -206,30 +227,30 @@ function NewRequest({ ar, onDone }) {
 
   if (result) {
     return (
-      <div className="text-center py-10 space-y-4">
-        <CheckCircle2 className="w-16 h-16 mx-auto text-[#34A853]" />
-        <h2 className="text-lg font-black text-[#071B33]">{ar ? 'تم إرسال طلبك!' : 'Request Sent!'}</h2>
-        <p className="text-sm text-gray-500">
-          {ar ? 'رقم الطلب:' : 'Order number:'} <span className="font-bold text-[#071B33]" dir="ltr">{result.orderNumber}</span>
-        </p>
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-[#071B33]">
-          <p className="font-bold mb-1">{ar ? 'كود التتبع:' : 'Tracking code:'}</p>
-          <p className="text-2xl font-black tracking-widest" dir="ltr">{result.trackingCode}</p>
-          <p className="text-xs text-gray-500 mt-2">
-            {ar ? 'احفظ هذا الكود مع رقم الواتساب لتتبع العروض لاحقًا' : 'Save this code with your WhatsApp number to track offers later'}
+      <FormCard ar={ar} title={ar ? 'تم إرسال طلبك!' : 'Request Sent!'}>
+        <div className="text-center space-y-4">
+          <CheckCircle2 className="w-16 h-16 mx-auto text-[#34A853]" />
+          <p className="text-sm text-gray-500">
+            {ar ? 'رقم الطلب:' : 'Order number:'} <span className="font-bold text-[#071B33]" dir="ltr">{result.orderNumber}</span>
           </p>
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-[#071B33]">
+            <p className="font-bold mb-1">{ar ? 'كود التتبع:' : 'Tracking code:'}</p>
+            <p className="text-2xl font-black tracking-widest" dir="ltr">{result.trackingCode}</p>
+            <p className="text-xs text-gray-500 mt-2">
+              {ar ? 'احفظ هذا الكود مع رقم الواتساب لتتبع العروض لاحقًا' : 'Save this code with your WhatsApp number to track offers later'}
+            </p>
+          </div>
+          <button onClick={onDone} className="w-full py-3 rounded-xl font-bold text-white" style={{ background: '#071B33' }}>
+            {ar ? 'حسنًا' : 'Done'}
+          </button>
         </div>
-        <button onClick={onDone} className="w-full py-3 rounded-xl font-bold text-white" style={{ background: '#071B33' }}>
-          {ar ? 'حسنًا' : 'Done'}
-        </button>
-      </div>
+      </FormCard>
     )
   }
 
   return (
+    <FormCard ar={ar} title={ar ? 'طلب جديد' : 'New Request'} onBack={onBack}>
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-lg font-black text-[#071B33] text-center mb-2">{ar ? 'طلب جديد' : 'New Request'}</h2>
-
       <div>
         <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'الاسم' : 'Name'} *</label>
         <input value={form.customerName} onChange={e => setForm(f => ({ ...f, customerName: e.target.value }))}
@@ -302,6 +323,7 @@ function NewRequest({ ar, onDone }) {
         {submitting ? (ar ? 'جارٍ الإرسال...' : 'Sending...') : (ar ? 'إرسال الطلب' : 'Send Request')}
       </button>
     </form>
+    </FormCard>
   )
 }
 
@@ -365,8 +387,8 @@ function TrackRequest({ ar, onBack, initial }) {
     const { request, offers } = data
     const st = STATUS_LABELS[request.status] || STATUS_LABELS.open
     return (
+      <FormCard ar={ar} title={ar ? 'تتبع طلب' : 'Track Request'} onBack={() => setData(null)}>
       <div className="space-y-4">
-        <button onClick={() => setData(null)} className="text-sm text-gray-500">{ar ? '‹ رجوع' : '‹ Back'}</button>
         <div className="bg-white rounded-2xl border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-1">
             <span className="font-black text-[#071B33]" dir="ltr">{request.orderNumber}</span>
@@ -407,12 +429,13 @@ function TrackRequest({ ar, onBack, initial }) {
           ))}
         </div>
       </div>
+      </FormCard>
     )
   }
 
   return (
+    <FormCard ar={ar} title={ar ? 'تتبع طلب' : 'Track Request'} onBack={onBack}>
     <form onSubmit={handleTrack} className="space-y-4">
-      <h2 className="text-lg font-black text-[#071B33] text-center mb-2">{ar ? 'تتبع طلب' : 'Track Request'}</h2>
       <div>
         <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'رقم الواتساب' : 'WhatsApp number'}</label>
         <LibyaPhoneInput value={whatsapp} onChange={setWhatsapp} required />
@@ -434,7 +457,7 @@ function TrackRequest({ ar, onBack, initial }) {
       <button type="submit" disabled={loading} className="w-full py-3.5 rounded-xl font-black text-white disabled:opacity-60" style={{ background: '#071B33' }}>
         {loading ? (ar ? 'جارٍ البحث...' : 'Searching...') : (ar ? 'بحث' : 'Search')}
       </button>
-      <button type="button" onClick={onBack} className="w-full text-sm text-gray-500">{ar ? '‹ رجوع' : '‹ Back'}</button>
     </form>
+    </FormCard>
   )
 }

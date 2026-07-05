@@ -5,3 +5,4 @@
 - [Sibling fixed FABs overlapping each other](fab-sibling-overlap.md) — global FABs at the same bottom offset can steal clicks from each other on narrow phones, not just from page content
 - [General request WhatsApp validation gap](general-request-whatsapp-validation.md) — missing min-length check let customers save a truncated WhatsApp number, breaking later self-tracking
 - [Order number vs tracking code confusion](order-number-vs-tracking-code.md) — users kept typing the order number where the tracking code goes; accept both values instead of warning better
+- [Nested form back navigation vs global app back](nested-form-back-navigation.md) — internal sub-view back controls need visually distinct treatment (e.g. circular icon in a card) from the page's global header back button
