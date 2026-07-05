@@ -2224,6 +2224,10 @@ function genTrackingCode() {
 router.post("/general-requests", async (req, res): Promise<void> => {
   const { customerName, whatsapp, cityId, cityName, categoryId, categoryName, title, description, photoUrls } = req.body;
   if (!customerName || !whatsapp) { res.status(400).json({ error: "الاسم ورقم الواتساب مطلوبان" }); return; }
+  if (normalizeWa(whatsapp).length !== 9) {
+    res.status(400).json({ error: "رقم الواتساب غير مكتمل، يجب أن يتكون من 9 أرقام بعد 218+" });
+    return;
+  }
 
   // Soft rate-limit: >=5 requests from same WhatsApp within the last hour
   const candidates = waCandidates(whatsapp);

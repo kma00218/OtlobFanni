@@ -97,11 +97,20 @@ function NewRequest({ ar, onDone }) {
     finally { setUploading(false) }
   }
 
+  function validateLibyaPhone(v) {
+    const digits = (v || '').replace(/\D/g, '').replace(/^218/, '')
+    return digits.length === 9
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     if (!form.customerName.trim() || !form.whatsapp.trim() || !form.title.trim() || !form.description.trim()) {
       setError(ar ? 'يرجى تعبئة كل الحقول المطلوبة' : 'Please fill all required fields')
+      return
+    }
+    if (!validateLibyaPhone(form.whatsapp)) {
+      setError(ar ? 'رقم الواتساب غير مكتمل، يجب أن يتكون من 9 أرقام بعد 218+' : 'WhatsApp number is incomplete, it must be 9 digits after +218')
       return
     }
     setSubmitting(true)

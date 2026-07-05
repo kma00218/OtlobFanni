@@ -184,7 +184,7 @@ function SearchFAB() {
         onClick={() => setOpen(true)}
         className="fixed z-40 active:scale-90 transition-transform duration-150"
         style={{
-          bottom: '96px',
+          bottom: '160px',
           [ar ? 'right' : 'left']: '16px',
           width: '52px',
           height: '52px',
@@ -218,7 +218,7 @@ function MyRequestsFAB() {
       href="/my-requests"
       className="fixed z-40 flex items-center gap-2 active:scale-95 transition-transform duration-150"
       style={{
-        bottom: '96px',
+        bottom: '160px',
         [ar ? 'left' : 'right']: '16px',
         padding: '12px 16px',
         borderRadius: '18px',
