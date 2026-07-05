@@ -94,7 +94,7 @@ function RequestCard({ req }) {
         <div className="px-4 pb-4 space-y-3" style={{ borderTop: '1px solid #F0F2F5' }}>
           <div className="pt-3 flex items-center gap-3 flex-wrap">
             <span className="text-xs text-gray-500 flex items-center gap-1">
-              <Phone className="w-3 h-3" /> {req.whatsapp}
+              <Phone className="w-3 h-3" /> <span dir="ltr">{req.whatsapp}</span>
             </span>
             <span className="text-[10px] text-gray-300" dir="ltr">كود التتبع: {req.trackingCode}</span>
           </div>

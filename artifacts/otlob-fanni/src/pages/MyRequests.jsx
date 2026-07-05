@@ -316,7 +316,7 @@ function TrackRequest({ ar, onBack }) {
               {request.assignedOfferId === o.id ? (
                 <div className="mt-2 text-sm font-bold text-[#34A853] flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" /> {ar ? 'تم اختياره — تواصل معك الفني' : 'Selected — contact will be shared'}
-                  {o.providerWhatsapp && <a href={`https://wa.me/${o.providerWhatsapp.replace(/\D/g, '')}`} className="underline ms-1" target="_blank" rel="noreferrer">{o.providerWhatsapp}</a>}
+                  {o.providerWhatsapp && <a href={`https://wa.me/${o.providerWhatsapp.replace(/\D/g, '')}`} className="underline ms-1" dir="ltr" target="_blank" rel="noreferrer">{o.providerWhatsapp}</a>}
                 </div>
               ) : !request.assignedOfferId ? (
                 <button onClick={() => handleSelect(o)} disabled={selecting === o.id}
