@@ -2219,6 +2219,16 @@ function genTrackingCode() {
   for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
   return out;
 }
+// Normalizes user-typed order/tracking codes: strips invisible bidi marks and
+// collapses any dash-like unicode (en/em dash, minus sign, smart-punctuation
+// substitutes some mobile keyboards insert for "-") down to a plain hyphen.
+function normalizeCode(code: string) {
+  return String(code || "")
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g, "")
+    .replace(/[\u2010-\u2015\u2212]/g, "-")
+    .toUpperCase()
+    .trim();
+}
 
 // ── Create a general request (public, anonymous) ──────────────────────────────
 router.post("/general-requests", async (req, res): Promise<void> => {
@@ -2265,7 +2275,7 @@ router.post("/general-requests/track", async (req, res): Promise<void> => {
   const { whatsapp, trackingCode } = req.body;
   if (!whatsapp || !trackingCode) { res.status(400).json({ error: "الرقم والكود مطلوبان" }); return; }
   const candidates = waCandidates(whatsapp);
-  const code = String(trackingCode).toUpperCase().trim();
+  const code = normalizeCode(trackingCode);
   // Accept either the real tracking code OR the order number (users often confuse the two).
   // Both still require the matching WhatsApp number, which keeps lookups reasonably scoped.
   const [reqRow] = await db.select().from(generalRequestsTable)
@@ -2388,7 +2398,7 @@ router.post("/general-requests/:id/select-offer", async (req, res): Promise<void
 
   const candidates = waCandidates(whatsapp);
   const [reqRow] = await db.select().from(generalRequestsTable)
-    .where(and(eq(generalRequestsTable.id, requestId), inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, trackingCode.toUpperCase().trim())));
+    .where(and(eq(generalRequestsTable.id, requestId), inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, normalizeCode(trackingCode))));
   if (!reqRow) { res.status(404).json({ error: "الطلب غير موجود" }); return; }
   if (reqRow.status !== "open") { res.status(409).json({ error: "تم اختيار عرض مسبقاً على هذا الطلب" }); return; }
 

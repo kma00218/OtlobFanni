@@ -6,3 +6,4 @@
 - [General request WhatsApp validation gap](general-request-whatsapp-validation.md) — missing min-length check let customers save a truncated WhatsApp number, breaking later self-tracking
 - [Order number vs tracking code confusion](order-number-vs-tracking-code.md) — users kept typing the order number where the tracking code goes; accept both values instead of warning better
 - [Nested form back navigation vs global app back](nested-form-back-navigation.md) — internal sub-view back controls need visually distinct treatment (e.g. circular icon in a card) from the page's global header back button
+- [Dash-like unicode normalization for codes](dash-unicode-normalization.md) — mobile keyboards silently swap "-" for lookalike dashes, breaking exact-match order/tracking code lookups

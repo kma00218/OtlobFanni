@@ -12,6 +12,17 @@ const FIELD_INPUT = "w-full rounded-xl border-2 border-[#0a0a0a] bg-white px-3.5
 const FIELD_SELECT = `${FIELD_INPUT} appearance-none pe-9 cursor-pointer`
 const FIELD_HINT = "text-[12px] text-gray-400 mt-1.5 px-0.5 leading-relaxed"
 
+// Some mobile keyboards silently swap "-" for a lookalike dash (en dash, minus
+// sign, etc.) via smart punctuation. Normalize those + strip invisible bidi
+// marks before sending, so tracking lookups don't fail on cosmetic mismatches.
+function normalizeCode(str) {
+  return String(str || '')
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g, '')
+    .replace(/[\u2010-\u2015\u2212]/g, '-')
+    .toUpperCase()
+    .trim()
+}
+
 function FormCard({ ar, title, subtitle, onBack, children }) {
   return (
     <div className="bg-white rounded-2xl border-2 border-[#0a0a0a] shadow-[0_8px_30px_rgba(7,27,51,0.12)] overflow-hidden">
@@ -363,19 +374,19 @@ function TrackRequest({ ar, onBack, initial }) {
 
   async function handleTrack(e) {
     e.preventDefault()
-    await doTrack(whatsapp.trim(), code.trim().toUpperCase())
+    await doTrack(whatsapp.trim(), normalizeCode(code))
   }
 
   useEffect(() => {
     if (initial?.whatsapp && initial?.trackingCode) {
-      doTrack(initial.whatsapp.trim(), initial.trackingCode.trim().toUpperCase())
+      doTrack(initial.whatsapp.trim(), normalizeCode(initial.trackingCode))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function refresh() {
     try {
-      const res = await api.generalRequests.track(whatsapp.trim(), code.trim().toUpperCase())
+      const res = await api.generalRequests.track(whatsapp.trim(), normalizeCode(code))
       setData(res)
     } catch {}
   }
@@ -391,7 +402,7 @@ function TrackRequest({ ar, onBack, initial }) {
     setSelecting(offer.id)
     try {
       await api.generalRequests.selectOffer(data.request.id, {
-        whatsapp: whatsapp.trim(), trackingCode: code.trim().toUpperCase(), offerId: offer.id,
+        whatsapp: whatsapp.trim(), trackingCode: normalizeCode(code), offerId: offer.id,
       })
       await refresh()
     } catch {
