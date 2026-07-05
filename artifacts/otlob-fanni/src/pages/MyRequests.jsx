@@ -8,19 +8,19 @@ import api, { uploadFile, getFileUrl } from '../lib/api'
 import { CheckCircle2, ClipboardList, Loader2, PlusCircle, Search, Camera, X, ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 
 const FIELD_LABEL = "block text-[13px] font-bold text-[#071B33] mb-1.5 tracking-[0.01em]"
-const FIELD_INPUT = "w-full rounded-xl border-2 border-gray-200 bg-white px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:ring-4 focus:ring-[#FF7900]/10 outline-none transition-all"
+const FIELD_INPUT = "w-full rounded-xl border-2 border-[#0a0a0a] bg-white px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:ring-4 focus:ring-[#FF7900]/15 outline-none transition-all"
 const FIELD_SELECT = `${FIELD_INPUT} appearance-none pe-9 cursor-pointer`
 const FIELD_HINT = "text-[12px] text-gray-400 mt-1.5 px-0.5 leading-relaxed"
 
 function FormCard({ ar, title, subtitle, onBack, children }) {
   return (
-    <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-[0_8px_30px_rgba(7,27,51,0.08)] overflow-hidden">
-      <div className="flex items-center gap-2 px-5 pt-5 pb-4 border-b-2 border-gray-100">
+    <div className="bg-white rounded-2xl border-2 border-[#0a0a0a] shadow-[0_8px_30px_rgba(7,27,51,0.12)] overflow-hidden">
+      <div className="flex items-center gap-2 px-5 pt-5 pb-4 border-b-2 border-[#0a0a0a]">
         {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center active:scale-90 transition-all flex-shrink-0"
+            className="w-9 h-9 rounded-full bg-white border-2 border-[#0a0a0a] hover:bg-gray-100 flex items-center justify-center active:scale-90 transition-all flex-shrink-0"
             aria-label={ar ? 'رجوع للنموذج الرئيسي' : 'Back to main form'}
           >
             {ar ? <ChevronRight className="w-5 h-5 text-[#071B33]" /> : <ChevronLeft className="w-5 h-5 text-[#071B33]" />}

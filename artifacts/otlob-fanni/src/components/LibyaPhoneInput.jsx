@@ -27,8 +27,8 @@ export default function LibyaPhoneInput({ value, onChange, onBlur, required, cla
 
   return (
     <div>
-      <div className="flex rounded-xl overflow-hidden border-2 border-gray-200 focus-within:border-[#FF7900] focus-within:ring-4 focus-within:ring-[#FF7900]/10 transition-all bg-white" dir="ltr">
-        <span className="flex items-center px-3 bg-gray-50 text-[#071B33] font-bold text-[15px] border-r-2 border-gray-200 select-none whitespace-nowrap">
+      <div className="flex rounded-xl overflow-hidden border-2 border-[#0a0a0a] focus-within:border-[#FF7900] focus-within:ring-4 focus-within:ring-[#FF7900]/15 transition-all bg-white" dir="ltr">
+        <span className="flex items-center px-3 bg-gray-50 text-[#071B33] font-bold text-[15px] border-r-2 border-[#0a0a0a] select-none whitespace-nowrap">
           🇱🇾 +218
         </span>
         <input
