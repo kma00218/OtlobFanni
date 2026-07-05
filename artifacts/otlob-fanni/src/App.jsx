@@ -216,20 +216,33 @@ function MyRequestsFAB() {
   return (
     <Link
       href="/my-requests"
-      className="fixed z-40 flex items-center gap-2 active:scale-95 transition-transform duration-150"
+      className="fixed z-40 flex items-center gap-3 active:scale-[0.96] transition-transform duration-150"
       style={{
         bottom: '160px',
         [ar ? 'left' : 'right']: '16px',
-        padding: '12px 16px',
-        borderRadius: '18px',
-        background: 'linear-gradient(135deg, #071B33 0%, #0d2e57 100%)',
-        boxShadow: '0 6px 24px rgba(7,27,51,0.5)',
+        padding: '10px 16px 10px 10px',
+        borderRadius: '20px',
+        background: '#ffffff',
+        border: '2px solid #eef1f5',
+        boxShadow: '0 10px 28px rgba(7,27,51,0.18), 0 2px 6px rgba(7,27,51,0.08)',
         textDecoration: 'none',
       }}
       aria-label={ar ? 'طلباتي' : 'My Requests'}
     >
-      <ClipboardList className="w-5 h-5 text-white flex-shrink-0" />
-      <span className="text-sm font-black text-white whitespace-nowrap">{ar ? 'طلباتي' : 'My Requests'}</span>
+      <span
+        className="flex items-center justify-center flex-shrink-0 rounded-full"
+        style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}
+      >
+        <ClipboardList className="w-[19px] h-[19px] text-white" />
+      </span>
+      <span className="flex flex-col" style={{ alignItems: ar ? 'flex-end' : 'flex-start' }}>
+        <span className="text-[14px] font-black leading-tight whitespace-nowrap" style={{ color: '#071B33' }}>
+          {ar ? 'طلباتي' : 'My Requests'}
+        </span>
+        <span className="text-[10.5px] font-bold leading-tight whitespace-nowrap" style={{ color: '#FF7900' }}>
+          {ar ? 'تتبّع أو أنشئ طلب' : 'Track or start a request'}
+        </span>
+      </span>
     </Link>
   );
 }
