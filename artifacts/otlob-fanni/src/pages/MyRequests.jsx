@@ -5,25 +5,35 @@ import BackHeader from '../components/BackHeader'
 import { useAllCategories } from '../hooks/useAllCategories'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import api, { uploadFile, getFileUrl } from '../lib/api'
-import { CheckCircle2, ClipboardList, Loader2, PlusCircle, Search, Camera, X, ChevronRight, ChevronLeft } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Loader2, PlusCircle, Search, Camera, X, ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 
-function FormCard({ ar, title, onBack, children }) {
+const FIELD_LABEL = "block text-[13px] font-bold text-[#071B33] mb-1.5 tracking-[0.01em]"
+const FIELD_INPUT = "w-full rounded-xl border-2 border-gray-200 bg-white px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:ring-4 focus:ring-[#FF7900]/10 outline-none transition-all"
+const FIELD_SELECT = `${FIELD_INPUT} appearance-none pe-9 cursor-pointer`
+const FIELD_HINT = "text-[12px] text-gray-400 mt-1.5 px-0.5 leading-relaxed"
+
+function FormCard({ ar, title, subtitle, onBack, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-[0_4px_24px_rgba(7,27,51,0.06)] p-5">
-      <div className="flex items-center gap-2 mb-5">
+    <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-[0_8px_30px_rgba(7,27,51,0.08)] overflow-hidden">
+      <div className="flex items-center gap-2 px-5 pt-5 pb-4 border-b-2 border-gray-100">
         {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center active:scale-90 transition-transform flex-shrink-0"
+            className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center active:scale-90 transition-all flex-shrink-0"
             aria-label={ar ? 'رجوع للنموذج الرئيسي' : 'Back to main form'}
           >
             {ar ? <ChevronRight className="w-5 h-5 text-[#071B33]" /> : <ChevronLeft className="w-5 h-5 text-[#071B33]" />}
           </button>
         )}
-        <h2 className={`text-lg font-black text-[#071B33] flex-1 text-center ${onBack ? '-me-9' : ''}`}>{title}</h2>
+        <div className={`flex-1 text-center ${onBack ? '-me-9' : ''}`}>
+          <h2 className="text-[19px] font-black text-[#071B33] tracking-tight leading-tight">{title}</h2>
+          {subtitle && <p className="text-[13px] text-gray-400 mt-0.5">{subtitle}</p>}
+        </div>
       </div>
-      {children}
+      <div className="p-5">
+        {children}
+      </div>
     </div>
   )
 }
@@ -228,19 +238,19 @@ function NewRequest({ ar, onDone, onBack }) {
   if (result) {
     return (
       <FormCard ar={ar} title={ar ? 'تم إرسال طلبك!' : 'Request Sent!'}>
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-5">
           <CheckCircle2 className="w-16 h-16 mx-auto text-[#34A853]" />
-          <p className="text-sm text-gray-500">
+          <p className="text-[14px] text-gray-500">
             {ar ? 'رقم الطلب:' : 'Order number:'} <span className="font-bold text-[#071B33]" dir="ltr">{result.orderNumber}</span>
           </p>
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-[#071B33]">
+          <div className="bg-orange-50 border-2 border-orange-100 rounded-xl p-4 text-[14px] text-[#071B33]">
             <p className="font-bold mb-1">{ar ? 'كود التتبع:' : 'Tracking code:'}</p>
-            <p className="text-2xl font-black tracking-widest" dir="ltr">{result.trackingCode}</p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-2xl font-black tracking-[0.2em]" dir="ltr">{result.trackingCode}</p>
+            <p className="text-[12px] text-gray-500 mt-2 leading-relaxed">
               {ar ? 'احفظ هذا الكود مع رقم الواتساب لتتبع العروض لاحقًا' : 'Save this code with your WhatsApp number to track offers later'}
             </p>
           </div>
-          <button onClick={onDone} className="w-full py-3 rounded-xl font-bold text-white" style={{ background: '#071B33' }}>
+          <button onClick={onDone} className="w-full py-3.5 rounded-xl font-black text-[15px] tracking-wide text-white active:scale-[0.98] transition-transform" style={{ background: '#071B33' }}>
             {ar ? 'حسنًا' : 'Done'}
           </button>
         </div>
@@ -249,56 +259,62 @@ function NewRequest({ ar, onDone, onBack }) {
   }
 
   return (
-    <FormCard ar={ar} title={ar ? 'طلب جديد' : 'New Request'} onBack={onBack}>
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <FormCard ar={ar} title={ar ? 'طلب جديد' : 'New Request'} subtitle={ar ? 'عبّي البيانات وسنوصلها للفنيين' : 'Fill in the details to reach technicians'} onBack={onBack}>
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'الاسم' : 'Name'} *</label>
+        <label className={FIELD_LABEL}>{ar ? 'الاسم' : 'Name'} *</label>
         <input value={form.customerName} onChange={e => setForm(f => ({ ...f, customerName: e.target.value }))}
-          className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-[#FF7900] focus:ring-2 focus:ring-[#FF7900]/20 outline-none" required />
+          className={FIELD_INPUT} required />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'رقم الواتساب' : 'WhatsApp number'} *</label>
+        <label className={FIELD_LABEL}>{ar ? 'رقم الواتساب' : 'WhatsApp number'} *</label>
         <LibyaPhoneInput value={form.whatsapp} onChange={v => setForm(f => ({ ...f, whatsapp: v }))} required />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'المدينة' : 'City'}</label>
-          <select value={form.cityId} onChange={e => setForm(f => ({ ...f, cityId: e.target.value }))}
-            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none bg-white">
-            <option value="">{ar ? 'اختر' : 'Select'}</option>
-            {cities.map(c => <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>)}
-          </select>
+          <label className={FIELD_LABEL}>{ar ? 'المدينة' : 'City'}</label>
+          <div className="relative">
+            <select value={form.cityId} onChange={e => setForm(f => ({ ...f, cityId: e.target.value }))}
+              className={FIELD_SELECT}>
+              <option value="">{ar ? 'اختر' : 'Select'}</option>
+              {cities.map(c => <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>)}
+            </select>
+            <ChevronDown className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3.5 w-4 h-4 text-gray-400" />
+          </div>
         </div>
         <div>
-          <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'التخصص' : 'Category'}</label>
-          <select value={form.categoryId} onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}
-            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none bg-white">
-            <option value="">{ar ? 'اختر' : 'Select'}</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>)}
-          </select>
+          <label className={FIELD_LABEL}>{ar ? 'التخصص' : 'Category'}</label>
+          <div className="relative">
+            <select value={form.categoryId} onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}
+              className={FIELD_SELECT}>
+              <option value="">{ar ? 'اختر' : 'Select'}</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>)}
+            </select>
+            <ChevronDown className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3.5 w-4 h-4 text-gray-400" />
+          </div>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'عنوان الطلب' : 'Request title'} *</label>
+        <label className={FIELD_LABEL}>{ar ? 'عنوان الطلب' : 'Request title'} *</label>
         <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
           placeholder={ar ? 'مثال: تسريب ماء في المطبخ' : 'e.g. Water leak in kitchen'}
-          className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-[#FF7900] focus:ring-2 focus:ring-[#FF7900]/20 outline-none" required />
+          className={FIELD_INPUT} required />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'وصف المشكلة' : 'Description'} *</label>
+        <label className={FIELD_LABEL}>{ar ? 'وصف المشكلة' : 'Description'} *</label>
         <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-          rows={4} className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:border-[#FF7900] focus:ring-2 focus:ring-[#FF7900]/20 outline-none resize-none" required />
+          rows={4} className={`${FIELD_INPUT} resize-none leading-relaxed`} required />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'صور (اختياري، حتى 3)' : 'Photos (optional, up to 3)'}</label>
+        <label className={FIELD_LABEL}>{ar ? 'صور (اختياري، حتى 3)' : 'Photos (optional, up to 3)'}</label>
         <div className="flex gap-2 flex-wrap">
           {photos.map((p, i) => (
-            <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
+            <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-200">
               <img src={getFileUrl(p)} alt="" className="w-full h-full object-cover" />
               <button type="button" onClick={() => setPhotos(ps => ps.filter((_, idx) => idx !== i))}
                 className="absolute top-0.5 right-0.5 bg-black/60 rounded-full p-0.5">
@@ -307,7 +323,7 @@ function NewRequest({ ar, onDone, onBack }) {
             </div>
           ))}
           {photos.length < 3 && (
-            <label className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer text-gray-400">
+            <label className="w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer text-gray-400 hover:border-[#FF7900] hover:text-[#FF7900] transition-colors">
               {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
               <input type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoAdd} disabled={uploading} />
             </label>
@@ -315,10 +331,10 @@ function NewRequest({ ar, onDone, onBack }) {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+      {error && <p className="text-[13px] font-medium text-red-600 bg-red-50 border-2 border-red-100 rounded-xl px-3.5 py-2.5 text-center">{error}</p>}
 
       <button type="submit" disabled={submitting}
-        className="w-full py-3.5 rounded-xl font-black text-white disabled:opacity-60"
+        className="w-full py-3.5 rounded-xl font-black text-[16px] tracking-wide text-white disabled:opacity-60 shadow-[0_6px_20px_rgba(255,121,0,0.3)] active:scale-[0.98] transition-transform"
         style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}>
         {submitting ? (ar ? 'جارٍ الإرسال...' : 'Sending...') : (ar ? 'إرسال الطلب' : 'Send Request')}
       </button>
@@ -388,45 +404,47 @@ function TrackRequest({ ar, onBack, initial }) {
     const st = STATUS_LABELS[request.status] || STATUS_LABELS.open
     return (
       <FormCard ar={ar} title={ar ? 'تتبع طلب' : 'Track Request'} onBack={() => setData(null)}>
-      <div className="space-y-4">
-        <div className="bg-white rounded-2xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-1">
-            <span className="font-black text-[#071B33]" dir="ltr">{request.orderNumber}</span>
-            <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: st.color }}>{ar ? st.ar : st.en}</span>
+      <div className="space-y-5">
+        <div className="bg-gray-50 rounded-xl border-2 border-gray-100 p-4">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-black text-[#071B33] text-[15px]" dir="ltr">{request.orderNumber}</span>
+            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{ background: st.color }}>{ar ? st.ar : st.en}</span>
           </div>
-          <p className="font-bold text-[#071B33] mt-2">{request.title}</p>
-          <p className="text-sm text-gray-500 mt-1">{request.description}</p>
+          <p className="font-bold text-[#071B33] mt-2 text-[15px]">{request.title}</p>
+          <p className="text-[13px] text-gray-500 mt-1 leading-relaxed">{request.description}</p>
         </div>
 
-        <h3 className="font-bold text-[#071B33]">{ar ? `العروض (${offers.length})` : `Offers (${offers.length})`}</h3>
-        {offers.length === 0 && <p className="text-sm text-gray-400 text-center py-6">{ar ? 'لا توجد عروض بعد، تحقق لاحقًا' : 'No offers yet, check back later'}</p>}
-        <div className="space-y-3">
-          {offers.map(o => (
-            <div key={o.id} className={`bg-white rounded-2xl border p-4 ${request.assignedOfferId === o.id ? 'border-[#34A853] ring-2 ring-[#34A853]/20' : 'border-gray-200'}`}>
-              <div className="flex items-center gap-3">
-                {o.providerPhoto && <img src={getFileUrl(o.providerPhoto)} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />}
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#071B33]">{o.providerName}</span>
-                    <span className="font-black text-[#FF7900]">{o.price} {ar ? 'د.ل' : 'LYD'}</span>
+        <div>
+          <h3 className="font-black text-[#071B33] text-[15px] mb-3">{ar ? `العروض (${offers.length})` : `Offers (${offers.length})`}</h3>
+          {offers.length === 0 && <p className="text-[13px] text-gray-400 text-center py-6">{ar ? 'لا توجد عروض بعد، تحقق لاحقًا' : 'No offers yet, check back later'}</p>}
+          <div className="space-y-3">
+            {offers.map(o => (
+              <div key={o.id} className={`bg-white rounded-xl border-2 p-4 ${request.assignedOfferId === o.id ? 'border-[#34A853] ring-4 ring-[#34A853]/10' : 'border-gray-100'}`}>
+                <div className="flex items-center gap-3">
+                  {o.providerPhoto && <img src={getFileUrl(o.providerPhoto)} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-gray-200" />}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#071B33] text-[14px]">{o.providerName}</span>
+                      <span className="font-black text-[#FF7900] text-[15px]">{o.price} {ar ? 'د.ل' : 'LYD'}</span>
+                    </div>
+                    {o.etaText && <span className="text-[12px] text-gray-400">{o.etaText}</span>}
                   </div>
-                  {o.etaText && <span className="text-xs text-gray-400">{o.etaText}</span>}
                 </div>
+                {o.note && <p className="text-[13px] text-gray-500 mt-2 leading-relaxed">{o.note}</p>}
+                {request.assignedOfferId === o.id ? (
+                  <div className="mt-2.5 text-[13px] font-bold text-[#34A853] flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4" /> {ar ? 'تم اختياره — تواصل معك الفني' : 'Selected — contact will be shared'}
+                    {o.providerWhatsapp && <a href={`https://wa.me/${o.providerWhatsapp.replace(/\D/g, '')}`} className="underline ms-1" dir="ltr" target="_blank" rel="noreferrer">{o.providerWhatsapp}</a>}
+                  </div>
+                ) : !request.assignedOfferId ? (
+                  <button onClick={() => handleSelect(o)} disabled={selecting === o.id}
+                    className="mt-2.5 w-full py-2.5 rounded-lg text-[13px] font-bold text-white disabled:opacity-60" style={{ background: '#34A853' }}>
+                    {selecting === o.id ? (ar ? 'جارٍ...' : 'Selecting...') : (ar ? 'اختيار هذا العرض' : 'Select this offer')}
+                  </button>
+                ) : null}
               </div>
-              {o.note && <p className="text-sm text-gray-500 mt-2">{o.note}</p>}
-              {request.assignedOfferId === o.id ? (
-                <div className="mt-2 text-sm font-bold text-[#34A853] flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> {ar ? 'تم اختياره — تواصل معك الفني' : 'Selected — contact will be shared'}
-                  {o.providerWhatsapp && <a href={`https://wa.me/${o.providerWhatsapp.replace(/\D/g, '')}`} className="underline ms-1" dir="ltr" target="_blank" rel="noreferrer">{o.providerWhatsapp}</a>}
-                </div>
-              ) : !request.assignedOfferId ? (
-                <button onClick={() => handleSelect(o)} disabled={selecting === o.id}
-                  className="mt-2 w-full py-2 rounded-lg text-sm font-bold text-white disabled:opacity-60" style={{ background: '#34A853' }}>
-                  {selecting === o.id ? (ar ? 'جارٍ...' : 'Selecting...') : (ar ? 'اختيار هذا العرض' : 'Select this offer')}
-                </button>
-              ) : null}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
       </FormCard>
@@ -434,27 +452,27 @@ function TrackRequest({ ar, onBack, initial }) {
   }
 
   return (
-    <FormCard ar={ar} title={ar ? 'تتبع طلب' : 'Track Request'} onBack={onBack}>
-    <form onSubmit={handleTrack} className="space-y-4">
+    <FormCard ar={ar} title={ar ? 'تتبع طلب' : 'Track Request'} subtitle={ar ? 'ابحث برقم الطلب أو كود التتبع' : 'Search using your order number or tracking code'} onBack={onBack}>
+    <form onSubmit={handleTrack} className="space-y-5">
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'رقم الواتساب' : 'WhatsApp number'}</label>
+        <label className={FIELD_LABEL}>{ar ? 'رقم الواتساب' : 'WhatsApp number'}</label>
         <LibyaPhoneInput value={whatsapp} onChange={setWhatsapp} required />
       </div>
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'رقم الطلب أو كود التتبع' : 'Order number or tracking code'}</label>
+        <label className={FIELD_LABEL}>{ar ? 'رقم الطلب أو كود التتبع' : 'Order number or tracking code'}</label>
         <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={12} dir="ltr"
           placeholder={ar ? 'مثال: GR-432139 أو AB3XZ9' : 'e.g. GR-432139 or AB3XZ9'}
           autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck="false"
           style={{ unicodeBidi: 'plaintext' }}
-          className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm tracking-widest font-bold text-center outline-none focus:border-[#FF7900]" required />
-        <p className="text-[11px] text-gray-400 mt-1 px-0.5">
+          className={`${FIELD_INPUT} tracking-[0.15em] font-bold text-center`} required />
+        <p className={FIELD_HINT}>
           {ar
             ? 'اكتب رقم الطلب (GR-...) أو كود التتبع الذي ظهر لك بعد إرسال الطلب'
             : 'Enter the order number (GR-...) or the tracking code shown after you submitted the request'}
         </p>
       </div>
-      {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-      <button type="submit" disabled={loading} className="w-full py-3.5 rounded-xl font-black text-white disabled:opacity-60" style={{ background: '#071B33' }}>
+      {error && <p className="text-[13px] font-medium text-red-600 bg-red-50 border-2 border-red-100 rounded-xl px-3.5 py-2.5 text-center">{error}</p>}
+      <button type="submit" disabled={loading} className="w-full py-3.5 rounded-xl font-black text-[16px] tracking-wide text-white disabled:opacity-60 active:scale-[0.98] transition-transform" style={{ background: '#071B33' }}>
         {loading ? (ar ? 'جارٍ البحث...' : 'Searching...') : (ar ? 'بحث' : 'Search')}
       </button>
     </form>
