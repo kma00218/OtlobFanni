@@ -4,3 +4,4 @@
 - [Fixed FAB overlap on new pages](fab-overlap-bottom-padding.md) — new full-page routes need enough bottom padding to clear the app's global fixed floating buttons
 - [Sibling fixed FABs overlapping each other](fab-sibling-overlap.md) — global FABs at the same bottom offset can steal clicks from each other on narrow phones, not just from page content
 - [General request WhatsApp validation gap](general-request-whatsapp-validation.md) — missing min-length check let customers save a truncated WhatsApp number, breaking later self-tracking
+- [Order number vs tracking code confusion](order-number-vs-tracking-code.md) — users kept typing the order number where the tracking code goes; accept both values instead of warning better

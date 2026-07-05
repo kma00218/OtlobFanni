@@ -2265,8 +2265,14 @@ router.post("/general-requests/track", async (req, res): Promise<void> => {
   const { whatsapp, trackingCode } = req.body;
   if (!whatsapp || !trackingCode) { res.status(400).json({ error: "الرقم والكود مطلوبان" }); return; }
   const candidates = waCandidates(whatsapp);
+  const code = String(trackingCode).toUpperCase().trim();
+  // Accept either the real tracking code OR the order number (users often confuse the two).
+  // Both still require the matching WhatsApp number, which keeps lookups reasonably scoped.
   const [reqRow] = await db.select().from(generalRequestsTable)
-    .where(and(inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, trackingCode.toUpperCase().trim())));
+    .where(and(
+      inArray(generalRequestsTable.whatsapp, candidates),
+      or(eq(generalRequestsTable.trackingCode, code), eq(generalRequestsTable.orderNumber, code))!,
+    ));
   if (!reqRow) { res.status(404).json({ error: "لم يتم العثور على طلب بهذه البيانات" }); return; }
 
   const offers = await db.select().from(generalOffersTable)

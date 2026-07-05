@@ -315,13 +315,6 @@ function TrackRequest({ ar, onBack, initial }) {
 
   async function doTrack(wa, trackCode) {
     setError(''); setLoading(true); setData(null)
-    if (/^GR-?\d/i.test(trackCode)) {
-      setError(ar
-        ? 'هذا يبدو رقم الطلب وليس كود التتبع. كود التتبع مكوّن من 6 أحرف/أرقام تم عرضه بعد إرسال الطلب (مثال: AB3XZ9)'
-        : 'That looks like the order number, not the tracking code. The tracking code is 6 letters/digits shown right after you submitted the request (e.g. AB3XZ9)')
-      setLoading(false)
-      return
-    }
     try {
       const res = await api.generalRequests.track(wa, trackCode)
       setData(res)
@@ -425,16 +418,16 @@ function TrackRequest({ ar, onBack, initial }) {
         <LibyaPhoneInput value={whatsapp} onChange={setWhatsapp} required />
       </div>
       <div>
-        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'كود التتبع' : 'Tracking code'}</label>
-        <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={6} dir="ltr"
-          placeholder="AB3XZ9"
+        <label className="block text-sm font-bold text-[#071B33] mb-1">{ar ? 'رقم الطلب أو كود التتبع' : 'Order number or tracking code'}</label>
+        <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} maxLength={12} dir="ltr"
+          placeholder={ar ? 'مثال: GR-432139 أو AB3XZ9' : 'e.g. GR-432139 or AB3XZ9'}
           autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck="false"
           style={{ unicodeBidi: 'plaintext' }}
           className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm tracking-widest font-bold text-center outline-none focus:border-[#FF7900]" required />
         <p className="text-[11px] text-gray-400 mt-1 px-0.5">
           {ar
-            ? 'كود من 6 أحرف/أرقام ظهر لك بعد إرسال الطلب — وليس رقم الطلب (GR-...)'
-            : '6-character code shown right after you submitted the request — not the order number (GR-...)'}
+            ? 'اكتب رقم الطلب (GR-...) أو كود التتبع الذي ظهر لك بعد إرسال الطلب'
+            : 'Enter the order number (GR-...) or the tracking code shown after you submitted the request'}
         </p>
       </div>
       {error && <p className="text-sm text-red-500 text-center">{error}</p>}
