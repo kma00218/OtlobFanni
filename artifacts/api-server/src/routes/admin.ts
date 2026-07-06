@@ -112,7 +112,7 @@ router.get("/storage-usage", async (_req, res): Promise<void> => {
 });
 
 // ── Storage Orphan Audit / Cleanup ────────────────────────────────────────────
-async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> {
+async function findOrphanedObjects(): Promise<{ path: string; size: number; createdAt: string | null }[]> {
   const referenced = new Set<string>();
   const addPath = (p: unknown) => {
     if (typeof p === "string") {
@@ -171,6 +171,34 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> 
     }
   }
   return orphans;
+}
+
+const MIN_ORPHAN_AGE_MS = 48 * 60 * 60 * 1000; // 48h grace period so in-progress form uploads are never touched
+
+export async function cleanupStaleOrphans(): Promise<{ deleted: number; freedBytes: number; failed: number }> {
+  const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+  if (!bucketId) return { deleted: 0, freedBytes: 0, failed: 0 };
+  const orphans = await findOrphanedObjects();
+  const now = Date.now();
+  const stale = orphans.filter((o) => {
+    if (!o.createdAt) return false; // unknown age → skip, be conservative
+    const age = now - new Date(o.createdAt).getTime();
+    return age >= MIN_ORPHAN_AGE_MS;
+  });
+  const bucket = objectStorageClient.bucket(bucketId);
+  let deleted = 0;
+  let freedBytes = 0;
+  let failed = 0;
+  for (const o of stale) {
+    try {
+      await bucket.file(o.path).delete();
+      deleted++;
+      freedBytes += o.size;
+    } catch {
+      failed++;
+    }
+  }
+  return { deleted, freedBytes, failed };
 }
 
 router.get("/storage-raw-files", async (_req, res): Promise<void> => {
@@ -287,6 +315,64 @@ router.post("/storage-orphans/cleanup", async (req, res): Promise<void> => {
       failed,
       batchLog,
     });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
+// ── Explicit-list batch delete (used for verified, externally-confirmed orphan lists) ──
+router.post("/storage-objects/delete-batch", async (req, res): Promise<void> => {
+  try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
+    if (req.body?.confirm !== true) {
+      res.status(400).json({ error: "Missing explicit confirmation. Pass { confirm: true }." });
+      return;
+    }
+    const paths: unknown = req.body?.paths;
+    if (!Array.isArray(paths) || paths.length === 0) {
+      res.status(400).json({ error: "paths must be a non-empty array" });
+      return;
+    }
+    const bucket = objectStorageClient.bucket(bucketId);
+    let deleted = 0;
+    let freedBytes = 0;
+    const failed: { path: string; error: string }[] = [];
+    for (const p of paths) {
+      if (typeof p !== "string") continue;
+      try {
+        const [meta] = await bucket.file(p).getMetadata();
+        await bucket.file(p).delete();
+        deleted++;
+        freedBytes += Number(meta?.size ?? 0);
+      } catch (err) {
+        failed.push({ path: p, error: err instanceof Error ? err.message : "Unknown error" });
+      }
+    }
+    res.json({ deleted, freedBytes, failed });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
+// ── Existence check (used to verify protected/linked files survive deletion batches) ──
+router.post("/storage-objects/verify-exist", async (req, res): Promise<void> => {
+  try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
+    const paths: unknown = req.body?.paths;
+    if (!Array.isArray(paths) || paths.length === 0) {
+      res.status(400).json({ error: "paths must be a non-empty array" });
+      return;
+    }
+    const bucket = objectStorageClient.bucket(bucketId);
+    const missing: string[] = [];
+    for (const p of paths) {
+      if (typeof p !== "string") continue;
+      const [exists] = await bucket.file(p).exists();
+      if (!exists) missing.push(p);
+    }
+    res.json({ checked: paths.length, missing, allPresent: missing.length === 0 });
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
