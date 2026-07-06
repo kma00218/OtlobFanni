@@ -124,25 +124,32 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> 
     if (Array.isArray(arr)) for (const p of arr) addPath(p);
   };
 
-  const [techs, techApps, companies, ads, suppliers, serviceReqs, generalReqs, updateReports] = await Promise.all([
-    db.select({ profilePhoto: techniciansTable.profilePhoto, workImages: techniciansTable.workImages }).from(techniciansTable),
-    db.select({ profilePhoto: technicianApplicationsTable.profilePhoto, workImages: technicianApplicationsTable.workImages }).from(technicianApplicationsTable),
-    db.select({ companyLogo: companyApplicationsTable.companyLogo, workImages: companyApplicationsTable.workImages }).from(companyApplicationsTable),
-    db.select({ imageUrl: adsTable.imageUrl }).from(adsTable),
-    db.select({ logo: supplierApplicationsTable.logo, shopImages: supplierApplicationsTable.shopImages }).from(supplierApplicationsTable),
-    db.select({ photoUrls: serviceRequestsTable.photoUrls }).from(serviceRequestsTable),
-    db.select({ photoUrls: generalRequestsTable.photoUrls }).from(generalRequestsTable),
-    db.select({ profilePhoto: updateReportsTable.profilePhoto }).from(updateReportsTable),
+  const [
+    techs, techApps, companies, ads, adRequests, suppliers,
+    serviceReqs, generalReqs, generalOffers, updateReports,
+  ] = await Promise.all([
+    db.select({ id: techniciansTable.id, profilePhoto: techniciansTable.profilePhoto, workImages: techniciansTable.workImages }).from(techniciansTable),
+    db.select({ id: technicianApplicationsTable.id, profilePhoto: technicianApplicationsTable.profilePhoto, workImages: technicianApplicationsTable.workImages }).from(technicianApplicationsTable),
+    db.select({ id: companyApplicationsTable.id, companyLogo: companyApplicationsTable.companyLogo, workImages: companyApplicationsTable.workImages }).from(companyApplicationsTable),
+    db.select({ id: adsTable.id, imageUrl: adsTable.imageUrl }).from(adsTable),
+    db.select({ id: adRequestsTable.id, imagePreview: adRequestsTable.imagePreview }).from(adRequestsTable),
+    db.select({ id: supplierApplicationsTable.id, logo: supplierApplicationsTable.logo, shopImages: supplierApplicationsTable.shopImages }).from(supplierApplicationsTable),
+    db.select({ id: serviceRequestsTable.id, photoUrls: serviceRequestsTable.photoUrls }).from(serviceRequestsTable),
+    db.select({ id: generalRequestsTable.id, photoUrls: generalRequestsTable.photoUrls }).from(generalRequestsTable),
+    db.select({ id: generalOffersTable.id, providerPhoto: generalOffersTable.providerPhoto }).from(generalOffersTable),
+    db.select({ id: updateReportsTable.id, photos: updateReportsTable.photos, profilePhoto: updateReportsTable.profilePhoto, workPhotos: updateReportsTable.workPhotos }).from(updateReportsTable),
   ]);
 
   for (const r of techs) { addPath(r.profilePhoto); addPaths(r.workImages); }
   for (const r of techApps) { addPath(r.profilePhoto); addPaths(r.workImages); }
   for (const r of companies) { addPath(r.companyLogo); addPaths(r.workImages); }
   for (const r of ads) addPath(r.imageUrl);
+  for (const r of adRequests) addPath(r.imagePreview);
   for (const r of suppliers) { addPath(r.logo); addPaths(r.shopImages); }
   for (const r of serviceReqs) addPaths(r.photoUrls);
   for (const r of generalReqs) addPaths(r.photoUrls);
-  for (const r of updateReports) addPath(r.profilePhoto);
+  for (const r of generalOffers) addPath(r.providerPhoto);
+  for (const r of updateReports) { addPaths(r.photos); addPath(r.profilePhoto); addPaths(r.workPhotos); }
 
   const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
   if (!bucketId) return [];
@@ -150,12 +157,17 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> 
   const bucket = objectStorageClient.bucket(bucketId);
   const [files] = await bucket.getFiles({ prefix: privateDir ? `${privateDir}/uploads/` : "uploads/" });
 
-  const orphans: { path: string; size: number }[] = [];
+  const orphans: { path: string; size: number; createdAt: string | null; reason: string }[] = [];
   for (const file of files) {
     const entityId = file.name.split("/uploads/")[1];
     if (!entityId) continue;
     if (!referenced.has(`uploads/${entityId}`)) {
-      orphans.push({ path: file.name, size: Number(file.metadata?.size ?? 0) });
+      orphans.push({
+        path: file.name,
+        size: Number(file.metadata?.size ?? 0),
+        createdAt: (file.metadata?.timeCreated as string) ?? null,
+        reason: "Not referenced by any image/photo/logo column in technicians, technician_applications, company_applications, ads, ad_requests, supplier_applications, service_requests, general_requests, general_offers, or update_reports",
+      });
     }
   }
   return orphans;
@@ -163,30 +175,99 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> 
 
 router.get("/storage-orphans", async (_req, res): Promise<void> => {
   try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    const privateDir = (process.env.PRIVATE_OBJECT_DIR || "").split("/").slice(2).join("/");
+    const bucket = bucketId ? objectStorageClient.bucket(bucketId) : null;
+    const [allFiles] = bucket ? await bucket.getFiles({ prefix: privateDir ? `${privateDir}/uploads/` : "uploads/" }) : [[]];
     const orphans = await findOrphanedObjects();
-    const totalBytes = orphans.reduce((sum, o) => sum + o.size, 0);
-    res.json({ count: orphans.length, totalBytes, files: orphans.slice(0, 50).map((o) => o.path) });
+    const totalFiles = allFiles.length;
+    const orphanedCount = orphans.length;
+    const linkedCount = totalFiles - orphanedCount;
+    const totalOrphanBytes = orphans.reduce((sum, o) => sum + o.size, 0);
+    res.json({
+      totalFiles,
+      linkedCount,
+      orphanedCount,
+      totalOrphanBytes,
+      sample: orphans.slice(0, 50).map((o) => ({
+        path: o.path,
+        size: o.size,
+        createdAt: o.createdAt,
+        reason: o.reason,
+      })),
+    });
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
 
-router.post("/storage-orphans/cleanup", async (_req, res): Promise<void> => {
+router.post("/storage-orphans/backup", async (_req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
     const orphans = await findOrphanedObjects();
+    const date = new Date().toISOString().slice(0, 10);
+    const fileName = `orphaned-files-backup-list-${date}.json`;
+    const backupPayload = orphans.map((o) => ({
+      filePath: o.path,
+      bucketName: bucketId,
+      fileSizeBytes: o.size,
+      createdAt: o.createdAt,
+      reason: o.reason,
+    }));
+    const fs = await import("fs/promises");
+    const path = await import("path");
+    const backupDir = path.join(process.cwd(), "storage-backups");
+    await fs.mkdir(backupDir, { recursive: true });
+    const filePath = path.join(backupDir, fileName);
+    await fs.writeFile(filePath, JSON.stringify(backupPayload, null, 2), "utf-8");
+    res.json({ fileName, filePath, count: backupPayload.length, totalBytes: backupPayload.reduce((s, o) => s + o.fileSizeBytes, 0) });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
+router.post("/storage-orphans/cleanup", async (req, res): Promise<void> => {
+  try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
+    if (req.body?.confirm !== true) {
+      res.status(400).json({ error: "Missing explicit confirmation. Pass { confirm: true } after reviewing the dry-run report and backup." });
+      return;
+    }
+    const orphans = await findOrphanedObjects();
     const bucket = objectStorageClient.bucket(bucketId);
+    const batchSize = 50;
     let deleted = 0;
     let freedBytes = 0;
-    for (const o of orphans) {
-      try {
-        await bucket.file(o.path).delete();
-        deleted++;
-        freedBytes += o.size;
-      } catch { /* skip files that fail to delete */ }
+    const failed: { path: string; error: string }[] = [];
+    const batchLog: { batch: number; deleted: number; errors: number }[] = [];
+
+    for (let i = 0; i < orphans.length; i += batchSize) {
+      const batch = orphans.slice(i, i + batchSize);
+      let batchDeleted = 0;
+      let batchErrors = 0;
+      for (const o of batch) {
+        try {
+          await bucket.file(o.path).delete();
+          deleted++;
+          batchDeleted++;
+          freedBytes += o.size;
+        } catch (err) {
+          batchErrors++;
+          failed.push({ path: o.path, error: err instanceof Error ? err.message : "Unknown error" });
+        }
+      }
+      batchLog.push({ batch: Math.floor(i / batchSize) + 1, deleted: batchDeleted, errors: batchErrors });
     }
-    res.json({ deleted, freedBytes });
+
+    res.json({
+      deleted,
+      freedBytes,
+      remaining: orphans.length - deleted,
+      failed,
+      batchLog,
+    });
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
