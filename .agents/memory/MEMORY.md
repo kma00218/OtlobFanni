@@ -3,9 +3,8 @@
 - [Service lifecycle system](service-lifecycle.md) — full lifecycle (start→customer confirm→complete→customer confirm/dispute) built on service_requests table with confirmation_token
 - [Fixed FAB overlap on new pages](fab-overlap-bottom-padding.md) — new full-page routes need enough bottom padding to clear the app's global fixed floating buttons
 - [Sibling fixed FABs overlapping each other](fab-sibling-overlap.md) — global FABs at the same bottom offset can steal clicks from each other on narrow phones, not just from page content
-- [General request WhatsApp validation gap](general-request-whatsapp-validation.md) — missing min-length check let customers save a truncated WhatsApp number, breaking later self-tracking
-- [Order number vs tracking code confusion](order-number-vs-tracking-code.md) — users kept typing the order number where the tracking code goes; accept both values instead of warning better
+- [General request WhatsApp validation gap](general-request-whatsapp-validation.md) — missing min-length check let customers save a truncated WhatsApp number; enforce 9-digit validation on any form writing a lookup-identifying phone field
 - [Nested form back navigation vs global app back](nested-form-back-navigation.md) — internal sub-view back controls need visually distinct treatment (e.g. circular icon in a card) from the page's global header back button
-- [Dash-like unicode normalization for codes](dash-unicode-normalization.md) — mobile keyboards silently swap "-" for lookalike dashes, breaking exact-match order/tracking code lookups
 - [Object storage bucket key prefix gotcha](object-storage-key-prefix.md) — DB-stored object paths omit the bucket's private-dir prefix; must reconstruct it before checking file existence directly
 - [Auditing storage against the right database](storage-audit-env-mismatch.md) — audit against prod DB not dev; never auto-schedule delete jobs; storage delete routes require an admin token header + ENABLE_STORAGE_DELETE=true kill-switch
+- [Customer account system replaced tracking codes](customer-account-system.md) — "My Requests" now uses username+PIN accounts (no OTP/WhatsApp API), not anonymous whatsapp+tracking-code lookup

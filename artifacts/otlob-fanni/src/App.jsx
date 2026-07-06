@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider, useLang } from "./context/LanguageContext";
 import { AdminProvider } from "./context/AdminContext";
+import { CustomerAccountProvider } from "./context/CustomerAccountContext";
 import { Download, Search, UserPlus, ClipboardList } from "lucide-react";
 import NotificationPrompt from "./components/NotificationPrompt";
 import LocationPrompt from "./components/LocationPrompt";
@@ -271,6 +272,7 @@ function AppContent() {
 
   return (
     <LanguageProvider>
+      <CustomerAccountProvider>
       <TooltipProvider>
         <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
@@ -329,6 +331,7 @@ function AppContent() {
         </div>
         <Toaster />
       </TooltipProvider>
+      </CustomerAccountProvider>
     </LanguageProvider>
   );
 }

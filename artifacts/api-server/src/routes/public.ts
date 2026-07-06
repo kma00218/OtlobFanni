@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { db } from "@workspace/db";
 import {
   techniciansTable, citiesTable, categoriesTable,
@@ -6,11 +6,12 @@ import {
   adRequestsTable, serviceRequestsTable, reviewsTable,
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
   referralsTable, analyticsEventsTable, profileUpdateRequestsTable,
-  dealsTable, generalRequestsTable, generalOffersTable,
+  dealsTable, generalRequestsTable, generalOffersTable, customerAccountsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
+import { hashPin, verifyPin, signCustomerToken, verifyCustomerToken } from "../lib/customerAuth";
 
 const router: IRouter = Router();
 
@@ -2213,50 +2214,100 @@ function waCandidates(whatsapp: string) {
   const digits = normalizeWa(whatsapp);
   return [`0${digits}`, digits, `+218${digits}`, `218${digits}`];
 }
-function genTrackingCode() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no confusing chars
-  let out = "";
-  for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
-// Normalizes user-typed order/tracking codes: strips invisible bidi marks and
-// collapses any dash-like unicode (en/em dash, minus sign, smart-punctuation
-// substitutes some mobile keyboards insert for "-") down to a plain hyphen.
-function normalizeCode(code: string) {
-  return String(code || "")
-    .replace(/[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g, "")
-    .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, "-")
-    .replace(/[\s\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+/g, "")
-    .toUpperCase();
+// ── Customer-account auth middleware ───────────────────────────────────────────
+function requireCustomerAuth(req: Request, res: Response, next: NextFunction): void {
+  const header = req.header("authorization") || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+  const accountId = verifyCustomerToken(token);
+  if (!accountId) { res.status(401).json({ error: "يجب تسجيل الدخول" }); return; }
+  (req as any).customerAccountId = accountId;
+  next();
 }
 
-// ── Create a general request (public, anonymous) ──────────────────────────────
-router.post("/general-requests", async (req, res): Promise<void> => {
-  const { customerName, whatsapp, cityId, cityName, categoryId, categoryName, title, description, photoUrls } = req.body;
-  if (!customerName || !whatsapp) { res.status(400).json({ error: "الاسم ورقم الواتساب مطلوبان" }); return; }
+// ── Customer account: register ─────────────────────────────────────────────────
+router.post("/customer-accounts/register", async (req, res): Promise<void> => {
+  const { name, whatsapp, username, pin } = req.body;
+  if (!name?.trim() || !whatsapp?.trim() || !username?.trim() || !pin) {
+    res.status(400).json({ error: "جميع الحقول مطلوبة" }); return;
+  }
+  if (!/^\d{6}$/.test(String(pin))) { res.status(400).json({ error: "الرمز السري يجب أن يكون 6 أرقام" }); return; }
+  const cleanUsername = String(username).trim().toLowerCase();
+  if (!/^[a-z0-9_]{3,20}$/.test(cleanUsername)) {
+    res.status(400).json({ error: "اسم المستخدم يجب أن يكون بين 3 و20 حرف/رقم إنجليزي (a-z, 0-9, _)" });
+    return;
+  }
   if (normalizeWa(whatsapp).length !== 9) {
     res.status(400).json({ error: "رقم الواتساب غير مكتمل، يجب أن يتكون من 9 أرقام بعد 218+" });
     return;
   }
 
-  // Soft rate-limit: >=5 requests from same WhatsApp within the last hour
-  const candidates = waCandidates(whatsapp);
+  const waList = waCandidates(whatsapp);
+  const [existingWa] = await db.select().from(customerAccountsTable).where(inArray(customerAccountsTable.whatsapp, waList));
+  if (existingWa) { res.status(409).json({ error: "رقم الواتساب مسجل بحساب بالفعل، سجل الدخول بدلاً من ذلك" }); return; }
+  const [existingUser] = await db.select().from(customerAccountsTable).where(eq(customerAccountsTable.username, cleanUsername));
+  if (existingUser) { res.status(409).json({ error: "اسم المستخدم مستخدم بالفعل، اختر اسماً آخر" }); return; }
+
+  const id = crypto.randomBytes(8).toString("hex");
+  const [acc] = await db.insert(customerAccountsTable).values({
+    id,
+    name: String(name).trim(),
+    whatsapp: String(whatsapp).trim(),
+    username: cleanUsername,
+    pinHash: hashPin(String(pin)),
+  }).returning();
+
+  const token = signCustomerToken(acc.id);
+  res.status(201).json({ token, id: acc.id, name: acc.name, username: acc.username });
+});
+
+// ── Customer account: login ────────────────────────────────────────────────────
+router.post("/customer-accounts/login", async (req, res): Promise<void> => {
+  const { username, pin } = req.body;
+  if (!username?.trim() || !pin) { res.status(400).json({ error: "اسم المستخدم والرمز السري مطلوبان" }); return; }
+  const cleanUsername = String(username).trim().toLowerCase();
+  const [acc] = await db.select().from(customerAccountsTable).where(eq(customerAccountsTable.username, cleanUsername));
+  if (!acc || !verifyPin(String(pin), acc.pinHash)) {
+    res.status(401).json({ error: "اسم المستخدم أو الرمز السري غير صحيح" });
+    return;
+  }
+  const token = signCustomerToken(acc.id);
+  res.json({ token, id: acc.id, name: acc.name, username: acc.username });
+});
+
+// ── Customer account: current session info ─────────────────────────────────────
+router.get("/customer-accounts/me", requireCustomerAuth, async (req: any, res): Promise<void> => {
+  const [acc] = await db.select({
+    id: customerAccountsTable.id, name: customerAccountsTable.name,
+    username: customerAccountsTable.username, whatsapp: customerAccountsTable.whatsapp,
+  }).from(customerAccountsTable).where(eq(customerAccountsTable.id, req.customerAccountId));
+  if (!acc) { res.status(404).json({ error: "الحساب غير موجود" }); return; }
+  res.json(acc);
+});
+
+// ── Create a general request (requires a logged-in customer account) ──────────
+router.post("/general-requests", requireCustomerAuth, async (req: any, res): Promise<void> => {
+  const { cityId, cityName, categoryId, categoryName, title, description, photoUrls } = req.body;
+
+  const [acc] = await db.select().from(customerAccountsTable).where(eq(customerAccountsTable.id, req.customerAccountId));
+  if (!acc) { res.status(404).json({ error: "الحساب غير موجود" }); return; }
+
+  // Soft rate-limit: >=5 requests from the same account within the last hour
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
   const [{ value: recentCount }] = await db.select({ value: count() }).from(generalRequestsTable)
-    .where(and(inArray(generalRequestsTable.whatsapp, candidates), sql`${generalRequestsTable.createdAt} > ${oneHourAgo}`));
+    .where(and(eq(generalRequestsTable.customerAccountId, acc.id), sql`${generalRequestsTable.createdAt} > ${oneHourAgo}`));
   if (Number(recentCount) >= 5) {
     res.status(429).json({ error: "لقد نشرت عدة طلبات خلال وقت قصير، الرجاء الانتظار قليلاً قبل نشر طلب جديد" });
     return;
   }
 
   const id = crypto.randomBytes(8).toString("hex");
-  const orderNumber = "GR-" + String(Date.now()).slice(-6);
-  const trackingCode = genTrackingCode();
+  const orderNumber = "OF-" + String(Date.now()).slice(-5);
 
   const [r] = await db.insert(generalRequestsTable).values({
-    id, orderNumber, trackingCode,
-    customerName: String(customerName).trim(),
-    whatsapp: String(whatsapp).trim(),
+    id, orderNumber,
+    customerAccountId: acc.id,
+    customerName: acc.name,
+    whatsapp: acc.whatsapp,
     cityId: cityId || null,
     cityName: cityName || null,
     categoryId: categoryId || null,
@@ -2267,45 +2318,40 @@ router.post("/general-requests", async (req, res): Promise<void> => {
     status: "open",
   }).returning();
 
-  res.status(201).json({ id: r.id, orderNumber: r.orderNumber, trackingCode: r.trackingCode });
+  res.status(201).json({ id: r.id, orderNumber: r.orderNumber });
 });
 
-// ── Customer tracks their request + sees offers ────────────────────────────────
-router.post("/general-requests/track", async (req, res): Promise<void> => {
-  const { whatsapp, trackingCode } = req.body;
-  if (!whatsapp || !trackingCode) { res.status(400).json({ error: "الرقم والكود مطلوبان" }); return; }
-  const candidates = waCandidates(whatsapp);
-  const code = normalizeCode(trackingCode);
-  // Accept either the real tracking code OR the order number (users often confuse the two).
-  // Both still require the matching WhatsApp number, which keeps lookups reasonably scoped.
-  const [reqRow] = await db.select().from(generalRequestsTable)
-    .where(and(
-      inArray(generalRequestsTable.whatsapp, candidates),
-      or(eq(generalRequestsTable.trackingCode, code), eq(generalRequestsTable.orderNumber, code))!,
-    ));
-  if (!reqRow) { res.status(404).json({ error: "لم يتم العثور على طلب بهذه البيانات" }); return; }
+// ── Customer's own requests + offers ("طلباتي") ────────────────────────────────
+router.get("/general-requests/mine", requireCustomerAuth, async (req: any, res): Promise<void> => {
+  const rows = await db.select().from(generalRequestsTable)
+    .where(eq(generalRequestsTable.customerAccountId, req.customerAccountId))
+    .orderBy(desc(generalRequestsTable.createdAt));
 
-  const offers = await db.select().from(generalOffersTable)
-    .where(eq(generalOffersTable.requestId, reqRow.id))
-    .orderBy(desc(generalOffersTable.createdAt));
+  const withOffers = await Promise.all(rows.map(async (reqRow) => {
+    const offers = await db.select().from(generalOffersTable)
+      .where(eq(generalOffersTable.requestId, reqRow.id))
+      .orderBy(desc(generalOffersTable.createdAt));
 
-  // Hide contact details of providers unless their offer has been selected
-  const safeOffers = await Promise.all(offers.map(async (o) => {
-    if (o.status !== "selected") {
-      return { id: o.id, providerName: o.providerName, providerPhoto: o.providerPhoto, providerRating: o.providerRating, cityName: o.cityName, price: o.price, etaText: o.etaText, note: o.note, status: o.status, createdAt: o.createdAt };
-    }
-    let whatsappOut: string | null = null;
-    if (o.entityType === "technician") {
-      const [t] = await db.select({ whatsapp: techniciansTable.whatsapp }).from(techniciansTable).where(eq(techniciansTable.id, o.entityId));
-      whatsappOut = t?.whatsapp || null;
-    } else if (o.entityType === "company") {
-      const [c] = await db.select({ whatsapp: companyApplicationsTable.whatsapp }).from(companyApplicationsTable).where(eq(companyApplicationsTable.id, o.entityId));
-      whatsappOut = c?.whatsapp || null;
-    }
-    return { ...o, providerWhatsapp: whatsappOut };
+    // Hide contact details of providers unless their offer has been selected
+    const safeOffers = await Promise.all(offers.map(async (o) => {
+      if (o.status !== "selected") {
+        return { id: o.id, providerName: o.providerName, providerPhoto: o.providerPhoto, providerRating: o.providerRating, cityName: o.cityName, price: o.price, etaText: o.etaText, note: o.note, status: o.status, createdAt: o.createdAt };
+      }
+      let whatsappOut: string | null = null;
+      if (o.entityType === "technician") {
+        const [t] = await db.select({ whatsapp: techniciansTable.whatsapp }).from(techniciansTable).where(eq(techniciansTable.id, o.entityId));
+        whatsappOut = t?.whatsapp || null;
+      } else if (o.entityType === "company") {
+        const [c] = await db.select({ whatsapp: companyApplicationsTable.whatsapp }).from(companyApplicationsTable).where(eq(companyApplicationsTable.id, o.entityId));
+        whatsappOut = c?.whatsapp || null;
+      }
+      return { ...o, providerWhatsapp: whatsappOut };
+    }));
+
+    return { request: reqRow, offers: safeOffers };
   }));
 
-  res.json({ request: reqRow, offers: safeOffers });
+  res.json(withOffers);
 });
 
 // ── List open requests for a pro (matches city + category) ────────────────────
@@ -2391,16 +2437,15 @@ router.get("/general-requests/my-offers", async (req, res): Promise<void> => {
 
 // ── Customer selects an offer → assigns request + feeds it into the existing
 //    execution lifecycle by creating a normal service_request row ─────────────
-router.post("/general-requests/:id/select-offer", async (req, res): Promise<void> => {
+router.post("/general-requests/:id/select-offer", requireCustomerAuth, async (req: any, res): Promise<void> => {
   const requestId = req.params.id;
-  const { whatsapp, trackingCode, offerId } = req.body;
-  if (!whatsapp || !trackingCode || !offerId) { res.status(400).json({ error: "بيانات ناقصة" }); return; }
+  const { offerId } = req.body;
+  if (!offerId) { res.status(400).json({ error: "بيانات ناقصة" }); return; }
 
-  const candidates = waCandidates(whatsapp);
   const [reqRow] = await db.select().from(generalRequestsTable)
-    .where(and(eq(generalRequestsTable.id, requestId), inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, normalizeCode(trackingCode))));
+    .where(and(eq(generalRequestsTable.id, requestId), eq(generalRequestsTable.customerAccountId, req.customerAccountId)));
   if (!reqRow) {
-    console.warn("[select-offer 404]", { requestId, whatsapp, candidates, trackingCode, normalizedCode: normalizeCode(trackingCode) });
+    console.warn("[select-offer 404]", { requestId, customerAccountId: req.customerAccountId });
     res.status(404).json({ error: "الطلب غير موجود" }); return;
   }
   if (reqRow.status !== "open") { res.status(409).json({ error: "تم اختيار عرض مسبقاً على هذا الطلب" }); return; }

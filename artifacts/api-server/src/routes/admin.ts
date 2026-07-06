@@ -6,11 +6,12 @@ import {
   adRequestsTable, technicianApplicationsTable, companyApplicationsTable,
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
   proCredentialsTable, referralsTable, profileUpdateRequestsTable, dealsTable,
-  ambassadorsTable, generalRequestsTable, generalOffersTable,
+  ambassadorsTable, generalRequestsTable, generalOffersTable, customerAccountsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql, inArray } from "drizzle-orm";
 import { objectStorageClient, ObjectStorageService } from "../lib/objectStorage";
+import { hashPin } from "../lib/customerAuth";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -1484,6 +1485,42 @@ router.get("/general-requests", async (req, res): Promise<void> => {
   }
 
   res.json(reqs.map(r => ({ ...r, offers: offersByRequest[r.id] || [] })));
+});
+
+// ── Customer Accounts (search + manual PIN reset) ────────────────────────────
+router.get("/customer-accounts", async (req, res): Promise<void> => {
+  const { q } = req.query as Record<string, string>;
+  let rows;
+  if (q?.trim()) {
+    const like = `%${q.trim()}%`;
+    rows = await db.select({
+      id: customerAccountsTable.id, name: customerAccountsTable.name,
+      username: customerAccountsTable.username, whatsapp: customerAccountsTable.whatsapp,
+      createdAt: customerAccountsTable.createdAt,
+    }).from(customerAccountsTable)
+      .where(or(ilike(customerAccountsTable.username, like), ilike(customerAccountsTable.whatsapp, like), ilike(customerAccountsTable.name, like)))
+      .orderBy(desc(customerAccountsTable.createdAt))
+      .limit(50);
+  } else {
+    rows = await db.select({
+      id: customerAccountsTable.id, name: customerAccountsTable.name,
+      username: customerAccountsTable.username, whatsapp: customerAccountsTable.whatsapp,
+      createdAt: customerAccountsTable.createdAt,
+    }).from(customerAccountsTable)
+      .orderBy(desc(customerAccountsTable.createdAt))
+      .limit(50);
+  }
+  res.json(rows);
+});
+
+router.post("/customer-accounts/:id/reset-pin", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { newPin } = req.body;
+  if (!/^\d{6}$/.test(String(newPin || ""))) { res.status(400).json({ error: "الرمز السري يجب أن يكون 6 أرقام" }); return; }
+  const [acc] = await db.select().from(customerAccountsTable).where(eq(customerAccountsTable.id, id));
+  if (!acc) { res.status(404).json({ error: "الحساب غير موجود" }); return; }
+  await db.update(customerAccountsTable).set({ pinHash: hashPin(String(newPin)) }).where(eq(customerAccountsTable.id, id));
+  res.json({ success: true });
 });
 
 // ── AI Icon Generation ─────────────────────────────────────────────────────────

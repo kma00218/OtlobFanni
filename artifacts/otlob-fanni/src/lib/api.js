@@ -27,6 +27,29 @@ const patch = (path, body)  => request('PATCH',  path, body)
 const put  = (path, body)   => request('PUT',    path, body)
 const del  = (path)         => request('DELETE', path)
 
+const CUSTOMER_SESSION_KEY = 'otlobCustomerSession'
+function getCustomerToken() {
+  try { return JSON.parse(localStorage.getItem(CUSTOMER_SESSION_KEY) || 'null')?.token || null } catch { return null }
+}
+
+async function authRequest(method, path, body) {
+  const token = getCustomerToken()
+  const url = `${API_BASE}${path}`
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  }
+  if (body !== undefined) opts.body = JSON.stringify(body)
+  const res = await fetch(url, opts)
+  if (res.status === 204) return null
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`)
+  return data
+}
+
 /**
  * Compress an image file using Canvas API before upload.
  * - Resizes to max 1200px on longest side
@@ -224,6 +247,11 @@ export const api = {
       list: (qs = '') => get(`/admin/general-requests${qs}`),
     },
 
+    customerAccounts: {
+      list:     (q = '')          => get(`/admin/customer-accounts${q ? '?q=' + encodeURIComponent(q) : ''}`),
+      resetPin: (id, newPin)      => post(`/admin/customer-accounts/${id}/reset-pin`, { newPin }),
+    },
+
     adminUsers: {
       list:   ()         => get('/admin/admin-users'),
       create: (data)     => post('/admin/admin-users', data),
@@ -299,16 +327,22 @@ export const api = {
     updateProfile:       (entityType, entityId, fields)               => request('PATCH', '/pro/profile', { entityType, entityId, fields }),
   },
 
+  customerAccounts: {
+    register: (data) => post('/customer-accounts/register', data),
+    login:    (data) => post('/customer-accounts/login', data),
+    me:       ()     => authRequest('GET', '/customer-accounts/me'),
+  },
+
   generalRequests: {
-    create:      (data)                    => post('/general-requests', data),
-    track:       (whatsapp, trackingCode)  => post('/general-requests/track', { whatsapp, trackingCode }),
+    create:      (data)                    => authRequest('POST', '/general-requests', data),
+    mine:        ()                        => authRequest('GET', '/general-requests/mine'),
     forPro:      (params = {})             => {
       const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString()
       return get(`/general-requests/for-pro${qs ? '?' + qs : ''}`)
     },
     myOffers:    (entityType, entityId)    => get(`/general-requests/my-offers?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`),
     submitOffer: (requestId, data)         => post(`/general-requests/${requestId}/offers`, data),
-    selectOffer: (requestId, data)         => post(`/general-requests/${requestId}/select-offer`, data),
+    selectOffer: (requestId, data)         => authRequest('POST', `/general-requests/${requestId}/select-offer`, data),
   },
 
   deals: {

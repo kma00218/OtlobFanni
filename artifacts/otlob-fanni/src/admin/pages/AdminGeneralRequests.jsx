@@ -96,7 +96,6 @@ function RequestCard({ req }) {
             <span className="text-xs text-gray-500 flex items-center gap-1">
               <Phone className="w-3 h-3" /> <span dir="ltr">{req.whatsapp}</span>
             </span>
-            <span className="text-[10px] text-gray-300" dir="ltr">كود التتبع: {req.trackingCode}</span>
           </div>
 
           {req.description && (
