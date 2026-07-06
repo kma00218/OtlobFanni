@@ -189,6 +189,17 @@ export class ObjectStorageService {
     return normalizedPath;
   }
 
+  async deleteObjectEntity(objectPath: string | null | undefined): Promise<void> {
+    if (!objectPath || !objectPath.startsWith("/objects/")) return;
+    try {
+      const file = await this.getObjectEntityFile(objectPath);
+      await file.delete();
+    } catch (err) {
+      if (err instanceof ObjectNotFoundError) return;
+      throw err;
+    }
+  }
+
   async canAccessObjectEntity({
     userId,
     objectFile,

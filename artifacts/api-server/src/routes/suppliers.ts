@@ -3,8 +3,14 @@ import { autoExtractTagsInBackground } from "../lib/aiTags";
 import { db } from "@workspace/db";
 import { supplierApplicationsTable, citiesTable, reviewsTable, technicianApplicationsTable, companyApplicationsTable } from "@workspace/db/schema";
 import { eq, desc, and, or, ilike } from "drizzle-orm";
+import { ObjectStorageService } from "../lib/objectStorage";
 
 const router: IRouter = Router();
+const objectStorageService = new ObjectStorageService();
+
+async function deleteEntityFiles(paths: Array<string | null | undefined>): Promise<void> {
+  await Promise.all(paths.map((p) => objectStorageService.deleteObjectEntity(p).catch(() => {})));
+}
 
 // ── Public: Submit supplier application ──────────────────────────────────────
 router.post("/supplier-applications", async (req, res): Promise<void> => {
@@ -233,7 +239,8 @@ router.patch("/admin/suppliers/:id", async (req, res): Promise<void> => {
 // ── Admin: Delete published supplier ─────────────────────────────────────────
 router.delete("/admin/suppliers/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, raw));
+  const [row] = await db.delete(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.logo, ...(row.shopImages || [])]);
   res.sendStatus(204);
 });
 
@@ -295,7 +302,8 @@ router.put("/admin/supplier-applications/:id/fields", async (req, res): Promise<
 // ── Admin: Delete supplier application ───────────────────────────────────────
 router.delete("/admin/supplier-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, raw));
+  const [row] = await db.delete(supplierApplicationsTable).where(eq(supplierApplicationsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.logo, ...(row.shopImages || [])]);
   res.sendStatus(204);
 });
 

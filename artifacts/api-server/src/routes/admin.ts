@@ -10,9 +10,14 @@ import {
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql, inArray } from "drizzle-orm";
-import { objectStorageClient } from "../lib/objectStorage";
+import { objectStorageClient, ObjectStorageService } from "../lib/objectStorage";
 
 const router: IRouter = Router();
+const objectStorageService = new ObjectStorageService();
+
+async function deleteEntityFiles(paths: Array<string | null | undefined>): Promise<void> {
+  await Promise.all(paths.map((p) => objectStorageService.deleteObjectEntity(p).catch(() => {})));
+}
 
 // ── Stats (Dashboard) ─────────────────────────────────────────────────────────
 router.get("/stats", async (_req, res): Promise<void> => {
@@ -103,6 +108,87 @@ router.get("/storage-usage", async (_req, res): Promise<void> => {
     });
   } catch {
     res.json({ usedBytes: 0, fileCount: 0, limitBytes: 1 * 1024 * 1024 * 1024 });
+  }
+});
+
+// ── Storage Orphan Audit / Cleanup ────────────────────────────────────────────
+async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> {
+  const referenced = new Set<string>();
+  const addPath = (p: unknown) => {
+    if (typeof p === "string") {
+      const m = p.match(/\/objects\/(.+)$/);
+      if (m) referenced.add(m[1]);
+    }
+  };
+  const addPaths = (arr: unknown) => {
+    if (Array.isArray(arr)) for (const p of arr) addPath(p);
+  };
+
+  const [techs, techApps, companies, ads, suppliers, serviceReqs, generalReqs, updateReports] = await Promise.all([
+    db.select({ profilePhoto: techniciansTable.profilePhoto, workImages: techniciansTable.workImages }).from(techniciansTable),
+    db.select({ profilePhoto: technicianApplicationsTable.profilePhoto, workImages: technicianApplicationsTable.workImages }).from(technicianApplicationsTable),
+    db.select({ companyLogo: companyApplicationsTable.companyLogo, workImages: companyApplicationsTable.workImages }).from(companyApplicationsTable),
+    db.select({ imageUrl: adsTable.imageUrl }).from(adsTable),
+    db.select({ logo: supplierApplicationsTable.logo, shopImages: supplierApplicationsTable.shopImages }).from(supplierApplicationsTable),
+    db.select({ photoUrls: serviceRequestsTable.photoUrls }).from(serviceRequestsTable),
+    db.select({ photoUrls: generalRequestsTable.photoUrls }).from(generalRequestsTable),
+    db.select({ profilePhoto: updateReportsTable.profilePhoto }).from(updateReportsTable),
+  ]);
+
+  for (const r of techs) { addPath(r.profilePhoto); addPaths(r.workImages); }
+  for (const r of techApps) { addPath(r.profilePhoto); addPaths(r.workImages); }
+  for (const r of companies) { addPath(r.companyLogo); addPaths(r.workImages); }
+  for (const r of ads) addPath(r.imageUrl);
+  for (const r of suppliers) { addPath(r.logo); addPaths(r.shopImages); }
+  for (const r of serviceReqs) addPaths(r.photoUrls);
+  for (const r of generalReqs) addPaths(r.photoUrls);
+  for (const r of updateReports) addPath(r.profilePhoto);
+
+  const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+  if (!bucketId) return [];
+  const privateDir = (process.env.PRIVATE_OBJECT_DIR || "").split("/").slice(2).join("/");
+  const bucket = objectStorageClient.bucket(bucketId);
+  const [files] = await bucket.getFiles({ prefix: privateDir ? `${privateDir}/uploads/` : "uploads/" });
+
+  const orphans: { path: string; size: number }[] = [];
+  for (const file of files) {
+    const entityId = file.name.split("/uploads/")[1];
+    if (!entityId) continue;
+    if (!referenced.has(`uploads/${entityId}`)) {
+      orphans.push({ path: file.name, size: Number(file.metadata?.size ?? 0) });
+    }
+  }
+  return orphans;
+}
+
+router.get("/storage-orphans", async (_req, res): Promise<void> => {
+  try {
+    const orphans = await findOrphanedObjects();
+    const totalBytes = orphans.reduce((sum, o) => sum + o.size, 0);
+    res.json({ count: orphans.length, totalBytes, files: orphans.slice(0, 50).map((o) => o.path) });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
+router.post("/storage-orphans/cleanup", async (_req, res): Promise<void> => {
+  try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
+    const orphans = await findOrphanedObjects();
+    const bucket = objectStorageClient.bucket(bucketId);
+    let deleted = 0;
+    let freedBytes = 0;
+    for (const o of orphans) {
+      try {
+        await bucket.file(o.path).delete();
+        deleted++;
+        freedBytes += o.size;
+      } catch { /* skip files that fail to delete */ }
+    }
+    res.json({ deleted, freedBytes });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 });
 
@@ -232,7 +318,8 @@ router.put("/technician-applications/:id/fields", async (req, res): Promise<void
 
 router.delete("/technician-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, raw));
+  const [row] = await db.delete(technicianApplicationsTable).where(eq(technicianApplicationsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.profilePhoto, ...(row.workImages || [])]);
   res.sendStatus(204);
 });
 
@@ -375,7 +462,8 @@ router.put("/company-applications/:id/fields", async (req, res): Promise<void> =
 
 router.delete("/company-applications/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
+  const [row] = await db.delete(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.companyLogo, ...(row.workImages || [])]);
   res.sendStatus(204);
 });
 
@@ -417,7 +505,8 @@ router.post("/companies", async (req, res): Promise<void> => {
 
 router.delete("/companies/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw));
+  const [row] = await db.delete(companyApplicationsTable).where(eq(companyApplicationsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.companyLogo, ...(row.workImages || [])]);
   res.sendStatus(204);
 });
 
@@ -490,7 +579,8 @@ router.patch("/technicians/:id", async (req, res): Promise<void> => {
 
 router.delete("/technicians/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(techniciansTable).where(eq(techniciansTable.id, raw));
+  const [row] = await db.delete(techniciansTable).where(eq(techniciansTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.profilePhoto, ...(row.workImages || [])]);
   res.sendStatus(204);
 });
 
@@ -611,7 +701,8 @@ router.patch("/ads/:id", async (req, res): Promise<void> => {
 
 router.delete("/ads/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(adsTable).where(eq(adsTable.id, raw));
+  const [row] = await db.delete(adsTable).where(eq(adsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles([row.imageUrl]);
   res.sendStatus(204);
 });
 
@@ -650,7 +741,8 @@ router.delete("/ad-requests/:id", async (req, res): Promise<void> => {
 
 router.delete("/service-requests/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-  await db.delete(serviceRequestsTable).where(eq(serviceRequestsTable.id, raw));
+  const [row] = await db.delete(serviceRequestsTable).where(eq(serviceRequestsTable.id, raw)).returning();
+  if (row) await deleteEntityFiles(row.photoUrls || []);
   res.sendStatus(204);
 });
 
