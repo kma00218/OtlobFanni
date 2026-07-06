@@ -6,7 +6,7 @@ import BackHeader from '../components/BackHeader'
 import { useAllCategories } from '../hooks/useAllCategories'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import api, { uploadFile, getFileUrl } from '../lib/api'
-import { CheckCircle2, ClipboardList, Loader2, PlusCircle, LogIn, UserPlus, LogOut, Camera, X, ChevronRight, ChevronLeft, ChevronDown, Lock, User } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Loader2, PlusCircle, LogIn, UserPlus, LogOut, Camera, X, ChevronRight, ChevronLeft, ChevronDown, Lock, User, AlertTriangle } from 'lucide-react'
 
 const FIELD_LABEL = "block text-[13px] font-bold text-[#071B33] mb-1.5 tracking-[0.01em]"
 const FIELD_INPUT = "w-full rounded-xl border-2 border-[#0a0a0a] bg-[#F0F2F5] px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:bg-white focus:ring-4 focus:ring-[#FF7900]/15 outline-none transition-all"
@@ -248,9 +248,10 @@ function RegisterForm({ ar, onBack, onSuccess, onSwitch }) {
               className={`${FIELD_INPUT} tracking-[0.3em] text-center`} required />
           </div>
         </div>
-        <p className="text-[13px] font-bold text-[#8a5200] leading-relaxed bg-[#FFF4E5] border-2 border-[#FFD699] rounded-xl px-3 py-2.5">
-          {ar ? 'احفظ اسم المستخدم والرقم السري جيدًا، لا يمكن استعادتهما تلقائيًا — تواصل مع الدعم إذا نسيتهما' : 'Save your username and PIN carefully — they cannot be recovered automatically. Contact support if you forget them.'}
-        </p>
+        <div className="flex items-start gap-2 text-[13.5px] font-extrabold text-white leading-relaxed bg-[#D92D20] border-2 border-[#8f1c12] rounded-xl px-3 py-3 shadow-[0_4px_14px_rgba(217,45,32,0.35)]">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
+          <span>{ar ? 'تنبيه: احفظ اسم المستخدم والرقم السري جيدًا، لا يمكن استعادتهما تلقائيًا — تواصل مع الدعم إذا نسيتهما' : 'Warning: Save your username and PIN carefully — they cannot be recovered automatically. Contact support if you forget them.'}</span>
+        </div>
         {error && <p className="text-[13px] font-medium text-red-600 bg-red-50 border-2 border-red-100 rounded-xl px-3.5 py-2.5 text-center">{error}</p>}
         <button type="submit" disabled={loading}
           className="w-full py-3.5 rounded-xl font-black text-[16px] tracking-wide text-white disabled:opacity-60 shadow-[0_6px_20px_rgba(255,121,0,0.3)] active:scale-[0.98] transition-transform"
