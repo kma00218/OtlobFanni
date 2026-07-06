@@ -9,7 +9,7 @@ import api, { uploadFile, getFileUrl } from '../lib/api'
 import { CheckCircle2, ClipboardList, Loader2, PlusCircle, LogIn, UserPlus, LogOut, Camera, X, ChevronRight, ChevronLeft, ChevronDown, Lock, User } from 'lucide-react'
 
 const FIELD_LABEL = "block text-[13px] font-bold text-[#071B33] mb-1.5 tracking-[0.01em]"
-const FIELD_INPUT = "w-full rounded-xl border-2 border-[#0a0a0a] bg-white px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:ring-4 focus:ring-[#FF7900]/15 outline-none transition-all"
+const FIELD_INPUT = "w-full rounded-xl border-2 border-[#0a0a0a] bg-[#F0F2F5] px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:bg-white focus:ring-4 focus:ring-[#FF7900]/15 outline-none transition-all"
 const FIELD_SELECT = `${FIELD_INPUT} appearance-none pe-9 cursor-pointer`
 
 function FormCard({ ar, title, subtitle, onBack, children }) {
@@ -248,7 +248,7 @@ function RegisterForm({ ar, onBack, onSuccess, onSwitch }) {
               className={`${FIELD_INPUT} tracking-[0.3em] text-center`} required />
           </div>
         </div>
-        <p className="text-[12px] text-gray-400 leading-relaxed px-0.5">
+        <p className="text-[13px] font-bold text-[#8a5200] leading-relaxed bg-[#FFF4E5] border-2 border-[#FFD699] rounded-xl px-3 py-2.5">
           {ar ? 'احفظ اسم المستخدم والرقم السري جيدًا، لا يمكن استعادتهما تلقائيًا — تواصل مع الدعم إذا نسيتهما' : 'Save your username and PIN carefully — they cannot be recovered automatically. Contact support if you forget them.'}
         </p>
         {error && <p className="text-[13px] font-medium text-red-600 bg-red-50 border-2 border-red-100 rounded-xl px-3.5 py-2.5 text-center">{error}</p>}

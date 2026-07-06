@@ -27,8 +27,8 @@ export default function LibyaPhoneInput({ value, onChange, onBlur, required, cla
 
   return (
     <div>
-      <div className="flex rounded-xl overflow-hidden border-2 border-[#0a0a0a] focus-within:border-[#FF7900] focus-within:ring-4 focus-within:ring-[#FF7900]/15 transition-all bg-white" dir="ltr">
-        <span className="flex items-center px-3 bg-gray-50 text-[#071B33] font-bold text-[15px] border-r-2 border-[#0a0a0a] select-none whitespace-nowrap">
+      <div className="flex rounded-xl overflow-hidden border-2 border-[#0a0a0a] focus-within:border-[#FF7900] focus-within:ring-4 focus-within:ring-[#FF7900]/15 transition-all bg-[#F0F2F5] focus-within:bg-white" dir="ltr">
+        <span className="flex items-center px-3 bg-gray-200 text-[#071B33] font-bold text-[15px] border-r-2 border-[#0a0a0a] select-none whitespace-nowrap">
           🇱🇾 +218
         </span>
         <input
@@ -46,10 +46,10 @@ export default function LibyaPhoneInput({ value, onChange, onBlur, required, cla
           autoCapitalize="off"
           spellCheck="false"
           style={{ unicodeBidi: 'plaintext', textAlign: 'left' }}
-          className={`flex-1 bg-white outline-none px-3 py-3 text-[15px] font-medium text-[#071B33] placeholder-gray-400 placeholder:font-normal ${className || ''}`}
+          className={`flex-1 bg-transparent outline-none px-3 py-3 text-[15px] font-medium text-[#071B33] placeholder-gray-400 placeholder:font-normal ${className || ''}`}
         />
       </div>
-      <p className="text-[12px] text-gray-400 mt-1.5 px-0.5 leading-relaxed" dir={ar ? 'rtl' : 'ltr'}>
+      <p className="text-[13px] font-bold text-[#8a5200] mt-1.5 leading-relaxed bg-[#FFF4E5] border-2 border-[#FFD699] rounded-xl px-3 py-2.5" dir={ar ? 'rtl' : 'ltr'}>
         {hint}
       </p>
     </div>
