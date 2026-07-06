@@ -232,7 +232,10 @@ function RegisterForm({ ar, onBack, onSuccess, onSwitch }) {
         <div>
           <label className={FIELD_LABEL}>{ar ? 'اسم المستخدم' : 'Username'} *</label>
           <input value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
-            autoCapitalize="off" autoCorrect="off" dir="ltr" className={FIELD_INPUT} required />
+            autoCapitalize="off" autoCorrect="off" dir="ltr" placeholder="ahmed_92" className={FIELD_INPUT} required />
+          <p className="text-[12px] font-bold text-gray-500 mt-1.5 px-0.5 leading-relaxed">
+            {ar ? 'بالإنجليزية فقط: حروف وأرقام و "_" (مثال: ahmed_92)' : 'English only: letters, numbers, and "_" (example: ahmed_92)'}
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
