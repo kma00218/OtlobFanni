@@ -19,6 +19,27 @@ async function deleteEntityFiles(paths: Array<string | null | undefined>): Promi
   await Promise.all(paths.map((p) => objectStorageService.deleteObjectEntity(p).catch(() => {})));
 }
 
+// Hard safety gate for any bulk storage-orphan detection/cleanup code path.
+// `db` always points at whatever DATABASE_URL this server process was started
+// with, but the object storage bucket is SHARED between the dev workspace and
+// production. Running orphan-detection from a dev-workspace process (dev DB,
+// nearly empty) against that shared bucket makes real production files look
+// unreferenced — this is exactly what caused the 2026-07-06 data-loss incident.
+// Refusing to run unless NODE_ENV === "production" guarantees `db` is the
+// production database whenever this logic executes, so orphan detection can
+// never be computed against the wrong database.
+function assertProductionDatabaseContext(): void {
+  if (process.env.NODE_ENV !== "production") {
+    throw new Error(
+      "Refusing to run storage-orphan detection/cleanup outside the production " +
+        "environment. This server process is not running with NODE_ENV=production, " +
+        "so its database connection may not be the production database while the " +
+        "storage bucket it would act on is shared with production. Run this only " +
+        "against the deployed production server.",
+    );
+  }
+}
+
 // ── Stats (Dashboard) ─────────────────────────────────────────────────────────
 router.get("/stats", async (_req, res): Promise<void> => {
   const [techCount]          = await db.select({ count: count() }).from(techniciansTable);
@@ -119,6 +140,7 @@ router.get("/storage-usage", async (_req, res): Promise<void> => {
 
 // ── Storage Orphan Audit / Cleanup ────────────────────────────────────────────
 async function findOrphanedObjects(): Promise<{ path: string; size: number; createdAt: string | null }[]> {
+  assertProductionDatabaseContext();
   const referenced = new Set<string>();
   const addPath = (p: unknown) => {
     if (typeof p === "string") {
@@ -179,33 +201,13 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number; crea
   return orphans;
 }
 
-const MIN_ORPHAN_AGE_MS = 48 * 60 * 60 * 1000; // 48h grace period so in-progress form uploads are never touched
-
-export async function cleanupStaleOrphans(): Promise<{ deleted: number; freedBytes: number; failed: number }> {
-  const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
-  if (!bucketId) return { deleted: 0, freedBytes: 0, failed: 0 };
-  const orphans = await findOrphanedObjects();
-  const now = Date.now();
-  const stale = orphans.filter((o) => {
-    if (!o.createdAt) return false; // unknown age → skip, be conservative
-    const age = now - new Date(o.createdAt).getTime();
-    return age >= MIN_ORPHAN_AGE_MS;
-  });
-  const bucket = objectStorageClient.bucket(bucketId);
-  let deleted = 0;
-  let freedBytes = 0;
-  let failed = 0;
-  for (const o of stale) {
-    try {
-      await bucket.file(o.path).delete();
-      deleted++;
-      freedBytes += o.size;
-    } catch {
-      failed++;
-    }
-  }
-  return { deleted, freedBytes, failed };
-}
+// NOTE (2026-07-06): The previous `cleanupStaleOrphans()` auto-delete function
+// (scheduled to run unattended on server startup) was permanently removed —
+// not just disabled — after it caused a production data-loss incident. Do not
+// recreate any automatic/scheduled/unattended deletion path. All cleanup must
+// go through the manual dry-run → backup → explicit-approval → delete flow
+// below, and only ever against the production server (see
+// assertProductionDatabaseContext above).
 
 router.get("/storage-raw-files", async (_req, res): Promise<void> => {
   try {
@@ -282,10 +284,28 @@ router.post("/storage-orphans/backup", async (_req, res): Promise<void> => {
 
 router.post("/storage-orphans/cleanup", async (req, res): Promise<void> => {
   try {
+    assertProductionDatabaseContext();
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
     if (req.body?.confirm !== true) {
       res.status(400).json({ error: "Missing explicit confirmation. Pass { confirm: true } after reviewing the dry-run report and backup." });
+      return;
+    }
+    const backupFileName: unknown = req.body?.backupFileName;
+    if (typeof backupFileName !== "string" || !backupFileName.trim()) {
+      res.status(400).json({
+        error: "Missing backupFileName. Call POST /storage-orphans/backup first, review the dry-run report, " +
+          "get explicit human approval, then pass the returned fileName here as backupFileName to confirm a backup exists.",
+      });
+      return;
+    }
+    const fs = await import("fs/promises");
+    const path = await import("path");
+    const backupPath = path.join(process.cwd(), "storage-backups", path.basename(backupFileName));
+    try {
+      await fs.access(backupPath);
+    } catch {
+      res.status(400).json({ error: `Backup file not found at ${backupPath}. Create it via POST /storage-orphans/backup before cleaning up.` });
       return;
     }
     const orphans = await findOrphanedObjects();
@@ -329,6 +349,7 @@ router.post("/storage-orphans/cleanup", async (req, res): Promise<void> => {
 // ── Explicit-list batch delete (used for verified, externally-confirmed orphan lists) ──
 router.post("/storage-objects/delete-batch", async (req, res): Promise<void> => {
   try {
+    assertProductionDatabaseContext();
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
     if (req.body?.confirm !== true) {
