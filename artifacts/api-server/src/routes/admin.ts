@@ -173,6 +173,25 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number }[]> 
   return orphans;
 }
 
+router.get("/storage-raw-files", async (_req, res): Promise<void> => {
+  try {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    if (!bucketId) { res.json({ files: [] }); return; }
+    const privateDir = (process.env.PRIVATE_OBJECT_DIR || "").split("/").slice(2).join("/");
+    const bucket = objectStorageClient.bucket(bucketId);
+    const [files] = await bucket.getFiles({ prefix: privateDir ? `${privateDir}/uploads/` : "uploads/" });
+    res.json({
+      files: files.map((f) => ({
+        path: f.name,
+        size: Number(f.metadata?.size ?? 0),
+        createdAt: (f.metadata?.timeCreated as string) ?? null,
+      })),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+});
+
 router.get("/storage-orphans", async (_req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
