@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { autoExtractTagsInBackground } from "../lib/aiTags";
 import { db } from "@workspace/db";
 import {
@@ -36,6 +36,39 @@ function assertProductionDatabaseContext(): void {
         "so its database connection may not be the production database while the " +
         "storage bucket it would act on is shared with production. Run this only " +
         "against the deployed production server.",
+    );
+  }
+}
+
+// ── Storage endpoint hard security gates (permanent, 2026-07-06) ────────────
+// Every storage audit/cleanup/delete endpoint below requires BOTH:
+//  1. A valid `X-Admin-Storage-Token` header matching the ADMIN_STORAGE_TOKEN
+//     secret — no public/anonymous caller can reach these routes at all.
+//  2. For the two endpoints that can actually delete objects, the
+//     ENABLE_STORAGE_DELETE env var must literally equal "true". Any other
+//     value (unset, "false", empty) fails the request immediately, before
+//     any other logic runs. This is a manual, explicit opt-in switch that
+//     must be flipped on and back off around each approved cleanup.
+function requireAdminStorageAuth(req: Request, res: Response, next: NextFunction): void {
+  const configuredToken = process.env.ADMIN_STORAGE_TOKEN;
+  if (!configuredToken) {
+    res.status(503).json({ error: "Storage admin endpoints are not configured (ADMIN_STORAGE_TOKEN is not set)." });
+    return;
+  }
+  const provided = req.header("x-admin-storage-token");
+  if (!provided || provided !== configuredToken) {
+    res.status(401).json({ error: "Unauthorized: missing or invalid X-Admin-Storage-Token header." });
+    return;
+  }
+  next();
+}
+
+function assertStorageDeleteEnabled(): void {
+  if (process.env.ENABLE_STORAGE_DELETE !== "true") {
+    throw new Error(
+      "Storage deletion is disabled (ENABLE_STORAGE_DELETE is not \"true\"). " +
+        "Set ENABLE_STORAGE_DELETE=true explicitly to permit this request, then " +
+        "set it back to \"false\" once the approved cleanup is complete.",
     );
   }
 }
@@ -209,7 +242,7 @@ async function findOrphanedObjects(): Promise<{ path: string; size: number; crea
 // below, and only ever against the production server (see
 // assertProductionDatabaseContext above).
 
-router.get("/storage-raw-files", async (_req, res): Promise<void> => {
+router.get("/storage-raw-files", requireAdminStorageAuth, async (_req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.json({ files: [] }); return; }
@@ -228,7 +261,7 @@ router.get("/storage-raw-files", async (_req, res): Promise<void> => {
   }
 });
 
-router.get("/storage-orphans", async (_req, res): Promise<void> => {
+router.get("/storage-orphans", requireAdminStorageAuth, async (_req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     const privateDir = (process.env.PRIVATE_OBJECT_DIR || "").split("/").slice(2).join("/");
@@ -256,7 +289,7 @@ router.get("/storage-orphans", async (_req, res): Promise<void> => {
   }
 });
 
-router.post("/storage-orphans/backup", async (_req, res): Promise<void> => {
+router.post("/storage-orphans/backup", requireAdminStorageAuth, async (_req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
@@ -282,8 +315,9 @@ router.post("/storage-orphans/backup", async (_req, res): Promise<void> => {
   }
 });
 
-router.post("/storage-orphans/cleanup", async (req, res): Promise<void> => {
+router.post("/storage-orphans/cleanup", requireAdminStorageAuth, async (req, res): Promise<void> => {
   try {
+    assertStorageDeleteEnabled();
     assertProductionDatabaseContext();
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
@@ -347,8 +381,9 @@ router.post("/storage-orphans/cleanup", async (req, res): Promise<void> => {
 });
 
 // ── Explicit-list batch delete (used for verified, externally-confirmed orphan lists) ──
-router.post("/storage-objects/delete-batch", async (req, res): Promise<void> => {
+router.post("/storage-objects/delete-batch", requireAdminStorageAuth, async (req, res): Promise<void> => {
   try {
+    assertStorageDeleteEnabled();
     assertProductionDatabaseContext();
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
@@ -383,7 +418,7 @@ router.post("/storage-objects/delete-batch", async (req, res): Promise<void> => 
 });
 
 // ── Existence check (used to verify protected/linked files survive deletion batches) ──
-router.post("/storage-objects/verify-exist", async (req, res): Promise<void> => {
+router.post("/storage-objects/verify-exist", requireAdminStorageAuth, async (req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
     if (!bucketId) { res.status(400).json({ error: "Storage not configured" }); return; }
