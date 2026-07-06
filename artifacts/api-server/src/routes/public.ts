@@ -2399,11 +2399,17 @@ router.post("/general-requests/:id/select-offer", async (req, res): Promise<void
   const candidates = waCandidates(whatsapp);
   const [reqRow] = await db.select().from(generalRequestsTable)
     .where(and(eq(generalRequestsTable.id, requestId), inArray(generalRequestsTable.whatsapp, candidates), eq(generalRequestsTable.trackingCode, normalizeCode(trackingCode))));
-  if (!reqRow) { res.status(404).json({ error: "الطلب غير موجود" }); return; }
+  if (!reqRow) {
+    console.warn("[select-offer 404]", { requestId, whatsapp, candidates, trackingCode, normalizedCode: normalizeCode(trackingCode) });
+    res.status(404).json({ error: "الطلب غير موجود" }); return;
+  }
   if (reqRow.status !== "open") { res.status(409).json({ error: "تم اختيار عرض مسبقاً على هذا الطلب" }); return; }
 
   const [offer] = await db.select().from(generalOffersTable).where(eq(generalOffersTable.id, offerId));
-  if (!offer || offer.requestId !== requestId) { res.status(404).json({ error: "العرض غير موجود" }); return; }
+  if (!offer || offer.requestId !== requestId) {
+    console.warn("[select-offer offer-404]", { requestId, offerId, foundOffer: offer ? offer.requestId : null });
+    res.status(404).json({ error: "العرض غير موجود" }); return;
+  }
 
   await db.update(generalOffersTable).set({ status: "selected" }).where(eq(generalOffersTable.id, offer.id));
   await db.update(generalOffersTable).set({ status: "rejected" })

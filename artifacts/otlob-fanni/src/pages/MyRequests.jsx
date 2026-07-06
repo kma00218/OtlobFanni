@@ -405,8 +405,14 @@ function TrackRequest({ ar, onBack, initial }) {
         whatsapp: whatsapp.trim(), trackingCode: normalizeCode(code), offerId: offer.id,
       })
       await refresh()
-    } catch {
-      alert(ar ? 'حدث خطأ، حاول مرة أخرى' : 'Something went wrong, try again')
+    } catch (err) {
+      const msg = err?.message
+      if (msg && msg !== 'Failed to fetch') {
+        alert(msg)
+      } else {
+        alert(ar ? 'حدث خطأ، حاول مرة أخرى' : 'Something went wrong, try again')
+      }
+      await refresh().catch(() => {})
     } finally { setSelecting(null) }
   }
 
