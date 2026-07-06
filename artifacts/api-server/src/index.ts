@@ -1,24 +1,17 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { seedDatabase } from "./seed";
-import { cleanupStaleOrphans } from "./routes/admin";
 
-const STALE_UPLOAD_CLEANUP_INTERVAL_MS = 6 * 60 * 60 * 1000; // every 6h
-
+// DISABLED 2026-07-06: this job caused a production data-loss incident.
+// cleanupStaleOrphans() relied on findOrphanedObjects(), which queries the
+// DEV database for "is this file referenced" checks instead of production.
+// Against the (nearly empty) dev DB almost everything looked orphaned, so
+// once files crossed the 48h age threshold this job deleted real,
+// linked production images. DO NOT re-enable until findOrphanedObjects()
+// is fixed to check the correct (production) database and has been
+// re-validated with a dry run against production data.
 function scheduleStaleUploadCleanup() {
-  const run = async () => {
-    try {
-      const result = await cleanupStaleOrphans();
-      if (result.deleted > 0 || result.failed > 0) {
-        logger.info({ ...result }, "Stale upload cleanup run completed");
-      }
-    } catch (err) {
-      logger.error({ err }, "Stale upload cleanup run failed");
-    }
-  };
-  // Run once shortly after startup, then on a fixed interval.
-  setTimeout(run, 60 * 1000);
-  setInterval(run, STALE_UPLOAD_CLEANUP_INTERVAL_MS);
+  logger.warn("Stale upload cleanup job is DISABLED after a production data-loss incident. Not scheduling.");
 }
 
 const rawPort = process.env["PORT"];

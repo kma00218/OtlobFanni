@@ -87,6 +87,12 @@ router.get("/stats", async (_req, res): Promise<void> => {
 });
 
 // ── Storage Usage ─────────────────────────────────────────────────────────────
+// NOTE (2026-07-06): Temporary incident-response endpoints (storage-soft-deleted,
+// storage-objects/restore-batch, storage-bucket-metadata) used to recover 1,264
+// production images wrongly deleted by a buggy auto-cleanup job have been removed
+// now that the restore is complete and verified. They were unauthenticated and
+// destructive/sensitive enough that they should not remain in the codebase
+// long-term. Recreate them from git history only if a similar recovery is needed.
 router.get("/storage-usage", async (_req, res): Promise<void> => {
   try {
     const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
