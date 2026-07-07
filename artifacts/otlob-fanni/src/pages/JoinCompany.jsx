@@ -336,6 +336,24 @@ export default function JoinCompany() {
                 : 'If you forget the tracking number, you can search by your phone number via: Join Us → Track your request status'}
             </p>
           </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-2">
+            <p className="text-sm font-black text-[#071B33] mb-1">📢 {ar ? 'تابع قنوات Otlob Fanni الرسمية' : 'Follow Otlob Fanni Official Channels'}</p>
+            <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+              {ar ? 'انضم إلى قنواتنا الرسمية لتصلك التحديثات، الميزات الجديدة، والتعليمات المهمة.' : 'Join our official channels for updates, new features, and important instructions.'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <a href="https://whatsapp.com/channel/0029Vb8BOc3KbYMKjnChAv0O" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm text-white active:scale-95 transition-transform"
+                style={{ background: '#25D366' }}>
+                🟢 {ar ? 'قناة WhatsApp' : 'WhatsApp Channel'}
+              </a>
+              <a href="https://t.me/otlobfanni" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm text-white active:scale-95 transition-transform"
+                style={{ background: '#229ED9' }}>
+                🔵 {ar ? 'قناة Telegram' : 'Telegram Channel'}
+              </a>
+            </div>
+          </div>
           <div className="space-y-3">
             {requestNumber && (
               <a href={`/status/${requestNumber}`}

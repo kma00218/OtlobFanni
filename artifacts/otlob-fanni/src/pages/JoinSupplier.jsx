@@ -214,6 +214,24 @@ export default function JoinSupplier() {
               <p className="text-xs text-gray-400 mt-2">{ar ? 'احتفظ بهذا الرقم لمتابعة حالة طلبك' : 'Save this number to track your request'}</p>
             </div>
           )}
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-2">
+            <p className="text-sm font-black text-[#071B33] mb-1">📢 {ar ? 'تابع قنوات Otlob Fanni الرسمية' : 'Follow Otlob Fanni Official Channels'}</p>
+            <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+              {ar ? 'انضم إلى قنواتنا الرسمية لتصلك التحديثات، الميزات الجديدة، والتعليمات المهمة.' : 'Join our official channels for updates, new features, and important instructions.'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <a href="https://whatsapp.com/channel/0029Vb8BOc3KbYMKjnChAv0O" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm text-white active:scale-95 transition-transform"
+                style={{ background: '#25D366' }}>
+                🟢 {ar ? 'قناة WhatsApp' : 'WhatsApp Channel'}
+              </a>
+              <a href="https://t.me/otlobfanni" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm text-white active:scale-95 transition-transform"
+                style={{ background: '#229ED9' }}>
+                🔵 {ar ? 'قناة Telegram' : 'Telegram Channel'}
+              </a>
+            </div>
+          </div>
           <button onClick={() => window.history.back()}
             className="w-full text-white font-bold py-3.5 rounded-2xl text-sm transition-colors active:scale-95"
             style={{ background: 'linear-gradient(135deg, #0e5c6d 0%, #072a36 100%)' }}>
