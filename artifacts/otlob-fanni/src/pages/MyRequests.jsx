@@ -14,21 +14,23 @@ const FIELD_SELECT = `${FIELD_INPUT} appearance-none pe-9 cursor-pointer`
 
 function FormCard({ ar, title, subtitle, onBack, children }) {
   return (
-    <div className="bg-white rounded-2xl border-2 border-[#0a0a0a] shadow-[0_8px_30px_rgba(7,27,51,0.12)] overflow-hidden">
-      <div className="flex items-center gap-2 px-5 pt-5 pb-4 border-b-2 border-[#0a0a0a]">
+    <div className="bg-white rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(7,27,51,0.18)]" style={{ border: '2px solid #071B33' }}>
+      <div className="relative flex items-center justify-center px-4 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
         {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="w-9 h-9 rounded-full bg-white border-2 border-[#0a0a0a] hover:bg-gray-100 flex items-center justify-center active:scale-90 transition-all flex-shrink-0"
-            aria-label={ar ? 'رجوع للنموذج الرئيسي' : 'Back to main form'}
+            className="absolute start-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] text-[#071B33] bg-white active:scale-90 transition-all"
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}
+            aria-label={ar ? 'رجوع' : 'Back'}
           >
-            {ar ? <ChevronRight className="w-5 h-5 text-[#071B33]" /> : <ChevronLeft className="w-5 h-5 text-[#071B33]" />}
+            {ar ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            <span>{ar ? 'رجوع' : 'Back'}</span>
           </button>
         )}
-        <div className={`flex-1 text-center ${onBack ? '-me-9' : ''}`}>
-          <h2 className="text-[19px] font-black text-[#071B33] tracking-tight leading-tight">{title}</h2>
-          {subtitle && <p className="text-[13px] text-gray-400 mt-0.5">{subtitle}</p>}
+        <div className="text-center">
+          <h2 className="text-[19px] font-black text-white tracking-tight leading-tight">{title}</h2>
+          {subtitle && <p className="text-[13px] text-white/60 mt-0.5">{subtitle}</p>}
         </div>
       </div>
       <div className="p-5">
