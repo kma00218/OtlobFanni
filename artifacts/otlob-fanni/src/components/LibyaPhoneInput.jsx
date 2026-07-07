@@ -49,7 +49,7 @@ export default function LibyaPhoneInput({ value, onChange, onBlur, required, cla
           className={`flex-1 bg-transparent outline-none px-3 py-3 text-[15px] font-medium text-[#071B33] placeholder-gray-400 placeholder:font-normal ${className || ''}`}
         />
       </div>
-      <p className="text-[13px] font-bold text-[#8a5200] mt-1.5 leading-relaxed bg-[#FFF4E5] border-2 border-[#FFD699] rounded-xl px-3 py-2.5" dir={ar ? 'rtl' : 'ltr'}>
+      <p className="text-[14px] font-extrabold text-[#8a5200] mt-1.5 leading-relaxed bg-[#FFF4E5] border-2 border-[#FFD699] rounded-xl px-3 py-2.5" dir={ar ? 'rtl' : 'ltr'}>
         {hint}
       </p>
     </div>
