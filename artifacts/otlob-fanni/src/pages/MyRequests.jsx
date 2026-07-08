@@ -532,20 +532,19 @@ function NewRequest({ ar, onDone, onBack }) {
         {loadingCities ? (
           <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-[#FF7900]" /></div>
         ) : (
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+          <div className="grid grid-cols-2 gap-3">
             {cityStats.map(city => (
               <button
                 key={city.id}
                 onClick={() => handleCitySelect(city)}
-                className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border-2 active:scale-95 transition-all font-bold"
-                style={{
-                  borderColor: '#FF7900',
-                  background: 'white',
-                  color: '#071B33',
-                }}
+                className="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white active:scale-95 transition-transform"
+                style={{ border: '2px solid #E8EDF2', boxShadow: '0 2px 8px rgba(7,27,51,0.07)' }}
               >
-                <span className="text-[15px] font-black">{ar ? city.nameAr : city.nameEn}</span>
-                <span className="text-[14px] font-black text-[#FF7900]">{city.total}</span>
+                <span className="text-[15px] font-black text-[#071B33]">{ar ? city.nameAr : city.nameEn}</span>
+                <span className="text-[13px] font-black px-2 py-0.5 rounded-full text-white min-w-[28px] text-center"
+                  style={{ background: city.total > 0 ? 'linear-gradient(135deg,#FF7900,#c45e00)' : '#C0C8D2' }}>
+                  {city.total}
+                </span>
               </button>
             ))}
           </div>
