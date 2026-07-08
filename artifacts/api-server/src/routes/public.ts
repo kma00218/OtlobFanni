@@ -97,27 +97,38 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
     if (Array.isArray(c.extraSpecialties)) c.extraSpecialties.forEach(s => s && presentIds.add(s));
   }
 
-  // For each present category, resolve to the canonical (lowest sortOrder) category
-  // with the same Arabic name — in case technicians were registered with a custom UUID
-  // category that has the same name as a standard category (e.g. "كهرباء" → "electricity")
-  const nameToCanonical = new Map<string, typeof categories[0]>();
+  // Normalize Arabic text for fuzzy name matching:
+  // handles ة↔ه, أ/إ/آ↔ا, ى↔ي, tashkeel removal, extra spaces
+  function normalizeAr(s: string): string {
+    return s.trim()
+      .replace(/[أإآ]/g, 'ا')
+      .replace(/ة/g, 'ه')
+      .replace(/ى/g, 'ي')
+      .replace(/[\u064B-\u065F\u0670]/g, '') // remove harakat/diacritics
+      .replace(/\s+/g, ' ');
+  }
+
+  // Build normalized-name → canonical (lowest sortOrder) map across ALL categories
+  const normToCanonical = new Map<string, typeof categories[0]>();
   for (const cat of categories) {
-    const existing = nameToCanonical.get(cat.nameAr);
+    const key = normalizeAr(cat.nameAr);
+    const existing = normToCanonical.get(key);
     if (!existing || (cat.sortOrder ?? 99) < (existing.sortOrder ?? 99)) {
-      nameToCanonical.set(cat.nameAr, cat);
+      normToCanonical.set(key, cat);
     }
   }
 
+  // For each present category ID, resolve to the canonical entry using normalized matching
   const deduped = new Map<string, { id: string; nameAr: string; nameEn: string | null; iconName: string | null; sortOrder: number }>();
   for (const catId of presentIds) {
     const cat = categories.find(c => c.id === catId);
     if (!cat) continue;
-    // Resolve to canonical category for this Arabic name
-    const canonical = nameToCanonical.get(cat.nameAr) ?? cat;
+    const canonical = normToCanonical.get(normalizeAr(cat.nameAr)) ?? cat;
     const sortOrder = canonical.sortOrder ?? 99;
-    const existing = deduped.get(canonical.nameAr);
+    const key = normalizeAr(canonical.nameAr);
+    const existing = deduped.get(key);
     if (!existing || sortOrder < existing.sortOrder) {
-      deduped.set(canonical.nameAr, {
+      deduped.set(key, {
         id: canonical.id,
         nameAr: canonical.nameAr,
         nameEn: canonical.nameEn,
