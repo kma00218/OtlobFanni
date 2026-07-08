@@ -339,53 +339,61 @@ function Dashboard({ ar, onNew }) {
         {requests !== null && requests.length === 0 && (
           <p className="text-[13px] text-gray-400 text-center py-8">{ar ? 'لا توجد طلبات بعد' : 'No requests yet'}</p>
         )}
-        <div className="space-y-3">
+        <div className="space-y-5">
           {(requests || []).map(request => {
             const st = STATUS_LABELS[request.status] || STATUS_LABELS.open
             const offers = request.offers || []
             return (
-              <div key={request.id} className="bg-white rounded-2xl border-2 border-gray-100 p-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="font-black text-[#071B33] text-[14px]" dir="ltr">{request.orderNumber}</span>
+              <div key={request.id} className="bg-white rounded-2xl overflow-hidden"
+                style={{ border: '2px solid #D1D9E6', boxShadow: '0 6px 24px rgba(7,27,51,0.13)' }}>
+                {/* ── Coloured header strip ── */}
+                <div className="flex items-center justify-between px-4 py-3"
+                  style={{ background: st.color + '18', borderBottom: `2px solid ${st.color}30` }}>
+                  <span className="font-black text-[#071B33] text-[13px] tracking-wide" dir="ltr">{request.orderNumber}</span>
                   <span className="text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{ background: st.color }}>{ar ? st.ar : st.en}</span>
                 </div>
-                <p className="font-bold text-[#071B33] text-[15px]">{request.title}</p>
-                <p className="text-[13px] text-gray-500 mt-1 leading-relaxed">{request.description}</p>
 
-                {offers.length > 0 && (
-                  <div className="mt-3 space-y-2.5 border-t border-gray-100 pt-3">
-                    <p className="text-[12px] font-bold text-gray-400">{ar ? `العروض (${offers.length})` : `Offers (${offers.length})`}</p>
-                    {offers.map(o => (
-                      <div key={o.id} className={`rounded-xl border-2 p-3 ${request.assignedOfferId === o.id ? 'border-[#34A853] ring-4 ring-[#34A853]/10' : 'border-gray-100'}`}>
-                        <div className="flex items-center gap-3">
-                          {o.providerPhoto && <img src={getFileUrl(o.providerPhoto)} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-gray-200" />}
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-[#071B33] text-[13px]">{o.providerName}</span>
-                              <span className="font-black text-[#FF7900] text-[14px]">{o.price} {ar ? 'د.ل' : 'LYD'}</span>
+                {/* ── Request body ── */}
+                <div className="px-4 pt-3 pb-4">
+                  <p className="font-black text-[#071B33] text-[15px] leading-snug">{request.title}</p>
+                  <p className="text-[13px] text-gray-500 mt-1 leading-relaxed">{request.description}</p>
+
+                  {offers.length > 0 && (
+                    <div className="mt-3 space-y-2.5 pt-3" style={{ borderTop: '1.5px dashed #D1D9E6' }}>
+                      <p className="text-[12px] font-bold text-gray-400">{ar ? `العروض (${offers.length})` : `Offers (${offers.length})`}</p>
+                      {offers.map(o => (
+                        <div key={o.id}
+                          className={`rounded-xl border-2 p-3 ${request.assignedOfferId === o.id ? 'border-[#34A853] bg-green-50/60' : 'border-[#E8EDF3] bg-[#F8FAFC]'}`}>
+                          <div className="flex items-center gap-3">
+                            {o.providerPhoto && <img src={getFileUrl(o.providerPhoto)} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-gray-200" />}
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-[#071B33] text-[13px]">{o.providerName}</span>
+                                <span className="font-black text-[#FF7900] text-[14px]">{o.price} {ar ? 'د.ل' : 'LYD'}</span>
+                              </div>
+                              {o.etaText && <span className="text-[11px] text-gray-400">{o.etaText}</span>}
                             </div>
-                            {o.etaText && <span className="text-[11px] text-gray-400">{o.etaText}</span>}
                           </div>
+                          {o.note && <p className="text-[12px] text-gray-500 mt-1.5 leading-relaxed">{o.note}</p>}
+                          {request.assignedOfferId === o.id ? (
+                            <div className="mt-2 text-[12px] font-bold text-[#34A853] flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> {ar ? 'تم اختياره' : 'Selected'}
+                              {o.providerWhatsapp && <a href={`https://wa.me/${o.providerWhatsapp.replace(/\D/g, '')}`} className="underline ms-1" dir="ltr" target="_blank" rel="noreferrer">{o.providerWhatsapp}</a>}
+                            </div>
+                          ) : !request.assignedOfferId ? (
+                            <button onClick={() => handleSelect(request, o)} disabled={selecting === o.id}
+                              className="mt-2 w-full py-2 rounded-lg text-[12px] font-bold text-white disabled:opacity-60" style={{ background: '#34A853' }}>
+                              {selecting === o.id ? (ar ? 'جارٍ...' : 'Selecting...') : (ar ? 'اختيار هذا العرض' : 'Select this offer')}
+                            </button>
+                          ) : null}
                         </div>
-                        {o.note && <p className="text-[12px] text-gray-500 mt-1.5 leading-relaxed">{o.note}</p>}
-                        {request.assignedOfferId === o.id ? (
-                          <div className="mt-2 text-[12px] font-bold text-[#34A853] flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> {ar ? 'تم اختياره' : 'Selected'}
-                            {o.providerWhatsapp && <a href={`https://wa.me/${o.providerWhatsapp.replace(/\D/g, '')}`} className="underline ms-1" dir="ltr" target="_blank" rel="noreferrer">{o.providerWhatsapp}</a>}
-                          </div>
-                        ) : !request.assignedOfferId ? (
-                          <button onClick={() => handleSelect(request, o)} disabled={selecting === o.id}
-                            className="mt-2 w-full py-2 rounded-lg text-[12px] font-bold text-white disabled:opacity-60" style={{ background: '#34A853' }}>
-                            {selecting === o.id ? (ar ? 'جارٍ...' : 'Selecting...') : (ar ? 'اختيار هذا العرض' : 'Select this offer')}
-                          </button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {offers.length === 0 && (
-                  <p className="text-[12px] text-gray-400 mt-2.5">{ar ? 'لا توجد عروض بعد، تحقق لاحقًا' : 'No offers yet, check back later'}</p>
-                )}
+                      ))}
+                    </div>
+                  )}
+                  {offers.length === 0 && (
+                    <p className="text-[12px] text-gray-400 mt-2.5">{ar ? 'لا توجد عروض بعد، تحقق لاحقًا' : 'No offers yet, check back later'}</p>
+                  )}
+                </div>
               </div>
             )
           })}
