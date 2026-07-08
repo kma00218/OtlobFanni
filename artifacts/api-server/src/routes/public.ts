@@ -67,46 +67,36 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
     .from(citiesTable).where(eq(citiesTable.id, cityId));
   const cityKeys = [cityId, cityRow?.nameAr, cityRow?.nameEn].filter(Boolean) as string[];
 
-  // Collect all category IDs present in this city from every source:
-  // 1. technicians.category_id (primary)
-  // 2. unnested technicians.extra_specialties
-  // 3. company_applications.specialty (primary)
-  // 4. unnested company_applications.extra_specialties
-  const rows = await db.execute(sql`
-    SELECT cat_id FROM (
-      SELECT category_id AS cat_id
-        FROM technicians
-       WHERE is_approved = true AND is_active = true AND city_id = ${cityId}
-         AND category_id IS NOT NULL
+  // Load technicians + companies for this city, then compute category IDs client-side
+  // to avoid SQL array parameterization issues with node-postgres
+  const [techRows, compRows, categories] = await Promise.all([
+    db.select({ categoryId: techniciansTable.categoryId, extraSpecialties: techniciansTable.extraSpecialties })
+      .from(techniciansTable)
+      .where(and(
+        eq(techniciansTable.isApproved, true),
+        eq(techniciansTable.isActive, true),
+        eq(techniciansTable.cityId, cityId),
+      )),
+    db.select({ specialty: companyApplicationsTable.specialty, extraSpecialties: companyApplicationsTable.extraSpecialties })
+      .from(companyApplicationsTable)
+      .where(and(
+        eq(companyApplicationsTable.status, "published"),
+        inArray(companyApplicationsTable.city, cityKeys),
+      )),
+    db.select().from(categoriesTable),
+  ]);
 
-      UNION ALL
+  // Collect all category IDs from every source
+  const presentIds = new Set<string>();
+  for (const t of techRows) {
+    if (t.categoryId) presentIds.add(t.categoryId);
+    if (Array.isArray(t.extraSpecialties)) t.extraSpecialties.forEach(s => s && presentIds.add(s));
+  }
+  for (const c of compRows) {
+    if (c.specialty) presentIds.add(c.specialty);
+    if (Array.isArray(c.extraSpecialties)) c.extraSpecialties.forEach(s => s && presentIds.add(s));
+  }
 
-      SELECT unnest(extra_specialties) AS cat_id
-        FROM technicians
-       WHERE is_approved = true AND is_active = true AND city_id = ${cityId}
-
-      UNION ALL
-
-      SELECT specialty AS cat_id
-        FROM company_applications
-       WHERE status = 'published'
-         AND city = ANY(${cityKeys})
-         AND specialty IS NOT NULL AND specialty <> ''
-
-      UNION ALL
-
-      SELECT unnest(extra_specialties) AS cat_id
-        FROM company_applications
-       WHERE status = 'published'
-         AND city = ANY(${cityKeys})
-    ) sub
-    WHERE cat_id IS NOT NULL AND cat_id <> ''
-    GROUP BY cat_id
-  `) as { rows: { cat_id: string }[] };
-
-  const presentIds = new Set(rows.rows.map((r: { cat_id: string }) => r.cat_id));
-
-  const categories = await db.select().from(categoriesTable);
   const result = categories
     .filter(cat => presentIds.has(cat.id))
     .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, sortOrder: cat.sortOrder }))
