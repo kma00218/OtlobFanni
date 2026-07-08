@@ -533,20 +533,31 @@ function NewRequest({ ar, onDone, onBack }) {
           <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-[#FF7900]" /></div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
-            {cityStats.map(city => (
-              <button
-                key={city.id}
-                onClick={() => handleCitySelect(city)}
-                className="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white active:scale-95 transition-transform"
-                style={{ border: '2px solid #E8EDF2', boxShadow: '0 2px 8px rgba(7,27,51,0.07)' }}
-              >
-                <span className="text-[15px] font-black text-[#071B33]">{ar ? city.nameAr : city.nameEn}</span>
-                <span className="text-[13px] font-black px-2 py-0.5 rounded-full text-white min-w-[28px] text-center"
-                  style={{ background: city.total > 0 ? 'linear-gradient(135deg,#FF7900,#c45e00)' : '#C0C8D2' }}>
-                  {city.total}
-                </span>
-              </button>
-            ))}
+            {cityStats.map(city => {
+              const hasProviders = city.total > 0
+              return (
+                <button
+                  key={city.id}
+                  onClick={() => handleCitySelect(city)}
+                  className="flex items-center justify-between px-3.5 py-3.5 rounded-2xl active:scale-95 transition-transform"
+                  style={hasProviders
+                    ? { background: '#FFF3E6', border: '1.5px solid #FFA94D', boxShadow: '0 2px 8px rgba(255,121,0,0.12)' }
+                    : { background: '#F5F7FA', border: '1.5px solid #D8DFE8', boxShadow: '0 1px 4px rgba(7,27,51,0.05)' }
+                  }
+                >
+                  <span className="text-[15px] font-black" style={{ color: hasProviders ? '#071B33' : '#8A96A3' }}>
+                    {ar ? city.nameAr : city.nameEn}
+                  </span>
+                  <span className="text-[12px] font-black px-2 py-0.5 rounded-full min-w-[28px] text-center"
+                    style={hasProviders
+                      ? { background: '#FF7900', color: 'white' }
+                      : { background: '#D8DFE8', color: '#8A96A3' }
+                    }>
+                    {city.total}
+                  </span>
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
