@@ -108,12 +108,12 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
       .replace(/\s+/g, ' ');
   }
 
-  // Build normalized-name → canonical map: prefer standard categories (iconName != 'more'
-  // and sortOrder < 90) over custom UUID categories, then use sortOrder as tiebreaker.
-  // Custom categories created via admin get sortOrder=0 (DB default) which would otherwise
-  // incorrectly beat standard categories with sortOrder=5.
+  // Build normalized-name → canonical map.
+  // Standard (seeded) IDs are purely lowercase letters + underscores (no digits).
+  // Admin-created custom IDs always contain digits (k5, k12, custom_timestamp, UUIDs).
+  // Always prefer a standard category over a custom one with the same Arabic name.
   function isStandard(cat: typeof categories[0]): boolean {
-    return !!(cat.iconName && cat.iconName !== 'more' && (cat.sortOrder ?? 99) < 90);
+    return /^[a-z][a-z_]*$/.test(cat.id);
   }
   const normToCanonical = new Map<string, typeof categories[0]>();
   for (const cat of categories) {
