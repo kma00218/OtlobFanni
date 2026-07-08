@@ -108,13 +108,27 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
       .replace(/\s+/g, ' ');
   }
 
-  // Build normalized-name → canonical (lowest sortOrder) map across ALL categories
+  // Build normalized-name → canonical map: prefer standard categories (iconName != 'more'
+  // and sortOrder < 90) over custom UUID categories, then use sortOrder as tiebreaker.
+  // Custom categories created via admin get sortOrder=0 (DB default) which would otherwise
+  // incorrectly beat standard categories with sortOrder=5.
+  function isStandard(cat: typeof categories[0]): boolean {
+    return !!(cat.iconName && cat.iconName !== 'more' && (cat.sortOrder ?? 99) < 90);
+  }
   const normToCanonical = new Map<string, typeof categories[0]>();
   for (const cat of categories) {
     const key = normalizeAr(cat.nameAr);
     const existing = normToCanonical.get(key);
-    if (!existing || (cat.sortOrder ?? 99) < (existing.sortOrder ?? 99)) {
+    if (!existing) {
       normToCanonical.set(key, cat);
+    } else {
+      const catStd = isStandard(cat);
+      const exStd  = isStandard(existing);
+      if (catStd && !exStd) {
+        normToCanonical.set(key, cat);
+      } else if (catStd === exStd && (cat.sortOrder ?? 99) < (existing.sortOrder ?? 99)) {
+        normToCanonical.set(key, cat);
+      }
     }
   }
 

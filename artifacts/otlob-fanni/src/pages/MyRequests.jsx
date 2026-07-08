@@ -657,7 +657,7 @@ function NewRequest({ ar, onDone, onBack }) {
                 >
                   <div className="w-[72px] h-[72px] rounded-[18px] overflow-hidden shadow-sm">
                     <img
-                      src={`/icons/categories/${cat.iconName || cat.id}.png`}
+                      src={`/icons/categories/${cat.id}.png`}
                       alt={ar ? cat.nameAr : cat.nameEn}
                       className="w-full h-full object-cover"
                       onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}

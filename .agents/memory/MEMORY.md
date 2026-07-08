@@ -8,3 +8,4 @@
 - [Object storage bucket key prefix gotcha](object-storage-key-prefix.md) — DB-stored object paths omit the bucket's private-dir prefix; must reconstruct it before checking file existence directly
 - [Auditing storage against the right database](storage-audit-env-mismatch.md) — audit against prod DB not dev; never auto-schedule delete jobs; storage delete routes require an admin token header + ENABLE_STORAGE_DELETE=true kill-switch
 - [Customer account system replaced tracking codes](customer-account-system.md) — "My Requests" now uses username+PIN accounts (no OTP/WhatsApp API), not anonymous whatsapp+tracking-code lookup
+- [Custom category sortOrder=0 beats standard icons](custom-category-sortorder-bug.md) — admin-created categories get sortOrder=0 (DB default), which beats standard sortOrder=5 in normToCanonical; always prefer standard (iconName!='more', sortOrder<90) tier first
