@@ -97,10 +97,22 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
     if (Array.isArray(c.extraSpecialties)) c.extraSpecialties.forEach(s => s && presentIds.add(s));
   }
 
-  const result = categories
+  // Filter to present categories, then deduplicate by Arabic name —
+  // custom categories (sort_order=99, iconName='more') must not shadow
+  // real categories with the same name
+  const present = categories
     .filter(cat => presentIds.has(cat.id))
-    .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, sortOrder: cat.sortOrder }))
-    .sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99));
+    .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, sortOrder: cat.sortOrder ?? 99 }));
+
+  const deduped = new Map<string, typeof present[0]>();
+  for (const cat of present) {
+    const existing = deduped.get(cat.nameAr);
+    if (!existing || cat.sortOrder < existing.sortOrder) {
+      deduped.set(cat.nameAr, cat);
+    }
+  }
+
+  const result = [...deduped.values()].sort((a, b) => a.sortOrder - b.sortOrder);
 
   res.set("Cache-Control", "public, max-age=120, stale-while-revalidate=300");
   res.json(result);
