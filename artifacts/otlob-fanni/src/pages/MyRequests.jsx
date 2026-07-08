@@ -439,6 +439,7 @@ function NewRequest({ ar, onDone, onBack }) {
     } catch { setCityCategories([]) }
     finally { setLoadingCategories(false) }
     setStep(2)
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   async function handleCategorySelect(cat) {
@@ -446,6 +447,7 @@ function NewRequest({ ar, onDone, onBack }) {
     setTags(null)
     setDescription('')
     setStep(3)
+    window.scrollTo({ top: 0, behavior: 'instant' })
     api.providersCount({ cityId: selectedCity.id, categoryId: cat.id })
       .then(d => setProviderCount(d.count))
       .catch(() => {})
@@ -569,7 +571,7 @@ function NewRequest({ ar, onDone, onBack }) {
     return (
       <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <button onClick={() => setStep(1)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] text-[#071B33] bg-white border-2 border-[#071B33] active:scale-90 transition-all">
+          <button onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: 'instant' }) }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] text-[#071B33] bg-white border-2 border-[#071B33] active:scale-90 transition-all">
             <ChevronRight className="w-4 h-4" />
             <span>{ar ? 'رجوع' : 'Back'}</span>
           </button>
@@ -678,7 +680,7 @@ function NewRequest({ ar, onDone, onBack }) {
       ar={ar}
       title={ar ? 'وصف المشكلة' : 'Describe the Issue'}
       subtitle={ar ? 'الخطوة 3 من 3' : 'Step 3 of 3'}
-      onBack={() => setStep(2)}
+      onBack={() => { setStep(2); window.scrollTo({ top: 0, behavior: 'instant' }) }}
     >
       <div className="space-y-4">
         <div className="flex items-center gap-2 flex-wrap">
