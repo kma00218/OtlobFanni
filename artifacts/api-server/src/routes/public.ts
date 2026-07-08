@@ -108,13 +108,23 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
       .replace(/\s+/g, ' ');
   }
 
-  // Build normalized-name → canonical map.
   // Standard (seeded) IDs are purely lowercase letters + underscores (no digits).
   // Admin-created custom IDs always contain digits (k5, k12, custom_timestamp, UUIDs).
-  // Always prefer a standard category over a custom one with the same Arabic name.
   function isStandard(cat: typeof categories[0]): boolean {
     return /^[a-z][a-z_]*$/.test(cat.id);
   }
+
+  // Short Arabic filler words to skip when doing word-level matching
+  const AR_STOP = new Set(['في', 'من', 'على', 'إلى', 'الى', 'او', 'أو', 'و', 'ال']);
+
+  function meaningfulWords(nameAr: string): string[] {
+    return normalizeAr(nameAr)
+      .split(/[\s،,&\/]+/)
+      .map(w => w.replace(/^ال/, ''))  // strip definite article
+      .filter(w => w.length > 1 && !AR_STOP.has(w));
+  }
+
+  // Pass 1: exact normalized-name → canonical (standard always beats custom)
   const normToCanonical = new Map<string, typeof categories[0]>();
   for (const cat of categories) {
     const key = normalizeAr(cat.nameAr);
@@ -132,12 +142,39 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
     }
   }
 
-  // For each present category ID, resolve to the canonical entry using normalized matching
+  // Pass 2: word-level map — individual meaningful Arabic words → best standard category.
+  // Handles reversed word-order names like "إنترنت وشبكات" vs standard "شبكات وإنترنت".
+  const wordToStandard = new Map<string, typeof categories[0]>();
+  for (const cat of categories) {
+    if (!isStandard(cat)) continue;
+    for (const word of meaningfulWords(cat.nameAr)) {
+      const existing = wordToStandard.get(word);
+      if (!existing || (cat.sortOrder ?? 99) < (existing.sortOrder ?? 99)) {
+        wordToStandard.set(word, cat);
+      }
+    }
+  }
+
+  function resolveCategory(cat: typeof categories[0]): typeof categories[0] {
+    // Try exact name match first
+    const byName = normToCanonical.get(normalizeAr(cat.nameAr));
+    if (byName && isStandard(byName)) return byName;
+    // Fall back to word-level match for reversed/variant names
+    for (const word of meaningfulWords(cat.nameAr)) {
+      const byWord = wordToStandard.get(word);
+      if (byWord) return byWord;
+    }
+    return cat;
+  }
+
+  // For each present category ID, resolve to the canonical entry
   const deduped = new Map<string, { id: string; nameAr: string; nameEn: string | null; iconName: string | null; sortOrder: number }>();
   for (const catId of presentIds) {
     const cat = categories.find(c => c.id === catId);
     if (!cat) continue;
-    const canonical = normToCanonical.get(normalizeAr(cat.nameAr)) ?? cat;
+    const canonical = resolveCategory(cat);
+    // Skip unresolvable custom categories that have no proper icon (would show mosaic)
+    if (!isStandard(canonical) && (!canonical.iconName || canonical.iconName === 'more')) continue;
     const sortOrder = canonical.sortOrder ?? 99;
     const key = normalizeAr(canonical.nameAr);
     const existing = deduped.get(key);
