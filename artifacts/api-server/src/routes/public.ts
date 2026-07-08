@@ -97,18 +97,33 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
     if (Array.isArray(c.extraSpecialties)) c.extraSpecialties.forEach(s => s && presentIds.add(s));
   }
 
-  // Filter to present categories, then deduplicate by Arabic name —
-  // custom categories (sort_order=99, iconName='more') must not shadow
-  // real categories with the same name
-  const present = categories
-    .filter(cat => presentIds.has(cat.id))
-    .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, sortOrder: cat.sortOrder ?? 99 }));
+  // For each present category, resolve to the canonical (lowest sortOrder) category
+  // with the same Arabic name — in case technicians were registered with a custom UUID
+  // category that has the same name as a standard category (e.g. "كهرباء" → "electricity")
+  const nameToCanonical = new Map<string, typeof categories[0]>();
+  for (const cat of categories) {
+    const existing = nameToCanonical.get(cat.nameAr);
+    if (!existing || (cat.sortOrder ?? 99) < (existing.sortOrder ?? 99)) {
+      nameToCanonical.set(cat.nameAr, cat);
+    }
+  }
 
-  const deduped = new Map<string, typeof present[0]>();
-  for (const cat of present) {
-    const existing = deduped.get(cat.nameAr);
-    if (!existing || cat.sortOrder < existing.sortOrder) {
-      deduped.set(cat.nameAr, cat);
+  const deduped = new Map<string, { id: string; nameAr: string; nameEn: string | null; iconName: string | null; sortOrder: number }>();
+  for (const catId of presentIds) {
+    const cat = categories.find(c => c.id === catId);
+    if (!cat) continue;
+    // Resolve to canonical category for this Arabic name
+    const canonical = nameToCanonical.get(cat.nameAr) ?? cat;
+    const sortOrder = canonical.sortOrder ?? 99;
+    const existing = deduped.get(canonical.nameAr);
+    if (!existing || sortOrder < existing.sortOrder) {
+      deduped.set(canonical.nameAr, {
+        id: canonical.id,
+        nameAr: canonical.nameAr,
+        nameEn: canonical.nameEn,
+        iconName: canonical.iconName,
+        sortOrder,
+      });
     }
   }
 
