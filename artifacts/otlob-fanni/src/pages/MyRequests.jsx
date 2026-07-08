@@ -6,7 +6,7 @@ import BackHeader from '../components/BackHeader'
 import { useAllCategories } from '../hooks/useAllCategories'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import api, { uploadFile, getFileUrl } from '../lib/api'
-import { CheckCircle2, ClipboardList, Loader2, PlusCircle, LogIn, UserPlus, LogOut, Camera, X, ChevronRight, ChevronLeft, ChevronDown, Lock, User, AlertTriangle } from 'lucide-react'
+import { CheckCircle2, ClipboardList, Loader2, PlusCircle, LogIn, UserPlus, LogOut, Camera, X, ChevronRight, ChevronLeft, ChevronDown, Lock, User, AlertTriangle, MapPin } from 'lucide-react'
 
 const FIELD_LABEL = "block text-[13px] font-bold text-[#071B33] mb-1.5 tracking-[0.01em]"
 const FIELD_INPUT = "w-full rounded-xl border-2 border-[#0a0a0a] bg-[#F0F2F5] px-3.5 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 placeholder:font-normal focus:border-[#FF7900] focus:bg-white focus:ring-4 focus:ring-[#FF7900]/15 outline-none transition-all"
@@ -566,39 +566,62 @@ function NewRequest({ ar, onDone, onBack }) {
           <p className="text-[13px] font-bold text-gray-400">{ar ? 'الخطوة 2 من 3' : 'Step 2 of 3'}</p>
         </div>
 
-        {/* City stats card */}
-        <div className="rounded-2xl overflow-hidden" style={{ boxShadow: '0 8px 32px rgba(7,27,51,0.18)' }}>
-          {/* Gradient header */}
-          <div className="flex items-center justify-between px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
-            <div className={ar ? 'text-right' : 'text-left'}>
-              <p className="text-[24px] font-black text-white">{ar ? city?.nameAr : city?.nameEn}</p>
-              <p className="text-[13px] font-bold mt-0.5" style={{ color: '#FF7900' }}>
-                {city?.total ?? 0} {ar ? 'مقدّم خدمة' : 'service providers'}
-              </p>
+        {/* City stats card — matches CityTechnicians page */}
+        <div className="bg-white rounded-2xl overflow-hidden" style={{ border: '2px solid #D1D9E6', boxShadow: '0 4px 16px rgba(7,27,51,0.12)' }}>
+          {/* Orange top accent */}
+          <div style={{ height: '4px', background: 'linear-gradient(90deg, #FF7900, #ffb347)' }} />
+          {/* City name + icon */}
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3" style={{ borderBottom: '1px solid #F0F4F8' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg,rgba(255,121,0,0.15),rgba(255,121,0,0.05))' }}>
+              <MapPin className="w-5 h-5" style={{ color: '#FF7900' }} />
             </div>
-            <div className="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl" style={{ background: 'rgba(255,121,0,0.18)', width: 52, height: 52 }}>
-              📍
+            <div className="flex-1 min-w-0">
+              <p className="font-black text-[#071B33] text-[17px] leading-tight">{ar ? city?.nameAr : city?.nameEn}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">{city?.total ?? 0} {ar ? 'مقدّم خدمة' : 'providers'}</p>
             </div>
           </div>
-          {/* Stats row */}
-          <div className="grid grid-cols-4 bg-white" style={{ direction: 'ltr' }}>
-            {[
-              { label: ar ? 'فنيون'            : 'Technicians', value: city?.technicians ?? 0, emoji: '👷', orange: true },
-              { label: ar ? 'شركات خدمة'       : 'Companies',   value: city?.companies   ?? 0, emoji: '🏢' },
-              { label: ar ? 'موردو مستلزمات'   : 'Suppliers',   value: city?.suppliers   ?? 0, emoji: '🔧' },
-              { label: ar ? 'الإجمالي'         : 'Total',       value: city?.total       ?? 0, icon: 'Σ',  dark: true },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center py-3 px-1 gap-1.5" style={{ borderLeft: i > 0 ? '1px solid #f0f0f0' : 'none' }}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[19px]"
-                  style={{ background: item.dark ? '#071B33' : '#F5F5F5' }}>
-                  {item.icon
-                    ? <span className="font-black text-[14px] text-white">{item.icon}</span>
-                    : <span>{item.emoji}</span>}
-                </div>
-                <span className="text-[17px] font-black" style={{ color: item.orange ? '#FF7900' : '#071B33' }}>{item.value}</span>
-                <span className="text-[9px] font-bold text-center leading-tight text-gray-400">{item.label}</span>
+          {/* 4-column breakdown — direction rtl so فنيون appears on the right */}
+          <div className="grid grid-cols-4 divide-x divide-x-reverse" style={{ direction: 'rtl' }}>
+            {/* فنيون */}
+            <div className="flex flex-col items-center py-4 px-1.5">
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
+                style={{ boxShadow: '0 4px 12px rgba(255,121,0,0.20)', border: '1.5px solid rgba(255,121,0,0.15)' }}>
+                <img src="/icons/categories/workers.png" alt="technicians" className="w-full h-full object-cover"
+                  onError={e => { e.currentTarget.style.display = 'none' }} />
               </div>
-            ))}
+              <p className="text-[20px] font-black leading-none" style={{ color: '#FF7900' }}>{city?.technicians ?? 0}</p>
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">{ar ? 'فنيون' : 'Technicians'}</p>
+            </div>
+            {/* شركات خدمية */}
+            <div className="flex flex-col items-center py-4 px-1.5">
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
+                style={{ boxShadow: '0 4px 12px rgba(59,130,246,0.25)', border: '1.5px solid rgba(59,130,246,0.15)' }}>
+                <img src="/icons/sections/service_companies.png" alt="companies" className="w-full h-full object-cover"
+                  onError={e => { e.currentTarget.style.display = 'none' }} />
+              </div>
+              <p className="text-[20px] font-black leading-none" style={{ color: '#1e40af' }}>{city?.companies ?? 0}</p>
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">{ar ? 'شركات خدمية' : 'Service Co.'}</p>
+            </div>
+            {/* موردو مستلزمات */}
+            <div className="flex flex-col items-center py-4 px-1.5">
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 overflow-hidden"
+                style={{ boxShadow: '0 4px 12px rgba(14,124,143,0.20)', border: '1.5px solid rgba(14,124,143,0.15)' }}>
+                <img src="/icons/sections/more_services.png" alt="suppliers" className="w-full h-full object-cover"
+                  onError={e => { e.currentTarget.style.display = 'none' }} />
+              </div>
+              <p className="text-[20px] font-black leading-none" style={{ color: '#0e7c8f' }}>{city?.suppliers ?? 0}</p>
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">{ar ? 'موردو مستلزمات' : 'Suppliers'}</p>
+            </div>
+            {/* الإجمالي */}
+            <div className="flex flex-col items-center py-4 px-1.5" style={{ background: 'rgba(7,27,51,0.03)' }}>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-2"
+                style={{ background: 'linear-gradient(145deg, #1e3a5f 0%, #071B33 100%)', boxShadow: '0 4px 12px rgba(7,27,51,0.35)' }}>
+                <span className="text-white font-black leading-none select-none" style={{ fontSize: '32px', marginTop: '-2px' }}>Σ</span>
+              </div>
+              <p className="text-[20px] font-black leading-none text-[#071B33]">{city?.total ?? 0}</p>
+              <p className="text-[11px] font-bold text-[#374151] mt-1 text-center leading-tight">{ar ? 'الإجمالي' : 'Total'}</p>
+            </div>
           </div>
         </div>
 
