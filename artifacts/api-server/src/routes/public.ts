@@ -61,23 +61,57 @@ router.get("/categories-by-city", async (req, res): Promise<void> => {
     res.status(400).json({ error: "cityId required" });
     return;
   }
-  const [techCounts, categories] = await Promise.all([
-    db.select({ categoryId: techniciansTable.categoryId, cnt: count() })
-      .from(techniciansTable)
-      .where(and(
-        eq(techniciansTable.isApproved, true),
-        eq(techniciansTable.isActive, true),
-        eq(techniciansTable.cityId, cityId),
-      ))
-      .groupBy(techniciansTable.categoryId),
-    db.select().from(categoriesTable),
-  ]);
-  const countMap: Record<string, number> = {};
-  for (const t of techCounts) { if (t.categoryId) countMap[t.categoryId] = Number(t.cnt); }
+
+  // Resolve city names so we can match companies (stored by name, not id)
+  const [cityRow] = await db.select({ nameAr: citiesTable.nameAr, nameEn: citiesTable.nameEn })
+    .from(citiesTable).where(eq(citiesTable.id, cityId));
+  const cityKeys = [cityId, cityRow?.nameAr, cityRow?.nameEn].filter(Boolean) as string[];
+
+  // Collect all category IDs present in this city from every source:
+  // 1. technicians.category_id (primary)
+  // 2. unnested technicians.extra_specialties
+  // 3. company_applications.specialty (primary)
+  // 4. unnested company_applications.extra_specialties
+  const rows = await db.execute(sql`
+    SELECT cat_id FROM (
+      SELECT category_id AS cat_id
+        FROM technicians
+       WHERE is_approved = true AND is_active = true AND city_id = ${cityId}
+         AND category_id IS NOT NULL
+
+      UNION ALL
+
+      SELECT unnest(extra_specialties) AS cat_id
+        FROM technicians
+       WHERE is_approved = true AND is_active = true AND city_id = ${cityId}
+
+      UNION ALL
+
+      SELECT specialty AS cat_id
+        FROM company_applications
+       WHERE status = 'published'
+         AND city = ANY(${cityKeys})
+         AND specialty IS NOT NULL AND specialty <> ''
+
+      UNION ALL
+
+      SELECT unnest(extra_specialties) AS cat_id
+        FROM company_applications
+       WHERE status = 'published'
+         AND city = ANY(${cityKeys})
+    ) sub
+    WHERE cat_id IS NOT NULL AND cat_id <> ''
+    GROUP BY cat_id
+  `) as { rows: { cat_id: string }[] };
+
+  const presentIds = new Set(rows.rows.map((r: { cat_id: string }) => r.cat_id));
+
+  const categories = await db.select().from(categoriesTable);
   const result = categories
-    .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, count: countMap[cat.id] || 0 }))
-    .filter(cat => cat.count > 0)
-    .sort((a, b) => b.count - a.count);
+    .filter(cat => presentIds.has(cat.id))
+    .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, sortOrder: cat.sortOrder }))
+    .sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99));
+
   res.set("Cache-Control", "public, max-age=120, stale-while-revalidate=300");
   res.json(result);
 });
