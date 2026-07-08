@@ -10,6 +10,35 @@ const SYSTEM_PROMPT =
   "Example output: [\"تركيب تكييف\", \"صيانة كهربائية\", \"سباكة منزلية\"]. " +
   "No explanations, no markdown, only the JSON array.";
 
+const CUSTOMER_REQUEST_PROMPT =
+  "You are an assistant for a Libyan home-services app. " +
+  "A customer described a problem or service they need. Extract what type of service they require. " +
+  "Return ONLY a JSON array of short Arabic service tags (2–4 words each, max 8 tags). " +
+  "Tags must describe the service/repair needed. " +
+  "Example output: [\"تسريب مياه\", \"صيانة سباكة\", \"تبديل أنابيب\"]. " +
+  "No explanations, no markdown, only the JSON array.";
+
+export async function analyzeCustomerRequest(description: string): Promise<string[]> {
+  if (!description || description.trim().length < 5) return [];
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    max_completion_tokens: 256,
+    messages: [
+      { role: "system", content: CUSTOMER_REQUEST_PROMPT },
+      { role: "user", content: `وصف المشكلة من العميل: ${description}\n\nاستخرج وسوم الخدمة كمصفوفة JSON من السلاسل العربية.` },
+    ],
+  });
+  const raw = response.choices[0]?.message?.content?.trim() ?? "[]";
+  try {
+    const cleaned = raw.replace(/```json?|```/g, "").trim();
+    let tags = JSON.parse(cleaned);
+    if (!Array.isArray(tags)) tags = [];
+    return (tags as unknown[])
+      .filter((t): t is string => typeof t === "string" && t.trim().length > 0)
+      .slice(0, 8);
+  } catch { return []; }
+}
+
 export async function generateTags(
   description: string,
   name: string,

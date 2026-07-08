@@ -12,6 +12,7 @@ import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
 import { expandSearchTerms } from "../lib/synonyms";
 import { hashPin, verifyPin, signCustomerToken, verifyCustomerToken } from "../lib/customerAuth";
+import { analyzeCustomerRequest } from "../lib/aiTags";
 
 const router: IRouter = Router();
 
@@ -51,6 +52,64 @@ router.get("/city-stats", async (_req, res): Promise<void> => {
 
   res.set("Cache-Control", "public, max-age=180, stale-while-revalidate=300");
   res.json(result);
+});
+
+// ── Categories by City (with provider counts) ─────────────────────────────────
+router.get("/categories-by-city", async (req, res): Promise<void> => {
+  const { cityId } = req.query;
+  if (!cityId || typeof cityId !== "string") {
+    res.status(400).json({ error: "cityId required" });
+    return;
+  }
+  const [techCounts, categories] = await Promise.all([
+    db.select({ categoryId: techniciansTable.categoryId, cnt: count() })
+      .from(techniciansTable)
+      .where(and(
+        eq(techniciansTable.isApproved, true),
+        eq(techniciansTable.isActive, true),
+        eq(techniciansTable.cityId, cityId),
+      ))
+      .groupBy(techniciansTable.categoryId),
+    db.select().from(categoriesTable),
+  ]);
+  const countMap: Record<string, number> = {};
+  for (const t of techCounts) { if (t.categoryId) countMap[t.categoryId] = Number(t.cnt); }
+  const result = categories
+    .map(cat => ({ id: cat.id, nameAr: cat.nameAr, nameEn: cat.nameEn, iconName: cat.iconName, count: countMap[cat.id] || 0 }))
+    .filter(cat => cat.count > 0)
+    .sort((a, b) => b.count - a.count);
+  res.set("Cache-Control", "public, max-age=120, stale-while-revalidate=300");
+  res.json(result);
+});
+
+// ── Providers Count (pre-submission preview) ──────────────────────────────────
+router.get("/providers-count", async (req, res): Promise<void> => {
+  const { cityId, categoryId } = req.query;
+  const conditions = [
+    eq(techniciansTable.isApproved, true),
+    eq(techniciansTable.isActive, true),
+  ];
+  if (cityId && typeof cityId === "string") conditions.push(eq(techniciansTable.cityId, cityId));
+  if (categoryId && typeof categoryId === "string") conditions.push(eq(techniciansTable.categoryId, categoryId));
+  const [{ cnt }] = await db.select({ cnt: count() }).from(techniciansTable).where(and(...conditions));
+  res.json({ count: Number(cnt) });
+});
+
+// ── AI Analyze Customer Request (public) ──────────────────────────────────────
+router.post("/ai/analyze-request", async (req, res): Promise<void> => {
+  const { description } = req.body;
+  if (!description || typeof description !== "string" || description.trim().length < 5) {
+    res.status(400).json({ error: "description too short" });
+    return;
+  }
+  try {
+    const tags = await analyzeCustomerRequest(description.trim());
+    res.json({ tags });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[AI] analyze-request error:", msg);
+    res.status(500).json({ error: "AI service error" });
+  }
 });
 
 // ── Dynamic Sitemap ───────────────────────────────────────────────────────────

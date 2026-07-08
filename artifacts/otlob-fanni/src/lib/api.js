@@ -361,6 +361,13 @@ export const api = {
     },
   },
 
+  categoriesByCity:  (cityId) => get(`/categories-by-city?cityId=${encodeURIComponent(cityId)}`),
+  providersCount:    (params = {}) => {
+    const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))).toString()
+    return get(`/providers-count${qs ? '?' + qs : ''}`)
+  },
+  analyzeRequest:    (description) => post('/ai/analyze-request', { description }),
+
   popularCategories: () => get('/categories/popular'),
   submitReferral: (data) => post('/referrals', data),
 

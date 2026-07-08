@@ -396,54 +396,86 @@ function Dashboard({ ar, onNew }) {
 }
 
 function NewRequest({ ar, onDone, onBack }) {
-  const categories = useAllCategories()
-  const [cities, setCities] = useState([])
-  const [form, setForm] = useState({ cityId: '', categoryId: '', title: '', description: '' })
-  const [photos, setPhotos] = useState([])
-  const [uploading, setUploading] = useState(false)
+  const [step, setStep] = useState(1)
+  const [cityStats, setCityStats] = useState([])
+  const [loadingCities, setLoadingCities] = useState(true)
+  const [selectedCity, setSelectedCity] = useState(null)
+  const [cityCategories, setCityCategories] = useState([])
+  const [loadingCategories, setLoadingCategories] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [description, setDescription] = useState('')
+  const [analyzing, setAnalyzing] = useState(false)
+  const [tags, setTags] = useState(null)
+  const [providerCount, setProviderCount] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState(null)
 
-  useEffect(() => { api.cities().then(setCities).catch(() => {}) }, [])
+  useEffect(() => {
+    api.cityStats().then(data => {
+      const sorted = [...data].sort((a, b) => b.total - a.total).filter(c => c.total > 0)
+      setCityStats(sorted)
+    }).catch(() => {}).finally(() => setLoadingCities(false))
+  }, [])
 
-  async function handlePhotoAdd(e) {
-    const files = Array.from(e.target.files || []).slice(0, 3 - photos.length)
-    if (!files.length) return
-    setUploading(true)
+  async function handleCitySelect(city) {
+    setSelectedCity(city)
+    setSelectedCategory(null)
+    setTags(null)
+    setDescription('')
+    setProviderCount(null)
+    setLoadingCategories(true)
     try {
-      for (const file of files) {
-        const path = await uploadFile(file)
-        setPhotos(p => [...p, path])
-      }
-    } catch { setError(ar ? 'فشل رفع الصورة' : 'Photo upload failed') }
-    finally { setUploading(false) }
+      const cats = await api.categoriesByCity(city.id)
+      setCityCategories(cats)
+    } catch { setCityCategories([]) }
+    finally { setLoadingCategories(false) }
+    setStep(2)
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  async function handleCategorySelect(cat) {
+    setSelectedCategory(cat)
+    setTags(null)
+    setDescription('')
+    setStep(3)
+    api.providersCount({ cityId: selectedCity.id, categoryId: cat.id })
+      .then(d => setProviderCount(d.count))
+      .catch(() => {})
+  }
+
+  async function handleAnalyze() {
+    if (description.trim().length < 10) return
+    setAnalyzing(true)
     setError('')
-    if (!form.title.trim() || !form.description.trim()) {
-      setError(ar ? 'يرجى تعبئة كل الحقول المطلوبة' : 'Please fill all required fields')
-      return
-    }
+    try {
+      const { tags: extracted } = await api.analyzeRequest(description)
+      setTags(extracted || [])
+    } catch { setTags([]) }
+    finally { setAnalyzing(false) }
+  }
+
+  async function handleSubmit() {
+    if (!description.trim()) return
+    setError('')
     setSubmitting(true)
     try {
-      const city = cities.find(c => c.id === form.cityId)
-      const cat = categories.find(c => c.id === form.categoryId)
+      const tagsSuffix = tags?.length
+        ? `\n\n--- وسوم ذكية: ${tags.join('، ')} ---`
+        : ''
       const res = await api.generalRequests.create({
-        cityId: form.cityId || undefined,
-        cityName: city ? (ar ? city.nameAr : city.nameEn) : undefined,
-        categoryId: form.categoryId || undefined,
-        categoryName: cat ? (ar ? cat.nameAr : cat.nameEn) : undefined,
-        title: form.title.trim(),
-        description: form.description.trim(),
-        photoUrls: photos.length ? photos : undefined,
+        cityId: selectedCity.id,
+        cityName: ar ? selectedCity.nameAr : selectedCity.nameEn,
+        categoryId: selectedCategory?.id || undefined,
+        categoryName: selectedCategory ? (ar ? selectedCategory.nameAr : selectedCategory.nameEn) : undefined,
+        title: tags?.length
+          ? tags.slice(0, 2).join(' + ')
+          : (selectedCategory ? (ar ? selectedCategory.nameAr : selectedCategory.nameEn) : (ar ? 'طلب خدمة' : 'Service Request')),
+        description: description.trim() + tagsSuffix,
       })
       setResult(res)
     } catch (err) {
       setError(err.message === 'HTTP 429'
-        ? (ar ? 'وصلت الحد الأقصى للطلبات، حاول بعد ساعة' : 'You have reached the request limit, try again in an hour')
+        ? (ar ? 'وصلت الحد الأقصى للطلبات، حاول بعد ساعة' : 'Request limit reached, try again in an hour')
         : (ar ? 'حدث خطأ، حاول مرة أخرى' : 'Something went wrong, please try again'))
     } finally { setSubmitting(false) }
   }
@@ -452,91 +484,202 @@ function NewRequest({ ar, onDone, onBack }) {
     return (
       <FormCard ar={ar} title={ar ? 'تم إرسال طلبك!' : 'Request Sent!'}>
         <div className="text-center space-y-5">
-          <CheckCircle2 className="w-16 h-16 mx-auto text-[#34A853]" />
-          <p className="text-[14px] text-gray-500">
-            {ar ? 'رقم الطلب:' : 'Order number:'} <span className="font-bold text-[#071B33]" dir="ltr">{result.orderNumber}</span>
+          <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-12 h-12 text-[#34A853]" />
+          </div>
+          <div>
+            <p className="text-[16px] font-black text-[#071B33]">{ar ? 'طلبك في الطريق!' : 'Your request is on the way!'}</p>
+            <p className="text-[13px] text-gray-500 mt-1">
+              {ar ? 'رقم الطلب:' : 'Order:'} <span className="font-bold text-[#FF7900]" dir="ltr">{result.orderNumber}</span>
+            </p>
+          </div>
+          <p className="text-[13px] text-gray-500 leading-relaxed bg-gray-50 rounded-xl px-4 py-3">
+            {ar
+              ? 'سيتواصل معك مقدمو الخدمة بعروضهم، ستجدها في صفحة طلباتي'
+              : 'Service providers will send you offers. Find them in My Requests.'}
           </p>
-          <p className="text-[13px] text-gray-500 leading-relaxed">
-            {ar ? 'ستجد العروض المقدمة لك في صفحة طلباتي' : 'You will find offers sent to you in the My Requests page'}
-          </p>
-          <button onClick={onDone} className="w-full py-3.5 rounded-xl font-black text-[15px] tracking-wide text-white active:scale-[0.98] transition-transform" style={{ background: '#071B33' }}>
-            {ar ? 'حسنًا' : 'Done'}
+          <button onClick={onDone} className="w-full py-3.5 rounded-xl font-black text-[15px] tracking-wide text-white active:scale-[0.98] transition-transform" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
+            {ar ? 'حسنًا، شكرًا' : 'Done, Thanks'}
           </button>
         </div>
       </FormCard>
     )
   }
 
-  return (
-    <FormCard ar={ar} title={ar ? 'طلب جديد' : 'New Request'} subtitle={ar ? 'عبّي البيانات وسنوصلها للفنيين' : 'Fill in the details to reach technicians'} onBack={onBack}>
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className={FIELD_LABEL}>{ar ? 'المدينة' : 'City'}</label>
-          <div className="relative">
-            <select value={form.cityId} onChange={e => setForm(f => ({ ...f, cityId: e.target.value }))}
-              className={FIELD_SELECT}>
-              <option value="">{ar ? 'اختر' : 'Select'}</option>
-              {cities.map(c => <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>)}
-            </select>
-            <ChevronDown className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3.5 w-4 h-4 text-gray-400" />
-          </div>
-        </div>
-        <div>
-          <label className={FIELD_LABEL}>{ar ? 'التخصص' : 'Category'}</label>
-          <div className="relative">
-            <select value={form.categoryId} onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}
-              className={FIELD_SELECT}>
-              <option value="">{ar ? 'اختر' : 'Select'}</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{ar ? c.nameAr : c.nameEn}</option>)}
-            </select>
-            <ChevronDown className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3.5 w-4 h-4 text-gray-400" />
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <label className={FIELD_LABEL}>{ar ? 'عنوان الطلب' : 'Request title'} *</label>
-        <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-          placeholder={ar ? 'مثال: تسريب ماء في المطبخ' : 'e.g. Water leak in kitchen'}
-          className={FIELD_INPUT} required />
-      </div>
-
-      <div>
-        <label className={FIELD_LABEL}>{ar ? 'وصف المشكلة' : 'Description'} *</label>
-        <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-          rows={4} className={`${FIELD_INPUT} resize-none leading-relaxed`} required />
-      </div>
-
-      <div>
-        <label className={FIELD_LABEL}>{ar ? 'صور (اختياري، حتى 3)' : 'Photos (optional, up to 3)'}</label>
-        <div className="flex gap-2 flex-wrap">
-          {photos.map((p, i) => (
-            <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-200">
-              <img src={getFileUrl(p)} alt="" className="w-full h-full object-cover" />
-              <button type="button" onClick={() => setPhotos(ps => ps.filter((_, idx) => idx !== i))}
-                className="absolute top-0.5 right-0.5 bg-black/60 rounded-full p-0.5">
-                <X className="w-3 h-3 text-white" />
+  if (step === 1) {
+    return (
+      <FormCard ar={ar} title={ar ? 'اختر مدينتك' : 'Choose Your City'} subtitle={ar ? 'الخطوة 1 من 3' : 'Step 1 of 3'} onBack={onBack}>
+        {loadingCities ? (
+          <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-[#FF7900]" /></div>
+        ) : cityStats.length === 0 ? (
+          <p className="text-center text-gray-400 py-8">{ar ? 'لا توجد مدن متاحة' : 'No cities available'}</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {cityStats.map(city => (
+              <button
+                key={city.id}
+                onClick={() => handleCitySelect(city)}
+                className="w-full flex items-center justify-between px-4 py-4 rounded-2xl border-2 border-[#0a0a0a] bg-white active:scale-[0.98] transition-all hover:border-[#FF7900] hover:shadow-md group"
+              >
+                <div className={`flex flex-col ${ar ? 'items-start text-right' : 'items-start text-left'}`}>
+                  <span className="text-[17px] font-black text-[#071B33] group-hover:text-[#FF7900] transition-colors">
+                    {ar ? city.nameAr : city.nameEn}
+                  </span>
+                  <span className="text-[12px] text-gray-400 mt-0.5">
+                    {ar ? `${city.total} مقدم خدمة` : `${city.total} providers`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full text-[12px] font-bold text-white" style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
+                    {city.total}
+                  </span>
+                  <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-[#FF7900] transition-colors" />
+                </div>
               </button>
-            </div>
-          ))}
-          {photos.length < 3 && (
-            <label className="w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer text-gray-400 hover:border-[#FF7900] hover:text-[#FF7900] transition-colors">
-              {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
-              <input type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoAdd} disabled={uploading} />
-            </label>
+            ))}
+          </div>
+        )}
+      </FormCard>
+    )
+  }
+
+  if (step === 2) {
+    return (
+      <FormCard ar={ar} title={ar ? 'اختر التخصص' : 'Choose Specialty'} subtitle={ar ? `الخطوة 2 من 3 — ${ar ? selectedCity?.nameAr : selectedCity?.nameEn}` : `Step 2 of 3 — ${selectedCity?.nameEn}`} onBack={() => setStep(1)}>
+        {loadingCategories ? (
+          <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-[#FF7900]" /></div>
+        ) : cityCategories.length === 0 ? (
+          <div className="text-center py-8 space-y-3">
+            <p className="text-gray-400">{ar ? 'لا توجد تخصصات في هذه المدينة بعد' : 'No specialties in this city yet'}</p>
+            <button onClick={() => setStep(1)} className="text-[#FF7900] font-bold text-[13px]">{ar ? 'اختر مدينة أخرى' : 'Choose another city'}</button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            {cityCategories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => handleCategorySelect(cat)}
+                className="flex flex-col items-center gap-2 p-3 rounded-2xl border-2 border-gray-100 bg-white active:scale-95 transition-all hover:border-[#FF7900] hover:shadow-md group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden group-hover:bg-orange-50 transition-colors">
+                  <img
+                    src={`/icons/categories/${cat.iconName || cat.id}.png`}
+                    alt={ar ? cat.nameAr : cat.nameEn}
+                    className="w-9 h-9 object-contain"
+                    onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
+                  />
+                </div>
+                <span className="text-[11px] font-bold text-[#071B33] text-center leading-tight group-hover:text-[#FF7900] transition-colors line-clamp-2">
+                  {ar ? cat.nameAr : cat.nameEn}
+                </span>
+                <span className="text-[10px] text-gray-400 font-medium">{cat.count} {ar ? 'فني' : 'pros'}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </FormCard>
+    )
+  }
+
+  return (
+    <FormCard
+      ar={ar}
+      title={ar ? 'وصف المشكلة' : 'Describe the Issue'}
+      subtitle={ar ? 'الخطوة 3 من 3' : 'Step 3 of 3'}
+      onBack={() => setStep(2)}
+    >
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[12px] px-3 py-1 rounded-full font-bold text-white" style={{ background: '#071B33' }}>
+            {ar ? selectedCity?.nameAr : selectedCity?.nameEn}
+          </span>
+          {selectedCategory && (
+            <span className="text-[12px] px-3 py-1 rounded-full font-bold text-white" style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
+              {ar ? selectedCategory.nameAr : selectedCategory.nameEn}
+            </span>
           )}
         </div>
+
+        <div>
+          <label className={FIELD_LABEL}>{ar ? 'اكتب وصف المشكلة أو الخدمة التي تحتاجها' : 'Describe your problem or needed service'} *</label>
+          <textarea
+            value={description}
+            onChange={e => { setDescription(e.target.value); setTags(null) }}
+            rows={5}
+            placeholder={ar ? 'مثال: عندي تسريب مياه في المطبخ تحت الحوض، الأنبوب القديم بدأ يقطّر...' : 'e.g. I have a water leak under the kitchen sink, the old pipe started dripping...'}
+            className={`${FIELD_INPUT} resize-none leading-relaxed`}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAnalyze}
+          disabled={analyzing || description.trim().length < 10}
+          className="w-full py-3 rounded-xl font-black text-[14px] text-white disabled:opacity-50 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          style={{ background: 'linear-gradient(135deg, #4B0082 0%, #7B2FBE 100%)', boxShadow: '0 4px 14px rgba(75,0,130,0.3)' }}
+        >
+          {analyzing ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /><span>{ar ? 'جارٍ التحليل...' : 'Analyzing...'}</span></>
+          ) : (
+            <><span>✨</span><span>{ar ? 'تحليل بالذكاء الاصطناعي' : 'AI Analysis'}</span></>
+          )}
+        </button>
+
+        {tags !== null && (
+          <div className="rounded-2xl border-2 border-purple-200 bg-purple-50 px-4 py-3 space-y-2">
+            <p className="text-[12px] font-extrabold text-purple-700 flex items-center gap-1">
+              <span>✨</span>
+              <span>{ar ? 'وسوم ذكية' : 'Smart Tags'}</span>
+            </p>
+            {tags.length === 0 ? (
+              <p className="text-[12px] text-gray-400">{ar ? 'لم يتم استخراج وسوم — يرجى تفصيل المشكلة أكثر' : 'No tags extracted — please add more detail'}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag, i) => (
+                  <span key={i} className="px-3 py-1 rounded-full text-[12px] font-bold text-white" style={{ background: 'linear-gradient(135deg, #7B2FBE, #4B0082)' }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {tags !== null && providerCount !== null && (
+          <div className="rounded-2xl border-2 border-[#FF7900]/30 bg-orange-50 px-4 py-3 flex items-center gap-3">
+            <span className="text-2xl">📢</span>
+            <p className="text-[13px] font-bold text-[#071B33] leading-relaxed flex-1">
+              {ar
+                ? `سيصل طلبك إلى ${providerCount} مقدم خدمة مطابق في ${selectedCity?.nameAr}`
+                : `Your request will reach ${providerCount} matching providers in ${selectedCity?.nameEn}`}
+            </p>
+          </div>
+        )}
+
+        {error && <p className="text-[13px] font-medium text-red-600 bg-red-50 border-2 border-red-100 rounded-xl px-3.5 py-2.5 text-center">{error}</p>}
+
+        {tags !== null && (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting || !description.trim()}
+            className="w-full py-4 rounded-xl font-black text-[16px] tracking-wide text-white disabled:opacity-60 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+            style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 6px 20px rgba(255,121,0,0.3)' }}
+          >
+            {submitting ? (
+              <><Loader2 className="w-5 h-5 animate-spin" /><span>{ar ? 'جارٍ الإرسال...' : 'Sending...'}</span></>
+            ) : (
+              <><span>🚀</span><span>{ar ? 'إرسال الطلب' : 'Send Request'}</span></>
+            )}
+          </button>
+        )}
+
+        {tags === null && (
+          <p className="text-center text-[12px] text-gray-400">
+            {ar ? 'اضغط "تحليل بالذكاء الاصطناعي" أولاً ثم أرسل طلبك' : 'Tap AI Analysis first, then send your request'}
+          </p>
+        )}
       </div>
-
-      {error && <p className="text-[13px] font-medium text-red-600 bg-red-50 border-2 border-red-100 rounded-xl px-3.5 py-2.5 text-center">{error}</p>}
-
-      <button type="submit" disabled={submitting}
-        className="w-full py-3.5 rounded-xl font-black text-[16px] tracking-wide text-white disabled:opacity-60 shadow-[0_6px_20px_rgba(255,121,0,0.3)] active:scale-[0.98] transition-transform"
-        style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}>
-        {submitting ? (ar ? 'جارٍ الإرسال...' : 'Sending...') : (ar ? 'إرسال الطلب' : 'Send Request')}
-      </button>
-    </form>
     </FormCard>
   )
 }
