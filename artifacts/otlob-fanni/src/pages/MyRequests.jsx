@@ -412,10 +412,18 @@ function NewRequest({ ar, onDone, onBack }) {
   const [result, setResult] = useState(null)
 
   useEffect(() => {
-    api.cityStats().then(data => {
-      const sorted = [...data].sort((a, b) => b.total - a.total).filter(c => c.total > 0)
-      setCityStats(sorted)
-    }).catch(() => {}).finally(() => setLoadingCities(false))
+    Promise.all([api.cities(), api.cityStats()])
+      .then(([allCities, stats]) => {
+        const statsMap = Object.fromEntries(stats.map(s => [s.id, s]))
+        const merged = allCities.map(c => ({
+          ...c,
+          technicians: statsMap[c.id]?.technicians || 0,
+          companies:   statsMap[c.id]?.companies   || 0,
+          suppliers:   statsMap[c.id]?.suppliers   || 0,
+          total:       statsMap[c.id]?.total        || 0,
+        })).sort((a, b) => b.total - a.total)
+        setCityStats(merged)
+      }).catch(() => {}).finally(() => setLoadingCities(false))
   }, [])
 
   async function handleCitySelect(city) {
@@ -508,76 +516,121 @@ function NewRequest({ ar, onDone, onBack }) {
 
   if (step === 1) {
     return (
-      <FormCard ar={ar} title={ar ? 'اختر مدينتك' : 'Choose Your City'} subtitle={ar ? 'الخطوة 1 من 3' : 'Step 1 of 3'} onBack={onBack}>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <button onClick={onBack} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] text-[#071B33] bg-white border-2 border-[#071B33] active:scale-90 transition-all">
+            <ChevronRight className="w-4 h-4" />
+            <span>{ar ? 'رجوع' : 'Back'}</span>
+          </button>
+          <p className="text-[13px] font-bold text-gray-400">{ar ? 'الخطوة 1 من 3' : 'Step 1 of 3'}</p>
+        </div>
+
+        <div className="text-center">
+          <p className="text-[22px] font-black text-[#071B33]">📍 {ar ? 'اختر مدينتك' : 'Choose Your City'}</p>
+        </div>
+
         {loadingCities ? (
           <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-[#FF7900]" /></div>
-        ) : cityStats.length === 0 ? (
-          <p className="text-center text-gray-400 py-8">{ar ? 'لا توجد مدن متاحة' : 'No cities available'}</p>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
             {cityStats.map(city => (
               <button
                 key={city.id}
                 onClick={() => handleCitySelect(city)}
-                className="w-full flex items-center justify-between px-4 py-4 rounded-2xl border-2 border-[#0a0a0a] bg-white active:scale-[0.98] transition-all hover:border-[#FF7900] hover:shadow-md group"
+                className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border-2 active:scale-95 transition-all font-bold"
+                style={{
+                  borderColor: '#FF7900',
+                  background: 'white',
+                  color: '#071B33',
+                }}
               >
-                <div className={`flex flex-col ${ar ? 'items-start text-right' : 'items-start text-left'}`}>
-                  <span className="text-[17px] font-black text-[#071B33] group-hover:text-[#FF7900] transition-colors">
-                    {ar ? city.nameAr : city.nameEn}
-                  </span>
-                  <span className="text-[12px] text-gray-400 mt-0.5">
-                    {ar ? `${city.total} مقدم خدمة` : `${city.total} providers`}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-[12px] font-bold text-white" style={{ background: 'linear-gradient(135deg, #FF7900, #c45e00)' }}>
-                    {city.total}
-                  </span>
-                  <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-[#FF7900] transition-colors" />
-                </div>
+                <span className="text-[15px] font-black">{ar ? city.nameAr : city.nameEn}</span>
+                <span className="text-[14px] font-black text-[#FF7900]">{city.total}</span>
               </button>
             ))}
           </div>
         )}
-      </FormCard>
+      </div>
     )
   }
 
   if (step === 2) {
+    const city = selectedCity
     return (
-      <FormCard ar={ar} title={ar ? 'اختر التخصص' : 'Choose Specialty'} subtitle={ar ? `الخطوة 2 من 3 — ${ar ? selectedCity?.nameAr : selectedCity?.nameEn}` : `Step 2 of 3 — ${selectedCity?.nameEn}`} onBack={() => setStep(1)}>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <button onClick={() => setStep(1)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[13px] text-[#071B33] bg-white border-2 border-[#071B33] active:scale-90 transition-all">
+            <ChevronRight className="w-4 h-4" />
+            <span>{ar ? 'رجوع' : 'Back'}</span>
+          </button>
+          <p className="text-[13px] font-bold text-gray-400">{ar ? 'الخطوة 2 من 3' : 'Step 2 of 3'}</p>
+        </div>
+
+        {/* City stats card */}
+        <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3">
+            <div className={ar ? 'text-right' : 'text-left'}>
+              <p className="text-[22px] font-black text-[#071B33]">{ar ? city?.nameAr : city?.nameEn}</p>
+              <p className="text-[13px] text-gray-400 font-medium">{city?.total ?? 0} {ar ? 'مقدّم خدمة' : 'providers'}</p>
+            </div>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: '#FFF3E0' }}>
+              <span className="text-2xl">📍</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 divide-x divide-gray-100 border-t border-gray-100" style={{ direction: 'ltr' }}>
+            {[
+              { label: ar ? 'الإجمالي' : 'Total',     value: city?.total ?? 0,       icon: 'Σ',  dark: true },
+              { label: ar ? 'فنيون'    : 'Technicians', value: city?.technicians ?? 0, emoji: '👷', orange: true },
+              { label: ar ? 'شركات خدمة' : 'Companies', value: city?.companies ?? 0,  emoji: '🏢' },
+              { label: ar ? 'موردو مستلزمات' : 'Suppliers', value: city?.suppliers ?? 0, emoji: '🔧' },
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center py-3 px-1 gap-1">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-[18px] ${item.dark ? 'text-white' : ''}`}
+                  style={{ background: item.dark ? '#071B33' : '#F5F5F5' }}>
+                  {item.icon ? <span className="font-black text-[15px]">{item.icon}</span> : <span>{item.emoji}</span>}
+                </div>
+                <span className={`text-[16px] font-black ${item.orange ? 'text-[#FF7900]' : 'text-[#071B33]'}`}>{item.value}</span>
+                <span className="text-[9px] text-gray-400 font-bold text-center leading-tight">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Category grid */}
         {loadingCategories ? (
           <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-[#FF7900]" /></div>
         ) : cityCategories.length === 0 ? (
           <div className="text-center py-8 space-y-3">
-            <p className="text-gray-400">{ar ? 'لا توجد تخصصات في هذه المدينة بعد' : 'No specialties in this city yet'}</p>
-            <button onClick={() => setStep(1)} className="text-[#FF7900] font-bold text-[13px]">{ar ? 'اختر مدينة أخرى' : 'Choose another city'}</button>
+            <p className="text-gray-400 text-[14px] font-bold">{ar ? 'لا توجد تخصصات في هذه المدينة بعد' : 'No specialties yet in this city'}</p>
+            <p className="text-gray-300 text-[12px]">{ar ? 'يمكنك تقديم طلبك وسيصل لأقرب الفنيين' : 'You can still submit and we\'ll reach nearby pros'}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-3">
-            {cityCategories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => handleCategorySelect(cat)}
-                className="flex flex-col items-center gap-2 p-3 rounded-2xl border-2 border-gray-100 bg-white active:scale-95 transition-all hover:border-[#FF7900] hover:shadow-md group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden group-hover:bg-orange-50 transition-colors">
-                  <img
-                    src={`/icons/categories/${cat.iconName || cat.id}.png`}
-                    alt={ar ? cat.nameAr : cat.nameEn}
-                    className="w-9 h-9 object-contain"
-                    onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
-                  />
-                </div>
-                <span className="text-[11px] font-bold text-[#071B33] text-center leading-tight group-hover:text-[#FF7900] transition-colors line-clamp-2">
-                  {ar ? cat.nameAr : cat.nameEn}
-                </span>
-                <span className="text-[10px] text-gray-400 font-medium">{cat.count} {ar ? 'فني' : 'pros'}</span>
-              </button>
-            ))}
-          </div>
+          <>
+            <p className="text-[14px] font-extrabold text-[#071B33] text-center">{ar ? 'اختر التخصص المطلوب' : 'Choose the specialty'}</p>
+            <div className="grid grid-cols-3 gap-x-3 gap-y-5">
+              {cityCategories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategorySelect(cat)}
+                  className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
+                >
+                  <div className="w-[72px] h-[72px] rounded-[18px] overflow-hidden shadow-sm">
+                    <img
+                      src={`/icons/categories/${cat.iconName || cat.id}.png`}
+                      alt={ar ? cat.nameAr : cat.nameEn}
+                      className="w-full h-full object-cover"
+                      onError={e => { e.currentTarget.src = '/icons/categories/more.png' }}
+                    />
+                  </div>
+                  <span className="text-[12px] font-bold text-[#071B33] text-center leading-tight line-clamp-2 w-full">
+                    {ar ? cat.nameAr : cat.nameEn}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
         )}
-      </FormCard>
+      </div>
     )
   }
 
