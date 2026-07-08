@@ -223,9 +223,9 @@ function MyRequestsFAB() {
         [ar ? 'left' : 'right']: '16px',
         padding: '10px 16px 10px 10px',
         borderRadius: '20px',
-        background: '#FFF4E8',
-        border: '2px solid #0a0a0a',
-        boxShadow: '0 10px 28px rgba(7,27,51,0.18), 0 2px 6px rgba(7,27,51,0.08)',
+        background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)',
+        border: '2.5px solid #FF7900',
+        boxShadow: '0 10px 32px rgba(7,27,51,0.45), 0 2px 8px rgba(255,121,0,0.25)',
         textDecoration: 'none',
       }}
       aria-label={ar ? 'طلباتي' : 'My Requests'}
@@ -237,10 +237,10 @@ function MyRequestsFAB() {
         <ClipboardList className="w-[19px] h-[19px] text-white" />
       </span>
       <span className="flex flex-col" style={{ alignItems: ar ? 'flex-end' : 'flex-start' }}>
-        <span className="text-[14px] font-black leading-tight whitespace-nowrap" style={{ color: '#071B33' }}>
+        <span className="text-[14px] font-black leading-tight whitespace-nowrap" style={{ color: '#ffffff' }}>
           {ar ? 'طلباتي' : 'My Requests'}
         </span>
-        <span className="text-[10.5px] font-bold leading-tight whitespace-nowrap" style={{ color: '#FF7900' }}>
+        <span className="text-[10.5px] font-bold leading-tight whitespace-nowrap" style={{ color: '#FF9A3C' }}>
           {ar ? 'تتبّع أو أنشئ طلب' : 'Track or start a request'}
         </span>
       </span>
