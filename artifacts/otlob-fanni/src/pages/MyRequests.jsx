@@ -567,30 +567,36 @@ function NewRequest({ ar, onDone, onBack }) {
         </div>
 
         {/* City stats card */}
-        <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 pt-4 pb-3">
+        <div className="rounded-2xl overflow-hidden" style={{ boxShadow: '0 8px 32px rgba(7,27,51,0.18)' }}>
+          {/* Gradient header */}
+          <div className="flex items-center justify-between px-5 py-4" style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}>
             <div className={ar ? 'text-right' : 'text-left'}>
-              <p className="text-[22px] font-black text-[#071B33]">{ar ? city?.nameAr : city?.nameEn}</p>
-              <p className="text-[13px] text-gray-400 font-medium">{city?.total ?? 0} {ar ? 'مقدّم خدمة' : 'providers'}</p>
+              <p className="text-[24px] font-black text-white">{ar ? city?.nameAr : city?.nameEn}</p>
+              <p className="text-[13px] font-bold mt-0.5" style={{ color: '#FF7900' }}>
+                {city?.total ?? 0} {ar ? 'مقدّم خدمة' : 'service providers'}
+              </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: '#FFF3E0' }}>
-              <span className="text-2xl">📍</span>
+            <div className="w-13 h-13 rounded-2xl flex items-center justify-center text-2xl" style={{ background: 'rgba(255,121,0,0.18)', width: 52, height: 52 }}>
+              📍
             </div>
           </div>
-          <div className="grid grid-cols-4 divide-x divide-gray-100 border-t border-gray-100" style={{ direction: 'ltr' }}>
+          {/* Stats row */}
+          <div className="grid grid-cols-4 bg-white" style={{ direction: 'ltr' }}>
             {[
-              { label: ar ? 'الإجمالي' : 'Total',     value: city?.total ?? 0,       icon: 'Σ',  dark: true },
-              { label: ar ? 'فنيون'    : 'Technicians', value: city?.technicians ?? 0, emoji: '👷', orange: true },
-              { label: ar ? 'شركات خدمة' : 'Companies', value: city?.companies ?? 0,  emoji: '🏢' },
-              { label: ar ? 'موردو مستلزمات' : 'Suppliers', value: city?.suppliers ?? 0, emoji: '🔧' },
+              { label: ar ? 'فنيون'            : 'Technicians', value: city?.technicians ?? 0, emoji: '👷', orange: true },
+              { label: ar ? 'شركات خدمة'       : 'Companies',   value: city?.companies   ?? 0, emoji: '🏢' },
+              { label: ar ? 'موردو مستلزمات'   : 'Suppliers',   value: city?.suppliers   ?? 0, emoji: '🔧' },
+              { label: ar ? 'الإجمالي'         : 'Total',       value: city?.total       ?? 0, icon: 'Σ',  dark: true },
             ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center py-3 px-1 gap-1">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-[18px] ${item.dark ? 'text-white' : ''}`}
+              <div key={i} className="flex flex-col items-center py-3 px-1 gap-1.5" style={{ borderLeft: i > 0 ? '1px solid #f0f0f0' : 'none' }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[19px]"
                   style={{ background: item.dark ? '#071B33' : '#F5F5F5' }}>
-                  {item.icon ? <span className="font-black text-[15px]">{item.icon}</span> : <span>{item.emoji}</span>}
+                  {item.icon
+                    ? <span className="font-black text-[14px] text-white">{item.icon}</span>
+                    : <span>{item.emoji}</span>}
                 </div>
-                <span className={`text-[16px] font-black ${item.orange ? 'text-[#FF7900]' : 'text-[#071B33]'}`}>{item.value}</span>
-                <span className="text-[9px] text-gray-400 font-bold text-center leading-tight">{item.label}</span>
+                <span className="text-[17px] font-black" style={{ color: item.orange ? '#FF7900' : '#071B33' }}>{item.value}</span>
+                <span className="text-[9px] font-bold text-center leading-tight text-gray-400">{item.label}</span>
               </div>
             ))}
           </div>
