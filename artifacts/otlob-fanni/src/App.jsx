@@ -221,8 +221,9 @@ function MyRequestsFAB() {
       style={{
         bottom: '160px',
         [ar ? 'left' : 'right']: '16px',
-        padding: '10px 16px 10px 10px',
+        padding: '12px 20px 12px 12px',
         borderRadius: '20px',
+        minWidth: '200px',
         background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)',
         border: '2.5px solid #FF7900',
         boxShadow: '0 10px 32px rgba(7,27,51,0.45), 0 2px 8px rgba(255,121,0,0.25)',
@@ -232,16 +233,16 @@ function MyRequestsFAB() {
     >
       <span
         className="flex items-center justify-center flex-shrink-0 rounded-full"
-        style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}
+        style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}
       >
-        <ClipboardList className="w-[19px] h-[19px] text-white" />
+        <ClipboardList className="w-[21px] h-[21px] text-white" />
       </span>
       <span className="flex flex-col" style={{ alignItems: ar ? 'flex-end' : 'flex-start' }}>
-        <span className="text-[14px] font-black leading-tight whitespace-nowrap" style={{ color: '#ffffff' }}>
-          {ar ? 'طلباتي' : 'My Requests'}
+        <span className="text-[15px] font-black leading-tight whitespace-nowrap" style={{ color: '#ffffff' }}>
+          {ar ? 'اطلب خدمة الآن' : 'Request a Service'}
         </span>
-        <span className="text-[10.5px] font-bold leading-tight whitespace-nowrap" style={{ color: '#FF9A3C' }}>
-          {ar ? 'تتبّع أو أنشئ طلب' : 'Track or start a request'}
+        <span className="text-[11px] font-bold leading-tight whitespace-nowrap" style={{ color: '#FF9A3C' }}>
+          {ar ? 'تتبّع طلباتك • عروض الفنيين' : 'Track requests • Get offers'}
         </span>
       </span>
     </Link>
