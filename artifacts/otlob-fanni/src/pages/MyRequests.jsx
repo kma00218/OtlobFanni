@@ -345,7 +345,7 @@ function Dashboard({ ar, onNew }) {
             const offers = request.offers || []
             return (
               <div key={request.id} className="bg-white rounded-2xl overflow-hidden"
-                style={{ border: '2px solid #D1D9E6', boxShadow: '0 6px 24px rgba(7,27,51,0.13)' }}>
+                style={{ border: '2.5px solid #071B33', boxShadow: '0 4px 16px rgba(7,27,51,0.15)' }}>
                 {/* ── Coloured header strip ── */}
                 <div className="flex items-center justify-between px-4 py-3"
                   style={{ background: st.color + '18', borderBottom: `2px solid ${st.color}30` }}>
