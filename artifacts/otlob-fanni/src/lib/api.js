@@ -252,6 +252,7 @@ export const api = {
 
     customerAccounts: {
       list:     (q = '')          => get(`/admin/customer-accounts${q ? '?q=' + encodeURIComponent(q) : ''}`),
+      orders:   (id)              => get(`/admin/customer-accounts/${id}/orders`),
       resetPin: (id, newPin)      => post(`/admin/customer-accounts/${id}/reset-pin`, { newPin }),
     },
 

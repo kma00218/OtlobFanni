@@ -1542,6 +1542,42 @@ router.get("/customer-accounts", async (req, res): Promise<void> => {
   res.json(rows);
 });
 
+router.get("/customer-accounts/:id/orders", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const [serviceReqs, generalReqs] = await Promise.all([
+    db.select({
+      id: serviceRequestsTable.id,
+      orderNumber: sql<string>`'SR-' || substr(${serviceRequestsTable.id}, 1, 6)`,
+      categoryName: serviceRequestsTable.categoryName,
+      cityName: serviceRequestsTable.cityName,
+      status: serviceRequestsTable.status,
+      createdAt: serviceRequestsTable.createdAt,
+      description: serviceRequestsTable.description,
+    }).from(serviceRequestsTable)
+      .where(and(eq(serviceRequestsTable.ownerId, id), eq(serviceRequestsTable.ownerType, 'customer_account')))
+      .orderBy(desc(serviceRequestsTable.createdAt))
+      .limit(20),
+    db.select({
+      id: generalRequestsTable.id,
+      orderNumber: generalRequestsTable.orderNumber,
+      title: generalRequestsTable.title,
+      categoryName: generalRequestsTable.categoryName,
+      cityName: generalRequestsTable.cityName,
+      status: generalRequestsTable.status,
+      createdAt: generalRequestsTable.createdAt,
+    }).from(generalRequestsTable)
+      .where(eq(generalRequestsTable.customerAccountId, id))
+      .orderBy(desc(generalRequestsTable.createdAt))
+      .limit(20),
+  ]);
+  const service = serviceReqs.map(r => ({ ...r, type: 'service' }));
+  const general = generalReqs.map(r => ({ ...r, type: 'general' }));
+  const all = [...service, ...general].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  res.json(all);
+});
+
 router.post("/customer-accounts/:id/reset-pin", async (req, res): Promise<void> => {
   const { id } = req.params;
   const { newPin } = req.body;
