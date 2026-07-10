@@ -103,6 +103,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
   const [pendingProfileUpds]   = await db.select({ count: count() }).from(profileUpdateRequestsTable).where(eq(profileUpdateRequestsTable.status, "pending"));
   const [openGeneralReqs]      = await db.select({ count: count() }).from(generalRequestsTable).where(eq(generalRequestsTable.status, "open"));
   const [totalGeneralReqs]     = await db.select({ count: count() }).from(generalRequestsTable);
+  const [totalCustomerAccs]    = await db.select({ count: count() }).from(customerAccountsTable);
 
   const recentRequests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt)).limit(10);
   const recentTechs      = await db.select().from(techniciansTable).orderBy(desc(techniciansTable.createdAt)).limit(5);
@@ -135,6 +136,7 @@ router.get("/stats", async (_req, res): Promise<void> => {
     pendingProfileUpdates:  Number(pendingProfileUpds.count),
     openGeneralRequests:    Number(openGeneralReqs.count),
     totalGeneralRequests:   Number(totalGeneralReqs.count),
+    totalCustomerAccounts:  Number(totalCustomerAccs.count),
     recentRequests,
     recentTechs,
     recentCompanies,

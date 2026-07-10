@@ -40,7 +40,7 @@ const NAV_GROUPS = [
       { path: '/admin/profile-updates',         label: 'تعديلات الملفات',   icon: FilePen,    badgeKey: 'pendingProfileUpdates', badgeColor: 'orange' },
       { path: '/admin/service-requests',        label: 'طلبات العملاء',     icon: ClipboardList, badgeKey: 'newRequests', badgeColor: 'orange' },
       { path: '/admin/general-requests',        label: 'طلبات خدمات عامة وعروض', icon: ListChecks,    badgeKey: 'openGeneralRequests', badgeColor: 'blue', statsKey: 'totalGeneralRequests' },
-      { path: '/admin/customer-accounts',        label: 'حسابات العملاء',    icon: Users2 },
+      { path: '/admin/customer-accounts',        label: 'حسابات العملاء',    icon: Users2, statsKey: 'totalCustomerAccounts' },
       { path: '/admin/deals',                    label: 'الصفقات المؤكدة',    icon: Handshake },
     ]
   },
