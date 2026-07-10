@@ -7,6 +7,7 @@ import {
   adminsTable, serviceRequestsTable, supplierApplicationsTable, updateReportsTable,
   proCredentialsTable, referralsTable, profileUpdateRequestsTable, dealsTable,
   ambassadorsTable, generalRequestsTable, generalOffersTable, customerAccountsTable,
+  generalRequestViewsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, ne, desc, count, and, or, ilike, sql, inArray } from "drizzle-orm";
@@ -1486,7 +1487,23 @@ router.get("/general-requests", async (req, res): Promise<void> => {
     (offersByRequest[o.requestId] ??= []).push(o);
   }
 
-  res.json(reqs.map(r => ({ ...r, offers: offersByRequest[r.id] || [] })));
+  // Fetch recipients (views) for all requests
+  const views = requestIds.length > 0
+    ? await db.select().from(generalRequestViewsTable)
+        .where(inArray(generalRequestViewsTable.requestId, requestIds))
+        .orderBy(generalRequestViewsTable.viewedAt)
+    : [];
+
+  const viewsByRequest: Record<string, typeof views> = {};
+  for (const v of views) {
+    (viewsByRequest[v.requestId] ??= []).push(v);
+  }
+
+  res.json(reqs.map(r => ({
+    ...r,
+    offers:     offersByRequest[r.id]  || [],
+    recipients: viewsByRequest[r.id]   || [],
+  })));
 });
 
 router.patch("/general-requests/:id/cancel", async (req, res): Promise<void> => {

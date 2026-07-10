@@ -18,4 +18,5 @@ export * from "./deals";
 export * from "./ambassadors";
 export * from "./general_requests";
 export * from "./general_offers";
+export * from "./general_request_views";
 export * from "./customer_accounts";

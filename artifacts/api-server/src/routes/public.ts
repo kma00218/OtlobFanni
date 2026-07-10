@@ -7,6 +7,7 @@ import {
   supplierApplicationsTable, updateReportsTable, proCredentialsTable,
   referralsTable, analyticsEventsTable, profileUpdateRequestsTable,
   dealsTable, generalRequestsTable, generalOffersTable, customerAccountsTable,
+  generalRequestViewsTable,
 } from "@workspace/db/schema";
 import crypto from "crypto";
 import { eq, and, or, desc, inArray, ilike, sql, count } from "drizzle-orm";
@@ -2528,7 +2529,7 @@ router.get("/general-requests/mine", requireCustomerAuth, async (req: any, res):
 
 // ── List open requests for a pro (matches city + category) ────────────────────
 router.get("/general-requests/for-pro", async (req, res): Promise<void> => {
-  const { cityId, cityName, categoryId, categoryName } = req.query as Record<string, string>;
+  const { cityId, cityName, categoryId, categoryName, entityType, entityId, providerName, whatsapp } = req.query as Record<string, string>;
   const conditions = [eq(generalRequestsTable.status, "open")];
   const cityConds = [] as any[];
   if (cityId) cityConds.push(eq(generalRequestsTable.cityId, cityId));
@@ -2553,6 +2554,25 @@ router.get("/general-requests/for-pro", async (req, res): Promise<void> => {
     .where(and(...conditions))
     .orderBy(desc(generalRequestsTable.createdAt))
     .limit(100);
+
+  // Record view for each returned request (fire-and-forget, no await needed for response)
+  if (entityType && entityId && rows.length > 0) {
+    const viewCity = cityName || cityId || null;
+    const viewCat  = categoryName || categoryId || null;
+    Promise.all(rows.map(r =>
+      db.insert(generalRequestViewsTable).values({
+        id:           crypto.randomUUID(),
+        requestId:    r.id,
+        entityType,
+        entityId,
+        providerName: providerName || null,
+        whatsapp:     whatsapp || null,
+        cityName:     viewCity,
+        categoryName: viewCat,
+        viewedAt:     new Date(),
+      }).onConflictDoNothing()
+    )).catch(() => {});
+  }
 
   res.json(rows);
 });

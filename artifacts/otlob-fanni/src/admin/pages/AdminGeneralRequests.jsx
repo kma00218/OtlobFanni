@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ListChecks, MapPin, Tag, RefreshCw, Filter, ChevronDown, Star, Phone, Trash2, XCircle, CheckCircle2, MessageCircle } from 'lucide-react'
+import { ListChecks, MapPin, Tag, RefreshCw, Filter, ChevronDown, Star, Phone, Trash2, XCircle, CheckCircle2, MessageCircle, Users, Eye } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 
 const STATUS_CONFIG = {
@@ -62,13 +62,46 @@ function OfferRow({ offer, canSelect, onSelect, selecting }) {
   )
 }
 
+const ENTITY_LABELS = { technician: 'فني', company: 'شركة', supplier: 'مورد' }
+
+function RecipientRow({ r }) {
+  const wa = r.whatsapp
+    ? `https://wa.me/${r.whatsapp.replace(/^0/, '218').replace(/\D/g, '')}`
+    : null
+  return (
+    <div className="flex items-center gap-3 rounded-xl p-2.5 bg-gray-50">
+      <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+        <Eye className="w-3.5 h-3.5 text-indigo-500" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-bold text-[#071B33] text-xs">{r.providerName || '—'}</span>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+            {ENTITY_LABELS[r.entityType] || r.entityType}
+          </span>
+        </div>
+        {r.whatsapp && <p className="text-[10px] text-gray-400 mt-0.5" dir="ltr">{r.whatsapp}</p>}
+      </div>
+      {wa && (
+        <a href={wa} target="_blank" rel="noreferrer"
+          className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg text-white flex-shrink-0"
+          style={{ background: '#25D366' }}>
+          <MessageCircle className="w-3 h-3" /> واتساب
+        </a>
+      )}
+    </div>
+  )
+}
+
 function RequestCard({ req, onRefresh }) {
   const [expanded, setExpanded] = useState(false)
   const [acting, setActing] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [selecting, setSelecting] = useState(false)
+  const [showRecipients, setShowRecipients] = useState(false)
   const status = STATUS_CONFIG[req.status] || STATUS_CONFIG.open
   const offers = req.offers || []
+  const recipients = req.recipients || []
 
   const handleCancel = async () => {
     if (!confirm('هل تريد إلغاء هذا الطلب؟')) return
@@ -128,6 +161,9 @@ function RequestCard({ req, onRefresh }) {
             {status.label}
           </span>
           <span className="text-[10px] font-bold text-gray-400">{offers.length} عرض</span>
+          <span className="text-[10px] font-bold text-indigo-400 flex items-center gap-0.5">
+            <Eye className="w-2.5 h-2.5" />{recipients.length} استلم
+          </span>
           <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
         </div>
       </button>
@@ -211,6 +247,31 @@ function RequestCard({ req, onRefresh }) {
             </div>
           )}
 
+          {/* Recipients section */}
+          <div className="pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
+            <button
+              type="button"
+              onClick={() => setShowRecipients(v => !v)}
+              className="w-full flex items-center justify-between mb-2 text-right"
+            >
+              <div className="flex items-center gap-2">
+                <Users className="w-3.5 h-3.5 text-indigo-500" />
+                <p className="text-xs font-bold text-gray-500">من وصله الطلب ({recipients.length})</p>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${showRecipients ? 'rotate-180' : ''}`} />
+            </button>
+            {showRecipients && (
+              recipients.length === 0 ? (
+                <p className="text-xs text-gray-400 text-center py-3">لم يصل الطلب لأي فني بعد</p>
+              ) : (
+                <div className="space-y-1.5 mb-2">
+                  {recipients.map(r => <RecipientRow key={r.id} r={r} />)}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Offers section */}
           <div className="pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-500">العروض المقدمة ({offers.length})</p>

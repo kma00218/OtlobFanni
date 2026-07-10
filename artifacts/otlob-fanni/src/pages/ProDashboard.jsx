@@ -620,8 +620,14 @@ export default function ProDashboard() {
       const catParams = sess.entityType === 'company'
         ? { categoryId: profile?.specialty, categoryName: profile?.categoryAr }
         : { categoryId: profile?.categoryId, categoryName: profile?.categoryAr }
+      const trackParams = {
+        entityType:   sess.entityType,
+        entityId:     sess.entityId,
+        providerName: profile?.nameAr || profile?.name || profile?.tradeName || '',
+        whatsapp:     profile?.whatsapp || profile?.phone || '',
+      }
       const [reqs, offers] = await Promise.all([
-        api.generalRequests.forPro({ ...params, ...catParams }),
+        api.generalRequests.forPro({ ...params, ...catParams, ...trackParams }),
         api.generalRequests.myOffers(sess.entityType, sess.entityId),
       ])
       setGenRequests(reqs)
