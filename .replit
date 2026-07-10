@@ -42,3 +42,6 @@ channel = "stable-25_05"
 
 [userenv.shared]
 ENABLE_STORAGE_DELETE = "false"
+
+[objectStorage]
+defaultBucketID = "replit-objstore-eba46a67-e992-4f44-85ee-23930b83ca54"
