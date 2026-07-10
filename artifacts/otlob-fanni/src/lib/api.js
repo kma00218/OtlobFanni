@@ -250,6 +250,10 @@ export const api = {
       selectOffer:  (id, offerId)      => post(`/admin/general-requests/${id}/select-offer`, { offerId }),
     },
 
+    proActivation: {
+      list: (params = '') => get(`/admin/pro-activation${params ? '?' + params : ''}`),
+    },
+
     customerAccounts: {
       list:     (q = '')          => get(`/admin/customer-accounts${q ? '?q=' + encodeURIComponent(q) : ''}`),
       orders:   (id)              => get(`/admin/customer-accounts/${id}/orders`),

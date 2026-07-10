@@ -1745,4 +1745,50 @@ router.get("/affiliate-stats", async (_req, res): Promise<void> => {
   res.json({ referrers, totals });
 });
 
+// ── Pro PIN Activation ────────────────────────────────────────────────────────
+router.get("/pro-activation", async (req, res): Promise<void> => {
+  const { type, status, q } = req.query as Record<string, string>;
+
+  // Stats summary
+  const allCreds = await db.select({
+    entityType: proCredentialsTable.entityType,
+    entityId:   proCredentialsTable.entityId,
+    whatsapp:   proCredentialsTable.whatsapp,
+    displayName: proCredentialsTable.displayName,
+    passwordPlain: proCredentialsTable.passwordPlain,
+    createdAt:  proCredentialsTable.createdAt,
+    updatedAt:  proCredentialsTable.updatedAt,
+  }).from(proCredentialsTable).orderBy(desc(proCredentialsTable.updatedAt));
+
+  const stats = { technician: { total: 0, activated: 0 }, company: { total: 0, activated: 0 }, supplier: { total: 0, activated: 0 } };
+  for (const c of allCreds) {
+    const t = c.entityType as keyof typeof stats;
+    if (!stats[t]) continue;
+    stats[t].total++;
+    if (!c.passwordPlain || c.passwordPlain.trim() === "") stats[t].activated++;
+  }
+
+  // Filter list
+  let rows = allCreds;
+  if (type) rows = rows.filter(r => r.entityType === type);
+  if (status === "activated")     rows = rows.filter(r => !r.passwordPlain || r.passwordPlain.trim() === "");
+  if (status === "not_activated") rows = rows.filter(r => r.passwordPlain && r.passwordPlain.trim() !== "");
+  if (q?.trim()) {
+    const lq = q.trim().toLowerCase();
+    rows = rows.filter(r => r.displayName?.toLowerCase().includes(lq) || r.whatsapp?.includes(lq));
+  }
+
+  const list = rows.map(r => ({
+    entityType:  r.entityType,
+    entityId:    r.entityId,
+    displayName: r.displayName,
+    whatsapp:    r.whatsapp,
+    activated:   !r.passwordPlain || r.passwordPlain.trim() === "",
+    updatedAt:   r.updatedAt,
+    createdAt:   r.createdAt,
+  }));
+
+  res.json({ stats, list });
+});
+
 export default router;

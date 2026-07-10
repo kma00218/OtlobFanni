@@ -29,6 +29,7 @@ import AdminGeneralRequests from './pages/AdminGeneralRequests'
 import AdminCustomerAccounts from './pages/AdminCustomerAccounts'
 import AdminDeals from './pages/AdminDeals'
 import AdminAffiliates from './pages/AdminAffiliates'
+import AdminPinActivation from './pages/AdminPinActivation'
 import { Shield } from 'lucide-react'
 
 function AccessDenied() {
@@ -70,6 +71,7 @@ function AdminRoutes() {
       <Route path="/admin/service-requests"         component={AdminServiceRequests} />
       <Route path="/admin/general-requests"         component={AdminGeneralRequests} />
       <Route path="/admin/customer-accounts"        component={AdminCustomerAccounts} />
+      <Route path="/admin/pin-activation"           component={AdminPinActivation} />
       <Route path="/admin/deals"                   component={AdminDeals} />
       <Route path="/admin/affiliates"              component={AdminAffiliates} />
       <Route path="/admin/search"                  component={AdminSearch} />
