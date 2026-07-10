@@ -78,14 +78,14 @@ const NAV_GROUPS = [
 ]
 
 const ICON_COLORS = {
-  orange: { bg: 'bg-[#FF7900]/20',  icon: 'text-[#FF7900]',  border: 'border-[#FF7900]/30' },
-  blue:   { bg: 'bg-blue-500/20',   icon: 'text-blue-400',   border: 'border-blue-500/30' },
-  purple: { bg: 'bg-purple-500/20', icon: 'text-purple-400', border: 'border-purple-500/30' },
-  green:  { bg: 'bg-emerald-500/20',icon: 'text-emerald-400',border: 'border-emerald-500/30' },
-  teal:   { bg: 'bg-teal-500/20',   icon: 'text-teal-400',   border: 'border-teal-500/30' },
-  red:    { bg: 'bg-red-500/20',    icon: 'text-red-400',    border: 'border-red-500/30' },
-  yellow: { bg: 'bg-yellow-500/20', icon: 'text-yellow-400', border: 'border-yellow-500/30' },
-  gray:   { bg: 'bg-white/10',      icon: 'text-white/60',   border: 'border-white/15' },
+  orange: { bg: 'bg-orange-500/30',  icon: 'text-orange-400',  border: 'border-orange-500/40' },
+  blue:   { bg: 'bg-blue-500/30',    icon: 'text-blue-300',    border: 'border-blue-500/40' },
+  purple: { bg: 'bg-purple-500/30',  icon: 'text-purple-300',  border: 'border-purple-500/40' },
+  green:  { bg: 'bg-emerald-500/30', icon: 'text-emerald-300', border: 'border-emerald-500/40' },
+  teal:   { bg: 'bg-teal-500/30',    icon: 'text-teal-300',    border: 'border-teal-500/40' },
+  red:    { bg: 'bg-red-500/30',     icon: 'text-red-300',     border: 'border-red-500/40' },
+  yellow: { bg: 'bg-yellow-500/30',  icon: 'text-yellow-300',  border: 'border-yellow-500/40' },
+  gray:   { bg: 'bg-white/20',       icon: 'text-white',       border: 'border-white/25' },
 }
 
 const GROUP_HEADER_COLORS = {
@@ -123,39 +123,41 @@ function NavItem({ item, location, stats, onClose, isSuperAdmin }) {
   const colorKey = item.color || 'gray'
   const ic = ICON_COLORS[colorKey] || ICON_COLORS.gray
 
+  const activeBarColors = {
+    orange: '#FF7900', blue: '#3b82f6', purple: '#a855f7',
+    green: '#10b981', teal: '#14b8a6', red: '#ef4444', yellow: '#eab308', gray: '#fff',
+  }
+
   return (
     <Link
       href={item.path}
       onClick={onClose}
-      className={`
-        group flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm font-medium transition-all duration-150 relative
-        ${isActive
-          ? 'bg-white/15 shadow-inner border border-white/20'
-          : 'hover:bg-white/8 border border-transparent'
-        }
-      `}
+      className={`group flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-150 relative ${
+        isActive
+          ? 'bg-white/20 border border-white/25'
+          : 'hover:bg-white/10 border border-transparent'
+      }`}
     >
       {/* colored icon box */}
-      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 border ${
-        isActive ? `${ic.bg} ${ic.border}` : `${ic.bg} ${ic.border}`
-      }`}>
-        <item.icon className={`w-3.5 h-3.5 ${isActive ? ic.icon : ic.icon}`} />
+      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 border ${ic.bg} ${ic.border}`}>
+        <item.icon className={`w-3.5 h-3.5 ${ic.icon}`} />
       </div>
 
-      {/* active indicator */}
+      {/* active left indicator */}
       {isActive && (
-        <div className={`absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full ${ICON_COLORS[colorKey]?.bg.replace('/20', '') || 'bg-[#FF7900]'}`}
-          style={{ background: colorKey === 'orange' ? '#FF7900' : undefined }}
+        <div
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full"
+          style={{ background: activeBarColors[colorKey] || '#FF7900' }}
         />
       )}
 
-      <span className={`flex-1 truncate text-[13px] ${isActive ? 'text-white font-bold' : 'text-white/80 group-hover:text-white'}`}>
+      <span className={`flex-1 truncate text-[13px] text-white ${isActive ? 'font-bold' : 'font-medium opacity-90 group-hover:opacity-100'}`}>
         {item.label}
       </span>
 
       {showBadge && <NavBadge count={badgeCount} color={item.badgeColor} />}
       {!showBadge && grayCount > 0 && (
-        <span className="text-[10px] font-bold bg-white/15 text-white/70 px-1.5 py-0.5 rounded-full flex-shrink-0">
+        <span className="text-[10px] font-bold bg-white/20 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">
           {grayCount > 99 ? '99+' : grayCount}
         </span>
       )}
@@ -231,7 +233,7 @@ export default function AdminSidebar({ open, onClose }) {
               key={group.id}
               className={`mb-2 rounded-2xl overflow-hidden ${
                 group.label
-                  ? `border border-white/8 bg-white/4`
+                  ? 'border border-white/10 bg-white/5'
                   : ''
               }`}
             >
@@ -256,7 +258,7 @@ export default function AdminSidebar({ open, onClose }) {
 
       {/* User Card */}
       <div className="px-3 pb-4 flex-shrink-0 border-t border-white/10 pt-3 space-y-2">
-        <div className="rounded-xl p-3 flex items-center gap-3 bg-white/8 border border-white/10">
+        <div className="rounded-xl p-3 flex items-center gap-3 bg-white/10 border border-white/15">
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-xs font-black shadow-lg"
             style={{ background: 'linear-gradient(135deg, #FF7900, #FF9500)' }}
@@ -266,14 +268,14 @@ export default function AdminSidebar({ open, onClose }) {
           <div className="flex-1 min-w-0">
             <p className="text-white text-xs font-bold truncate">{profile?.full_name || 'المسؤول'}</p>
             <div className="flex items-center gap-1 mt-0.5">
-              <Shield className="w-2.5 h-2.5 text-[#FF7900]" />
-              <p className="text-white/50 text-[10px]">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
+              <Shield className="w-2.5 h-2.5 text-orange-400" />
+              <p className="text-white text-[10px] opacity-60">{isSuperAdmin ? 'Super Admin' : 'Sub Admin'}</p>
             </div>
           </div>
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs font-medium text-white/50 hover:bg-red-500/20 hover:text-red-300 transition-all border border-transparent hover:border-red-500/20"
+          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs font-medium text-white opacity-50 hover:bg-red-500/20 hover:text-red-300 hover:opacity-100 transition-all border border-transparent hover:border-red-500/20"
         >
           <LogOut className="w-3.5 h-3.5" />
           تسجيل الخروج
