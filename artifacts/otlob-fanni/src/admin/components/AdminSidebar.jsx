@@ -289,7 +289,7 @@ export default function AdminSidebar({ open, onClose }) {
       {/* Desktop sidebar */}
       <aside
         className="hidden lg:flex flex-col w-60 h-screen sticky top-0 flex-shrink-0"
-        style={{ background: '#071B33' }}
+        style={{ background: '#080C10' }}
       >
         {sidebarContent}
       </aside>
@@ -300,7 +300,7 @@ export default function AdminSidebar({ open, onClose }) {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
           <aside
             className="absolute right-0 top-0 bottom-0 w-60 flex flex-col shadow-2xl"
-            style={{ background: '#071B33' }}
+            style={{ background: '#080C10' }}
           >
             {sidebarContent}
           </aside>
