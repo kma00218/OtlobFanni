@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ListChecks, MapPin, Tag, RefreshCw, Filter, ChevronDown, Star, Phone } from 'lucide-react'
+import { ListChecks, MapPin, Tag, RefreshCw, Filter, ChevronDown, Star, Phone, Trash2, XCircle, CheckCircle2, MessageCircle } from 'lucide-react'
 import api, { getFileUrl } from '../../lib/api'
 
 const STATUS_CONFIG = {
@@ -10,20 +10,22 @@ const STATUS_CONFIG = {
 
 const OFFER_STATUS_CONFIG = {
   pending:  { label: 'قيد الانتظار', color: 'bg-gray-100 text-gray-600' },
-  selected: { label: 'مقبول',        color: 'bg-emerald-100 text-emerald-700' },
-  rejected: { label: 'مرفوض',        color: 'bg-red-50 text-red-500' },
+  selected: { label: 'مقبول ✓',     color: 'bg-emerald-100 text-emerald-700' },
+  rejected: { label: 'مرفوض',       color: 'bg-red-50 text-red-500' },
 }
 
 const ENTITY_TYPE_LABELS = { technician: 'فني', company: 'شركة', supplier: 'مورد' }
 
-function OfferRow({ offer }) {
+function OfferRow({ offer, canSelect, onSelect, selecting }) {
   const cfg = OFFER_STATUS_CONFIG[offer.status] || OFFER_STATUS_CONFIG.pending
   return (
-    <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+    <div className={`flex items-center gap-3 rounded-xl p-3 ${offer.status === 'selected' ? 'bg-emerald-50 border border-emerald-200' : 'bg-gray-50'}`}>
       {offer.providerPhoto ? (
         <img src={getFileUrl(offer.providerPhoto)} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
       ) : (
-        <div className="w-9 h-9 rounded-lg bg-gray-200 flex-shrink-0" />
+        <div className="w-9 h-9 rounded-lg bg-gray-200 flex-shrink-0 flex items-center justify-center text-xs font-black text-gray-500">
+          {(offer.providerName || '?')[0]}
+        </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
@@ -44,15 +46,55 @@ function OfferRow({ offer }) {
         </div>
         {offer.note && <p className="text-xs text-gray-500 mt-1">{offer.note}</p>}
       </div>
-      <span className={`text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 ${cfg.color}`}>{cfg.label}</span>
+      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+        <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${cfg.color}`}>{cfg.label}</span>
+        {canSelect && offer.status !== 'selected' && (
+          <button
+            onClick={() => onSelect(offer.id)}
+            disabled={selecting}
+            className="text-[10px] font-black px-2 py-1 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition-all disabled:opacity-50"
+          >
+            {selecting ? '...' : 'اختر هذا'}
+          </button>
+        )}
+      </div>
     </div>
   )
 }
 
-function RequestCard({ req }) {
+function RequestCard({ req, onRefresh }) {
   const [expanded, setExpanded] = useState(false)
+  const [acting, setActing] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [selecting, setSelecting] = useState(false)
   const status = STATUS_CONFIG[req.status] || STATUS_CONFIG.open
   const offers = req.offers || []
+
+  const handleCancel = async () => {
+    if (!confirm('هل تريد إلغاء هذا الطلب؟')) return
+    setActing('cancel')
+    try { await api.admin.generalRequests.cancel(req.id); onRefresh() }
+    catch { alert('فشل الإلغاء') }
+    finally { setActing(null) }
+  }
+
+  const handleDelete = async () => {
+    setActing('delete')
+    try { await api.admin.generalRequests.remove(req.id); onRefresh() }
+    catch { alert('فشل الحذف') }
+    finally { setActing(null); setConfirmDelete(false) }
+  }
+
+  const handleSelectOffer = async (offerId) => {
+    setSelecting(true)
+    try { await api.admin.generalRequests.selectOffer(req.id, offerId); onRefresh() }
+    catch { alert('فشل اختيار العرض') }
+    finally { setSelecting(false) }
+  }
+
+  const whatsappUrl = req.whatsapp
+    ? `https://wa.me/${req.whatsapp.replace(/^0/, '218')}`
+    : null
 
   return (
     <div className={`bg-white rounded-2xl shadow-sm overflow-hidden border ${
@@ -92,10 +134,64 @@ function RequestCard({ req }) {
 
       {expanded && (
         <div className="px-4 pb-4 space-y-3" style={{ borderTop: '1px solid #F0F2F5' }}>
-          <div className="pt-3 flex items-center gap-3 flex-wrap">
-            <span className="text-xs text-gray-500 flex items-center gap-1">
-              <Phone className="w-3 h-3" /> <span dir="ltr">{req.whatsapp}</span>
-            </span>
+          {/* Contact + actions row */}
+          <div className="pt-3 flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-xs text-gray-500 flex items-center gap-1">
+                <Phone className="w-3 h-3" /> <span dir="ltr">{req.whatsapp}</span>
+              </span>
+              {whatsappUrl && (
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-black px-3 py-1.5 rounded-xl text-white active:scale-95 transition-all"
+                  style={{ background: '#25D366' }}
+                >
+                  <MessageCircle className="w-3.5 h-3.5" /> واتساب
+                </a>
+              )}
+            </div>
+
+            {/* Admin action buttons */}
+            <div className="flex items-center gap-2">
+              {req.status === 'open' && (
+                <button
+                  onClick={handleCancel}
+                  disabled={!!acting}
+                  className="inline-flex items-center gap-1 text-[11px] font-black px-3 py-1.5 rounded-xl border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  <XCircle className="w-3.5 h-3.5" />
+                  {acting === 'cancel' ? 'جارٍ...' : 'إلغاء الطلب'}
+                </button>
+              )}
+              {!confirmDelete ? (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={!!acting}
+                  className="inline-flex items-center gap-1 text-[11px] font-black px-3 py-1.5 rounded-xl border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  حذف
+                </button>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={handleDelete}
+                    disabled={!!acting}
+                    className="text-[11px] font-black px-3 py-1.5 rounded-xl bg-red-600 text-white hover:bg-red-700 active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    {acting === 'delete' ? 'جارٍ...' : 'تأكيد الحذف'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="text-[11px] font-bold px-2 py-1.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 active:scale-95 transition-all"
+                  >
+                    لا
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {req.description && (
@@ -116,14 +212,25 @@ function RequestCard({ req }) {
           )}
 
           <div className="pt-1" style={{ borderTop: '1px solid #F0F2F5' }}>
-            <p className="text-xs font-bold text-gray-500 mb-2">
-              العروض المقدمة ({offers.length})
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-gray-500">العروض المقدمة ({offers.length})</p>
+              {req.status === 'open' && offers.length > 0 && (
+                <span className="text-[10px] text-gray-400">اضغط «اختر هذا» لتحديد العرض نيابةً عن العميل</span>
+              )}
+            </div>
             {offers.length === 0 ? (
               <p className="text-xs text-gray-400 text-center py-4">لا توجد عروض بعد</p>
             ) : (
               <div className="space-y-2">
-                {offers.map(o => <OfferRow key={o.id} offer={o} />)}
+                {offers.map(o => (
+                  <OfferRow
+                    key={o.id}
+                    offer={o}
+                    canSelect={req.status === 'open'}
+                    onSelect={handleSelectOffer}
+                    selecting={selecting}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -177,8 +284,17 @@ export default function AdminGeneralRequests() {
           </div>
         </div>
         <button onClick={load} className="p-2 rounded-xl hover:bg-gray-100 transition-colors">
-          <RefreshCw className="w-4 h-4 text-gray-500" />
+          <RefreshCw className={`w-4 h-4 text-gray-500 ${loading ? 'animate-spin' : ''}`} />
         </button>
+      </div>
+
+      {/* Admin capabilities info */}
+      <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3 text-xs text-blue-700 flex items-start gap-2">
+        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+        <p>
+          <span className="font-black">صلاحيات الأدمن: </span>
+          يمكنك إلغاء الطلبات، حذفها، اختيار عرض نيابةً عن العميل، والتواصل مع العميل مباشرةً عبر واتساب.
+        </p>
       </div>
 
       <div className="bg-white rounded-2xl p-4 space-y-3 shadow-sm border border-gray-100">
@@ -221,7 +337,7 @@ export default function AdminGeneralRequests() {
         </div>
       ) : (
         <div className="space-y-3">
-          {requests.map(r => <RequestCard key={r.id} req={r} />)}
+          {requests.map(r => <RequestCard key={r.id} req={r} onRefresh={load} />)}
         </div>
       )}
     </div>

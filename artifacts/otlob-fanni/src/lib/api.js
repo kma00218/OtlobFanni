@@ -244,7 +244,10 @@ export const api = {
     },
 
     generalRequests: {
-      list: (qs = '') => get(`/admin/general-requests${qs}`),
+      list:         (qs = '')          => get(`/admin/general-requests${qs}`),
+      cancel:       (id)               => patch(`/admin/general-requests/${id}/cancel`, {}),
+      remove:       (id)               => del(`/admin/general-requests/${id}`),
+      selectOffer:  (id, offerId)      => post(`/admin/general-requests/${id}/select-offer`, { offerId }),
     },
 
     customerAccounts: {

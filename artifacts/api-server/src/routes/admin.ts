@@ -1487,6 +1487,35 @@ router.get("/general-requests", async (req, res): Promise<void> => {
   res.json(reqs.map(r => ({ ...r, offers: offersByRequest[r.id] || [] })));
 });
 
+router.patch("/general-requests/:id/cancel", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const [req_] = await db.select().from(generalRequestsTable).where(eq(generalRequestsTable.id, id));
+  if (!req_) { res.status(404).json({ error: "الطلب غير موجود" }); return; }
+  await db.update(generalRequestsTable).set({ status: "cancelled" }).where(eq(generalRequestsTable.id, id));
+  res.json({ success: true });
+});
+
+router.delete("/general-requests/:id", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  await db.delete(generalOffersTable).where(eq(generalOffersTable.requestId, id));
+  await db.delete(generalRequestsTable).where(eq(generalRequestsTable.id, id));
+  res.json({ success: true });
+});
+
+router.post("/general-requests/:id/select-offer", async (req, res): Promise<void> => {
+  const { id } = req.params;
+  const { offerId } = req.body;
+  if (!offerId) { res.status(400).json({ error: "offerId مطلوب" }); return; }
+  const [req_] = await db.select().from(generalRequestsTable).where(eq(generalRequestsTable.id, id));
+  if (!req_) { res.status(404).json({ error: "الطلب غير موجود" }); return; }
+  const [offer] = await db.select().from(generalOffersTable).where(eq(generalOffersTable.id, offerId));
+  if (!offer) { res.status(404).json({ error: "العرض غير موجود" }); return; }
+  await db.update(generalRequestsTable).set({ status: "assigned", assignedOfferId: offerId }).where(eq(generalRequestsTable.id, id));
+  await db.update(generalOffersTable).set({ status: "selected" }).where(eq(generalOffersTable.requestId, id));
+  await db.update(generalOffersTable).set({ status: "rejected" }).where(and(eq(generalOffersTable.requestId, id), ne(generalOffersTable.id, offerId)));
+  res.json({ success: true });
+});
+
 // ── Customer Accounts (search + manual PIN reset) ────────────────────────────
 router.get("/customer-accounts", async (req, res): Promise<void> => {
   const { q } = req.query as Record<string, string>;
