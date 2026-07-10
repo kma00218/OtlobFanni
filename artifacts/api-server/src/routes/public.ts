@@ -2491,6 +2491,64 @@ router.post("/general-requests", requireCustomerAuth, async (req: any, res): Pro
     status: "open",
   }).returning();
 
+  // Pre-record all matching providers as recipients (fire-and-forget)
+  Promise.resolve().then(async () => {
+    try {
+      const viewRecords: { id: string; requestId: string; entityType: string; entityId: string; providerName: string | null; whatsapp: string | null; cityName: string | null; categoryName: string | null; source: string }[] = [];
+
+      // 1. Matching technicians
+      const techConds: any[] = [eq(techniciansTable.isApproved, true), eq(techniciansTable.isActive, true)];
+      if (cityId)     techConds.push(eq(techniciansTable.cityId, cityId));
+      if (categoryId) techConds.push(eq(techniciansTable.categoryId, categoryId));
+      if (cityId || categoryId) {
+        const techs = await db.select({
+          id: techniciansTable.id, nameAr: techniciansTable.nameAr,
+          whatsapp: techniciansTable.whatsapp,
+        }).from(techniciansTable).where(and(...techConds));
+        for (const t of techs) {
+          viewRecords.push({ id: crypto.randomUUID(), requestId: r.id, entityType: "technician", entityId: t.id, providerName: t.nameAr || null, whatsapp: t.whatsapp || null, cityName: cityName || null, categoryName: categoryName || null, source: "auto" });
+        }
+      }
+
+      // 2. Matching companies (approved/published, matching city name or specialty)
+      const companyConds: any[] = [or(eq(companyApplicationsTable.status, "approved"), eq(companyApplicationsTable.status, "published"))!];
+      if (cityName) companyConds.push(eq(companyApplicationsTable.city, cityName));
+      if (categoryId || categoryName) {
+        const catCond: any[] = [];
+        if (categoryId)   catCond.push(eq(companyApplicationsTable.specialty, categoryId));
+        if (categoryName) catCond.push(eq(companyApplicationsTable.specialty, categoryName));
+        companyConds.push(or(...catCond)!);
+      }
+      if (cityName || categoryId || categoryName) {
+        const companies = await db.select({
+          id: companyApplicationsTable.id, companyName: companyApplicationsTable.companyName,
+          whatsapp: companyApplicationsTable.whatsapp,
+        }).from(companyApplicationsTable).where(and(...companyConds));
+        for (const c of companies) {
+          viewRecords.push({ id: crypto.randomUUID(), requestId: r.id, entityType: "company", entityId: c.id, providerName: c.companyName || null, whatsapp: c.whatsapp || null, cityName: cityName || null, categoryName: categoryName || null, source: "auto" });
+        }
+      }
+
+      // 3. Matching suppliers (published, matching city name — suppliers have no category)
+      if (cityName) {
+        const suppliers = await db.select({
+          id: supplierApplicationsTable.id, businessName: supplierApplicationsTable.businessName,
+          whatsapp: supplierApplicationsTable.whatsapp,
+        }).from(supplierApplicationsTable).where(and(
+          eq(supplierApplicationsTable.status, "published"),
+          eq(supplierApplicationsTable.city, cityName),
+        ));
+        for (const s of suppliers) {
+          viewRecords.push({ id: crypto.randomUUID(), requestId: r.id, entityType: "supplier", entityId: s.id, providerName: s.businessName || null, whatsapp: s.whatsapp || null, cityName: cityName || null, categoryName: null, source: "auto" });
+        }
+      }
+
+      if (viewRecords.length > 0) {
+        await db.insert(generalRequestViewsTable).values(viewRecords).onConflictDoNothing();
+      }
+    } catch (e) { console.error("[general-request] pre-record recipients error:", e); }
+  });
+
   res.status(201).json({ id: r.id, orderNumber: r.orderNumber });
 });
 

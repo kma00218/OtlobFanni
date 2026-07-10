@@ -68,16 +68,23 @@ function RecipientRow({ r }) {
   const wa = r.whatsapp
     ? `https://wa.me/${r.whatsapp.replace(/^0/, '218').replace(/\D/g, '')}`
     : null
+  const isViewed = r.source === 'view'
   return (
-    <div className="flex items-center gap-3 rounded-xl p-2.5 bg-gray-50">
-      <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-        <Eye className="w-3.5 h-3.5 text-indigo-500" />
+    <div className={`flex items-center gap-3 rounded-xl p-2.5 ${isViewed ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50'}`}>
+      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isViewed ? 'bg-emerald-100' : 'bg-orange-100'}`}>
+        {isViewed
+          ? <Eye className="w-3.5 h-3.5 text-emerald-600" />
+          : <CheckCircle2 className="w-3.5 h-3.5 text-orange-500" />
+        }
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-bold text-[#071B33] text-xs">{r.providerName || '—'}</span>
           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
             {ENTITY_LABELS[r.entityType] || r.entityType}
+          </span>
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isViewed ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-50 text-orange-600'}`}>
+            {isViewed ? '👁 فتح لوحته' : '📢 وصله الطلب'}
           </span>
         </div>
         {r.whatsapp && <p className="text-[10px] text-gray-400 mt-0.5" dir="ltr">{r.whatsapp}</p>}

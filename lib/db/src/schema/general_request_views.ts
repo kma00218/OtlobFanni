@@ -9,6 +9,7 @@ export const generalRequestViewsTable = pgTable("general_request_views", {
   whatsapp:     text("whatsapp"),
   cityName:     text("city_name"),
   categoryName: text("category_name"),
+  source:       text("source").notNull().default("view"), // 'auto' = pre-recorded at creation | 'view' = opened dashboard
   viewedAt:     timestamp("viewed_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   unique("grv_request_entity").on(t.requestId, t.entityType, t.entityId),
