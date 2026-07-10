@@ -42,6 +42,7 @@ channel = "stable-25_05"
 
 [userenv.shared]
 ENABLE_STORAGE_DELETE = "false"
+ASSETLINKS_SHA256 = "56:40:18:B6:39:05:E8:D8:40:B4:C5:C7:93:80:AC:B7:91:2C:8F:57:7A:07:F2:64:06:3E:BD:7A:DC:E6:B3:CD"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-eba46a67-e992-4f44-85ee-23930b83ca54"

@@ -58,7 +58,7 @@ app.get("/.well-known/assetlinks.json", (req: Request, res: Response): void => {
     },
   ];
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   res.json(payload);
 });
 
