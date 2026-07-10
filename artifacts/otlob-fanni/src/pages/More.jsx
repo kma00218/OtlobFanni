@@ -328,7 +328,7 @@ export default function More() {
                   PRO
                 </span>
               </div>
-              <p className="text-white/55 text-xs leading-snug">
+              <p className="text-white/90 text-xs font-bold leading-snug tracking-wide">
                 {ar ? 'فنيين · شركات · موردين' : 'Technicians · Companies · Suppliers'}
               </p>
             </div>
