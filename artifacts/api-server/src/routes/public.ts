@@ -1520,10 +1520,12 @@ router.get("/general-requests/recent", async (_req, res): Promise<void> => {
   const rows = await db.select({
     categoryId:   generalRequestsTable.categoryId,
     categoryName: generalRequestsTable.categoryName,
+    iconName:     categoriesTable.iconName,
     cityName:     generalRequestsTable.cityName,
     status:       generalRequestsTable.status,
     createdAt:    generalRequestsTable.createdAt,
   }).from(generalRequestsTable)
+    .leftJoin(categoriesTable, eq(generalRequestsTable.categoryId, categoriesTable.id))
     .where(eq(generalRequestsTable.status, "open"))
     .orderBy(desc(generalRequestsTable.createdAt))
     .limit(10);

@@ -25,7 +25,8 @@ function timeAgo(dateStr, ar) {
 }
 
 function RecentRequestCard({ req, ar, onTap }) {
-  const iconSrc = req.categoryId ? `/icons/categories/${req.categoryId}.png` : null
+  const iconKey = req.iconName || req.categoryId
+  const iconSrc = iconKey ? `/icons/categories/${iconKey}.png` : null
   return (
     <button
       type="button"
