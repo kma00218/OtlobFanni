@@ -1515,6 +1515,22 @@ router.delete("/deals/:id", async (req, res): Promise<void> => {
   res.json({ ok: true });
 });
 
+// ── Recent General Requests (public — no sensitive data) ─────────────────────
+router.get("/general-requests/recent", async (_req, res): Promise<void> => {
+  const rows = await db.select({
+    categoryId:   generalRequestsTable.categoryId,
+    categoryName: generalRequestsTable.categoryName,
+    cityName:     generalRequestsTable.cityName,
+    status:       generalRequestsTable.status,
+    createdAt:    generalRequestsTable.createdAt,
+  }).from(generalRequestsTable)
+    .where(eq(generalRequestsTable.status, "open"))
+    .orderBy(desc(generalRequestsTable.createdAt))
+    .limit(10);
+  res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=60");
+  res.json(rows);
+});
+
 // ── Recently Joined ───────────────────────────────────────────────────────────
 router.get("/recently-joined", async (_req, res): Promise<void> => {
   const [techRows, companyRows, supplierRows] = await Promise.all([

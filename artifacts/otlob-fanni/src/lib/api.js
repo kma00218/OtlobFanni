@@ -174,6 +174,7 @@ export const api = {
   supplierReviews: (id) => get(`/suppliers/${id}/reviews`),
   submitSupplierReview: (id, data) => post(`/suppliers/${id}/reviews`, data),
   recentlyJoined: () => get('/recently-joined'),
+  recentGeneralRequests: () => get('/general-requests/recent'),
   submitAdRequest:             (data) => post('/ad-requests',             data),
   referralStats:               (id)   => get(`/referral-stats/${id}`),
 

@@ -1,17 +1,100 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { useLang } from '../context/LanguageContext'
 import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
 import { useAllCategories } from '../hooks/useAllCategories'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus, Wrench } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus, Wrench, X, ClipboardList, MapPin, Clock } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
 import LibyaMap from '../components/LibyaMap'
+
+function timeAgo(dateStr, ar) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1)  return ar ? 'الآن' : 'Just now'
+  if (mins < 60) return ar ? `منذ ${mins} دقيقة` : `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24)  return ar ? `منذ ${hrs} ساعة` : `${hrs}h ago`
+  const days = Math.floor(hrs / 24)
+  return ar ? `منذ ${days} يوم` : `${days}d ago`
+}
+
+function RecentRequestCard({ req, ar, onTap }) {
+  const iconSrc = req.categoryId ? `/icons/categories/${req.categoryId}.png` : null
+  return (
+    <button
+      type="button"
+      onClick={() => onTap(req)}
+      className="flex-shrink-0 w-36 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden active:scale-[0.97] transition-transform text-right"
+    >
+      <div className="w-full h-20 flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg,rgba(255,121,0,0.12),rgba(7,27,51,0.08))' }}>
+        {iconSrc ? (
+          <img src={iconSrc} alt="" className="w-12 h-12 object-cover rounded-xl"
+            onError={e => { e.currentTarget.style.display='none' }} />
+        ) : (
+          <ClipboardList className="w-10 h-10 text-[#FF7900]/60" />
+        )}
+      </div>
+      <div className="p-2.5 flex flex-col gap-1">
+        <p className="text-[11px] font-bold text-[#071B33] leading-tight line-clamp-2 min-h-[28px]">
+          {req.categoryName || (ar ? 'طلب خدمة' : 'Service Request')}
+        </p>
+        {req.cityName && (
+          <p className="text-[10px] text-[#FF7900] font-medium flex items-center gap-0.5 truncate">
+            <MapPin className="w-2.5 h-2.5 flex-shrink-0" />{req.cityName}
+          </p>
+        )}
+        <div className="flex items-center justify-between mt-0.5">
+          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+            {ar ? 'مفتوح' : 'Open'}
+          </span>
+          <span className="text-[9px] text-gray-400 flex items-center gap-0.5">
+            <Clock className="w-2 h-2" />{timeAgo(req.createdAt, ar)}
+          </span>
+        </div>
+      </div>
+    </button>
+  )
+}
+
+function ProRequiredModal({ ar, onClose, onJoin }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.45)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="w-full max-w-md bg-white rounded-t-3xl px-5 pb-8 pt-5 shadow-2xl" dir="rtl">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-black text-[#071B33]">
+            {ar ? 'عرض تفاصيل الطلب' : 'View Request Details'}
+          </h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+        <div className="bg-orange-50 rounded-2xl p-4 mb-4 flex items-start gap-3">
+          <span className="text-2xl">📋</span>
+          <p className="text-sm font-semibold text-[#071B33] leading-relaxed">
+            {ar
+              ? 'سجّل كفني أو شركة خدمات أو مورد مستلزمات لعرض تفاصيل الطلب وإرسال عرض.'
+              : 'Register as a technician, service company, or supplier to view request details and send an offer.'}
+          </p>
+        </div>
+        <button
+          onClick={onJoin}
+          className="w-full py-3.5 rounded-2xl text-white font-black text-sm active:scale-95 transition-all"
+          style={{ background: 'linear-gradient(135deg,#FF7900,#FF9500)' }}
+        >
+          {ar ? 'انضم الآن' : 'Join Now'}
+        </button>
+      </div>
+    </div>
+  )
+}
 
 function RecentCard({ item, ar }) {
   const name = ar ? item.nameAr : (item.nameEn || item.nameAr)
@@ -182,6 +265,8 @@ export default function Home() {
   const [topCategories, setTopCategories] = useState([])
   const [showReferral, setShowReferral] = useState(false)
   const [referralForm, setReferralForm] = useState({ type: 'technician', name: '', phone: '', specialty: '', city: '', submitting: false })
+  const [recentRequests, setRecentRequests] = useState([])
+  const [showProModal, setShowProModal] = useState(false)
 
 
   const handleLogoClick = () => {
@@ -222,6 +307,15 @@ export default function Home() {
         setTopCategories(data)
       })
       .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const load = () => api.recentGeneralRequests()
+      .then(data => setRecentRequests(Array.isArray(data) ? data : []))
+      .catch(() => {})
+    load()
+    const timer = setInterval(load, 30000)
+    return () => clearInterval(timer)
   }, [])
 
   const activeSections = sections.filter(s => s.isActive)
@@ -458,6 +552,34 @@ export default function Home() {
                 </button>
               )
               })}
+            </div>
+          </div>
+        )}
+
+        {/* ── آخر الطلبات ── */}
+        {recentRequests.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-extrabold text-[#071B33]">
+                {ar ? '📋 آخر الطلبات' : '📋 Latest Requests'}
+              </span>
+              <span className="text-[10px] text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">
+                {ar ? 'طلبات مفتوحة' : 'Open requests'}
+              </span>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+              {recentRequests.map((req, i) => (
+                <RecentRequestCard
+                  key={req.categoryId + '-' + i}
+                  req={req}
+                  ar={ar}
+                  onTap={() => {
+                    const proSession = localStorage.getItem('pro_session')
+                    if (proSession) { navigate('/pro?tab=general') }
+                    else { setShowProModal(true) }
+                  }}
+                />
+              ))}
             </div>
           </div>
         )}
@@ -846,6 +968,14 @@ export default function Home() {
           </div>
         </div>
       </div>
+    )}
+
+    {showProModal && (
+      <ProRequiredModal
+        ar={ar}
+        onClose={() => setShowProModal(false)}
+        onJoin={() => { setShowProModal(false); navigate('/join-us') }}
+      />
     )}
     </div>
   )
