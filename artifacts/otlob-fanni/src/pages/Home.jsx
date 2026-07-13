@@ -66,7 +66,7 @@ function RecentRequestCard({ req, ar, onTap }) {
 
 function ProRequiredModal({ ar, onClose, onJoin }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.45)' }}
+    <div className="fixed inset-0 z-[300] flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.45)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className="w-full max-w-md bg-white rounded-t-3xl px-5 pb-8 pt-5 shadow-2xl" dir="rtl">
         <div className="flex items-center justify-between mb-4">
