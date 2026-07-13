@@ -31,34 +31,34 @@ function RecentRequestCard({ req, ar, onTap }) {
     <button
       type="button"
       onClick={() => onTap(req)}
-      className="flex-shrink-0 w-36 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden active:scale-[0.97] transition-transform text-right"
+      className="w-full flex items-center gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm px-3 py-2.5 active:scale-[0.98] transition-transform text-right"
     >
-      <div className="w-full h-20 flex items-center justify-center"
+      <div className="w-10 h-10 flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg,rgba(255,121,0,0.12),rgba(7,27,51,0.08))' }}>
         {iconSrc ? (
-          <img src={iconSrc} alt="" className="w-12 h-12 object-cover rounded-xl"
+          <img src={iconSrc} alt="" className="w-full h-full object-cover"
             onError={e => { e.currentTarget.style.display='none' }} />
         ) : (
-          <ClipboardList className="w-10 h-10 text-[#FF7900]/60" />
+          <ClipboardList className="w-5 h-5 text-[#FF7900]/60" />
         )}
       </div>
-      <div className="p-2.5 flex flex-col gap-1">
-        <p className="text-[11px] font-bold text-[#071B33] leading-tight line-clamp-2 min-h-[28px]">
+      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+        <p className="text-[13px] font-bold text-[#071B33] truncate leading-tight">
           {req.categoryName || (ar ? 'طلب خدمة' : 'Service Request')}
         </p>
         {req.cityName && (
-          <p className="text-[10px] text-[#FF7900] font-medium flex items-center gap-0.5 truncate">
-            <MapPin className="w-2.5 h-2.5 flex-shrink-0" />{req.cityName}
+          <p className="text-[11px] text-[#FF7900] font-medium flex items-center gap-0.5 truncate">
+            <MapPin className="w-3 h-3 flex-shrink-0" />{req.cityName}
           </p>
         )}
-        <div className="flex items-center justify-between mt-0.5">
-          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-            {ar ? 'مفتوح' : 'Open'}
-          </span>
-          <span className="text-[9px] text-gray-400 flex items-center gap-0.5">
-            <Clock className="w-2 h-2" />{timeAgo(req.createdAt, ar)}
-          </span>
-        </div>
+      </div>
+      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+          {ar ? 'مفتوح' : 'Open'}
+        </span>
+        <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
+          <Clock className="w-2.5 h-2.5" />{timeAgo(req.createdAt, ar)}
+        </span>
       </div>
     </button>
   )
@@ -568,7 +568,7 @@ export default function Home() {
                 {ar ? 'طلبات مفتوحة' : 'Open requests'}
               </span>
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+            <div className="flex flex-col gap-2">
               {recentRequests.map((req, i) => (
                 <RecentRequestCard
                   key={req.categoryId + '-' + i}
