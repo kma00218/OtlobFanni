@@ -569,7 +569,7 @@ export default function Home() {
               </span>
             </div>
             <div className="flex flex-col gap-2">
-              {recentRequests.map((req, i) => (
+              {recentRequests.slice(0, 4).map((req, i) => (
                 <RecentRequestCard
                   key={req.categoryId + '-' + i}
                   req={req}
