@@ -31,7 +31,7 @@ function RecentRequestCard({ req, ar, onTap }) {
     <button
       type="button"
       onClick={() => onTap(req)}
-      className="w-full flex items-center gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm px-3 py-2.5 active:scale-[0.98] transition-transform text-right"
+      className="flex-shrink-0 w-52 flex items-center gap-2.5 bg-white rounded-2xl border border-gray-100 shadow-sm px-3 py-2.5 active:scale-[0.98] transition-transform text-right"
     >
       <div className="w-10 h-10 flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg,rgba(255,121,0,0.12),rgba(7,27,51,0.08))' }}>
@@ -568,8 +568,8 @@ export default function Home() {
                 {ar ? 'طلبات مفتوحة' : 'Open requests'}
               </span>
             </div>
-            <div className="flex flex-col gap-2">
-              {recentRequests.slice(0, 4).map((req, i) => (
+            <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+              {recentRequests.map((req, i) => (
                 <RecentRequestCard
                   key={req.categoryId + '-' + i}
                   req={req}
