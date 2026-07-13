@@ -494,7 +494,10 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
       .from(techniciansTable)
       .where(eq(techniciansTable.applicationId, app.id));
 
+    let publishedTechId: string | null = null;
+
     if (existing) {
+      publishedTechId = existing.id;
       // Technician record already exists (created during approval) — activate it now
       await db.update(techniciansTable)
         .set({
@@ -514,8 +517,9 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
         || (app.customSpecialty ? "more_services" : app.specialty)
         || null;
 
+      publishedTechId = "tech_" + app.id;
       await db.insert(techniciansTable).values({
-        id: "tech_" + app.id,
+        id: publishedTechId,
         nameAr: app.fullName,
         phone: app.phone,
         whatsapp: app.whatsapp || app.phone,
@@ -540,6 +544,31 @@ router.patch("/technician-applications/:id", async (req, res): Promise<void> => 
         applicationId: app.id,
         referralSource: app.referredByType ?? null,
       }).onConflictDoNothing();
+    }
+
+    // ── Auto-create proCredentials on first publish if missing ────────────────
+    if (publishedTechId) {
+      const [existingCred] = await db.select({ id: proCredentialsTable.id })
+        .from(proCredentialsTable)
+        .where(eq(proCredentialsTable.entityId, publishedTechId));
+      if (!existingCred) {
+        const whatsapp = app.whatsapp || app.phone || "";
+        const displayName = app.fullName || "";
+        const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        const bytes = crypto.randomBytes(6);
+        let password = "";
+        for (let i = 0; i < 6; i++) password += CHARS[bytes[i] % CHARS.length];
+        const passwordHash = crypto.createHash("sha256").update(password).digest("hex");
+        await db.insert(proCredentialsTable).values({
+          id: crypto.randomUUID(),
+          entityType: "technician",
+          entityId: publishedTechId,
+          whatsapp,
+          displayName,
+          passwordHash,
+          passwordPlain: password,
+        }).onConflictDoNothing();
+      }
     }
   }
 
