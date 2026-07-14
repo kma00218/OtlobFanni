@@ -617,9 +617,9 @@ export default function ProDashboard() {
       const params = sess.entityType === 'company'
         ? { cityName: profile?.city }
         : { cityId: profile?.cityId, cityName: profile?.cityNameAr }
-      const catParams = sess.entityType === 'company'
-        ? { categoryId: profile?.specialty, categoryName: profile?.categoryAr }
-        : { categoryId: profile?.categoryId, categoryName: profile?.categoryAr }
+      const primaryCatId = sess.entityType === 'company' ? profile?.specialty : profile?.categoryId
+      const allCatIds = [primaryCatId, ...(profile?.extraSpecialties || [])].filter(Boolean)
+      const catParams = { categoryIds: allCatIds.join(','), categoryName: profile?.categoryAr }
       const trackParams = {
         entityType:   sess.entityType,
         entityId:     sess.entityId,

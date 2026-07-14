@@ -2665,14 +2665,21 @@ router.get("/general-requests/mine", requireCustomerAuth, async (req: any, res):
 
 // ── List open requests for a pro (matches city + category) ────────────────────
 router.get("/general-requests/for-pro", async (req, res): Promise<void> => {
-  const { cityId, cityName, categoryId, categoryName, entityType, entityId, providerName, whatsapp } = req.query as Record<string, string>;
+  const { cityId, cityName, categoryId, categoryIds, categoryName, entityType, entityId, providerName, whatsapp } = req.query as Record<string, string>;
   const conditions = [eq(generalRequestsTable.status, "open")];
   const cityConds = [] as any[];
   if (cityId) cityConds.push(eq(generalRequestsTable.cityId, cityId));
   if (cityName) cityConds.push(eq(generalRequestsTable.cityName, cityName));
   if (cityConds.length) conditions.push(or(...cityConds)!);
   const catConds = [] as any[];
-  if (categoryId) catConds.push(eq(generalRequestsTable.categoryId, categoryId));
+  // Support multiple category IDs (primary + extraSpecialties) via comma-separated categoryIds param
+  if (categoryIds) {
+    const ids = categoryIds.split(",").map(s => s.trim()).filter(Boolean);
+    if (ids.length === 1) catConds.push(eq(generalRequestsTable.categoryId, ids[0]));
+    else if (ids.length > 1) catConds.push(inArray(generalRequestsTable.categoryId, ids));
+  } else if (categoryId) {
+    catConds.push(eq(generalRequestsTable.categoryId, categoryId));
+  }
   if (categoryName) catConds.push(eq(generalRequestsTable.categoryName, categoryName));
   if (catConds.length) conditions.push(or(...catConds)!);
 
