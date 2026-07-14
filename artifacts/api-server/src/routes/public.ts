@@ -2366,20 +2366,80 @@ router.post("/pro/activate", async (req, res): Promise<void> => {
   const [cred] = await db.select().from(proCredentialsTable).where(inArray(proCredentialsTable.whatsapp, candidates));
 
   if (!cred) {
-    const [tech] = await db.select({ id: techniciansTable.id }).from(techniciansTable)
-      .where(inArray(techniciansTable.whatsapp, candidates)).limit(1);
-    if (!tech) {
-      const [company] = await db.select({ id: companyApplicationsTable.id }).from(companyApplicationsTable)
-        .where(inArray(companyApplicationsTable.whatsapp, candidates)).limit(1);
-      if (!company) {
-        const [supplier] = await db.select({ id: supplierApplicationsTable.id }).from(supplierApplicationsTable)
-          .where(inArray(supplierApplicationsTable.whatsapp, candidates)).limit(1);
-        if (!supplier) {
-          res.status(404).json({ error: "هذا الرقم غير مسجل في منصة اطلب فني" }); return;
+    // Auto-create credentials for any published entity — no admin required
+    let entityType: string | null = null;
+    let entityId: string | null = null;
+    let displayName = "";
+    let entityWhatsapp = candidates[2]; // default to +218... format
+
+    const [tech] = await db
+      .select({ id: techniciansTable.id, nameAr: techniciansTable.nameAr, whatsapp: techniciansTable.whatsapp })
+      .from(techniciansTable)
+      .where(and(
+        inArray(techniciansTable.whatsapp, candidates),
+        eq(techniciansTable.isApproved, true),
+        eq(techniciansTable.isActive, true),
+      ))
+      .limit(1);
+
+    if (tech) {
+      entityType = "technician";
+      entityId   = tech.id;
+      displayName = tech.nameAr || "";
+      entityWhatsapp = tech.whatsapp || entityWhatsapp;
+    } else {
+      const [company] = await db
+        .select({ id: companyApplicationsTable.id, companyName: companyApplicationsTable.companyName, whatsapp: companyApplicationsTable.whatsapp })
+        .from(companyApplicationsTable)
+        .where(and(inArray(companyApplicationsTable.whatsapp, candidates), eq(companyApplicationsTable.status, "published")))
+        .limit(1);
+
+      if (company) {
+        entityType = "company";
+        entityId   = company.id;
+        displayName = company.companyName || "";
+        entityWhatsapp = company.whatsapp || entityWhatsapp;
+      } else {
+        const [supplier] = await db
+          .select({ id: supplierApplicationsTable.id, businessName: supplierApplicationsTable.businessName, whatsapp: supplierApplicationsTable.whatsapp })
+          .from(supplierApplicationsTable)
+          .where(and(inArray(supplierApplicationsTable.whatsapp, candidates), eq(supplierApplicationsTable.status, "published")))
+          .limit(1);
+
+        if (supplier) {
+          entityType = "supplier";
+          entityId   = supplier.id;
+          displayName = supplier.businessName || "";
+          entityWhatsapp = supplier.whatsapp || entityWhatsapp;
         }
       }
     }
-    res.status(404).json({ error: "لم يتم تفعيل حسابك بعد، تواصل مع الإدارة" }); return;
+
+    if (!entityType || !entityId) {
+      res.status(404).json({ error: "هذا الرقم غير مسجل في منصة اطلب فني أو لم يتم نشر حسابك بعد" }); return;
+    }
+
+    const pinHash = crypto.createHash("sha256").update(pinStr).digest("hex");
+    const newCredId = crypto.randomUUID();
+    try {
+      await db.insert(proCredentialsTable).values({
+        id: newCredId,
+        entityType,
+        entityId,
+        whatsapp: entityWhatsapp,
+        displayName,
+        passwordHash: pinHash,
+        passwordPlain: "",
+      });
+    } catch {
+      // entityId unique conflict — credentials already exist under a different whatsapp format; update PIN
+      await db.update(proCredentialsTable)
+        .set({ passwordHash: pinHash, passwordPlain: "", updatedAt: new Date() })
+        .where(eq(proCredentialsTable.entityId, entityId));
+    }
+
+    res.json({ success: true, entityType, entityId, displayName });
+    return;
   }
 
   const pinHash = crypto.createHash("sha256").update(pinStr).digest("hex");
