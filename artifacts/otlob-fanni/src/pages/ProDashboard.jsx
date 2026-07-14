@@ -702,7 +702,7 @@ export default function ProDashboard() {
 
   const cfg          = TYPE_CONFIG[session.entityType] || TYPE_CONFIG.technician
   const initials     = (session.displayName || '').trim().slice(0, 1)
-  const newCount     = requests.filter(r => !r.isRead).length
+  const newCount     = requests.filter(r => r.status === 'new').length
   const pendingDeals = deals.filter(d => d.status === 'pending').length
   const offeredIds   = new Set(genOffers.map(o => o.requestId))
   const genNewCount  = genRequests.filter(r => !offeredIds.has(r.id)).length
