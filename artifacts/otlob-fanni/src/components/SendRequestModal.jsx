@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { MapPin, Send, CheckCircle2, LogIn, UserPlus, Camera, Lock, User, AlertTriangle, Loader2, X as XIcon, Sparkles, ChevronRight } from 'lucide-react'
+import { useLocation } from 'wouter'
+import { MapPin, Send, CheckCircle2, LogIn, UserPlus, Camera, Lock, User, AlertTriangle, Loader2, X as XIcon, ChevronRight, ClipboardList } from 'lucide-react'
 import api from '../lib/api'
 import LibyaPhoneInput from './LibyaPhoneInput'
 import { useCustomerAccount } from '../context/CustomerAccountContext'
@@ -25,6 +26,7 @@ const REQUEST_TYPES_EN = [
 ]
 
 export default function SendRequestModal({ open, onClose, cityId, cityName, categoryId, categoryName, ar }) {
+  const [, navigate] = useLocation()
   const { isLoggedIn, account, login, register, loading: authLoading } = useCustomerAccount()
   const [view, setView] = useState('gate')
   const [requestType, setRequestType] = useState('')
@@ -450,17 +452,25 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
                 )}
               </div>
               <div className="bg-gray-50 rounded-2xl px-5 py-4 text-start space-y-2.5">
-                {[
-                  ar ? '📲 سيتواصل معك مقدمو الخدمة بعروضهم' : '📲 Providers will reach out with their offers',
-                  ar ? '📋 تجد طلبك في صفحة "طلباتي"' : '📋 Find your request under "My Requests"',
-                ].map((item, i) => (
-                  <p key={i} className="text-[13px] text-gray-600 font-medium">{item}</p>
-                ))}
+                <p className="text-[13px] text-gray-600 font-medium">
+                  {ar ? '📲 سيتواصل معك مقدمو الخدمة عبر الواتساب بعروضهم' : '📲 Providers will contact you on WhatsApp with their offers'}
+                </p>
+                <p className="text-[13px] text-gray-600 font-medium">
+                  {ar ? '📋 تابع حالة طلبك من صفحة "طلباتي"' : '📋 Track your request status from "My Requests"'}
+                </p>
               </div>
+
+              <button
+                onClick={() => { onClose(); navigate('/my-requests') }}
+                className="w-full py-4 rounded-2xl font-black text-[16px] text-white flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all"
+                style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)', boxShadow: '0 10px 30px rgba(255,121,0,0.3)' }}>
+                <ClipboardList className="w-5 h-5" />
+                <span>{ar ? 'عرض طلباتي' : 'View My Requests'}</span>
+              </button>
+
               <button onClick={onClose}
-                className="w-full py-4 rounded-2xl font-black text-[16px] text-white active:scale-[0.98] transition-all"
-                style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)', boxShadow: '0 10px 30px rgba(7,27,51,0.3)' }}>
-                {ar ? 'حسنًا، شكرًا' : 'Done, Thanks'}
+                className="w-full py-3 rounded-2xl font-bold text-[14px] text-gray-500 bg-gray-100 active:scale-[0.98] transition-all">
+                {ar ? 'إغلاق' : 'Close'}
               </button>
             </div>
           )}

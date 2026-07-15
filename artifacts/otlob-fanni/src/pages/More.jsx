@@ -1,5 +1,5 @@
 import { useLang } from '../context/LanguageContext';
-import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell, Briefcase, UserPlus } from 'lucide-react';
+import { Info, FileText, Shield, Globe, Megaphone, HelpCircle, Share2, Heart, Download, Facebook, Instagram, ExternalLink, Bell, Briefcase, UserPlus, ClipboardList } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
 import { track } from '../lib/tracker';
@@ -155,6 +155,13 @@ export default function More() {
   ]
 
   const quickItems = [
+    {
+      labelAr: 'طلباتي',
+      labelEn: 'My Requests',
+      href: '/my-requests',
+      bg: 'bg-gradient-to-br from-[#FF7900] to-[#c45e00]',
+      icon: <ClipboardList className="w-6 h-6 text-white" strokeWidth={2} />,
+    },
     {
       labelAr: 'أعلن معنا',
       labelEn: 'Advertise',
