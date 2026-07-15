@@ -344,6 +344,23 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
           {view === 'form' && (
             <div className="space-y-3 pt-1">
 
+              {/* My Requests shortcut */}
+              <button
+                type="button"
+                onClick={() => { onClose(); navigate('/my-requests') }}
+                className="w-full flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-200 shadow-sm active:scale-[0.98] transition-all"
+              >
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #FF7900 0%, #c45e00 100%)' }}>
+                  <ClipboardList className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 text-start">
+                  <p className="text-[13px] font-black text-[#071B33]">{ar ? 'طلباتي السابقة' : 'My Previous Requests'}</p>
+                  <p className="text-[11px] text-gray-400 font-medium">{ar ? 'اعرض طلباتك وتابع العروض' : 'View your orders & track offers'}</p>
+                </div>
+                <ChevronRight className={`w-4 h-4 text-gray-400 flex-shrink-0 ${ar ? 'rotate-180' : ''}`} />
+              </button>
+
               {/* Request type */}
               <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
                 <label className={LABEL}>{ar ? 'نوع الطلب' : 'Request Type'} <span className="text-red-400">*</span></label>
