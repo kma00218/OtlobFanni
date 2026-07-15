@@ -325,7 +325,6 @@ function AppContent() {
           </ErrorBoundary>
           {location !== '/pro-login' && location !== '/pro-activate' && location !== '/pro' && location !== '/pro/soon' && location !== '/pro/profile' && location !== '/pro/edit-profile' && !location.startsWith('/service-confirm') && <BottomNav />}
           <SearchFAB />
-          <MyRequestsFAB />
           <InstallFAB />
           <NotificationPrompt />
           <LocationPrompt />
