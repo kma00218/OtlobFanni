@@ -4,7 +4,7 @@ import api from '../lib/api'
 import LibyaPhoneInput from './LibyaPhoneInput'
 import { useCustomerAccount } from '../context/CustomerAccountContext'
 
-const INPUT = "w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 focus:border-[#FF7900] focus:bg-white focus:ring-4 focus:ring-[#FF7900]/10 outline-none transition-all"
+const INPUT = "w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 focus:border-[#FF7900] focus:ring-4 focus:ring-[#FF7900]/10 outline-none transition-all shadow-sm"
 const LABEL = "block text-[12px] font-bold text-gray-500 uppercase tracking-wide mb-2"
 
 const REQUEST_TYPES_AR = [
@@ -137,7 +137,7 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
       <div className="absolute inset-0 bg-[#071B33]/70 backdrop-blur-sm" onClick={onClose} />
 
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white rounded-t-[28px] flex flex-col"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-[#F4F5F7] rounded-t-[28px] flex flex-col"
         style={{ maxHeight: '93dvh' }}
       >
         {/* drag handle */}
@@ -145,9 +145,9 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
           <div className="w-10 h-1 rounded-full bg-gray-200" />
         </div>
 
-        {/* ── FORM HEADER with gradient band ── */}
+        {/* ── FORM HEADER ── */}
         {(view === 'form' || view === 'gate' || view === 'login' || view === 'register') && (
-          <div className="flex-shrink-0 px-5 pt-4 pb-5">
+          <div className="flex-shrink-0 px-5 pt-4 pb-5 bg-white rounded-t-[28px] border-b border-gray-200">
             <div className="flex items-center justify-between mb-3">
               <button
                 onClick={view === 'login' || view === 'register' ? () => setView('gate') : onClose}
@@ -340,19 +340,19 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
 
           {/* ── FORM ── */}
           {view === 'form' && (
-            <div className="space-y-6 pt-1">
+            <div className="space-y-3 pt-1">
 
               {/* Request type */}
-              <div>
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
                 <label className={LABEL}>{ar ? 'نوع الطلب' : 'Request Type'} <span className="text-red-400">*</span></label>
                 <div className="grid grid-cols-3 gap-2">
                   {types.map(({ label, icon }) => (
                     <button key={label} type="button"
                       onClick={() => setRequestType(label)}
-                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border-2 text-[12px] font-bold transition-all active:scale-95 ${
+                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 text-[12px] font-bold transition-all active:scale-95 ${
                         requestType === label
-                          ? 'bg-[#FF7900] text-white border-[#FF7900] shadow-lg shadow-orange-200'
-                          : 'bg-gray-50 text-[#071B33] border-transparent hover:border-gray-200'
+                          ? 'bg-[#FF7900] text-white border-[#FF7900] shadow-md shadow-orange-200'
+                          : 'bg-gray-50 text-[#071B33] border-gray-200 hover:border-[#FF7900]/40'
                       }`}>
                       <span className="text-[18px] leading-none">{icon}</span>
                       <span className="leading-tight text-center">{label}</span>
@@ -362,7 +362,7 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
               </div>
 
               {/* Description */}
-              <div>
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
                 <label className={LABEL}>{ar ? 'وصف المشكلة أو الخدمة' : 'Description'} <span className="text-red-400">*</span></label>
                 <textarea
                   value={description}
@@ -372,7 +372,7 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
                   className={`${INPUT} resize-none leading-relaxed`}
                 />
                 {description.length > 0 && (
-                  <div className="flex justify-end mt-1">
+                  <div className="flex justify-end mt-1.5">
                     <span className={`text-[11px] font-medium ${description.length < 10 ? 'text-red-400' : 'text-green-500'}`}>
                       {description.length} {ar ? 'حرف' : 'chars'}
                     </span>
@@ -381,11 +381,14 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
               </div>
 
               {/* Photos */}
-              <div>
-                <label className={LABEL}>{ar ? 'صور توضيحية' : 'Photos'} <span className="text-gray-400 font-normal normal-case">{ar ? '(اختياري، حتى 3)' : '(optional, up to 3)'}</span></label>
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
+                <label className={LABEL}>
+                  {ar ? 'صور توضيحية' : 'Photos'}
+                  <span className="text-gray-400 font-normal normal-case ms-1">{ar ? '(اختياري، حتى 3)' : '(optional, up to 3)'}</span>
+                </label>
                 <div className="flex gap-2.5 flex-wrap">
                   {photos.map((p, i) => (
-                    <div key={i} className="relative w-[88px] h-[88px] rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+                    <div key={i} className="relative w-[88px] h-[88px] rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm">
                       <img src={p.preview} alt="" className="w-full h-full object-cover" />
                       <button type="button" onClick={() => removePhoto(i)}
                         className="absolute top-1.5 end-1.5 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
@@ -395,7 +398,7 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
                   ))}
                   {photos.length < 3 && (
                     <button type="button" onClick={() => fileRef.current?.click()}
-                      className="w-[88px] h-[88px] rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1.5 bg-gray-50 active:scale-95 transition-transform hover:border-[#FF7900]/50 hover:bg-orange-50 group">
+                      className="w-[88px] h-[88px] rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1.5 bg-gray-50 active:scale-95 transition-transform hover:border-[#FF7900]/60 hover:bg-orange-50 group">
                       <Camera className="w-5 h-5 text-gray-400 group-hover:text-[#FF7900] transition-colors" />
                       <span className="text-[11px] text-gray-400 font-semibold group-hover:text-[#FF7900] transition-colors">{ar ? 'إضافة' : 'Add'}</span>
                     </button>
@@ -405,10 +408,10 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
               </div>
 
               {/* WhatsApp */}
-              <div>
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
                 <label className={LABEL}>{ar ? 'رقم الواتساب للتواصل' : 'WhatsApp Contact'}</label>
                 <LibyaPhoneInput value={whatsapp} onChange={setWhatsapp} />
-                <p className="text-[11px] text-gray-400 mt-1.5 ps-1">
+                <p className="text-[11px] text-gray-400 mt-2 ps-1">
                   {ar ? 'يُستخدم للتواصل معك من قِبل مقدمي الخدمة' : 'Used by providers to contact you'}
                 </p>
               </div>
