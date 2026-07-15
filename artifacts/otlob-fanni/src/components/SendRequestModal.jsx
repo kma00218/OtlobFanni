@@ -5,7 +5,7 @@ import api from '../lib/api'
 import LibyaPhoneInput from './LibyaPhoneInput'
 import { useCustomerAccount } from '../context/CustomerAccountContext'
 
-const INPUT = "w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 focus:border-[#FF7900] focus:ring-4 focus:ring-[#FF7900]/10 outline-none transition-all shadow-sm"
+const INPUT = "w-full rounded-2xl border-2 border-[#1C1C1E] bg-[#F0F2F5] px-4 py-3 text-[15px] font-medium text-[#071B33] placeholder:text-gray-400 focus:border-[#FF7900] focus:bg-white focus:ring-4 focus:ring-[#FF7900]/10 outline-none transition-all"
 const LABEL = "block text-[12px] font-bold text-gray-500 uppercase tracking-wide mb-2"
 
 const REQUEST_TYPES_AR = [
@@ -371,7 +371,7 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
                       className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 text-[12px] font-bold transition-all active:scale-95 ${
                         requestType === label
                           ? 'bg-[#FF7900] text-white border-[#FF7900] shadow-md shadow-orange-200'
-                          : 'bg-gray-50 text-[#071B33] border-gray-200 hover:border-[#FF7900]/40'
+                          : 'bg-[#F0F2F5] text-[#071B33] border-[#1C1C1E]'
                       }`}>
                       <span className="text-[18px] leading-none">{icon}</span>
                       <span className="leading-tight text-center">{label}</span>
@@ -417,7 +417,7 @@ export default function SendRequestModal({ open, onClose, cityId, cityName, cate
                   ))}
                   {photos.length < 3 && (
                     <button type="button" onClick={() => fileRef.current?.click()}
-                      className="w-[88px] h-[88px] rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1.5 bg-gray-50 active:scale-95 transition-transform hover:border-[#FF7900]/60 hover:bg-orange-50 group">
+                      className="w-[88px] h-[88px] rounded-xl border-2 border-dashed border-[#1C1C1E] flex flex-col items-center justify-center gap-1.5 bg-[#F0F2F5] active:scale-95 transition-transform hover:border-[#FF7900] hover:bg-orange-50 group">
                       <Camera className="w-5 h-5 text-gray-400 group-hover:text-[#FF7900] transition-colors" />
                       <span className="text-[11px] text-gray-400 font-semibold group-hover:text-[#FF7900] transition-colors">{ar ? 'إضافة' : 'Add'}</span>
                     </button>
