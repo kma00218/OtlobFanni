@@ -3,8 +3,9 @@ import { useParams, useLocation } from 'wouter'
 import { useLang } from '../context/LanguageContext'
 import { useSeoMeta } from '../hooks/useSeoMeta'
 import BackHeader from '../components/BackHeader'
-import { MapPin, Globe, Search, Building2, Package, Star, Phone, MessageSquare, Zap, Heart } from 'lucide-react'
+import { MapPin, Globe, Search, Building2, Package, Star, Phone, MessageSquare, Zap, Heart, Send } from 'lucide-react'
 import api, { getFileUrl } from '../lib/api'
+import SendRequestModal from '../components/SendRequestModal'
 import { SkeletonListCards } from '../components/Skeleton'
 import { categories as staticCategoriesData } from '../data/services'
 import { useAllCategories } from '../hooks/useAllCategories'
@@ -244,6 +245,7 @@ export default function CityTechnicians() {
   const [visibleCompanies, setVisibleCompanies] = useState(20)
   const [visibleSuppliers, setVisibleSuppliers] = useState(20)
   const [selectedCatId, setSelectedCatId]       = useState(null)
+  const [showSendModal, setShowSendModal]       = useState(false)
   const techFavs = useFavorites('city_fav_techs')
   const compFavs = useFavorites('city_fav_comps')
 
@@ -573,6 +575,36 @@ export default function CityTechnicians() {
           </div>
         )}
 
+        {/* زر إرسال الطلب — يظهر فقط عند اختيار تخصص */}
+        {selectedCatId && (
+          <button
+            type="button"
+            onClick={() => setShowSendModal(true)}
+            className="w-full rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
+            style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)', boxShadow: '0 6px 20px rgba(7,27,51,0.25)' }}
+          >
+            <div className="flex items-center gap-3 px-4 py-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(255,121,0,0.18)' }}>
+                <Send className="w-5 h-5 text-[#FF7900]" />
+              </div>
+              <div className="flex-1 text-start">
+                <p className="text-[15px] font-black text-white leading-tight">
+                  {ar ? 'أرسل طلبك إلى مقدمي الخدمة' : 'Send Your Request to Providers'}
+                </p>
+                <p className="text-[11px] text-white/60 mt-0.5 leading-snug">
+                  {ar
+                    ? 'اكتب وصف المشكلة ليصل طلبك إلى الفنيين والشركات المطابقة في نفس المدينة والتخصص'
+                    : 'Describe your issue and reach all matching providers in your city and specialty'}
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                {ar ? <span className="text-white/50 text-lg">‹</span> : <span className="text-white/50 text-lg">›</span>}
+              </div>
+            </div>
+          </button>
+        )}
+
         {loading ? (
           <SkeletonListCards count={4} />
         ) : total === 0 ? (
@@ -699,6 +731,20 @@ export default function CityTechnicians() {
           </>
         )}
       </main>
+
+      <SendRequestModal
+        open={showSendModal}
+        onClose={() => setShowSendModal(false)}
+        cityId={id}
+        cityName={cityName}
+        categoryId={selectedCatId || undefined}
+        categoryName={selectedCatId
+          ? (ar
+              ? allCategoriesData.find(c => c.id === selectedCatId)?.nameAr
+              : allCategoriesData.find(c => c.id === selectedCatId)?.nameEn) || ''
+          : ''}
+        ar={ar}
+      />
     </div>
   )
 }
