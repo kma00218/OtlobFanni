@@ -2079,6 +2079,12 @@ router.post("/ad-requests", async (req, res): Promise<void> => {
     return;
   }
 
+  const VALID_PLACEMENTS = ["home_top", "home_bottom", "section_page", "all_specialties_page", "global"];
+  if (body.requested_placement && !VALID_PLACEMENTS.includes(body.requested_placement)) {
+    res.status(400).json({ error: "Invalid placement" });
+    return;
+  }
+
   const [req_] = await db
     .insert(adRequestsTable)
     .values({
@@ -2092,6 +2098,11 @@ router.post("/ad-requests", async (req, res): Promise<void> => {
       adTitle:             body.ad_title || null,
       adDescription:       body.ad_description || null,
       requestedPlacement:  body.requested_placement || null,
+      sectionId:           body.section_id || null,
+      duration:            body.duration || null,
+      price:               body.price != null ? String(body.price) : null,
+      startDate:           body.start_date || null,
+      endDate:             body.end_date || null,
       websiteOrSocialLink: body.website_or_social_link || null,
       notes:               body.notes || null,
       imagePreview:        body.image_preview || body.imagePreview || null,

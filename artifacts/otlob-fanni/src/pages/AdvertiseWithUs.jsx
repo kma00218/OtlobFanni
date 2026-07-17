@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useLang } from '../context/LanguageContext'
 import BackHeader from '../components/BackHeader'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
-import { Megaphone, CheckCircle, Monitor, Star, LayoutGrid, Globe, Layers, Building2 } from 'lucide-react'
+import { Megaphone, CheckCircle, Monitor, LayoutGrid, Globe, Layers, Calendar } from 'lucide-react'
 import api, { uploadFile } from '../lib/api'
+import { sections as SECTIONS } from '../data/services'
 
 const AD_PLACEMENTS = [
   {
@@ -29,22 +30,12 @@ const AD_PLACEMENTS = [
   {
     value: 'section_page',
     labelAr: 'صفحة قسم معين',
-    descAr: 'يظهر داخل صفحة قسم محدد (كهرباء، سباكة...)',
+    descAr: 'يظهر داخل صفحة قسم محدد (خدمات منزلية، سيارات...)',
     labelEn: 'Section Page',
     icon: LayoutGrid,
     color: 'text-pink-600',
     bg: 'bg-pink-50',
     border: 'border-pink-300',
-  },
-  {
-    value: 'category_page',
-    labelAr: 'صفحة تخصص معين',
-    descAr: 'يظهر داخل صفحة تخصص محدد (كهربائي، نجار...)',
-    labelEn: 'Category Page',
-    icon: Star,
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
-    border: 'border-amber-300',
   },
   {
     value: 'all_specialties_page',
@@ -57,18 +48,8 @@ const AD_PLACEMENTS = [
     border: 'border-emerald-300',
   },
   {
-    value: 'trusted_companies',
-    labelAr: 'صفحة الشركات المعتمدة',
-    descAr: 'يظهر في صفحة قائمة الشركات المعتمدة',
-    labelEn: 'Trusted Companies Page',
-    icon: Building2,
-    color: 'text-cyan-600',
-    bg: 'bg-cyan-50',
-    border: 'border-cyan-300',
-  },
-  {
     value: 'global',
-    labelAr: 'كل الصفحات',
+    labelAr: 'جميع صفحات المنصة',
     descAr: 'إعلانك يظهر في جميع صفحات التطبيق',
     labelEn: 'All Pages',
     icon: Globe,
@@ -77,6 +58,14 @@ const AD_PLACEMENTS = [
     border: 'border-purple-300',
   },
 ]
+
+const PRICING = {
+  home_top:             { week: 120, month: 350 },
+  home_bottom:          { week: 60,  month: 180 },
+  section_page:         { week: 50,  month: 150 },
+  all_specialties_page: { week: 60,  month: 180 },
+  global:               { week: 250, month: 750 },
+}
 
 const emptyForm = {
   companyName: '',
@@ -89,6 +78,14 @@ const emptyForm = {
   city: '',
   notes: '',
   adType: '',
+  selectedSection: '',
+  duration: '',
+}
+
+function addDays(date, days) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().split('T')[0]
 }
 
 export default function AdvertiseWithUs() {
@@ -104,9 +101,17 @@ export default function AdvertiseWithUs() {
   const [errors, setErrors] = useState({})
 
   const set = (field, val) => {
-    setForm(prev => ({ ...prev, [field]: val }))
+    setForm(prev => {
+      const next = { ...prev, [field]: val }
+      if (field === 'adType') next.selectedSection = ''
+      return next
+    })
     setErrors(prev => ({ ...prev, [field]: undefined }))
   }
+
+  const computedPrice = form.adType && form.duration
+    ? (PRICING[form.adType]?.[form.duration] ?? null)
+    : null
 
   const handleImage = async (e) => {
     const file = e.target.files?.[0]
@@ -133,6 +138,8 @@ export default function AdvertiseWithUs() {
     if (!form.adTitle.trim()) errs.adTitle = true
     if (!form.adDescription.trim()) errs.adDescription = true
     if (!form.adType) errs.adType = true
+    if (form.adType === 'section_page' && !form.selectedSection) errs.selectedSection = true
+    if (!form.duration) errs.duration = true
     return errs
   }
 
@@ -144,6 +151,9 @@ export default function AdvertiseWithUs() {
       setErrors(errs)
       return
     }
+
+    const today = new Date().toISOString().split('T')[0]
+    const endDate = addDays(new Date(), form.duration === 'week' ? 7 : 30)
 
     setSubmitting(true)
     try {
@@ -160,6 +170,11 @@ export default function AdvertiseWithUs() {
         notes: form.notes || null,
         image_preview: imagePath || null,
         requested_placement: form.adType,
+        section_id: form.adType === 'section_page' ? (form.selectedSection || null) : null,
+        duration: form.duration,
+        price: computedPrice,
+        start_date: today,
+        end_date: endDate,
         status: 'pending',
       })
       setSubmitted(true)
@@ -232,7 +247,7 @@ export default function AdvertiseWithUs() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* ── 1. بيانات المعلن ── */}
+          {/* ── ١. بيانات المعلن ── */}
           <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 space-y-4 [border-top:3px_solid_#FF7900]">
             <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#FF7900] text-white text-xs flex items-center justify-center font-black">١</span>
@@ -285,7 +300,7 @@ export default function AdvertiseWithUs() {
             </div>
           </div>
 
-          {/* ── 2. موضع الإعلان ── */}
+          {/* ── ٢. موضع الإعلان ── */}
           <div className={`bg-white rounded-2xl border-2 shadow-sm p-5 space-y-3 [border-top:3px_solid_#071B33] ${errors.adType ? 'border-red-300' : 'border-gray-100'}`}>
             <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#071B33] text-white text-xs flex items-center justify-center font-black">٢</span>
@@ -331,12 +346,138 @@ export default function AdvertiseWithUs() {
                 )
               })}
             </div>
+
+            {/* قسم مستهدف — يظهر فقط عند اختيار "صفحة قسم معين" */}
+            {form.adType === 'section_page' && (
+              <div className="pt-2 border-t border-pink-100 mt-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  {ar ? 'اختر القسم المستهدف' : 'Select Target Section'}
+                  <span className="text-red-400 mr-1">*</span>
+                </label>
+                {errors.selectedSection && (
+                  <p className="text-red-400 text-xs mb-1">{ar ? 'يرجى اختيار القسم' : 'Please select a section'}</p>
+                )}
+                <select
+                  className={`w-full border-2 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition bg-pink-50 text-gray-900 ${
+                    errors.selectedSection ? 'border-red-400' : 'border-pink-200'
+                  }`}
+                  value={form.selectedSection}
+                  onChange={e => {
+                    setForm(prev => ({ ...prev, selectedSection: e.target.value }))
+                    setErrors(prev => ({ ...prev, selectedSection: undefined }))
+                  }}
+                >
+                  <option value="">{ar ? '-- اختر القسم --' : '-- Select Section --'}</option>
+                  {SECTIONS.filter(s => s.isActive).map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.nameAr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
-          {/* ── 3. تفاصيل الإعلان ── */}
-          <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 space-y-4 [border-top:3px_solid_#FF7900]">
+          {/* ── ٣. مدة الإعلان ── */}
+          <div className={`bg-white rounded-2xl border-2 shadow-sm p-5 space-y-3 [border-top:3px_solid_#FF7900] ${errors.duration ? 'border-red-300' : 'border-gray-100'}`}>
             <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-[#FF7900] text-white text-xs flex items-center justify-center font-black">٣</span>
+              {ar ? 'مدة الإعلان' : 'Ad Duration'}
+              <span className="text-red-400 font-black">*</span>
+            </p>
+            {errors.duration && (
+              <p className="text-red-400 text-xs">{ar ? 'يرجى اختيار مدة الإعلان' : 'Please select a duration'}</p>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* أسبوع */}
+              <button
+                type="button"
+                onClick={() => set('duration', 'week')}
+                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 transition-all ${
+                  form.duration === 'week'
+                    ? 'bg-orange-50 border-[#FF7900] shadow-sm'
+                    : 'bg-gray-50 border-gray-100 hover:border-gray-200'
+                }`}
+              >
+                <Calendar className={`w-6 h-6 ${form.duration === 'week' ? 'text-[#FF7900]' : 'text-gray-400'}`} />
+                <p className={`text-sm font-bold ${form.duration === 'week' ? 'text-[#FF7900]' : 'text-gray-700'}`}>
+                  {ar ? 'أسبوع' : 'One Week'}
+                </p>
+                <p className="text-[11px] text-gray-400">{ar ? '7 أيام' : '7 days'}</p>
+                {form.adType && PRICING[form.adType] && (
+                  <p className={`text-sm font-black mt-0.5 ${form.duration === 'week' ? 'text-[#FF7900]' : 'text-gray-500'}`}>
+                    {PRICING[form.adType].week} {ar ? 'د.ل' : 'LYD'}
+                  </p>
+                )}
+              </button>
+
+              {/* شهر */}
+              <button
+                type="button"
+                onClick={() => set('duration', 'month')}
+                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 transition-all ${
+                  form.duration === 'month'
+                    ? 'bg-orange-50 border-[#FF7900] shadow-sm'
+                    : 'bg-gray-50 border-gray-100 hover:border-gray-200'
+                }`}
+              >
+                <Calendar className={`w-6 h-6 ${form.duration === 'month' ? 'text-[#FF7900]' : 'text-gray-400'}`} />
+                <p className={`text-sm font-bold ${form.duration === 'month' ? 'text-[#FF7900]' : 'text-gray-700'}`}>
+                  {ar ? 'شهر' : 'One Month'}
+                </p>
+                <p className="text-[11px] text-gray-400">{ar ? '30 يوماً' : '30 days'}</p>
+                {form.adType && PRICING[form.adType] && (
+                  <p className={`text-sm font-black mt-0.5 ${form.duration === 'month' ? 'text-[#FF7900]' : 'text-gray-500'}`}>
+                    {PRICING[form.adType].month} {ar ? 'د.ل' : 'LYD'}
+                  </p>
+                )}
+              </button>
+            </div>
+
+            {/* ملخص السعر */}
+            {computedPrice !== null && (
+              <div className="bg-gradient-to-r from-[#FF7900]/10 to-orange-50 border border-[#FF7900]/30 rounded-xl p-4 flex items-center justify-between mt-1">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">
+                    {ar ? 'إجمالي التكلفة' : 'Total Cost'}
+                  </p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    {form.duration === 'week'
+                      ? (ar ? 'مدة 7 أيام' : '7-day period')
+                      : (ar ? 'مدة 30 يوماً' : '30-day period')}
+                  </p>
+                </div>
+                <div className="text-start">
+                  <p className="text-2xl font-black text-[#FF7900]">
+                    {computedPrice}
+                    <span className="text-base font-bold text-[#FF7900]/80 mr-1"> {ar ? 'د.ل' : 'LYD'}</span>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* جدول الأسعار */}
+            {!form.adType && (
+              <div className="bg-gray-50 rounded-xl p-3 space-y-1.5">
+                <p className="text-xs font-semibold text-gray-500 mb-2">{ar ? 'جدول الأسعار (د.ل)' : 'Price Table (LYD)'}</p>
+                {AD_PLACEMENTS.map(p => (
+                  <div key={p.value} className="flex items-center justify-between text-xs">
+                    <span className="text-gray-600">{p.labelAr}</span>
+                    <span className="text-gray-500 font-mono">
+                      {PRICING[p.value].week} / {PRICING[p.value].month}
+                      <span className="text-gray-400 mr-1"> {ar ? '(أسبوع/شهر)' : '(wk/mo)'}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── ٤. تفاصيل الإعلان ── */}
+          <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 space-y-4 [border-top:3px_solid_#071B33]">
+            <p className="font-bold text-[#071B33] text-sm flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-[#071B33] text-white text-xs flex items-center justify-center font-black">٤</span>
               {ar ? 'تفاصيل الإعلان' : 'Ad Details'}
             </p>
 
