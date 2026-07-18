@@ -29,8 +29,8 @@ export default function StatsAdCarousel({ stats, ar }) {
       merged.sort((a, b) => (a.sort_order ?? a.sortOrder ?? 0) - (b.sort_order ?? b.sortOrder ?? 0))
       if (merged.length > 0) {
         setAds(merged)
-      } else {
-        // demo mode: start on the ad slide so it's visible immediately
+      } else if (import.meta.env.DEV) {
+        // demo only in development — never shown in production
         setAds([DEMO_AD])
         setSlide(1)
       }
