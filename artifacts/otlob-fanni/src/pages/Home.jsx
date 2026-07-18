@@ -8,6 +8,7 @@ import { useAllCategories } from '../hooks/useAllCategories'
 import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus, Wrench, X, ClipboardList, MapPin, Clock } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
+import StatsAdCarousel from '../components/StatsAdCarousel'
 import { api, getFileUrl } from '../lib/api'
 import { SkeletonRecentCard } from '../components/Skeleton'
 import LibyaPhoneInput from '../components/LibyaPhoneInput'
@@ -407,50 +408,8 @@ export default function Home() {
           <Logo />
         </div>
 
-        {/* ── بطاقة الإطلاق ── */}
-        {stats && (() => {
-          return (
-            <div className="relative rounded-2xl overflow-hidden select-none" style={{ background: '#071B33' }}>
-              {/* subtle radial glow */}
-              <div className="absolute inset-0 pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }} />
-
-              <div className="relative flex items-center gap-2 px-3 pt-3 pb-6">
-                {/* Stats grid */}
-                <div className="flex flex-1 items-center justify-around">
-                  <div className="flex flex-col items-center flex-shrink-0">
-                    <span className="text-2xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
-                    <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-shrink-0">
-                    <span className="text-2xl font-black text-blue-300 leading-none">{stats.companies}</span>
-                    <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-shrink-0">
-                    <span className="text-2xl font-black text-teal-300 leading-none">{stats.suppliers}</span>
-                    <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
-                  </div>
-                </div>
-
-                <div className="w-px self-stretch bg-white/15" />
-
-                {/* Grand total */}
-                <div className="flex flex-col items-center flex-shrink-0">
-                  <span className="text-3xl font-black text-[#FF7900] leading-none">
-                    {stats.technicians + stats.companies + stats.suppliers}
-                  </span>
-                  <span className="text-xs font-bold text-white/70 mt-1">{ar ? 'إجمالي' : 'Total'}</span>
-                </div>
-              </div>
-
-              {/* Single clean arc at the bottom */}
-              <svg viewBox="0 0 400 14" preserveAspectRatio="none"
-                className="absolute bottom-0 left-0 right-0 w-full" style={{ height: 14 }}>
-                <path d="M0,14 L0,14 Q200,0 400,14 Z" fill="#F8FAFC" />
-              </svg>
-            </div>
-          )
-        })()}
+        {/* ── بطاقة الإطلاق + إعلانات home_top ── */}
+        {stats && <StatsAdCarousel stats={stats} ar={ar} />}
 
         {/* ── قسم العميل ── */}
         <div className="text-center">
@@ -585,8 +544,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* إعلان أعلى الصفحة */}
-        <AdBanner placement="home_top" dismissible />
 
         {/* Recently Joined + divider + provider heading — grouped tight */}
         <div className="flex flex-col gap-2">
