@@ -63,27 +63,27 @@ export default function StatsAdCarousel({ stats, ar }) {
 
       {/* ── Stats slide — always rendered so container keeps its height ── */}
       <div className={`relative z-10 transition-opacity duration-500 ${isStats ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-center gap-2 px-4 pt-6 pb-10">
+        <div className="flex items-center gap-2 px-3 pt-3 pb-6">
           <div className="flex flex-1 items-center justify-around">
-            <div className="flex flex-col items-center flex-shrink-0 gap-1">
-              <span className="text-4xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
-              <span className="text-xs font-bold text-white/80 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
+            <div className="flex flex-col items-center flex-shrink-0">
+              <span className="text-2xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
+              <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
             </div>
-            <div className="flex flex-col items-center flex-shrink-0 gap-1">
-              <span className="text-4xl font-black text-blue-300 leading-none">{stats.companies}</span>
-              <span className="text-xs font-bold text-white/80 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
+            <div className="flex flex-col items-center flex-shrink-0">
+              <span className="text-2xl font-black text-blue-300 leading-none">{stats.companies}</span>
+              <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
             </div>
-            <div className="flex flex-col items-center flex-shrink-0 gap-1">
-              <span className="text-4xl font-black text-teal-300 leading-none">{stats.suppliers}</span>
-              <span className="text-xs font-bold text-white/80 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
+            <div className="flex flex-col items-center flex-shrink-0">
+              <span className="text-2xl font-black text-teal-300 leading-none">{stats.suppliers}</span>
+              <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
             </div>
           </div>
           <div className="w-px self-stretch bg-white/15" />
-          <div className="flex flex-col items-center flex-shrink-0 gap-1">
-            <span className="text-5xl font-black text-[#FF7900] leading-none">
+          <div className="flex flex-col items-center flex-shrink-0">
+            <span className="text-3xl font-black text-[#FF7900] leading-none">
               {stats.technicians + stats.companies + stats.suppliers}
             </span>
-            <span className="text-xs font-bold text-white/70">{ar ? 'إجمالي' : 'Total'}</span>
+            <span className="text-xs font-bold text-white/70 mt-1">{ar ? 'إجمالي' : 'Total'}</span>
           </div>
         </div>
       </div>
