@@ -3,6 +3,15 @@ import api, { getFileUrl } from '../lib/api'
 
 const INTERVAL_MS = 5000
 
+const DEMO_AD = {
+  id: '__demo__',
+  adTitle: 'مطعم الشروق — طرابلس',
+  adDescription: 'أشهى المأكولات الليبية الأصيلة بأسعار لا تُقاوم',
+  linkUrl: '#',
+  imagePreview: null,
+  _isDemo: true,
+}
+
 export default function StatsAdCarousel({ stats, ar }) {
   const [ads, setAds]         = useState([])
   const [slideIndex, setSlide] = useState(0)
@@ -18,7 +27,13 @@ export default function StatsAdCarousel({ stats, ar }) {
         if (!merged.find(a => a.id === g.id)) merged.push(g)
       }
       merged.sort((a, b) => (a.sort_order ?? a.sortOrder ?? 0) - (b.sort_order ?? b.sortOrder ?? 0))
-      setAds(merged)
+      if (merged.length > 0) {
+        setAds(merged)
+      } else {
+        // demo mode: start on the ad slide so it's visible immediately
+        setAds([DEMO_AD])
+        setSlide(1)
+      }
     })
   }, [])
 
@@ -93,22 +108,35 @@ export default function StatsAdCarousel({ stats, ar }) {
               className="block w-full h-full"
             >
               {image ? (
-                <img src={image} alt={title} className="w-full h-full object-cover" />
+                <>
+                  <img src={image} alt={title} className="w-full h-full object-cover" />
+                  {(title || desc) && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent flex items-end px-3 pb-6">
+                      <div className="min-w-0">
+                        {title && <p className="text-white font-bold text-sm leading-tight truncate">{title}</p>}
+                        {desc  && <p className="text-white/70 text-xs mt-0.5 line-clamp-1">{desc}</p>}
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
-                <div className="flex items-center justify-center w-full h-full px-5 py-4">
-                  <p className="text-white font-bold text-base text-center leading-snug">{title}</p>
-                </div>
-              )}
-
-              {/* gradient overlay + text */}
-              {image && (title || desc) && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent flex items-end px-3 pb-6">
-                  <div className="min-w-0">
-                    {title && <p className="text-white font-bold text-sm leading-tight truncate">{title}</p>}
-                    {desc  && <p className="text-white/70 text-xs mt-0.5 line-clamp-1">{desc}</p>}
+                /* no-image: rich branded card */
+                <div className="flex items-center gap-3 w-full h-full px-4 py-3"
+                  style={{ background: 'linear-gradient(135deg, #1a3a5c 0%, #0d2540 60%, #FF7900 200%)' }}>
+                  {/* icon circle */}
+                  <div className="w-11 h-11 rounded-xl bg-[#FF7900] flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <span className="text-xl">🍽️</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {title && <p className="text-white font-black text-sm leading-tight">{title}</p>}
+                    {desc  && <p className="text-white/70 text-xs mt-0.5 line-clamp-2 leading-snug">{desc}</p>}
+                  </div>
+                  <div className="flex-shrink-0 bg-[#FF7900] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow">
+                    {ar ? 'تفاصيل' : 'Details'}
                   </div>
                 </div>
               )}
+
             </a>
 
             {/* إعلان badge */}
