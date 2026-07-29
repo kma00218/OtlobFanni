@@ -16,8 +16,8 @@
 set -e
 
 PACKAGE="com.otlobfanni.app"
-VERSION_NAME="1.0.1"
-VERSION_CODE=2
+VERSION_NAME="1.1.0"
+VERSION_CODE=3
 KEYSTORE="release.keystore"
 KEY_ALIAS="otlobfanni-release"
 AAB_OUTPUT="app-release.aab"

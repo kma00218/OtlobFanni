@@ -1,135 +1,121 @@
-# OtlobFanni — Google Play Setup Guide
-## Package: `com.otlobfanni.app` | Version: `1.0.0`
+# OtlobFanni — Google Play Production Build Guide
+## Package: `com.otlobfanni.app` | Version: `1.1.0` (versionCode 3)
 
 ---
 
-## Option A — GitHub Actions (recommended, no local setup needed)
+## ✅ Pre-flight Checklist
 
-### Prerequisites
-- GitHub account with this repo pushed to it
-- That's it.
+| Item | Status |
+|---|---|
+| Production URL | `https://otlobfanni.ly/` ✅ |
+| Package name | `com.otlobfanni.app` ✅ |
+| versionCode | **3** (higher than any previous build) ✅ |
+| versionName | **1.1.0** ✅ |
+| Target SDK | 34 (Android 14) ✅ |
+| Min SDK | 21 (Android 5.0) ✅ |
+| Build type | Release (signed AAB) ✅ |
+| assetlinks.json | Must be live at `https://otlobfanni.ly/.well-known/assetlinks.json` |
 
 ---
 
-### Step 1 — Push this repo to GitHub
+## Build via GitHub Actions (Recommended)
+
+The signing keystore lives in GitHub Secrets — no local machine needed.
+
+### Step 1 — Push this repo to GitHub (if not done)
 
 ```bash
 git remote add origin https://github.com/YOUR_USERNAME/otlobfanni.git
 git push -u origin main
 ```
 
----
+### Step 2 — Ensure GitHub Secrets are set
 
-### Step 2 — First run: generate keystore + build AAB
+Go to: **GitHub repo → Settings → Secrets and variables → Actions**
 
-1. Go to your GitHub repo → **Actions** tab
-2. Select **"Build Android AAB"** workflow
-3. Click **"Run workflow"**
-4. Check **"Generate NEW keystore"** = `true`
-5. Click **"Run workflow"**
-
-When it finishes (~15 min):
-- Download **`app-release-aab`** artifact → this is your `app-release.aab`
-- Download **`release-keystore-STORE-SAFELY`** artifact → save this forever
-- In the workflow logs, find and copy:
-  - The **SHA-256 fingerprint** (for Replit → `ASSETLINKS_SHA256`)
-  - The **KEYSTORE_BASE64** value (for GitHub Secrets)
-
----
-
-### Step 3 — Set GitHub Secrets (for future builds)
-
-Go to: **GitHub repo → Settings → Secrets and variables → Actions → New repository secret**
-
-| Secret name | Value |
+| Secret name | Description |
 |---|---|
-| `KEYSTORE_BASE64` | long base64 string from workflow logs |
-| `KEYSTORE_PASS` | password you used (or `changeme_store` if not set) |
-| `KEY_PASS` | key password (or `changeme_key` if not set) |
+| `KEYSTORE_BASE64` | Base64-encoded release keystore (generated once, keep forever) |
+| `KEYSTORE_PASS` | Keystore password |
+| `KEY_PASS` | Key password |
+
+> **First time?** Run the workflow with `generate_keystore = true` (Step 3 below).
+> It will output `KEYSTORE_BASE64` in the logs — copy it and add to Secrets.
+
+### Step 3 — Run the build workflow
+
+1. GitHub repo → **Actions** tab
+2. Select **"Build Android AAB"**
+3. Click **"Run workflow"**
+4. Set `Generate NEW keystore` = **`false`** (unless it's your very first build)
+5. Click **"Run workflow"**
+6. Wait ~15 minutes
+7. Download `app-release-aab` artifact → this is your `app-release.aab`
 
 ---
 
-### Step 4 — Set SHA-256 on Replit
-
-1. Open Replit project → **Secrets** tab
-2. Add secret: `ASSETLINKS_SHA256` = `AA:BB:CC:DD:...` (from workflow logs)
-3. **Redeploy** the app
-
-Verify it's working:
-```
-https://otlobfanni.ly/.well-known/assetlinks.json
-```
-
----
-
-### Future builds (after secrets are set)
-
-1. Actions → "Build Android AAB" → Run workflow
-2. Leave "Generate NEW keystore" = `false`
-3. Download `app-release.aab` artifact when done
-
----
-
-## Option B — macOS (minimum steps, no Android Studio)
-
-Bubblewrap can download JDK and Android SDK automatically.
-
-```bash
-# 1. Install Node.js (if not installed)
-brew install node
-
-# 2. Install Bubblewrap
-npm install -g @bubblewrap/cli
-
-# 3. Go to the android-twa directory
-cd android-twa
-
-# 4. Initialize project (will prompt to auto-install JDK + SDK)
-bubblewrap init --manifest=./twa-manifest.json
-
-# 5. Build
-bubblewrap build
-```
-
-Total time: ~20 minutes (mostly SDK download on first run).
-Output: `android-twa/app-release.aab`
-
----
-
-## Step 5 — Upload to Google Play Console
+## Upload to Google Play Console
 
 1. Open [play.google.com/console](https://play.google.com/console)
-2. Create new app → Package: `com.otlobfanni.app`
-3. **Testing → Closed testing → Create track**
+2. Select **OtlobFanni** app (`com.otlobfanni.app`)
+3. Go to **Production → Create new release**
 4. Upload `app-release.aab`
-5. Fill required store listing fields
+5. Enter the release notes (see Changelog below)
+6. Review and **Rollout to Production**
 
 ---
 
-## Step 6 — Get final SHA-256 from Google Play
+## Changelog — v1.1.0 (versionCode 3)
+
+**What's new in this release:**
+
+- **Advertisement System** — sponsors can now appear in the home screen stats carousel with rotating ad slots
+- **AI-powered Search** — natural language search with AI tags and synonym expansion for better technician discovery
+- **Service Lifecycle Improvements** — full start → confirmation → completion → dispute flow on service requests
+- **Customer Account System** — username + PIN accounts replace anonymous tracking codes for "My Requests"
+- **General Request Flow** — improved request submission, WhatsApp validation, and pro dashboard tab
+- **UI/UX Improvements** — fixed FAB overlap, improved back navigation, improved category sorting
+- **Bug Fixes** — custom category sort order, object storage path resolution, WhatsApp min-length validation
+- **Performance** — optimized bundle, improved API response times
+
+---
+
+## After Upload — Set assetlinks.json
 
 If you use **Google Play App Signing** (recommended):
 
 1. Play Console → **Release → Setup → App signing**
 2. Copy **"App signing key certificate" → SHA-256**
-3. Update Replit Secret `ASSETLINKS_SHA256` with this value
-4. Redeploy
+3. In Replit → **Secrets** → set `ASSETLINKS_SHA256` = that SHA-256 value
+4. **Redeploy** the app
 
-Verify Digital Asset Links:
+Verify:
+```
+https://otlobfanni.ly/.well-known/assetlinks.json
+```
 ```
 https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://otlobfanni.ly&relation=delegate_permission/common.handle_all_urls
 ```
 
 ---
 
-## Updating the app in future
+## Future Releases
 
-Only increment version numbers in `twa-manifest.json`:
+Only two files need updating for each new release:
+
+**`android-twa/twa-manifest.json`:**
 ```json
-"appVersionCode": 2,
-"appVersionName": "1.0.1"
+"appVersionCode": 4,
+"appVersionName": "1.2.0"
 ```
-Then run the GitHub Actions workflow again. No code changes needed.
+
+**`android-twa/build.sh`:**
+```bash
+VERSION_NAME="1.2.0"
+VERSION_CODE=4
+```
+
+Then push to GitHub and run the Actions workflow. No other code changes needed.
 
 ---
 
@@ -142,7 +128,7 @@ Then run the GitHub Actions workflow again. No code changes needed.
 - [x] Target SDK 34 (Android 14) — compliant
 - [x] Min SDK 21 (Android 5.0) — covers 99%+ of active devices
 - [x] Package name: `com.otlobfanni.app`
-- [x] Version: `1.0.0` (code: 1)
-- [ ] Privacy policy URL required → use `https://otlobfanni.ly/privacy`
-- [ ] Store screenshots (min 2)
+- [x] Release build (signed AAB, not debug APK)
+- [ ] Privacy policy URL → `https://otlobfanni.ly/privacy`
+- [ ] Store screenshots (min 2 required)
 - [ ] Content rating questionnaire

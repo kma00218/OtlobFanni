@@ -22,8 +22,8 @@
     "path": "./release.keystore",
     "alias": "otlobfanni-release"
   },
-  "appVersionCode": 2,
-  "appVersionName": "1.0.1",
+  "appVersionCode": 3,
+  "appVersionName": "1.1.0",
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://otlobfanni.ly/manifest.json",
