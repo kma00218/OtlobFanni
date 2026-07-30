@@ -41,42 +41,60 @@ jobs:
             build-tools;34.0.0
 
       - name: Generate new release keystore
-        if: ${{ inputs.generate_keystore == true }}
+        if: ${{ inputs.generate_keystore == 'true' }}
         working-directory: android-twa
         run: |
           keytool -genkey -v \
             -keystore release.keystore \
-            -alias otlobfanni-release \
+            -alias "${KEY_ALIAS:-otlobfanni-release}" \
             -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" \
-            -keypass  "${{ secrets.KEY_PASS     || 'changeme_key'   }}" \
+            -storepass "${STORE_PASSWORD:-changeme_store}" \
+            -keypass  "${KEY_PASSWORD:-changeme_key}" \
             -dname "CN=OtlobFanni, OU=Mobile, O=OtlobFanni, L=Tripoli, S=Tripoli, C=LY"
           echo "=== SHA-256 (for assetlinks.json) ==="
-          keytool -list -v -keystore release.keystore -alias otlobfanni-release \
-            -storepass "${{ secrets.KEYSTORE_PASS || 'changeme_store' }}" 2>/dev/null | grep "SHA256:"
+          keytool -list -v -keystore release.keystore \
+            -alias "${KEY_ALIAS:-otlobfanni-release}" \
+            -storepass "${STORE_PASSWORD:-changeme_store}" 2>/dev/null | grep "SHA256:"
           echo "=== KEYSTORE_BASE64 (copy to GitHub Secrets) ==="
           base64 -w 0 release.keystore
+        env:
+          KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
 
       - name: Restore keystore from secret
-        if: ${{ inputs.generate_keystore != true }}
+        if: ${{ inputs.generate_keystore != 'true' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "ERROR: KEYSTORE_BASE64 secret is not set."
+            echo "ERROR: KEYSTORE_BASE64 secret is not set. Add it under Settings → Secrets → Actions."
             exit 1
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > android-twa/release.keystore
+          echo "✅ Keystore restored."
 
       - name: Install dependencies
         working-directory: android-twa
         run: npm install
 
+      - name: Initialize TWA project
+        working-directory: android-twa
+        run: |
+          if [ ! -d "android" ]; then
+            echo "▶ Initializing TWA project from manifest..."
+            npx bubblewrap init \
+              --manifest=./twa-manifest.json \
+              --directory=./android
+          else
+            echo "▶ TWA project already initialized, skipping."
+          fi
+
       - name: Build Android AAB
         working-directory: android-twa
         env:
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
-          KEY_PASS: ${{ secrets.KEY_PASS }}
+          KEYSTORE_PASS:  ${{ secrets.STORE_PASSWORD }}
+          KEY_PASS:       ${{ secrets.KEY_PASSWORD }}
         run: npm run build:android
 
       - name: Upload AAB artifact
@@ -87,7 +105,7 @@ jobs:
           retention-days: 30
 
       - name: Upload generated keystore (first-time only)
-        if: ${{ inputs.generate_keystore == true }}
+        if: ${{ inputs.generate_keystore == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: release-keystore-STORE-SAFELY
