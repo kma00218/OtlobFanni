@@ -145,6 +145,8 @@ function IosNotSafariView({ ar, onClose }) {
 }
 
 /* ─── Android no prompt view ───────────────────────────────── */
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.otlobfanni.app'
+
 function AndroidView({ ar, onClose }) {
   return (
     <div className="px-5 pb-10 pt-3">
@@ -153,33 +155,40 @@ function AndroidView({ ar, onClose }) {
           <X className="w-4 h-4 text-gray-500" />
         </button>
         <p className="text-[#071B33] font-black text-lg">
-          {ar ? '📲 أضف التطبيق لهاتفك' : '📲 Add App to Phone'}
+          {ar ? '📲 حمّل التطبيق' : '📲 Get the App'}
         </p>
         <div className="w-8" />
       </div>
 
-      <div className="bg-[#E8F5E9] rounded-2xl px-4 py-3 mb-5 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-[#34A853] flex items-center justify-center flex-shrink-0">
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-            <path d="M17.523 0.976l-1.401 2.425a6.977 6.977 0 0 0-8.244 0L6.477.976a.5.5 0 0 0-.686.182.5.5 0 0 0 .182.687L7.35 3.24A6.978 6.978 0 0 0 5 8.5h14a6.978 6.978 0 0 0-2.35-5.26l.877-1.395a.5.5 0 0 0-.686-.869zM9.5 6a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm5 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zM3 9.5A1.5 1.5 0 0 0 1.5 11v5A1.5 1.5 0 0 0 3 17.5 1.5 1.5 0 0 0 4.5 16v-5A1.5 1.5 0 0 0 3 9.5zm18 0a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5v-5a1.5 1.5 0 0 0-1.5-1.5zM5 9.5v9a1.5 1.5 0 0 0 1.5 1.5H7v3a1.5 1.5 0 0 0 1.5 1.5A1.5 1.5 0 0 0 10 23v-3h4v3a1.5 1.5 0 0 0 1.5 1.5A1.5 1.5 0 0 0 17 23v-3h.5a1.5 1.5 0 0 0 1.5-1.5v-9z"/>
-          </svg>
+      {/* App card */}
+      <div className="bg-gradient-to-br from-[#071B33] to-[#0d2a4a] rounded-2xl px-5 py-5 mb-5 flex items-center gap-4">
+        <img src="/icon-192.png" alt="اطلب فني" className="w-14 h-14 rounded-2xl shadow-lg flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-black text-base leading-tight">{ar ? 'اطلب فني' : 'Otlob Fanni'}</p>
+          <p className="text-white/60 text-xs mt-1 leading-snug">
+            {ar ? 'التطبيق الرسمي — متاح الآن على Google Play' : 'Official app — now on Google Play'}
+          </p>
         </div>
-        <p className="text-[#1b5e20] text-xs font-bold leading-snug">
-          {ar ? 'تأكد أنك تستخدم متصفح Chrome' : 'Make sure you\'re using Chrome browser'}
-        </p>
       </div>
 
-      <div className="space-y-3">
-        <Step n={1} icon="⋮" color="#34A853"
-          title={ar ? 'اضغط النقاط الثلاث ⋮' : 'Tap the three dots ⋮'}
-          desc={ar ? 'في أعلى يمين متصفح Chrome' : 'Top right corner of Chrome'} />
-        <Step n={2} icon="📱" color="#34A853"
-          title={ar ? 'اختر "إضافة إلى الشاشة الرئيسية"' : 'Tap "Add to Home Screen"'}
-          desc={ar ? 'أو "تثبيت التطبيق" إذا ظهرت' : 'Or "Install App" if it appears'} />
-        <Step n={3} icon="✅" color="#34A853"
-          title={ar ? 'اضغط "تثبيت"' : 'Tap "Install"'}
-          desc={ar ? 'ستجد التطبيق على شاشتك مثل أي تطبيق عادي!' : 'The app will appear on your home screen!'} />
-      </div>
+      {/* Play Store button */}
+      <a
+        href={PLAY_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClose}
+        className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-extrabold text-white text-base shadow-lg active:scale-95 transition-transform"
+        style={{ background: 'linear-gradient(135deg, #34A853 0%, #1a7a36 100%)' }}
+      >
+        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0">
+          <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.55l2.302 1.33a1 1 0 010 1.726l-2.302 1.33L15.396 12l2.302-2.843zM5.864 2.658L16.8 8.99l-2.302 2.302-8.635-8.635z"/>
+        </svg>
+        {ar ? 'تحميل من Google Play' : 'Get it on Google Play'}
+      </a>
+
+      <p className="text-center text-gray-400 text-xs mt-3">
+        {ar ? 'مجاني — Android 5.0 أو أحدث' : 'Free — Android 5.0 or later'}
+      </p>
     </div>
   )
 }

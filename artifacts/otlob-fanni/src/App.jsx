@@ -16,6 +16,7 @@ import BottomNav from "./components/BottomNav";
 import Header from "./components/Header";
 import SearchOverlay from "./components/SearchOverlay";
 import InstallGuideModal from "./components/InstallGuideModal";
+import SmartAppBanner from "./components/SmartAppBanner";
 
 // Public Pages — lazy loaded
 const Home = lazy(() => import("./pages/Home"));
@@ -117,15 +118,23 @@ function InstallFAB() {
   if (isInstalled) return null;
   if (location === '/more' || location === '/pro-login' || location === '/pro-activate' || location === '/pro' || location === '/pro/soon' || location === '/pro/profile' || location === '/pro/edit-profile') return null;
 
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.otlobfanni.app';
+
   const handleFABClick = async () => {
+    if (isAndroid) {
+      // Android — always send to Play Store
+      track('install_playstore');
+      window.open(PLAY_STORE_URL, '_blank', 'noopener,noreferrer');
+      return;
+    }
     if (installPrompt) {
-      // Android Chrome — trigger system prompt directly, no modal needed
       track('install_direct');
       installPrompt.prompt();
       const { outcome } = await installPrompt.userChoice;
       if (outcome === 'accepted') { setIsInstalled(true); setInstallPrompt(null); }
     } else {
-      // iOS or Android without prompt — show guidance modal
+      // iOS without prompt — show guidance modal
       setShowModal(true);
     }
   };
@@ -152,9 +161,11 @@ function InstallFAB() {
         }}
       >
         <Download className="w-5 h-5 flex-shrink-0" strokeWidth={2.5} />
-        {hasDirectInstall
-          ? (lang === 'ar' ? 'ثبّت الآن' : 'Install Now')
-          : (lang === 'ar' ? 'ثبّت التطبيق' : 'Install App')}
+        {isAndroid
+          ? (lang === 'ar' ? 'حمّل من Play' : 'Get on Play')
+          : hasDirectInstall
+            ? (lang === 'ar' ? 'ثبّت الآن' : 'Install Now')
+            : (lang === 'ar' ? 'ثبّت التطبيق' : 'Install App')}
       </button>
       <style>{`@keyframes installPulse { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.045)} }`}</style>
 
@@ -277,6 +288,7 @@ function AppContent() {
       <TooltipProvider>
         <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
+          <SmartAppBanner />
           {!hasOwnHeader && <Header woodTexture={location === '/'} />}
           <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>

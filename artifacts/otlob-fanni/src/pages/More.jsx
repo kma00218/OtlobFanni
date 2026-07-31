@@ -19,18 +19,7 @@ const IOS_STEPS_EN = [
   { n: '3', text: 'Select "Add to Home Screen"' },
   { n: '4', text: 'Tap "Add" — done!' },
 ]
-const AND_STEPS_AR = [
-  { n: '1', text: 'افتح التطبيق في متصفح Chrome' },
-  { n: '2', text: 'اضغط على النقاط الثلاث ⋮ في أعلى الشاشة' },
-  { n: '3', text: 'اختر "إضافة إلى الشاشة الرئيسية" أو "تثبيت التطبيق"' },
-  { n: '4', text: 'اضغط "تثبيت" — خلصت!' },
-]
-const AND_STEPS_EN = [
-  { n: '1', text: 'Open the app in Chrome browser' },
-  { n: '2', text: 'Tap the three dots ⋮ at the top right' },
-  { n: '3', text: 'Select "Add to Home Screen" or "Install App"' },
-  { n: '4', text: 'Tap "Install" — done!' },
-]
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.otlobfanni.app'
 
 function IconGrid({ title, titleIcon, items, ar }) {
   return (
@@ -83,24 +72,8 @@ export default function More() {
   const ar = lang === 'ar'
   const [, navigate] = useLocation()
   const [installTab, setInstallTab] = useState('ios')
-  const [installPrompt, setInstallPrompt] = useState(null)
-  const [installed, setInstalled] = useState(false)
   const [showReferral, setShowReferral] = useState(false)
   const [referralForm, setReferralForm] = useState({ type: 'technician', name: '', phone: '', specialty: '', city: '', submitting: false })
-
-  useEffect(() => {
-    const handler = (e) => { e.preventDefault(); setInstallPrompt(e) }
-    window.addEventListener('beforeinstallprompt', handler)
-    window.addEventListener('appinstalled', () => setInstalled(true))
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
-
-  const handleInstall = async () => {
-    if (!installPrompt) return
-    installPrompt.prompt()
-    const { outcome } = await installPrompt.userChoice
-    if (outcome === 'accepted') { setInstalled(true); setInstallPrompt(null) }
-  }
 
   const handleShare = () => {
     track('share')
@@ -387,7 +360,7 @@ export default function More() {
             </div>
             <div>
               <p className="text-white font-extrabold text-sm">{ar ? 'ثبّت التطبيق على جهازك' : 'Install App on Your Device'}</p>
-              <p className="text-white/70 text-xs mt-0.5">{ar ? 'مجاناً – بدون متجر تطبيقات' : 'Free – No app store needed'}</p>
+              <p className="text-white/70 text-xs mt-0.5">{ar ? 'مجاناً – iOS و Android' : 'Free – iOS & Android'}</p>
             </div>
           </div>
           <div className="flex gap-2 p-3 bg-[#F2F2F7]">
@@ -419,27 +392,28 @@ export default function More() {
             )}
             {installTab === 'android' && (
               <div className="space-y-3">
-                {installPrompt && !installed && (
-                  <button
-                    onClick={handleInstall}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-extrabold text-sm text-white mb-3 shadow-md active:scale-95 transition-transform"
-                    style={{ background: 'linear-gradient(135deg, #34A853 0%, #1a7a36 100%)' }}
-                  >
-                    <Download className="w-4 h-4" />
-                    {ar ? '⚡ ثبّت التطبيق الآن مباشرة' : '⚡ Install App Now'}
-                  </button>
-                )}
-                {installed && (
-                  <div className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white mb-3 bg-gray-400">
-                    {ar ? '✓ تم التثبيت بنجاح!' : '✓ Installed successfully!'}
+                <div className="flex items-center gap-3 bg-[#E8F5E9] rounded-xl px-3 py-2.5">
+                  <img src="/icon-192.png" alt="اطلب فني" className="w-10 h-10 rounded-xl flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#1b5e20] font-extrabold text-sm leading-tight">{ar ? 'اطلب فني' : 'Otlob Fanni'}</p>
+                    <p className="text-[#2e7d32] text-xs mt-0.5">{ar ? 'متاح الآن على Google Play' : 'Now on Google Play'}</p>
                   </div>
-                )}
-                {(ar ? AND_STEPS_AR : AND_STEPS_EN).map(step => (
-                  <div key={step.n} className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-[#34A853] text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0 mt-0.5">{step.n}</span>
-                    <p className="text-gray-800 text-sm font-medium leading-snug pt-0.5">{step.text}</p>
-                  </div>
-                ))}
+                </div>
+                <a
+                  href={PLAY_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-extrabold text-sm text-white shadow-md active:scale-95 transition-transform"
+                  style={{ background: 'linear-gradient(135deg, #34A853 0%, #1a7a36 100%)' }}
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0">
+                    <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.55l2.302 1.33a1 1 0 010 1.726l-2.302 1.33L15.396 12l2.302-2.843zM5.864 2.658L16.8 8.99l-2.302 2.302-8.635-8.635z"/>
+                  </svg>
+                  {ar ? 'تحميل من Google Play' : 'Get it on Google Play'}
+                </a>
+                <p className="text-center text-gray-400 text-xs">
+                  {ar ? 'مجاني — Android 5.0 أو أحدث' : 'Free — Android 5.0 or later'}
+                </p>
               </div>
             )}
           </div>
