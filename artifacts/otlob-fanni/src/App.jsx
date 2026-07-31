@@ -262,6 +262,7 @@ function MyRequestsFAB() {
 
 function AppContent() {
   const [location] = useLocation();
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const isAdminPath = location.startsWith("/admin");
 
   if (isAdminPath) {
@@ -288,7 +289,10 @@ function AppContent() {
       <TooltipProvider>
         <ScrollToTop />
         <div className="min-h-[100dvh] max-w-[480px] mx-auto bg-background shadow-2xl relative shadow-black/10">
-          <SmartAppBanner />
+          <SmartAppBanner onIOSInstall={() => setShowInstallModal(true)} />
+          {showInstallModal && (
+            <InstallGuideModal ar={true} onClose={() => setShowInstallModal(false)} />
+          )}
           {!hasOwnHeader && <Header woodTexture={location === '/'} />}
           <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
