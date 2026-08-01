@@ -537,33 +537,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── آخر الطلبات ── */}
-        {recentRequests.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-extrabold text-[#071B33]">
-                {ar ? '📋 آخر الطلبات' : '📋 Latest Requests'}
-              </span>
-              <span className="text-[10px] text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">
-                {ar ? 'طلبات مفتوحة' : 'Open requests'}
-              </span>
-            </div>
-            <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
-              {recentRequests.map((req, i) => (
-                <RecentRequestCard
-                  key={req.categoryId + '-' + i}
-                  req={req}
-                  ar={ar}
-                  onTap={() => {
-                    const proSession = localStorage.getItem('pro_session')
-                    if (proSession) { navigate('/pro?tab=general') }
-                    else { setShowProModal(true) }
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* آخر الطلبات — hidden for now to keep home page focused */}
 
 
         {/* Recently Joined + divider + provider heading — grouped tight */}
