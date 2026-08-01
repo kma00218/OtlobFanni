@@ -430,7 +430,7 @@ export default function Home() {
               {/* Text */}
               <div className="flex-1 min-w-0">
                 <p className="text-white font-black leading-tight" style={{ fontSize: '15px' }}>
-                  {ar ? 'ابحث عن أي خدمة الآن' : 'Search any service now'}
+                  {ar ? 'ابحث عن' : 'Search for'}
                 </p>
                 <p className="font-bold leading-tight mt-0.5" style={{ fontSize: '12px', color: '#FFA94D' }}>
                   {ar ? 'فنيون · شركات خدمية · موردو مستلزمات' : 'Technicians · Companies · Suppliers'}
