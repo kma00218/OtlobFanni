@@ -389,24 +389,22 @@ function RequestCard({ req, onStatusChange, onMarkRead, proName, highlighted }) 
               </a>
             )}
 
+            {canStartWork && req.status !== 'contacted' && (
+              <button onClick={() => changeStatus('contacted')} disabled={updating}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 disabled:opacity-50">
+                <MessageCircle className="w-3 h-3" /> تم التواصل
+              </button>
+            )}
             {canStartWork && (
-              <>
-                {req.status !== 'contacted' && (
-                  <button onClick={() => changeStatus('contacted')} disabled={updating}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 disabled:opacity-50">
-                    <MessageCircle className="w-3 h-3" /> تم التواصل
-                  </button>
-                )}
-                <button onClick={handleStartWork} disabled={lifecycleUpdating}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 active:scale-95 transition-all"
-                  style={{ background: 'linear-gradient(135deg, #FF7900, #d96400)' }}>
-                  {lifecycleUpdating
-                    ? <RefreshCw className="w-3 h-3 animate-spin" />
-                    : <PlayCircle className="w-3 h-3" />
-                  }
-                  بدأت العمل
-                </button>
-              </>
+              <button onClick={() => { changeStatus('in_progress'); setShowCompleteForm(false) }} disabled={updating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 active:scale-95 transition-all"
+                style={{ background: 'linear-gradient(135deg, #059669, #065f46)' }}>
+                {updating
+                  ? <RefreshCw className="w-3 h-3 animate-spin" />
+                  : <Flag className="w-3 h-3" />
+                }
+                أنهيت العمل
+              </button>
             )}
 
             {canComplete && !showCompleteForm && (
@@ -543,7 +541,7 @@ export default function ProDashboard() {
   const [requests,       setRequests]      = useState([])
   const [reqLoading,     setReqLoading]    = useState(false)
   const [reqFilter,      setReqFilter]     = useState('all')
-  const [activeTab,      setActiveTab]     = useState('profile')
+  const [activeTab,      setActiveTab]     = useState('requests')
   const [deals,          setDeals]         = useState([])
   const [dealsLoading,   setDealsLoading]  = useState(false)
   const [dealFilter,     setDealFilter]    = useState('all')
@@ -861,21 +859,17 @@ export default function ProDashboard() {
         </div>
       </div>
 
-      {/* ── Tab Bar ────────────────────────────────── */}
+      {/* ── Tab Bar — 2 tabs only ───────────────── */}
       <div className="flex mx-4 mb-1 rounded-2xl p-1 gap-1"
         style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', boxShadow: '0 2px 12px rgba(0,0,0,0.2)' }}>
         {[
-          { key: 'profile',  label: 'ملفي',              badge: 0 },
-          { key: 'requests', label: cfg.requestsTab,      badge: newCount },
-          { key: 'general',  label: 'الطلبات العامة',     badge: genNewCount },
-          { key: 'deals',    label: cfg.dealsTab,         badge: pendingDeals },
+          { key: 'requests', label: 'الطلبات', badge: newCount + genNewCount },
+          { key: 'profile',  label: 'ملفي',    badge: 0 },
         ].map(tab => (
           <button key={tab.key}
             onClick={() => {
               setActiveTab(tab.key)
-              if (tab.key === 'requests' && session) loadRequests(session)
-              if (tab.key === 'deals'    && session) loadDeals(session)
-              if (tab.key === 'general'  && session) loadGeneralRequests(session)
+              if (tab.key === 'requests' && session) { loadRequests(session); loadGeneralRequests(session) }
             }}
             className={`flex-1 py-2.5 text-xs font-bold transition-all rounded-xl relative ${
               activeTab === tab.key ? 'bg-white text-[#071B33] shadow' : 'text-white/85'
@@ -1019,42 +1013,7 @@ export default function ProDashboard() {
               ))}
             </div>
 
-            {/* ── Coming soon tools ── */}
-            <div className="rounded-2xl overflow-hidden bg-white"
-              style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.08)', border: '1.5px solid #E2E6EA' }}>
-              <div className="px-4 py-3 flex items-center justify-between border-b border-[#F5F5F7]">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
-                    <TrendingUp className="w-3.5 h-3.5 text-slate-400" />
-                  </div>
-                  <div>
-                    <p className="font-extrabold text-[#071B33] text-sm">أدوات الباقة المهنية</p>
-                    <p className="text-[11px] text-slate-400">ستُفعَّل مع اشتراكك القريب</p>
-                  </div>
-                </div>
-                <span className="flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full"
-                  style={{ color: cfg.color, background: `${cfg.color}15`, border: `1px solid ${cfg.color}30` }}>
-                  <Sparkles className="w-3 h-3" /> قريباً
-                </span>
-              </div>
-              <div className="grid grid-cols-2">
-                {TOOLS.map((tool, i) => (
-                  <div key={tool.id}
-                    className={`px-4 py-5 flex flex-col items-center gap-2.5 ${i % 2 === 0 ? 'border-l border-[#F0F2F5]' : ''} ${i < 2 ? 'border-b border-[#F0F2F5]' : ''}`}>
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${tool.bg} flex items-center justify-center opacity-30`}>
-                      {tool.icon}
-                    </div>
-                    <div className="text-center">
-                      <p className="font-bold text-slate-400 text-[13px]">{tool.labelAr}</p>
-                      <div className="flex items-center justify-center gap-1 mt-1">
-                        <Lock className="w-2.5 h-2.5 text-slate-300" />
-                        <p className="text-[10px] text-slate-300 font-semibold">قريباً</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Tools hidden until subscription feature is live */}
 
           </div>
         )}
@@ -1122,6 +1081,126 @@ export default function ProDashboard() {
                 ))}
               </div>
             )}
+
+            {/* ── General (broadcast) requests — embedded section ── */}
+            <div className="mt-4 pt-4" style={{ borderTop: '2px dashed #E2E6EA' }}>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #7B2FBE, #4c1d80)' }}>
+                    <Send className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-black text-[#071B33] text-sm">طلبات عامة قريبة منك</p>
+                    <p className="text-[11px] text-gray-400">{genRequests.length} طلب متاح لتقديم عرض</p>
+                  </div>
+                </div>
+                <button onClick={() => loadGeneralRequests(session)}
+                  className="p-2 rounded-xl bg-white border border-gray-100 shadow-sm">
+                  <RefreshCw className={`w-3.5 h-3.5 text-gray-400 ${genLoading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+
+              {genLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
+                    style={{ borderColor: '#7B2FBE transparent transparent transparent' }} />
+                </div>
+              ) : genRequests.length === 0 ? (
+                <div className="text-center py-8 bg-white rounded-2xl" style={{ border: '1px solid #F0F2F5' }}>
+                  <p className="text-gray-400 text-sm">لا توجد طلبات عامة حالياً في مدينتك وتخصصك</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {genRequests.map(r => {
+                    const myOffer = genOffers.find(o => o.requestId === r.id)
+                    const formOpen = genOfferForm?.requestId === r.id
+                    return (
+                      <div key={r.id} className="bg-white rounded-2xl p-4 shadow-sm" style={{ border: '1px solid #EDE9F8' }}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="font-black text-[#071B33] text-sm truncate">{r.title}</p>
+                            <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
+                              {r.cityName && <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" />{r.cityName}</span>}
+                              {r.categoryName && <span>• {r.categoryName}</span>}
+                            </div>
+                          </div>
+                          {myOffer && (
+                            <span className={`text-[10px] font-black px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+                              myOffer.status === 'selected' ? 'bg-emerald-100 text-emerald-700' : myOffer.status === 'rejected' ? 'bg-gray-100 text-gray-500' : 'bg-amber-100 text-amber-700'
+                            }`}>
+                              {myOffer.status === 'selected' ? 'تم اختيارك ✓' : myOffer.status === 'rejected' ? 'لم يتم اختيارك' : 'قيد المراجعة'}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2 leading-relaxed">{r.description}</p>
+                        {Array.isArray(r.photoUrls) && r.photoUrls.length > 0 && (
+                          <div className="flex gap-2 mt-2">
+                            {r.photoUrls.map((p, i) => (
+                              <img key={i} src={getFileUrl(p)} alt="" className="w-14 h-14 rounded-lg object-cover" />
+                            ))}
+                          </div>
+                        )}
+                        {!myOffer && !formOpen && (
+                          <button onClick={() => setGenOfferForm({ requestId: r.id, price: '', etaText: '', note: '' })}
+                            className="mt-3 w-full py-2.5 rounded-xl text-xs font-black text-white active:scale-95 transition-all"
+                            style={{ background: 'linear-gradient(135deg, #7B2FBE, #4c1d80)' }}>
+                            تقديم عرض سعر
+                          </button>
+                        )}
+                        {myOffer && myOffer.status !== 'rejected' && !formOpen && (
+                          <button onClick={() => setGenOfferForm({ requestId: r.id, price: myOffer.price || '', etaText: myOffer.etaText || '', note: myOffer.note || '' })}
+                            className="mt-3 w-full py-2 rounded-xl text-xs font-bold text-gray-500 bg-gray-50 active:scale-95 transition-all">
+                            تعديل العرض ({myOffer.price} د.ل)
+                          </button>
+                        )}
+                        {formOpen && (
+                          <div className="mt-3 space-y-2 bg-gray-50 rounded-2xl p-3">
+                            <div className="grid grid-cols-2 gap-2">
+                              <input type="number" min="0" placeholder="السعر (د.ل) *" required
+                                value={genOfferForm.price}
+                                onChange={e => setGenOfferForm(f => ({ ...f, price: e.target.value }))}
+                                className="px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B2FBE]/30" />
+                              <input type="text" placeholder="المدة (مثال: خلال يوم)"
+                                value={genOfferForm.etaText}
+                                onChange={e => setGenOfferForm(f => ({ ...f, etaText: e.target.value }))}
+                                className="px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B2FBE]/30" />
+                            </div>
+                            <textarea rows={2} placeholder="ملاحظة (اختياري)"
+                              value={genOfferForm.note}
+                              onChange={e => setGenOfferForm(f => ({ ...f, note: e.target.value }))}
+                              className="w-full px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B2FBE]/30 resize-none" />
+                            <div className="flex gap-2">
+                              <button type="button" onClick={() => setGenOfferForm(null)}
+                                className="flex-1 py-2 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-200">
+                                إلغاء
+                              </button>
+                              <button type="button" disabled={genSubmitting || !genOfferForm.price}
+                                onClick={async () => {
+                                  setGenSubmitting(true)
+                                  try {
+                                    await api.generalRequests.submitOffer(genOfferForm.requestId, {
+                                      entityType: session.entityType, entityId: session.entityId,
+                                      price: genOfferForm.price, etaText: genOfferForm.etaText || undefined, note: genOfferForm.note || undefined,
+                                    })
+                                    setGenOfferForm(null)
+                                    loadGeneralRequests(session)
+                                  } catch { alert('حدث خطأ، حاول مرة أخرى') }
+                                  finally { setGenSubmitting(false) }
+                                }}
+                                className="flex-1 py-2 rounded-xl text-xs font-black text-white disabled:opacity-50"
+                                style={{ background: 'linear-gradient(135deg, #7B2FBE, #4c1d80)' }}>
+                                {genSubmitting ? 'جارٍ الإرسال...' : 'إرسال العرض'}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
