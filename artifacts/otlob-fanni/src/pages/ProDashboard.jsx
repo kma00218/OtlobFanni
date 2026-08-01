@@ -396,10 +396,10 @@ function RequestCard({ req, onStatusChange, onMarkRead, proName, highlighted }) 
               </button>
             )}
             {canStartWork && (
-              <button onClick={() => { changeStatus('in_progress'); setShowCompleteForm(false) }} disabled={updating}
+              <button onClick={handleStartWork} disabled={lifecycleUpdating}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 active:scale-95 transition-all"
                 style={{ background: 'linear-gradient(135deg, #059669, #065f46)' }}>
-                {updating
+                {lifecycleUpdating
                   ? <RefreshCw className="w-3 h-3 animate-spin" />
                   : <Flag className="w-3 h-3" />
                 }
