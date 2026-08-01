@@ -5,7 +5,7 @@ import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
 import { useAllCategories } from '../hooks/useAllCategories'
-import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus, Wrench, X, ClipboardList, MapPin, Clock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, LayoutGrid, Users, Package, ChevronLeft, ChevronRight, Share2, UserPlus, Wrench, X, ClipboardList, MapPin, Clock, Search } from 'lucide-react'
 import { Link, useLocation } from 'wouter'
 import AdBanner from '../components/AdBanner'
 import StatsAdCarousel from '../components/StatsAdCarousel'
@@ -412,12 +412,33 @@ export default function Home() {
         {stats && <StatsAdCarousel stats={stats} ar={ar} />}
 
         {/* ── قسم العميل ── */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#071B33] rounded-2xl px-4 py-2.5 mb-3 shadow-sm">
-            <span className="text-lg">🔍</span>
-            <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
-              {ar ? 'هل تبحث عن فني / شركة خدمية / مورد مستلزمات؟' : 'Looking for a technician / company / supplier?'}
-            </p>
+        <div>
+          {/* Full-width search banner */}
+          <div
+            className="w-full rounded-2xl overflow-hidden mb-3 shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}
+            dir={ar ? 'rtl' : 'ltr'}
+          >
+            <div className="flex items-center gap-3 px-4 py-3.5">
+              {/* Icon */}
+              <div
+                className="w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center"
+                style={{ background: 'rgba(255,121,0,0.18)', border: '1.5px solid rgba(255,121,0,0.35)' }}
+              >
+                <Search className="w-5 h-5 text-[#FF7900]" />
+              </div>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-black leading-tight" style={{ fontSize: '15px' }}>
+                  {ar ? 'ابحث عن أي خدمة الآن' : 'Search any service now'}
+                </p>
+                <p className="font-bold leading-tight mt-0.5" style={{ fontSize: '12px', color: '#FFA94D' }}>
+                  {ar ? 'فنيون · شركات خدمية · موردو مستلزمات' : 'Technicians · Companies · Suppliers'}
+                </p>
+              </div>
+            </div>
+            {/* Orange accent line at the bottom */}
+            <div style={{ height: '3px', background: 'linear-gradient(to right, #FF7900, #ffb347)' }} />
           </div>
 
           {citiesForFilter.length > 0 && (
