@@ -859,29 +859,42 @@ export default function ProDashboard() {
         </div>
       </div>
 
-      {/* ── Tab Bar — 2 tabs only ───────────────── */}
-      <div className="flex mx-4 mb-1 rounded-2xl p-1 gap-1"
-        style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', boxShadow: '0 2px 12px rgba(0,0,0,0.2)' }}>
+      {/* ── Tab Bar — 2 tabs, 3D raised/pressed style ── */}
+      <div className="flex mx-4 mb-2 gap-2.5">
         {[
           { key: 'requests', label: 'الطلبات', badge: newCount + genNewCount },
           { key: 'profile',  label: 'ملفي',    badge: 0 },
-        ].map(tab => (
-          <button key={tab.key}
-            onClick={() => {
-              setActiveTab(tab.key)
-              if (tab.key === 'requests' && session) { loadRequests(session); loadGeneralRequests(session) }
-            }}
-            className={`flex-1 py-2.5 text-xs font-bold transition-all rounded-xl relative ${
-              activeTab === tab.key ? 'bg-white text-[#071B33] shadow' : 'text-white/85'
-            }`}>
-            {tab.label}
-            {tab.badge > 0 && (
-              <span className="absolute -top-1 -left-1 w-5 h-5 bg-[#FF7900] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                {tab.badge > 9 ? '9+' : tab.badge}
-              </span>
-            )}
-          </button>
-        ))}
+        ].map(tab => {
+          const isActive = activeTab === tab.key
+          return (
+            <button key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key)
+                if (tab.key === 'requests' && session) { loadRequests(session); loadGeneralRequests(session) }
+              }}
+              className="flex-1 relative py-3 rounded-2xl font-black text-sm transition-all duration-150 active:scale-[0.97]"
+              style={isActive ? {
+                background: 'linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%)',
+                color: '#071B33',
+                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.1)',
+                border: '1.5px solid rgba(255,255,255,0.9)',
+                transform: 'translateY(2px)',
+              } : {
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)',
+                color: 'rgba(255,255,255,0.9)',
+                boxShadow: '0 4px 0 rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.15) inset',
+                border: '1.5px solid rgba(255,255,255,0.18)',
+              }}>
+              {tab.label}
+              {tab.badge > 0 && (
+                <span className="absolute -top-1.5 -left-1.5 min-w-[20px] h-5 px-1 bg-[#FF7900] text-white text-[10px] font-black rounded-full flex items-center justify-center"
+                  style={{ boxShadow: '0 2px 6px rgba(255,121,0,0.6)' }}>
+                  {tab.badge > 9 ? '9+' : tab.badge}
+                </span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       {/* ── Body ───────────────────────────────────── */}
