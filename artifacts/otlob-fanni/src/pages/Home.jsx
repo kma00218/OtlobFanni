@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useLang } from '../context/LanguageContext'
-import Logo from '../components/Logo'
 import SearchBar from '../components/SearchBar'
 import SectionCard from '../components/SectionCard'
 import { sections } from '../data/services'
@@ -257,8 +256,6 @@ export default function Home() {
   const { dir, lang } = useLang()
   const ar = lang === 'ar'
   const [, navigate] = useLocation()
-  const logoClickCount = useRef(0)
-  const logoClickTimer = useRef(null)
   const cityRef        = useRef(null)
   const [cityPulse, setCityPulse] = useState(false)
   const allCategoriesData = useAllCategories()
@@ -272,19 +269,6 @@ export default function Home() {
   const [recentRequests, setRecentRequests] = useState([])
   const [showProModal, setShowProModal] = useState(false)
 
-
-  const handleLogoClick = () => {
-    logoClickCount.current += 1
-    if (logoClickTimer.current) clearTimeout(logoClickTimer.current)
-    if (logoClickCount.current >= 5) {
-      logoClickCount.current = 0
-      navigate('/admin/login')
-      return
-    }
-    logoClickTimer.current = setTimeout(() => {
-      logoClickCount.current = 0
-    }, 5000)
-  }
 
   useEffect(() => {
     api.recentlyJoined()
@@ -406,10 +390,6 @@ export default function Home() {
       </Link>
 
       <main className="px-4 pt-2 pb-4 flex flex-col gap-4">
-        <div className="flex justify-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>
-          <Logo />
-        </div>
-
         {/* ── بطاقة الإطلاق + إعلانات home_top ── */}
         {stats && <StatsAdCarousel stats={stats} ar={ar} />}
 
