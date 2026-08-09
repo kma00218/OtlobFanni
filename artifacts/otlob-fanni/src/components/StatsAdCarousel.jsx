@@ -60,23 +60,23 @@ export default function StatsAdCarousel({ stats, ar }) {
         <div className="flex items-center gap-2 px-3 pt-5 pb-6">
           <div className="flex flex-1 items-center justify-around">
             <div className="flex flex-col items-center flex-shrink-0">
-              <span className="text-2xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
+              <span className="text-xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
               <span className="text-[14px] font-extrabold text-gray-500 mt-1.5 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
             </div>
             <div className="w-px self-stretch bg-gray-100" />
             <div className="flex flex-col items-center flex-shrink-0">
-              <span className="text-2xl font-black text-blue-500 leading-none">{stats.companies}</span>
+              <span className="text-xl font-black text-blue-500 leading-none">{stats.companies}</span>
               <span className="text-[14px] font-extrabold text-gray-500 mt-1.5 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
             </div>
             <div className="w-px self-stretch bg-gray-100" />
             <div className="flex flex-col items-center flex-shrink-0">
-              <span className="text-2xl font-black text-teal-500 leading-none">{stats.suppliers}</span>
+              <span className="text-xl font-black text-teal-500 leading-none">{stats.suppliers}</span>
               <span className="text-[14px] font-extrabold text-gray-500 mt-1.5 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
             </div>
           </div>
           <div className="w-px self-stretch bg-gray-200" />
           <div className="flex flex-col items-center flex-shrink-0 px-1">
-            <span className="text-3xl font-black text-[#FF7900] leading-none">
+            <span className="text-2xl font-black text-[#FF7900] leading-none">
               {stats.technicians + stats.companies + stats.suppliers}
             </span>
             <span className="text-[14px] font-extrabold text-gray-500 mt-1.5">{ar ? 'إجمالي' : 'Total'}</span>
