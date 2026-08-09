@@ -417,8 +417,29 @@ export default function Home() {
         <div>
           {/* Full-width search banner — tappable guide */}
           <button
-            className="w-full rounded-2xl overflow-hidden mb-3 shadow-lg active:scale-[0.98] transition-transform text-right"
-            style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}
+            className="w-full rounded-2xl overflow-hidden mb-3 text-right select-none"
+            style={{
+              background: 'linear-gradient(160deg, #0f2d52 0%, #071B33 100%)',
+              boxShadow: '0 6px 0 #031020, 0 8px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)',
+              transform: 'translateY(0px)',
+              transition: 'box-shadow 0.1s ease, transform 0.1s ease',
+            }}
+            onMouseDown={e => {
+              e.currentTarget.style.boxShadow = '0 2px 0 #031020, 0 3px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)'
+              e.currentTarget.style.transform = 'translateY(4px)'
+            }}
+            onMouseUp={e => {
+              e.currentTarget.style.boxShadow = '0 6px 0 #031020, 0 8px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)'
+              e.currentTarget.style.transform = 'translateY(0px)'
+            }}
+            onTouchStart={e => {
+              e.currentTarget.style.boxShadow = '0 2px 0 #031020, 0 3px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)'
+              e.currentTarget.style.transform = 'translateY(4px)'
+            }}
+            onTouchEnd={e => {
+              e.currentTarget.style.boxShadow = '0 6px 0 #031020, 0 8px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)'
+              e.currentTarget.style.transform = 'translateY(0px)'
+            }}
             dir={ar ? 'rtl' : 'ltr'}
             onClick={() => {
               cityRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
