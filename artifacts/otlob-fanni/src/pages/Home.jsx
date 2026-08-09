@@ -597,34 +597,38 @@ export default function Home() {
 
         </div>
 
-        {/* ── قسم الانضمام — إطار برتقالي ── */}
-        <div className="-mx-4 px-4 py-6"
-          style={{ borderTop: '3px solid #FF7900', borderBottom: '3px solid #FF7900' }}>
+        {/* ── قسم الانضمام — خلفية داكنة ── */}
+        <div className="-mx-4 px-4 py-7"
+          style={{ background: 'linear-gradient(160deg, #071B33 0%, #0f2d52 100%)' }}>
 
           {/* أو divider */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
+            <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
               {ar ? 'أو' : 'OR'}
             </span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
           </div>
 
           {/* عنوان قسم الانضمام */}
-          <div className="text-center mb-4">
-            <div className="inline-flex items-center gap-2 bg-[#FFF4E8] border-2 border-[#071B33] rounded-2xl px-4 py-2.5 mb-0.5 shadow-sm">
+          <div className="text-center mb-5">
+            <div className="inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 mb-2"
+              style={{ background: 'rgba(255,121,0,0.15)', border: '1.5px solid rgba(255,121,0,0.4)' }}>
               <span className="text-lg">💼</span>
               <p className="text-[14px] font-black text-[#FF7900] leading-tight whitespace-nowrap" style={{ letterSpacing: '-0.3px' }}>
                 {ar ? 'هل أنت فني أو شركة خدمية أو مورد مستلزمات؟' : 'Are you a technician, service company or supplier?'}
               </p>
             </div>
-            <p className="text-[15px] font-extrabold text-[#071B33] leading-snug">
+            <p className="text-[16px] font-extrabold text-white leading-snug">
               {ar ? 'انضم إلينا مجاناً' : 'Join Us for Free'}
             </p>
           </div>
 
           {/* بطاقات الانضمام */}
           <JoinCards ar={ar} />
+
+          {/* Orange accent line at bottom */}
+          <div className="mt-6 h-0.5 rounded-full" style={{ background: 'linear-gradient(to right, transparent, #FF7900, transparent)' }} />
         </div>
 
         <div className="mt-6">
