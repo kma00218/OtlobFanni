@@ -514,7 +514,7 @@ export default function Home() {
                       >
                         {label}
                         {(city.total || 0) > 0 && (
-                          <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 leading-none ${cityPulse ? 'bg-white/20 text-white' : 'bg-orange-50 text-[#FF7900]'}`}>
+                          <span className={`text-[11px] font-black rounded-full px-2 py-0.5 leading-none ${cityPulse ? 'bg-white/30 text-white' : 'bg-[#FF7900] text-white'}`}>
                             {city.total}
                           </span>
                         )}
