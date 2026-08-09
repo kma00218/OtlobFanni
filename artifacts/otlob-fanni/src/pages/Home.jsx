@@ -503,10 +503,10 @@ export default function Home() {
                       <button
                         key={city.id}
                         onClick={() => { setCityPulse(false); navigate(`/city/${city.id}`) }}
-                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:scale-95 transition-all"
+                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:translate-y-[2px] transition-all"
                         style={cityPulse
-                          ? { background: '#FF7900', border: '1.5px solid #FF7900', color: '#fff' }
-                          : { background: '#FFF3E6', border: '1.5px solid #FFA94D', color: '#071B33' }
+                          ? { background: '#FF7900', border: '1.5px solid #FF7900', color: '#fff', boxShadow: '0 3px 0 #B35500, 0 4px 10px rgba(255,121,0,0.3)' }
+                          : { background: '#FFF3E6', border: '1.5px solid #FFA94D', color: '#071B33', boxShadow: '0 3px 0 #C47A1E, 0 4px 10px rgba(0,0,0,0.1)' }
                         }
                       >
                         {label}
