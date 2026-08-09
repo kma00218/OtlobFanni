@@ -183,7 +183,8 @@ const JOIN_TYPES = [
     key: 'tech',
     img: '/join-cards/technician-v2.png',
     accent: '#FF7900',
-    shadow: '0 6px 20px rgba(255,121,0,0.35)',
+    edge: '#B35500',
+    shadow: '0 5px 0 #B35500, 0 8px 20px rgba(255,121,0,0.35)',
     ar: 'هل أنت فني؟',
     en: 'Are you a Technician?',
     subAr: 'سجّل مجاناً',
@@ -193,7 +194,8 @@ const JOIN_TYPES = [
     key: 'company',
     img: '/join-cards/company-v2.png',
     accent: '#1a56db',
-    shadow: '0 6px 20px rgba(26,86,219,0.35)',
+    edge: '#0f3490',
+    shadow: '0 5px 0 #0f3490, 0 8px 20px rgba(26,86,219,0.35)',
     ar: 'لديك شركة خدمية؟',
     en: 'Have a Service Company?',
     subAr: 'سجّل شركتك',
@@ -203,7 +205,8 @@ const JOIN_TYPES = [
     key: 'supplier',
     img: '/join-cards/supplier-v2.png',
     accent: '#0d9488',
-    shadow: '0 6px 20px rgba(13,148,136,0.35)',
+    edge: '#065f59',
+    shadow: '0 5px 0 #065f59, 0 8px 20px rgba(13,148,136,0.35)',
     ar: 'مورّد مستلزمات؟',
     en: 'Are you a Supplier?',
     subAr: 'انضم إلينا',
@@ -236,7 +239,7 @@ function JoinCards({ ar }) {
       {JOIN_TYPES.map(type => (
         <Link key={type.key} href="/join-us" className="flex-1">
           <div
-            className="relative overflow-hidden rounded-2xl active:scale-95 transition-transform duration-150 select-none cursor-pointer flex flex-col"
+            className="relative overflow-hidden rounded-2xl active:translate-y-[4px] transition-all duration-150 select-none cursor-pointer flex flex-col"
             style={{ boxShadow: type.shadow }}
           >
             <div className="relative w-full" style={{ paddingBottom: '90%' }}>
