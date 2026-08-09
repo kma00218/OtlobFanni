@@ -53,37 +53,33 @@ export default function StatsAdCarousel({ stats, ar }) {
   return (
     <div
       className="relative rounded-2xl overflow-hidden select-none"
-      style={{ background: '#071B33' }}
+      style={{ background: '#fff', border: '1.5px solid #F0F2F5', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}
     >
-      {/* radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(255,121,0,0.12) 0%, transparent 65%)' }}
-      />
-
       {/* ── Stats slide — always rendered so container keeps its height ── */}
       <div className={`relative z-10 transition-opacity duration-500 ${isStats ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-center gap-2 px-3 pt-3 pb-6">
+        <div className="flex items-center gap-2 px-3 pt-3 pb-4">
           <div className="flex flex-1 items-center justify-around">
             <div className="flex flex-col items-center flex-shrink-0">
               <span className="text-2xl font-black text-[#FF7900] leading-none">{stats.technicians}</span>
-              <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
+              <span className="text-[11px] font-bold text-gray-400 mt-1 whitespace-nowrap">{ar ? 'فني' : 'Tech'}</span>
             </div>
+            <div className="w-px self-stretch bg-gray-100" />
             <div className="flex flex-col items-center flex-shrink-0">
-              <span className="text-2xl font-black text-blue-300 leading-none">{stats.companies}</span>
-              <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
+              <span className="text-2xl font-black text-blue-500 leading-none">{stats.companies}</span>
+              <span className="text-[11px] font-bold text-gray-400 mt-1 whitespace-nowrap">{ar ? 'شركة خدمات' : 'Service Co.'}</span>
             </div>
+            <div className="w-px self-stretch bg-gray-100" />
             <div className="flex flex-col items-center flex-shrink-0">
-              <span className="text-2xl font-black text-teal-300 leading-none">{stats.suppliers}</span>
-              <span className="text-[11px] font-bold text-white/80 mt-1 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
+              <span className="text-2xl font-black text-teal-500 leading-none">{stats.suppliers}</span>
+              <span className="text-[11px] font-bold text-gray-400 mt-1 whitespace-nowrap">{ar ? 'مورد مستلزمات' : 'Supplier'}</span>
             </div>
           </div>
-          <div className="w-px self-stretch bg-white/15" />
-          <div className="flex flex-col items-center flex-shrink-0">
+          <div className="w-px self-stretch bg-gray-200" />
+          <div className="flex flex-col items-center flex-shrink-0 px-1">
             <span className="text-3xl font-black text-[#FF7900] leading-none">
               {stats.technicians + stats.companies + stats.suppliers}
             </span>
-            <span className="text-xs font-bold text-white/70 mt-1">{ar ? 'إجمالي' : 'Total'}</span>
+            <span className="text-xs font-bold text-gray-400 mt-1">{ar ? 'إجمالي' : 'Total'}</span>
           </div>
         </div>
       </div>
@@ -166,15 +162,8 @@ export default function StatsAdCarousel({ stats, ar }) {
         </div>
       )}
 
-      {/* ── Bottom arc ── */}
-      <svg
-        viewBox="0 0 400 14"
-        preserveAspectRatio="none"
-        className="absolute bottom-0 left-0 right-0 w-full z-50"
-        style={{ height: 14 }}
-      >
-        <path d="M0,14 L0,14 Q200,0 400,14 Z" fill="#F8FAFC" />
-      </svg>
+      {/* ── Bottom orange accent line ── */}
+      <div className="absolute bottom-0 left-0 right-0 z-50" style={{ height: '3px', background: 'linear-gradient(to right, #FF7900, #ffb347)' }} />
     </div>
   )
 }

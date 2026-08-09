@@ -259,6 +259,8 @@ export default function Home() {
   const [, navigate] = useLocation()
   const logoClickCount = useRef(0)
   const logoClickTimer = useRef(null)
+  const cityRef        = useRef(null)
+  const [cityPulse, setCityPulse] = useState(false)
   const allCategoriesData = useAllCategories()
   const [recent, setRecent] = useState([])
   const [recentLoading, setRecentLoading] = useState(true)
@@ -413,21 +415,24 @@ export default function Home() {
 
         {/* ── قسم العميل ── */}
         <div>
-          {/* Full-width search banner */}
-          <div
-            className="w-full rounded-2xl overflow-hidden mb-3 shadow-lg"
+          {/* Full-width search banner — tappable guide */}
+          <button
+            className="w-full rounded-2xl overflow-hidden mb-3 shadow-lg active:scale-[0.98] transition-transform text-right"
             style={{ background: 'linear-gradient(135deg, #071B33 0%, #0f2d52 100%)' }}
             dir={ar ? 'rtl' : 'ltr'}
+            onClick={() => {
+              cityRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              setCityPulse(true)
+              setTimeout(() => setCityPulse(false), 3000)
+            }}
           >
             <div className="flex items-center gap-3 px-4 py-3.5">
-              {/* Icon */}
               <div
                 className="w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center"
                 style={{ background: 'rgba(255,121,0,0.18)', border: '1.5px solid rgba(255,121,0,0.35)' }}
               >
                 <Search className="w-5 h-5 text-[#FF7900]" />
               </div>
-              {/* Text */}
               <div className="flex-1 min-w-0">
                 <p className="text-white font-black leading-tight" style={{ fontSize: '15px' }}>
                   {ar ? 'ابحث عن' : 'Search for'}
@@ -436,17 +441,37 @@ export default function Home() {
                   {ar ? 'فنيون · شركات خدمية · موردو مستلزمات' : 'Technicians · Companies · Suppliers'}
                 </p>
               </div>
+              {/* Arrow hint */}
+              <div className="flex-shrink-0 flex flex-col items-center gap-0.5 opacity-60">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/60" />
+                <div className="w-0.5 h-3 bg-white/40 rounded-full" />
+                <div
+                  className="w-0 h-0"
+                  style={{ borderLeft: '4px solid transparent', borderRight: '4px solid transparent', borderTop: '5px solid rgba(255,255,255,0.6)' }}
+                />
+              </div>
             </div>
-            {/* Orange accent line at the bottom */}
             <div style={{ height: '3px', background: 'linear-gradient(to right, #FF7900, #ffb347)' }} />
-          </div>
+          </button>
 
           {citiesForFilter.length > 0 && (
-            <>
-              <p className="text-[16px] font-black text-[#071B33] mb-2">
-                {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
-              </p>
-              <div className="relative -mx-1">
+            <div ref={cityRef}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[16px] font-black text-[#071B33]">
+                  {ar ? '📍 اختر مدينتك' : '📍 Choose your city'}
+                </p>
+                {cityPulse && (
+                  <span
+                    className="text-[11px] font-bold text-[#FF7900] animate-pulse"
+                  >
+                    {ar ? 'ابدأ من هنا ↓' : 'Start here ↓'}
+                  </span>
+                )}
+              </div>
+              <div
+                className="relative -mx-1 rounded-xl transition-all duration-300"
+                style={cityPulse ? { outline: '2.5px solid #FF7900', outlineOffset: '3px', borderRadius: '12px' } : {}}
+              >
                 <div
                   className="flex gap-2 overflow-x-auto pb-0.5 px-1"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -456,13 +481,16 @@ export default function Home() {
                     return (
                       <button
                         key={city.id}
-                        onClick={() => navigate(`/city/${city.id}`)}
-                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:scale-95 transition-transform"
-                        style={{ background: '#FFF3E6', border: '1.5px solid #FFA94D', color: '#071B33' }}
+                        onClick={() => { setCityPulse(false); navigate(`/city/${city.id}`) }}
+                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold active:scale-95 transition-all"
+                        style={cityPulse
+                          ? { background: '#FF7900', border: '1.5px solid #FF7900', color: '#fff' }
+                          : { background: '#FFF3E6', border: '1.5px solid #FFA94D', color: '#071B33' }
+                        }
                       >
                         {label}
                         {(city.total || 0) > 0 && (
-                          <span className="text-[11px] font-bold text-[#FF7900] bg-orange-50 rounded-full px-2 py-0.5 leading-none">
+                          <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 leading-none ${cityPulse ? 'bg-white/20 text-white' : 'bg-orange-50 text-[#FF7900]'}`}>
                             {city.total}
                           </span>
                         )}
@@ -471,11 +499,11 @@ export default function Home() {
                   })}
                 </div>
                 <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-8"
-                  style={{ background: 'linear-gradient(to right, white 30%, transparent)' }} />
+                  style={{ background: cityPulse ? 'transparent' : 'linear-gradient(to right, white 30%, transparent)' }} />
                 <div className="pointer-events-none absolute top-0 bottom-0 right-0 w-8"
-                  style={{ background: 'linear-gradient(to left, white 30%, transparent)' }} />
+                  style={{ background: cityPulse ? 'transparent' : 'linear-gradient(to left, white 30%, transparent)' }} />
               </div>
-            </>
+            </div>
           )}
         </div>
 
