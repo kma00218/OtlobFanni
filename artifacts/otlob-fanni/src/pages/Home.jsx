@@ -461,7 +461,7 @@ export default function Home() {
                 <p className="text-white font-black leading-tight" style={{ fontSize: '15px' }}>
                   {ar ? 'ابحث عن' : 'Search for'}
                 </p>
-                <p className="font-bold leading-tight mt-0.5" style={{ fontSize: '12px', color: '#FFA94D' }}>
+                <p className="font-bold leading-tight mt-0.5" style={{ fontSize: '13.5px', color: '#FFA94D' }}>
                   {ar ? 'فنيون · شركات خدمية · موردو مستلزمات' : 'Technicians · Companies · Suppliers'}
                 </p>
               </div>
