@@ -405,7 +405,7 @@ export default function Home() {
         </div>
       </Link>
 
-      <main className="px-4 pt-2 pb-4 flex flex-col gap-4">
+      <main className="px-4 pt-1 pb-4 flex flex-col gap-3">
         <div className="flex justify-center" onClick={handleLogoClick} style={{ cursor: 'default' }}>
           <Logo />
         </div>
